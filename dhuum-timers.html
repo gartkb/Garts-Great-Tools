@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dhuum Timings Helper</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0f0f0;
+            color: #333;
+            padding-top: 20px;
+        }
+        
+        #encounter-container {
+            position: relative;
+            width: 752px;
+            height: 662px;
+            background-image: url('https://assets.snowcrows.com/uploads/28207ec4-a151-11ec-8fcf-ca7a943c517e/wobcgZJkj2xbWKJQTxKHIMva3EtB7xQDKHayN3DO.webp');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        #timer-display {
+            position: absolute;
+            bottom: 60px; 
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 48px;
+            font-weight: bold;
+            color: #333;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 0 20px;
+            border-radius: 10px;
+        }
+        
+        .tts-options-container {
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap; /* Allows checkboxes to wrap on smaller screens */
+            justify-content: center;
+            gap: 15px 20px;
+            align-items: center;
+            font-size: 18px;
+        }
+
+        .button-container {
+            margin-top: 15px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            font-size: 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            border: none;
+            color: white;
+            transition: background-color 0.3s;
+        }
+
+        #start-button { background-color: #4CAF50; }
+        #start-button:hover { background-color: #45a049; }
+        #stop-button { background-color: #f44336; }
+        #stop-button:hover { background-color: #da190b; }
+
+        .hidden { display: none !important; }
+
+        #arrow-pointer {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-color: #0d6efd;
+            clip-path: polygon(50% 0, 100% 40%, 65% 40%, 65% 100%, 35% 100%, 35% 40%, 0 40%);
+            transform-origin: center center;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        #arrow-pointer.warning { background-color: #ff1111; }
+        
+        #assignee-text {
+            position: absolute;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px black;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="encounter-container">
+        <div id="timer-display">10:00</div>
+        <div id="arrow-pointer" class="hidden"></div>
+        <div id="assignee-text" class="hidden"></div>
+    </div>
+    
+    <div class="tts-options-container">
+        <label><input type="checkbox" id="tts-g1" checked> G1 TTS</label>
+        <label><input type="checkbox" id="tts-g2" checked> G2 TTS</label>
+        <label><input type="checkbox" id="tts-g3" checked> G3 TTS</label>
+        <label><input type="checkbox" id="tts-greater-deathmark" checked> Greater Deathmark</label>
+    </div>
+
+    <div class="button-container">
+        <button id="start-button" class="btn">Start</button>
+        <button id="stop-button" class="btn hidden">Stop</button>
+    </div>
+
+    <script>
+        // --- DATA CONSTANTS ---
+        const greenEvents = [
+            // G1, G2, G3 Rotation
+            { time: "9:30", label: "arrow",   arrowPos: {x: 310, y: 323}, textPos: { x: 280, y: 340 }, arrowRotation: -37 },
+            { time: "9:00", label: "circle",  arrowPos: {x: 310, y: 388}, textPos: { x: 282, y: 375 }, arrowRotation: 30 },
+            { time: "8:30", label: "heart",   arrowPos: {x: 255, y: 423}, textPos: { x: 235, y: 400 }, arrowRotation: 80 },
+            { time: "8:00", label: "square",  arrowPos: {x: 195, y: 410}, textPos: { x: 215, y: 390 }, arrowRotation: 130 },
+            { time: "7:30", label: "star",    arrowPos: {x: 175, y: 355}, textPos: { x: 205, y: 355 }, arrowRotation: 180 },
+            { time: "7:00", label: "swirl",   arrowPos: {x: 195, y: 295}, textPos: { x: 215, y: 315 }, arrowRotation: 230 },
+            { time: "6:30", label: "triangle",arrowPos: {x: 255, y: 280}, textPos: { x: 235, y: 305 }, arrowRotation: 280 },
+            // Loops are just repetitions of the first 7 events
+            ...[...Array(2)].flatMap(() => [
+                { time: "6:00", label: "arrow",   arrowPos: {x: 310, y: 323}, textPos: { x: 280, y: 340 }, arrowRotation: -37 },
+                { time: "5:30", label: "circle",  arrowPos: {x: 310, y: 388}, textPos: { x: 282, y: 375 }, arrowRotation: 30 },
+                { time: "5:00", label: "heart",   arrowPos: {x: 255, y: 423}, textPos: { x: 235, y: 400 }, arrowRotation: 80 },
+                { time: "4:30", label: "square",  arrowPos: {x: 195, y: 410}, textPos: { x: 215, y: 390 }, arrowRotation: 130 },
+                { time: "4:00", label: "star",    arrowPos: {x: 175, y: 355}, textPos: { x: 205, y: 355 }, arrowRotation: 180 },
+                { time: "3:30", label: "swirl",   arrowPos: {x: 195, y: 295}, textPos: { x: 215, y: 315 }, arrowRotation: 230 },
+                { time: "3:00", label: "triangle",arrowPos: {x: 255, y: 280}, textPos: { x: 235, y: 305 }, arrowRotation: 280 },
+                { time: "2:30", label: "arrow",   arrowPos: {x: 310, y: 323}, textPos: { x: 280, y: 340 }, arrowRotation: -37 },
+                { time: "2:00", label: "circle",  arrowPos: {x: 310, y: 388}, textPos: { x: 282, y: 375 }, arrowRotation: 30 },
+                { time: "1:30", label: "heart",   arrowPos: {x: 255, y: 423}, textPos: { x: 235, y: 400 }, arrowRotation: 80 },
+                { time: "1:00", label: "square",  arrowPos: {x: 195, y: 410}, textPos: { x: 215, y: 390 }, arrowRotation: 130 },
+                { time: "0:30", label: "star",    arrowPos: {x: 175, y: 355}, textPos: { x: 205, y: 355 }, arrowRotation: 180 },
+                { time: "0:00", label: "swirl",   arrowPos: {x: 195, y: 295}, textPos: { x: 215, y: 315 }, arrowRotation: 230 },
+            ])
+        ];
+        const greaterDeathmarkTimings = ["6:25", "5:05", "3:45", "2:25", "1:05"];
+
+        // --- DOM ELEMENT REFERENCES ---
+        const startButton = document.getElementById('start-button');
+        const stopButton = document.getElementById('stop-button');
+        const timerDisplay = document.getElementById('timer-display');
+        const arrow = document.getElementById('arrow-pointer');
+        const assigneeText = document.getElementById('assignee-text');
+        
+        // --- TTS Checkbox References ---
+        const ttsG1 = document.getElementById('tts-g1');
+        const ttsG2 = document.getElementById('tts-g2');
+        const ttsG3 = document.getElementById('tts-g3');
+        const ttsGreaterDeathmark = document.getElementById('tts-greater-deathmark');
+        const ttsCheckboxes = { G1: ttsG1, G2: ttsG2, G3: ttsG3 };
+
+        // --- STATE VARIABLES ---
+        let timerInterval = null;
+        const initialTime = 600;
+        let totalSeconds = initialTime;
+        const assignees = ["G1", "G2", "G3"];
+
+        // --- UTILITY FUNCTIONS ---
+        function timeToSeconds(timeStr) {
+            const [minutes, seconds] = timeStr.split(':').map(Number);
+            return (minutes * 60) + seconds;
+        }
+
+        function formatTime(seconds) {
+            const min = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const sec = (seconds % 60).toString().padStart(2, '0');
+            return `${min}:${sec}`;
+        }
+
+        // --- CORE LOGIC ---
+        function update() {
+            totalSeconds--;
+            timerDisplay.textContent = formatTime(totalSeconds);
+
+            // --- Green Arrow Logic ---
+            let nextEvent = null;
+            let eventIndex = -1;
+            for (let i = 0; i < greenEvents.length; i++) {
+                if (totalSeconds >= timeToSeconds(greenEvents[i].time)) {
+                    nextEvent = greenEvents[i];
+                    eventIndex = i;
+                    break; 
+                }
+            }
+            
+            if (nextEvent) {
+                arrow.classList.remove('hidden');
+                assigneeText.classList.remove('hidden');
+                const arrowSize = 40;
+                arrow.style.left = `${nextEvent.arrowPos.x - arrowSize / 2}px`;
+                arrow.style.top = `${nextEvent.arrowPos.y - arrowSize / 2}px`;
+                arrow.style.transform = `rotate(${nextEvent.arrowRotation + 90}deg)`;
+                const assignee = assignees[eventIndex % 3];
+                assigneeText.style.left = `${nextEvent.textPos.x}px`;
+                assigneeText.style.top = `${nextEvent.textPos.y}px`;
+                assigneeText.textContent = assignee;
+                const eventTimeInSeconds = timeToSeconds(nextEvent.time);
+                if (totalSeconds === eventTimeInSeconds + 10) {
+                    if (ttsCheckboxes[assignee] && ttsCheckboxes[assignee].checked) {
+                        const textToSpeak = `Green ${assignee.slice(-1)} to ${nextEvent.label}`;
+                        const utterance = new SpeechSynthesisUtterance(textToSpeak);
+                        window.speechSynthesis.speak(utterance);
+                    }
+                }
+                arrow.classList.toggle('warning', totalSeconds <= eventTimeInSeconds + 10);
+            } else {
+                 arrow.classList.add('hidden');
+                 assigneeText.classList.add('hidden');
+            }
+
+            // --- Greater Deathmark TTS Logic ---
+            for (const time of greaterDeathmarkTimings) {
+                const deathmarkTimeInSeconds = timeToSeconds(time);
+                // Trigger TTS exactly 6 seconds before the event.
+                if (totalSeconds === deathmarkTimeInSeconds + 6) {
+                    if (ttsGreaterDeathmark.checked) {
+                        const utterance = new SpeechSynthesisUtterance("Big Dip in 5");
+                        window.speechSynthesis.speak(utterance);
+                    }
+                }
+            }
+
+            // --- Timer Stop Logic ---
+            if (totalSeconds <= 0) {
+                stopEncounter(true);
+            }
+        }
+        
+        // --- ENCOUNTER CONTROLS ---
+        function stopEncounter(finished = false) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            arrow.classList.add('hidden');
+            assigneeText.classList.add('hidden');
+            stopButton.classList.add('hidden');
+            startButton.classList.remove('hidden');
+            if (finished) {
+                 startButton.textContent = "Restart";
+                 timerDisplay.textContent = "Done!";
+            } else {
+                 timerDisplay.textContent = formatTime(initialTime);
+                 totalSeconds = initialTime;
+            }
+        }
+
+        function startEncounter() {
+            if (timerInterval) return;
+            try {
+                const prewarmUtterance = new SpeechSynthesisUtterance('');
+                window.speechSynthesis.speak(prewarmUtterance);
+                window.speechSynthesis.cancel();
+            } catch (e) {
+                // Speech synthesis might not be available or allowed.
+            }
+            totalSeconds = initialTime + 1;
+            startButton.textContent = "Start";
+            startButton.classList.add('hidden');
+            stopButton.classList.remove('hidden');
+            update(); 
+            timerInterval = setInterval(update, 1000);
+        }
+
+        // --- EVENT LISTENERS ---
+        startButton.addEventListener('click', startEncounter);
+        stopButton.addEventListener('click', () => stopEncounter(false));
+
+    </script>
+</body>
+</html>
