@@ -10,22 +10,33 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             background-color: #f0f0f0;
             color: #333;
-            padding-top: 20px;
+            padding: 20px;
+            gap: 15px;
+        }
+
+        h2.header-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #444;
+            margin: 0;
         }
         
         #encounter-container {
             position: relative;
-            width: 752px;
-            height: 662px;
-            background-image: url('https://assets.snowcrows.com/uploads/28207ec4-a151-11ec-8fcf-ca7a943c517e/wobcgZJkj2xbWKJQTxKHIMva3EtB7xQDKHayN3DO.webp');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
+            /* REMOVED: width and height properties. The container will now size to its content. */
+            /* This is a more flexible approach. */
+            max-width: 100%; /* Ensures the image scales down on smaller screens */
+        }
+        
+        /* The image itself defines the container's aspect ratio and size */
+        #background-image {
+            display: block;
+            width: 752px; /* Width of the actual image file */
+            height: auto;
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         #timer-display {
@@ -42,9 +53,8 @@
         }
         
         .tts-options-container {
-            margin-top: 15px;
             display: flex;
-            flex-wrap: wrap; /* Allows checkboxes to wrap on smaller screens */
+            flex-wrap: wrap;
             justify-content: center;
             gap: 15px 20px;
             align-items: center;
@@ -52,7 +62,6 @@
         }
 
         .button-container {
-            margin-top: 15px;
             display: flex;
             gap: 20px;
         }
@@ -69,6 +78,9 @@
 
         #start-button { background-color: #4CAF50; }
         #start-button:hover { background-color: #45a049; }
+        #listen-button { background-color: #0d6efd; }
+        #listen-button:hover { background-color: #0b5ed7; }
+        #listen-button:disabled { background-color: #6c757d; cursor: not-allowed; }
         #stop-button { background-color: #f44336; }
         #stop-button:hover { background-color: #da190b; }
 
@@ -94,11 +106,26 @@
             text-shadow: 1px 1px 3px black;
             transform: translate(-50%, -50%);
         }
+
+        .footer {
+            font-size: 14px;
+            color: #555;
+        }
+        .footer a {
+            color: #0d6efd;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
     
+    <h2 class="header-title">[SOUL] Dhuum Timer</h2>
+
     <div id="encounter-container">
+        <img id="background-image" src="https://assets.snowcrows.com/uploads/28207ec4-a151-11ec-8fcf-ca7a943c517e/wobcgZJkj2xbWKJQTxKHIMva3EtB7xQDKHayN3DO.webp" alt="Dhuum Timings Diagram">
         <div id="timer-display">10:00</div>
         <div id="arrow-pointer" class="hidden"></div>
         <div id="assignee-text" class="hidden"></div>
@@ -113,13 +140,17 @@
 
     <div class="button-container">
         <button id="start-button" class="btn">Start</button>
+        <button id="listen-button" class="btn">Listen for start</button>
         <button id="stop-button" class="btn hidden">Stop</button>
+    </div>
+    
+    <div class="footer">
+        gartkb @ [SOUL] : <a href="https://discord.gg/BC3XNTVzRY" target="_blank">https://discord.gg/BC3XNTVzRY</a>
     </div>
 
     <script>
         // --- DATA CONSTANTS ---
         const greenEvents = [
-            // G1, G2, G3 Rotation
             { time: "9:30", label: "arrow",   arrowPos: {x: 310, y: 323}, textPos: { x: 280, y: 340 }, arrowRotation: -37 },
             { time: "9:00", label: "circle",  arrowPos: {x: 310, y: 388}, textPos: { x: 282, y: 375 }, arrowRotation: 30 },
             { time: "8:30", label: "heart",   arrowPos: {x: 255, y: 423}, textPos: { x: 235, y: 400 }, arrowRotation: 80 },
@@ -127,27 +158,25 @@
             { time: "7:30", label: "star",    arrowPos: {x: 175, y: 355}, textPos: { x: 205, y: 355 }, arrowRotation: 180 },
             { time: "7:00", label: "swirl",   arrowPos: {x: 195, y: 295}, textPos: { x: 215, y: 315 }, arrowRotation: 230 },
             { time: "6:30", label: "triangle",arrowPos: {x: 255, y: 280}, textPos: { x: 235, y: 305 }, arrowRotation: 280 },
-            // Loops are just repetitions of the first 7 events
-            ...[...Array(2)].flatMap(() => [
-                { time: "6:00", label: "arrow",   arrowPos: {x: 310, y: 323}, textPos: { x: 280, y: 340 }, arrowRotation: -37 },
-                { time: "5:30", label: "circle",  arrowPos: {x: 310, y: 388}, textPos: { x: 282, y: 375 }, arrowRotation: 30 },
-                { time: "5:00", label: "heart",   arrowPos: {x: 255, y: 423}, textPos: { x: 235, y: 400 }, arrowRotation: 80 },
-                { time: "4:30", label: "square",  arrowPos: {x: 195, y: 410}, textPos: { x: 215, y: 390 }, arrowRotation: 130 },
-                { time: "4:00", label: "star",    arrowPos: {x: 175, y: 355}, textPos: { x: 205, y: 355 }, arrowRotation: 180 },
-                { time: "3:30", label: "swirl",   arrowPos: {x: 195, y: 295}, textPos: { x: 215, y: 315 }, arrowRotation: 230 },
-                { time: "3:00", label: "triangle",arrowPos: {x: 255, y: 280}, textPos: { x: 235, y: 305 }, arrowRotation: 280 },
-                { time: "2:30", label: "arrow",   arrowPos: {x: 310, y: 323}, textPos: { x: 280, y: 340 }, arrowRotation: -37 },
-                { time: "2:00", label: "circle",  arrowPos: {x: 310, y: 388}, textPos: { x: 282, y: 375 }, arrowRotation: 30 },
-                { time: "1:30", label: "heart",   arrowPos: {x: 255, y: 423}, textPos: { x: 235, y: 400 }, arrowRotation: 80 },
-                { time: "1:00", label: "square",  arrowPos: {x: 195, y: 410}, textPos: { x: 215, y: 390 }, arrowRotation: 130 },
-                { time: "0:30", label: "star",    arrowPos: {x: 175, y: 355}, textPos: { x: 205, y: 355 }, arrowRotation: 180 },
-                { time: "0:00", label: "swirl",   arrowPos: {x: 195, y: 295}, textPos: { x: 215, y: 315 }, arrowRotation: 230 },
-            ])
+            { time: "6:00", label: "arrow",   arrowPos: {x: 310, y: 323}, textPos: { x: 280, y: 340 }, arrowRotation: -37 },
+            { time: "5:30", label: "circle",  arrowPos: {x: 310, y: 388}, textPos: { x: 282, y: 375 }, arrowRotation: 30 },
+            { time: "5:00", label: "heart",   arrowPos: {x: 255, y: 423}, textPos: { x: 235, y: 400 }, arrowRotation: 80 },
+            { time: "4:30", label: "square",  arrowPos: {x: 195, y: 410}, textPos: { x: 215, y: 390 }, arrowRotation: 130 },
+            { time: "4:00", label: "star",    arrowPos: {x: 175, y: 355}, textPos: { x: 205, y: 355 }, arrowRotation: 180 },
+            { time: "3:30", label: "swirl",   arrowPos: {x: 195, y: 295}, textPos: { x: 215, y: 315 }, arrowRotation: 230 },
+            { time: "3:00", label: "triangle",arrowPos: {x: 255, y: 280}, textPos: { x: 235, y: 305 }, arrowRotation: 280 },
+            { time: "2:30", label: "arrow",   arrowPos: {x: 310, y: 323}, textPos: { x: 280, y: 340 }, arrowRotation: -37 },
+            { time: "2:00", label: "circle",  arrowPos: {x: 310, y: 388}, textPos: { x: 282, y: 375 }, arrowRotation: 30 },
+            { time: "1:30", label: "heart",   arrowPos: {x: 255, y: 423}, textPos: { x: 235, y: 400 }, arrowRotation: 80 },
+            { time: "1:00", label: "square",  arrowPos: {x: 195, y: 410}, textPos: { x: 215, y: 390 }, arrowRotation: 130 },
+            { time: "0:30", label: "star",    arrowPos: {x: 175, y: 355}, textPos: { x: 205, y: 355 }, arrowRotation: 180 },
+            { time: "0:00", label: "swirl",   arrowPos: {x: 195, y: 295}, textPos: { x: 215, y: 315 }, arrowRotation: 230 }
         ];
         const greaterDeathmarkTimings = ["6:25", "5:05", "3:45", "2:25", "1:05"];
 
         // --- DOM ELEMENT REFERENCES ---
         const startButton = document.getElementById('start-button');
+        const listenButton = document.getElementById('listen-button');
         const stopButton = document.getElementById('stop-button');
         const timerDisplay = document.getElementById('timer-display');
         const arrow = document.getElementById('arrow-pointer');
@@ -183,7 +212,7 @@
             totalSeconds--;
             timerDisplay.textContent = formatTime(totalSeconds);
 
-            // --- Green Arrow Logic ---
+            // Green Arrow Logic
             let nextEvent = null;
             let eventIndex = -1;
             for (let i = 0; i < greenEvents.length; i++) {
@@ -219,10 +248,9 @@
                  assigneeText.classList.add('hidden');
             }
 
-            // --- Greater Deathmark TTS Logic ---
+            // Greater Deathmark TTS Logic
             for (const time of greaterDeathmarkTimings) {
                 const deathmarkTimeInSeconds = timeToSeconds(time);
-                // Trigger TTS exactly 6 seconds before the event.
                 if (totalSeconds === deathmarkTimeInSeconds + 6) {
                     if (ttsGreaterDeathmark.checked) {
                         const utterance = new SpeechSynthesisUtterance("Big Dip in 5");
@@ -231,7 +259,6 @@
                 }
             }
 
-            // --- Timer Stop Logic ---
             if (totalSeconds <= 0) {
                 stopEncounter(true);
             }
@@ -245,6 +272,7 @@
             assigneeText.classList.add('hidden');
             stopButton.classList.add('hidden');
             startButton.classList.remove('hidden');
+            listenButton.classList.remove('hidden');
             if (finished) {
                  startButton.textContent = "Restart";
                  timerDisplay.textContent = "Done!";
@@ -261,19 +289,69 @@
                 window.speechSynthesis.speak(prewarmUtterance);
                 window.speechSynthesis.cancel();
             } catch (e) {
-                // Speech synthesis might not be available or allowed.
+                console.warn("Speech synthesis could not be pre-warmed.");
             }
             totalSeconds = initialTime + 1;
             startButton.textContent = "Start";
             startButton.classList.add('hidden');
+            listenButton.classList.add('hidden');
             stopButton.classList.remove('hidden');
             update(); 
             timerInterval = setInterval(update, 1000);
         }
 
+        // --- VOICE RECOGNITION LOGIC ---
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition;
+        let recognitionTimeout;
+
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript.toLowerCase();
+                if (transcript.includes('start')) {
+                    startEncounter();
+                }
+                clearTimeout(recognitionTimeout);
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Speech recognition error:", event.error);
+                listenButton.textContent = "Listen for start";
+                listenButton.disabled = false;
+            };
+
+            recognition.onend = () => {
+                clearTimeout(recognitionTimeout);
+                listenButton.textContent = "Listen for start";
+                listenButton.disabled = false;
+            };
+
+        } else {
+            listenButton.classList.add('hidden');
+            console.warn("Speech Recognition not supported in this browser.");
+        }
+        
+        function startListening() {
+            if (!recognition) return;
+            listenButton.textContent = "Listening...";
+            listenButton.disabled = true;
+            recognition.start();
+
+            recognitionTimeout = setTimeout(() => {
+                recognition.stop();
+            }, 20000);
+        }
+
         // --- EVENT LISTENERS ---
         startButton.addEventListener('click', startEncounter);
         stopButton.addEventListener('click', () => stopEncounter(false));
+        if(listenButton) listenButton.addEventListener('click', startListening);
 
     </script>
 </body>
