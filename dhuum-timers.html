@@ -25,15 +25,14 @@
         
         #encounter-container {
             position: relative;
-            /* REMOVED: width and height properties. The container will now size to its content. */
-            /* This is a more flexible approach. */
-            max-width: 100%; /* Ensures the image scales down on smaller screens */
+            display: inline-block; 
+            line-height: 0; 
         }
         
-        /* The image itself defines the container's aspect ratio and size */
         #background-image {
             display: block;
-            width: 752px; /* Width of the actual image file */
+            width: 752px;
+            max-width: 100%;
             height: auto;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -41,9 +40,10 @@
 
         #timer-display {
             position: absolute;
-            bottom: 60px; 
-            left: 50%;
-            transform: translateX(-50%);
+            /* MOVED TO TOP RIGHT CORNER */
+            top: 20px; 
+            right: 20px;
+            transform: none; /* Removed the centering transform */
             font-size: 48px;
             font-weight: bold;
             color: #333;
@@ -151,26 +151,26 @@
     <script>
         // --- DATA CONSTANTS ---
         const greenEvents = [
-            { time: "9:30", label: "arrow",   arrowPos: {x: 310, y: 323}, textPos: { x: 280, y: 340 }, arrowRotation: -37 },
-            { time: "9:00", label: "circle",  arrowPos: {x: 310, y: 388}, textPos: { x: 282, y: 375 }, arrowRotation: 30 },
-            { time: "8:30", label: "heart",   arrowPos: {x: 255, y: 423}, textPos: { x: 235, y: 400 }, arrowRotation: 80 },
-            { time: "8:00", label: "square",  arrowPos: {x: 195, y: 410}, textPos: { x: 215, y: 390 }, arrowRotation: 130 },
-            { time: "7:30", label: "star",    arrowPos: {x: 175, y: 355}, textPos: { x: 205, y: 355 }, arrowRotation: 180 },
-            { time: "7:00", label: "swirl",   arrowPos: {x: 195, y: 295}, textPos: { x: 215, y: 315 }, arrowRotation: 230 },
-            { time: "6:30", label: "triangle",arrowPos: {x: 255, y: 280}, textPos: { x: 235, y: 305 }, arrowRotation: 280 },
-            { time: "6:00", label: "arrow",   arrowPos: {x: 310, y: 323}, textPos: { x: 280, y: 340 }, arrowRotation: -37 },
-            { time: "5:30", label: "circle",  arrowPos: {x: 310, y: 388}, textPos: { x: 282, y: 375 }, arrowRotation: 30 },
-            { time: "5:00", label: "heart",   arrowPos: {x: 255, y: 423}, textPos: { x: 235, y: 400 }, arrowRotation: 80 },
-            { time: "4:30", label: "square",  arrowPos: {x: 195, y: 410}, textPos: { x: 215, y: 390 }, arrowRotation: 130 },
-            { time: "4:00", label: "star",    arrowPos: {x: 175, y: 355}, textPos: { x: 205, y: 355 }, arrowRotation: 180 },
-            { time: "3:30", label: "swirl",   arrowPos: {x: 195, y: 295}, textPos: { x: 215, y: 315 }, arrowRotation: 230 },
-            { time: "3:00", label: "triangle",arrowPos: {x: 255, y: 280}, textPos: { x: 235, y: 305 }, arrowRotation: 280 },
-            { time: "2:30", label: "arrow",   arrowPos: {x: 310, y: 323}, textPos: { x: 280, y: 340 }, arrowRotation: -37 },
-            { time: "2:00", label: "circle",  arrowPos: {x: 310, y: 388}, textPos: { x: 282, y: 375 }, arrowRotation: 30 },
-            { time: "1:30", label: "heart",   arrowPos: {x: 255, y: 423}, textPos: { x: 235, y: 400 }, arrowRotation: 80 },
-            { time: "1:00", label: "square",  arrowPos: {x: 195, y: 410}, textPos: { x: 215, y: 390 }, arrowRotation: 130 },
-            { time: "0:30", label: "star",    arrowPos: {x: 175, y: 355}, textPos: { x: 205, y: 355 }, arrowRotation: 180 },
-            { time: "0:00", label: "swirl",   arrowPos: {x: 195, y: 295}, textPos: { x: 215, y: 315 }, arrowRotation: 230 }
+            { time: "9:30", label: "arrow",   arrowPos: {x: 299, y: 236}, textPos: {x: 272, y: 250}, arrowRotation: -29 },
+            { time: "9:00", label: "circle",  arrowPos: {x: 300, y: 291}, textPos: {x: 272, y: 278}, arrowRotation: 26 },
+            { time: "8:30", label: "heart",   arrowPos: {x: 255, y: 326}, textPos: {x: 250, y: 295}, arrowRotation: 80 },
+            { time: "8:00", label: "square",  arrowPos: {x: 199, y: 315}, textPos: {x: 222, y: 290}, arrowRotation: 132 },
+            { time: "7:30", label: "star",    arrowPos: {x: 175, y: 263}, textPos: {x: 210, y: 264}, arrowRotation: -178 },
+            { time: "7:00", label: "swirl",   arrowPos: {x: 199, y: 209}, textPos: {x: 222, y: 236}, arrowRotation: -129 },
+            { time: "6:30", label: "triangle",arrowPos: {x: 257, y: 197}, textPos: {x: 251, y: 231}, arrowRotation: -79 },
+            { time: "6:00", label: "arrow",   arrowPos: {x: 299, y: 236}, textPos: {x: 272, y: 250}, arrowRotation: -29 },
+            { time: "5:30", label: "circle",  arrowPos: {x: 300, y: 291}, textPos: {x: 272, y: 278}, arrowRotation: 26 },
+            { time: "5:00", label: "heart",   arrowPos: {x: 255, y: 326}, textPos: {x: 250, y: 295}, arrowRotation: 80 },
+            { time: "4:30", label: "square",  arrowPos: {x: 199, y: 315}, textPos: {x: 222, y: 290}, arrowRotation: 132 },
+            { time: "4:00", label: "star",    arrowPos: {x: 175, y: 263}, textPos: {x: 210, y: 264}, arrowRotation: -178 },
+            { time: "3:30", label: "swirl",   arrowPos: {x: 199, y: 209}, textPos: {x: 222, y: 236}, arrowRotation: -129 },
+            { time: "3:00", label: "triangle",arrowPos: {x: 257, y: 197}, textPos: {x: 251, y: 231}, arrowRotation: -79 },
+            { time: "2:30", label: "arrow",   arrowPos: {x: 299, y: 236}, textPos: {x: 272, y: 250}, arrowRotation: -29 },
+            { time: "2:00", label: "circle",  arrowPos: {x: 300, y: 291}, textPos: {x: 272, y: 278}, arrowRotation: 26 },
+            { time: "1:30", label: "heart",   arrowPos: {x: 255, y: 326}, textPos: {x: 250, y: 295}, arrowRotation: 80 },
+            { time: "1:00", label: "square",  arrowPos: {x: 199, y: 315}, textPos: {x: 222, y: 290}, arrowRotation: 132 },
+            { time: "0:30", label: "star",    arrowPos: {x: 175, y: 263}, textPos: {x: 210, y: 264}, arrowRotation: -178 },
+            { time: "0:00", label: "swirl",   arrowPos: {x: 199, y: 209}, textPos: {x: 222, y: 236}, arrowRotation: -129 }
         ];
         const greaterDeathmarkTimings = ["6:25", "5:05", "3:45", "2:25", "1:05"];
 
