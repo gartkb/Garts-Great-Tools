@@ -82,6 +82,11 @@
         #start-button:hover { background-color: #45a049; }
         #stop-button { background-color: #f44336; }
         #stop-button:hover { background-color: #da190b; }
+        
+        #listen-button { background-color: #0d6efd; } /* Blue listen button */
+        #listen-button:hover { background-color: #0b5ed7; }
+        #listen-button:disabled { background-color: #6c757d; cursor: not-allowed; }
+
 
         /* --- Helper class to hide elements --- */
         .hidden { display: none !important; }
@@ -91,13 +96,13 @@
             position: absolute;
             width: 40px;
             height: 40px;
-            background-color: #0d6efd; /* Blue */
+            background-color: #0d6efd;
             clip-path: polygon(50% 0, 100% 40%, 65% 40%, 65% 100%, 35% 100%, 35% 40%, 0 40%);
             transform-origin: center center;
             transition: background-color 0.2s ease-in-out;
         }
 
-        #arrow-pointer.warning { background-color: #ff1111; /* Red */ }
+        #arrow-pointer.warning { background-color: #ff1111; }
         
         /* --- Text for Assignee labels --- */
         #assignee-text {
@@ -112,7 +117,7 @@
         /* --- Footer Styling --- */
         .footer {
             margin-top: 25px;
-            font-size: 14px; /* <--- THIS IS THE NEW LINE TO CONTROL FONT SIZE */
+            font-size: 14px;
             color: #555;
         }
         .footer a {
@@ -141,6 +146,7 @@
 
     <div class="button-container">
         <button id="start-button" class="btn">Start</button>
+        <button id="listen-button" class="btn">Listen for start</button>
         <button id="stop-button" class="btn hidden">Stop</button>
     </div>
 
@@ -151,10 +157,10 @@
     <script>
         // --- DATA CONSTANTS ---
         const symbolData = {
-            Heart:  { arrowPos: {x: 457, y: 165}, textPos: { x: 456, y: 195 }, arrowRotation: -87 }, // North
-            Arrow:  { arrowPos: {x: 453, y: 240}, textPos: { x: 455, y: 215 }, arrowRotation: 96 },  // South
-            Circle: { arrowPos: {x: 415, y: 207}, textPos: { x: 450, y: 225 }, arrowRotation: 176 }, // West
-            Square: { arrowPos: {x: 489, y: 207}, textPos: { x: 458, y: 225 }, arrowRotation: 4 }    // East
+            Heart:  { arrowPos: {x: 457, y: 165}, textPos: { x: 456, y: 195 }, arrowRotation: -87 },
+            Arrow:  { arrowPos: {x: 453, y: 240}, textPos: { x: 455, y: 215 }, arrowRotation: 96 },
+            Circle: { arrowPos: {x: 415, y: 207}, textPos: { x: 450, y: 225 }, arrowRotation: 176 },
+            Square: { arrowPos: {x: 489, y: 207}, textPos: { x: 458, y: 225 }, arrowRotation: 4 }
         };
 
         const cannonEvents = [
@@ -171,6 +177,7 @@
 
         // --- DOM ELEMENT REFERENCES ---
         const startButton = document.getElementById('start-button');
+        const listenButton = document.getElementById('listen-button');
         const stopButton = document.getElementById('stop-button');
         const timerDisplay = document.getElementById('timer-display');
         const arrow = document.getElementById('arrow-pointer');
@@ -265,6 +272,7 @@
             assigneeText.classList.add('hidden');
             stopButton.classList.add('hidden');
             startButton.classList.remove('hidden');
+            listenButton.classList.remove('hidden'); // Show listen button again
             if (finished) {
                  startButton.textContent = "Restart";
                  timerDisplay.textContent = "Done!";
@@ -286,14 +294,66 @@
             totalSeconds = initialTime + 1;
             startButton.textContent = "Start";
             startButton.classList.add('hidden');
+            listenButton.classList.add('hidden'); // Hide listen button when running
             stopButton.classList.remove('hidden');
             update(); 
             timerInterval = setInterval(update, 1000);
         }
 
+        // --- VOICE RECOGNITION LOGIC ---
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition;
+        let recognitionTimeout;
+
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript.toLowerCase();
+                if (transcript.includes('start')) {
+                    startEncounter();
+                }
+                clearTimeout(recognitionTimeout); // Stop the timeout if we got a result
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Speech recognition error:", event.error);
+                listenButton.textContent = "Listen for start";
+                listenButton.disabled = false;
+            };
+
+            recognition.onend = () => {
+                clearTimeout(recognitionTimeout);
+                listenButton.textContent = "Listen for start";
+                listenButton.disabled = false;
+            };
+
+        } else {
+            // Hide the button if the browser doesn't support the API
+            listenButton.classList.add('hidden');
+            console.warn("Speech Recognition not supported in this browser.");
+        }
+        
+        function startListening() {
+            if (!recognition) return;
+            listenButton.textContent = "Listening...";
+            listenButton.disabled = true;
+            recognition.start();
+
+            // Set a timeout to stop listening after 20 seconds
+            recognitionTimeout = setTimeout(() => {
+                recognition.stop();
+            }, 20000);
+        }
+
         // --- EVENT LISTENERS ---
         startButton.addEventListener('click', startEncounter);
         stopButton.addEventListener('click', () => stopEncounter(false));
+        if(listenButton) listenButton.addEventListener('click', startListening);
 
     </script>
 </body>
