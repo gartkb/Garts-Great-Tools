@@ -154,7 +154,14 @@
         image credit: <a href="https://www.snowcrows.com" target="_blank">Snow Crows</a>
     </div>
 
+    <audio id="start-chime" src="https://assets.mixkit.co/sfx/preview/mixkit-positive-interface-beep-221.mp3" preload="auto"></audio>
+
     <script>
+        // --- CONSTANTS ---
+        const LISTEN_DURATION = 60; // seconds
+        const MAX_RESTARTS = Math.ceil(LISTEN_DURATION / 5); // ~5s per restart
+        const initialTime = 540; // 9 minutes in seconds
+
         // --- DATA CONSTANTS ---
         const symbolData = {
             Heart:  { arrowPos: {x: 457, y: 165}, textPos: { x: 456, y: 195 }, arrowRotation: -87 },
@@ -182,6 +189,7 @@
         const timerDisplay = document.getElementById('timer-display');
         const arrow = document.getElementById('arrow-pointer');
         const assigneeText = document.getElementById('assignee-text');
+        const startChime = document.getElementById('start-chime');
         
         const ttsCannon1 = document.getElementById('tts-cannon-1');
         const ttsCannon2 = document.getElementById('tts-cannon-2');
@@ -190,7 +198,6 @@
 
         // --- STATE VARIABLES ---
         let timerInterval = null;
-        const initialTime = 540;
         let totalSeconds = initialTime;
         const assignees = ["Cannon 1/3", "Cannon 2/4"];
 
@@ -204,6 +211,11 @@
             const min = Math.floor(seconds / 60).toString().padStart(2, '0');
             const sec = (seconds % 60).toString().padStart(2, '0');
             return `${min}:${sec}`;
+        }
+
+        function playStartChime() {
+            startChime.currentTime = 0;
+            startChime.play().catch(e => console.log("Chime play prevented:", e));
         }
 
         // --- CORE LOGIC ---
@@ -283,6 +295,10 @@
 
         function startEncounter() {
             if (timerInterval) return;
+            
+            // Play start chime
+            playStartChime();
+            
             try {
                 const prewarmUtterance = new SpeechSynthesisUtterance('');
                 window.speechSynthesis.speak(prewarmUtterance);
@@ -290,6 +306,7 @@
             } catch (e) {
                 console.warn("Speech synthesis could not be pre-warmed.");
             }
+            
             totalSeconds = initialTime + 1;
             startButton.textContent = "Start";
             startButton.classList.add('hidden');
@@ -305,7 +322,6 @@
         let recognitionTimeout;
         let recognitionStartTime;
         let restartCount = 0;
-        const MAX_RESTARTS = 12; // Allows for ~60 seconds total listening (5s chunks × 12)
         let timeUpdateInterval;
 
         if (SpeechRecognition) {
@@ -319,6 +335,7 @@
                 const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
                 if (transcript.includes('start')) {
                     stopListening();
+                    playStartChime();
                     startEncounter();
                 }
                 // Reset restart counter when speech is detected
@@ -341,7 +358,7 @@
             recognition.onend = () => {
                 // Check if we should continue listening
                 const elapsed = Date.now() - recognitionStartTime;
-                if (elapsed < 60000 && restartCount < MAX_RESTARTS) {
+                if (elapsed < LISTEN_DURATION * 1000 && restartCount < MAX_RESTARTS) {
                     recognition.start();
                 } else {
                     stopListening();
@@ -364,7 +381,7 @@
 
         function startListening() {
             if (!recognition) return;
-            listenButton.textContent = "Listening... (60s)";
+            listenButton.textContent = `Listening... (${LISTEN_DURATION}s)`;
             listenButton.disabled = true;
             recognitionStartTime = Date.now();
             restartCount = 0;
@@ -373,7 +390,7 @@
             // Update UI with remaining time
             timeUpdateInterval = setInterval(() => {
                 const elapsed = Math.floor((Date.now() - recognitionStartTime) / 1000);
-                const remaining = 60 - elapsed;
+                const remaining = LISTEN_DURATION - elapsed;
                 listenButton.textContent = remaining > 0 ? 
                     `Listening... (${remaining}s)` : 
                     "Ready to listen";
