@@ -81,6 +81,7 @@
         #listen-button { background-color: #0d6efd; }
         #listen-button:hover { background-color: #0b5ed7; }
         #listen-button:disabled { background-color: #6c757d; cursor: not-allowed; }
+        #listen-button.listening { background-color: #0b5ed7; }
         #stop-button { background-color: #f44336; }
         #stop-button:hover { background-color: #da190b; }
 
@@ -150,6 +151,11 @@
     </div>
 
     <script>
+        // --- CONSTANTS ---
+        const LISTEN_DURATION = 30; // seconds (changed from 60 to 30 as requested)
+        const MAX_RESTARTS = Math.ceil(LISTEN_DURATION / 5); // ~5s per restart
+        const initialTime = 600; // 10 minutes in seconds
+
         // --- DATA CONSTANTS ---
         const greenEvents = [
             { time: "9:30", label: "arrow",   arrowPos: {x: 299, y: 236}, textPos: {x: 272, y: 250}, arrowRotation: -29 },
@@ -192,9 +198,10 @@
 
         // --- STATE VARIABLES ---
         let timerInterval = null;
-        const initialTime = 600;
         let totalSeconds = initialTime;
         const assignees = ["G1", "G2", "G3"];
+        let audioContext;
+        let isListening = false;
 
         // --- UTILITY FUNCTIONS ---
         function timeToSeconds(timeStr) {
@@ -206,6 +213,36 @@
             const min = Math.floor(seconds / 60).toString().padStart(2, '0');
             const sec = (seconds % 60).toString().padStart(2, '0');
             return `${min}:${sec}`;
+        }
+
+        function playStartChime() {
+            try {
+                // Initialize audio context if not already done
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.type = 'triangle';
+                oscillator.frequency.value = 880; // A5 note
+                gainNode.gain.value = 0.1;
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                // Quick fade in/out
+                gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.01);
+                oscillator.start();
+                
+                // Stop after short duration
+                oscillator.stop(audioContext.currentTime + 0.2);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.2);
+            } catch (e) {
+                console.log("Audio error:", e);
+            }
         }
 
         // --- CORE LOGIC ---
@@ -285,6 +322,10 @@
 
         function startEncounter() {
             if (timerInterval) return;
+            
+            // Play start chime
+            playStartChime();
+            
             try {
                 const prewarmUtterance = new SpeechSynthesisUtterance('');
                 window.speechSynthesis.speak(prewarmUtterance);
@@ -292,6 +333,7 @@
             } catch (e) {
                 console.warn("Speech synthesis could not be pre-warmed.");
             }
+            
             totalSeconds = initialTime + 1;
             startButton.textContent = "Start";
             startButton.classList.add('hidden');
@@ -301,36 +343,53 @@
             timerInterval = setInterval(update, 1000);
         }
 
-        // --- VOICE RECOGNITION LOGIC ---
+        // --- IMPROVED VOICE RECOGNITION LOGIC ---
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         let recognition;
         let recognitionTimeout;
+        let recognitionStartTime;
+        let restartCount = 0;
+        let timeUpdateInterval;
 
         if (SpeechRecognition) {
             recognition = new SpeechRecognition();
-            recognition.continuous = false;
+            recognition.continuous = true;
             recognition.lang = 'en-US';
             recognition.interimResults = false;
             recognition.maxAlternatives = 1;
 
             recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript.toLowerCase();
+                const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
                 if (transcript.includes('start')) {
+                    stopListening();
+                    playStartChime();
                     startEncounter();
                 }
-                clearTimeout(recognitionTimeout);
+                // Reset restart counter when speech is detected
+                restartCount = 0;
             };
 
             recognition.onerror = (event) => {
+                if (event.error === 'no-speech') {
+                    // Silently restart if we haven't hit our limit
+                    if (restartCount < MAX_RESTARTS) {
+                        restartCount++;
+                        recognition.start();
+                        return;
+                    }
+                }
                 console.error("Speech recognition error:", event.error);
-                listenButton.textContent = "Listen for start";
-                listenButton.disabled = false;
+                stopListening();
             };
 
             recognition.onend = () => {
-                clearTimeout(recognitionTimeout);
-                listenButton.textContent = "Listen for start";
-                listenButton.disabled = false;
+                // Check if we should continue listening
+                const elapsed = Date.now() - recognitionStartTime;
+                if (isListening && elapsed < LISTEN_DURATION * 1000 && restartCount < MAX_RESTARTS) {
+                    recognition.start();
+                } else {
+                    stopListening();
+                }
             };
 
         } else {
@@ -338,22 +397,52 @@
             console.warn("Speech Recognition not supported in this browser.");
         }
         
+        function stopListening() {
+            if (!recognition) return;
+            isListening = false;
+            clearInterval(timeUpdateInterval);
+            recognition.stop();
+            listenButton.textContent = "Listen for start";
+            listenButton.classList.remove('listening');
+            listenButton.disabled = false;
+            restartCount = 0;
+        }
+
         function startListening() {
             if (!recognition) return;
-            listenButton.textContent = "Listening...";
-            listenButton.disabled = true;
+            
+            if (isListening) {
+                stopListening();
+                return;
+            }
+            
+            isListening = true;
+            listenButton.textContent = `Listening... (${LISTEN_DURATION}s)`;
+            listenButton.classList.add('listening');
+            listenButton.disabled = false;
+            recognitionStartTime = Date.now();
+            restartCount = 0;
             recognition.start();
 
-            recognitionTimeout = setTimeout(() => {
-                recognition.stop();
-            }, 30000);
+            // Update UI with remaining time
+            timeUpdateInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - recognitionStartTime) / 1000);
+                const remaining = LISTEN_DURATION - elapsed;
+                listenButton.textContent = remaining > 0 ? 
+                    `Listening... (${remaining}s)` : 
+                    "Listen for start";
+                
+                if (remaining <= 0) {
+                    clearInterval(timeUpdateInterval);
+                    stopListening();
+                }
+            }, 500);
         }
 
         // --- EVENT LISTENERS ---
         startButton.addEventListener('click', startEncounter);
         stopButton.addEventListener('click', () => stopEncounter(false));
-        if(listenButton) listenButton.addEventListener('click', startListening);
-
+        listenButton.addEventListener('click', startListening);
     </script>
 </body>
 </html>
