@@ -305,50 +305,59 @@
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         let recognition;
         let recognitionTimeout;
+        let recognitionActive = false;
 
         if (SpeechRecognition) {
             recognition = new SpeechRecognition();
-            recognition.continuous = false;
+            recognition.continuous = true;  // Continuous listening mode
             recognition.lang = 'en-US';
             recognition.interimResults = false;
             recognition.maxAlternatives = 1;
 
             recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript.toLowerCase();
+                const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
                 if (transcript.includes('start')) {
+                    stopListening();
                     startEncounter();
                 }
-                clearTimeout(recognitionTimeout); // Stop the timeout if we got a result
             };
 
             recognition.onerror = (event) => {
                 console.error("Speech recognition error:", event.error);
-                listenButton.textContent = "Listen for start";
-                listenButton.disabled = false;
+                stopListening();
             };
 
             recognition.onend = () => {
-                // Only reset if the timeout hasn't occurred
-                if (recognitionTimeout && !recognitionTimeout._called) {
-                    listenButton.textContent = "Listen for start";
-                    listenButton.disabled = false;
+                // Only restart if we're still in listening mode
+                if (recognitionActive) {
+                    recognition.start();
+                }
             };
 
         } else {
-            // Hide the button if the browser doesn't support the API
             listenButton.classList.add('hidden');
             console.warn("Speech Recognition not supported in this browser.");
         }
         
+        function stopListening() {
+            if (!recognition) return;
+            clearTimeout(recognitionTimeout);
+            recognitionActive = false;
+            recognition.stop();
+            listenButton.textContent = "Listen for start";
+            listenButton.disabled = false;
+        }
+
         function startListening() {
             if (!recognition) return;
             listenButton.textContent = "Listening...";
             listenButton.disabled = true;
+            recognitionActive = true;
             recognition.start();
 
-            // Set a timeout to stop listening after 20 seconds
+            // Set a timeout to stop listening after 60 seconds
             recognitionTimeout = setTimeout(() => {
-                recognition.stop();
+                stopListening();
             }, 60000);
         }
 
