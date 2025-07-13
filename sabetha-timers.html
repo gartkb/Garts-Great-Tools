@@ -328,9 +328,10 @@
             };
 
             recognition.onend = () => {
-                clearTimeout(recognitionTimeout);
-                listenButton.textContent = "Listen for start";
-                listenButton.disabled = false;
+                // Only reset if the timeout hasn't occurred
+                if (recognitionTimeout && !recognitionTimeout._called) {
+                    listenButton.textContent = "Listen for start";
+                    listenButton.disabled = false;
             };
 
         } else {
