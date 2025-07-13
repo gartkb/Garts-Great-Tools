@@ -86,6 +86,7 @@
         #listen-button { background-color: #0d6efd; }
         #listen-button:hover { background-color: #0b5ed7; }
         #listen-button:disabled { background-color: #6c757d; cursor: not-allowed; }
+        #listen-button.listening { background-color: #0b5ed7; }
 
         /* --- Helper class to hide elements --- */
         .hidden { display: none !important; }
@@ -154,11 +155,9 @@
         image credit: <a href="https://www.snowcrows.com" target="_blank">Snow Crows</a>
     </div>
 
-    <audio id="start-chime" src="https://assets.mixkit.co/sfx/preview/mixkit-positive-interface-beep-221.mp3" preload="auto"></audio>
-
     <script>
         // --- CONSTANTS ---
-        const LISTEN_DURATION = 30; // seconds
+        const LISTEN_DURATION = 60; // seconds
         const MAX_RESTARTS = Math.ceil(LISTEN_DURATION / 5); // ~5s per restart
         const initialTime = 540; // 9 minutes in seconds
 
@@ -189,7 +188,6 @@
         const timerDisplay = document.getElementById('timer-display');
         const arrow = document.getElementById('arrow-pointer');
         const assigneeText = document.getElementById('assignee-text');
-        const startChime = document.getElementById('start-chime');
         
         const ttsCannon1 = document.getElementById('tts-cannon-1');
         const ttsCannon2 = document.getElementById('tts-cannon-2');
@@ -200,6 +198,8 @@
         let timerInterval = null;
         let totalSeconds = initialTime;
         const assignees = ["Cannon 1/3", "Cannon 2/4"];
+        let audioContext;
+        let isListening = false;
 
         // --- UTILITY FUNCTIONS ---
         function timeToSeconds(timeStr) {
@@ -214,8 +214,33 @@
         }
 
         function playStartChime() {
-            startChime.currentTime = 0;
-            startChime.play().catch(e => console.log("Chime play prevented:", e));
+            try {
+                // Initialize audio context if not already done
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.type = 'triangle';
+                oscillator.frequency.value = 880; // A5 note
+                gainNode.gain.value = 0.1;
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                // Quick fade in/out
+                gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.01);
+                oscillator.start();
+                
+                // Stop after short duration
+                oscillator.stop(audioContext.currentTime + 0.2);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.2);
+            } catch (e) {
+                console.log("Audio error:", e);
+            }
         }
 
         // --- CORE LOGIC ---
@@ -358,7 +383,7 @@
             recognition.onend = () => {
                 // Check if we should continue listening
                 const elapsed = Date.now() - recognitionStartTime;
-                if (elapsed < LISTEN_DURATION * 1000 && restartCount < MAX_RESTARTS) {
+                if (isListening && elapsed < LISTEN_DURATION * 1000 && restartCount < MAX_RESTARTS) {
                     recognition.start();
                 } else {
                     stopListening();
@@ -372,17 +397,27 @@
         
         function stopListening() {
             if (!recognition) return;
+            isListening = false;
             clearInterval(timeUpdateInterval);
             recognition.stop();
             listenButton.textContent = "Listen for start";
+            listenButton.classList.remove('listening');
             listenButton.disabled = false;
             restartCount = 0;
         }
 
         function startListening() {
             if (!recognition) return;
+            
+            if (isListening) {
+                stopListening();
+                return;
+            }
+            
+            isListening = true;
             listenButton.textContent = `Listening... (${LISTEN_DURATION}s)`;
-            listenButton.disabled = true;
+            listenButton.classList.add('listening');
+            listenButton.disabled = false;
             recognitionStartTime = Date.now();
             restartCount = 0;
             recognition.start();
@@ -393,7 +428,7 @@
                 const remaining = LISTEN_DURATION - elapsed;
                 listenButton.textContent = remaining > 0 ? 
                     `Listening... (${remaining}s)` : 
-                    "Ready to listen";
+                    "Listen for start";
                 
                 if (remaining <= 0) {
                     clearInterval(timeUpdateInterval);
