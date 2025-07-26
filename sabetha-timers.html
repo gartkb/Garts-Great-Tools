@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,10 +24,10 @@
             color: #444;
             margin-bottom: 15px;
         }
-        
+
         /* --- Main Container for the Diagram --- */
         #encounter-container {
-            position: relative; 
+            position: relative;
             width: 900px;
             height: 400px;
             background-image: url('images/sc-sabetha.webp');
@@ -34,13 +35,13 @@
             background-repeat: no-repeat;
             background-position: center;
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
         /* --- Timer Display --- */
         #timer-display {
             position: absolute;
-            bottom: 20px; 
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             font-size: 48px;
@@ -50,7 +51,7 @@
             padding: 0 20px;
             border-radius: 10px;
         }
-        
+
         /* --- Container for TTS Checkboxes --- */
         .tts-options-container {
             margin-top: 15px;
@@ -78,18 +79,43 @@
             transition: background-color 0.3s;
         }
 
-        #start-button { background-color: #4CAF50; }
-        #start-button:hover { background-color: #45a049; }
-        #stop-button { background-color: #f44336; }
-        #stop-button:hover { background-color: #da190b; }
-        
-        #listen-button { background-color: #0d6efd; }
-        #listen-button:hover { background-color: #0b5ed7; }
-        #listen-button:disabled { background-color: #6c757d; cursor: not-allowed; }
-        #listen-button.listening { background-color: #0b5ed7; }
+        #start-button {
+            background-color: #4CAF50;
+        }
+
+        #start-button:hover {
+            background-color: #45a049;
+        }
+
+        #stop-button {
+            background-color: #f44336;
+        }
+
+        #stop-button:hover {
+            background-color: #da190b;
+        }
+
+        #listen-button {
+            background-color: #0d6efd;
+        }
+
+        #listen-button:hover {
+            background-color: #0b5ed7;
+        }
+
+        #listen-button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        #listen-button.listening {
+            background-color: #0b5ed7;
+        }
 
         /* --- Helper class to hide elements --- */
-        .hidden { display: none !important; }
+        .hidden {
+            display: none !important;
+        }
 
         /* --- Arrow Pointer Styling --- */
         #arrow-pointer {
@@ -102,8 +128,10 @@
             transition: background-color 0.2s ease-in-out;
         }
 
-        #arrow-pointer.warning { background-color: #ff1111; }
-        
+        #arrow-pointer.warning {
+            background-color: #ff1111;
+        }
+
         /* --- Text for Assignee labels --- */
         #assignee-text {
             position: absolute;
@@ -120,25 +148,28 @@
             font-size: 14px;
             color: #555;
         }
+
         .footer a {
             color: #0d6efd;
             text-decoration: none;
         }
+
         .footer a:hover {
             text-decoration: underline;
         }
     </style>
 </head>
+
 <body>
-    
+
     <h2 class="header-title">[SOUL] Sabetha Timer</h2>
-    
+
     <div id="encounter-container">
         <div id="timer-display">9:00</div>
         <div id="arrow-pointer" class="hidden"></div>
         <div id="assignee-text" class="hidden"></div>
     </div>
-    
+
     <div class="tts-options-container">
         <label><input type="checkbox" id="tts-cannon-1" checked> Cannon 1/3 TTS</label>
         <label><input type="checkbox" id="tts-cannon-2" checked> Cannon 2/4 TTS</label>
@@ -163,22 +194,22 @@
 
         // --- DATA CONSTANTS ---
         const symbolData = {
-            Heart:  { arrowPos: {x: 457, y: 165}, textPos: { x: 456, y: 195 }, arrowRotation: -87 },
-            Arrow:  { arrowPos: {x: 453, y: 240}, textPos: { x: 455, y: 215 }, arrowRotation: 96 },
-            Circle: { arrowPos: {x: 415, y: 207}, textPos: { x: 450, y: 225 }, arrowRotation: 176 },
-            Square: { arrowPos: {x: 489, y: 207}, textPos: { x: 458, y: 225 }, arrowRotation: 4 }
+            Heart: { arrowPos: { x: 457, y: 165 }, textPos: { x: 456, y: 195 }, arrowRotation: -87 },
+            Arrow: { arrowPos: { x: 453, y: 240 }, textPos: { x: 455, y: 215 }, arrowRotation: 96 },
+            Circle: { arrowPos: { x: 415, y: 207 }, textPos: { x: 450, y: 225 }, arrowRotation: 176 },
+            Square: { arrowPos: { x: 489, y: 207 }, textPos: { x: 458, y: 225 }, arrowRotation: 4 }
         };
 
         const cannonEvents = [
-            { time: "8:30", label: "Arrow" },  { time: "8:00", label: "Circle" },
-            { time: "7:30", label: "Heart" },  { time: "7:00", label: "Square" },
-            { time: "6:30", label: "Arrow" },  { time: "6:00", label: "Heart" },
+            { time: "8:30", label: "Arrow" }, { time: "8:00", label: "Circle" },
+            { time: "7:30", label: "Heart" }, { time: "7:00", label: "Square" },
+            { time: "6:30", label: "Arrow" }, { time: "6:00", label: "Heart" },
             { time: "5:30", label: "Circle" }, { time: "5:00", label: "Square" },
-            { time: "4:30", label: "Arrow" },  { time: "4:00", label: "Circle" },
-            { time: "3:30", label: "Heart" },  { time: "3:00", label: "Square" },
-            { time: "2:30", label: "Arrow" },  { time: "2:00", label: "Heart" },
+            { time: "4:30", label: "Arrow" }, { time: "4:00", label: "Circle" },
+            { time: "3:30", label: "Heart" }, { time: "3:00", label: "Square" },
+            { time: "2:30", label: "Arrow" }, { time: "2:00", label: "Heart" },
             { time: "1:30", label: "Circle" }, { time: "1:00", label: "Square" },
-            { time: "0:30", label: "Arrow" },  { time: "0:00", label: "Circle" }
+            { time: "0:30", label: "Arrow" }, { time: "0:00", label: "Circle" }
         ];
 
         // --- DOM ELEMENT REFERENCES ---
@@ -188,7 +219,7 @@
         const timerDisplay = document.getElementById('timer-display');
         const arrow = document.getElementById('arrow-pointer');
         const assigneeText = document.getElementById('assignee-text');
-        
+
         const ttsCannon1 = document.getElementById('tts-cannon-1');
         const ttsCannon2 = document.getElementById('tts-cannon-2');
         const ttsCheckboxes = { "Cannon 1/3": ttsCannon1, "Cannon 2/4": ttsCannon2 };
@@ -200,6 +231,7 @@
         const assignees = ["Cannon 1/3", "Cannon 2/4"];
         let audioContext;
         let isListening = false;
+        let announcedPreparations = new Set(); // Track which preparations we've announced
 
         // --- UTILITY FUNCTIONS ---
         function timeToSeconds(timeStr) {
@@ -219,22 +251,22 @@
                 if (!audioContext) {
                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 }
-                
+
                 const oscillator = audioContext.createOscillator();
                 const gainNode = audioContext.createGain();
-                
+
                 oscillator.type = 'triangle';
                 oscillator.frequency.value = 880; // A5 note
                 gainNode.gain.value = 0.1;
-                
+
                 oscillator.connect(gainNode);
                 gainNode.connect(audioContext.destination);
-                
+
                 // Quick fade in/out
                 gainNode.gain.setValueAtTime(0, audioContext.currentTime);
                 gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.01);
                 oscillator.start();
-                
+
                 // Stop after short duration
                 oscillator.stop(audioContext.currentTime + 0.2);
                 gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.2);
@@ -248,17 +280,39 @@
             totalSeconds--;
             timerDisplay.textContent = formatTime(totalSeconds);
 
+            // Reset announced preparations when timer resets
+            if (totalSeconds === initialTime) {
+                announcedPreparations.clear();
+            }
+
             let activeEvent = null;
             let activeEventIndex = -1;
             for (let i = 0; i < cannonEvents.length; i++) {
                 const eventTime = timeToSeconds(cannonEvents[i].time);
-                if (totalSeconds >= eventTime - 8) { 
+                if (totalSeconds >= eventTime - 8) {
                     activeEvent = cannonEvents[i];
                     activeEventIndex = i;
                     break;
                 }
             }
-            
+
+            // Check for preparation announcements (22 seconds before each event)
+            cannonEvents.forEach((event, index) => {
+                const eventTime = timeToSeconds(event.time);
+                const preparationTime = eventTime + 22; // 22 seconds before the event
+
+                if (totalSeconds === preparationTime && !announcedPreparations.has(index)) {
+                    const assignee = assignees[index % 2];
+                    if (ttsCheckboxes[assignee] && ttsCheckboxes[assignee].checked) {
+                        const cleanName = ttsCleanNames[assignee];
+                        const textToSpeak = `${cleanName} prepare for ${event.label}`;
+                        const utterance = new SpeechSynthesisUtterance(textToSpeak);
+                        window.speechSynthesis.speak(utterance);
+                        announcedPreparations.add(index);
+                    }
+                }
+            });
+
             if (activeEvent) {
                 arrow.classList.remove('hidden');
                 assigneeText.classList.remove('hidden');
@@ -269,7 +323,7 @@
                 arrow.style.left = `${currentSymbolData.arrowPos.x - arrowSize / 2}px`;
                 arrow.style.top = `${currentSymbolData.arrowPos.y - arrowSize / 2}px`;
                 arrow.style.transform = `rotate(${currentSymbolData.arrowRotation + 90}deg)`;
-                
+
                 assigneeText.style.left = `${currentSymbolData.textPos.x}px`;
                 assigneeText.style.top = `${currentSymbolData.textPos.y}px`;
                 assigneeText.textContent = assignee;
@@ -286,20 +340,20 @@
                         window.speechSynthesis.speak(utterance);
                     }
                 }
-                
+
                 const isWarningActive = totalSeconds <= warningStartTime && totalSeconds > warningEndTime;
                 arrow.classList.toggle('warning', isWarningActive);
 
             } else {
-                 arrow.classList.add('hidden');
-                 assigneeText.classList.add('hidden');
+                arrow.classList.add('hidden');
+                assigneeText.classList.add('hidden');
             }
 
             if (totalSeconds <= 0) {
                 stopEncounter(true);
             }
         }
-        
+
         // --- ENCOUNTER CONTROLS ---
         function stopEncounter(finished = false) {
             clearInterval(timerInterval);
@@ -309,21 +363,22 @@
             stopButton.classList.add('hidden');
             startButton.classList.remove('hidden');
             listenButton.classList.remove('hidden');
+            announcedPreparations.clear();
             if (finished) {
-                 startButton.textContent = "Restart";
-                 timerDisplay.textContent = "Done!";
+                startButton.textContent = "Restart";
+                timerDisplay.textContent = "Done!";
             } else {
-                 timerDisplay.textContent = formatTime(initialTime);
-                 totalSeconds = initialTime;
+                timerDisplay.textContent = formatTime(initialTime);
+                totalSeconds = initialTime;
             }
         }
 
         function startEncounter() {
             if (timerInterval) return;
-            
+
             // Play start chime
             playStartChime();
-            
+
             try {
                 const prewarmUtterance = new SpeechSynthesisUtterance('');
                 window.speechSynthesis.speak(prewarmUtterance);
@@ -331,13 +386,13 @@
             } catch (e) {
                 console.warn("Speech synthesis could not be pre-warmed.");
             }
-            
+
             totalSeconds = initialTime + 1;
             startButton.textContent = "Start";
             startButton.classList.add('hidden');
             listenButton.classList.add('hidden');
             stopButton.classList.remove('hidden');
-            update(); 
+            update();
             timerInterval = setInterval(update, 1000);
         }
 
@@ -394,7 +449,7 @@
             listenButton.classList.add('hidden');
             console.warn("Speech Recognition not supported in this browser.");
         }
-        
+
         function stopListening() {
             if (!recognition) return;
             isListening = false;
@@ -408,12 +463,12 @@
 
         function startListening() {
             if (!recognition) return;
-            
+
             if (isListening) {
                 stopListening();
                 return;
             }
-            
+
             isListening = true;
             listenButton.textContent = `Listening... (${LISTEN_DURATION}s)`;
             listenButton.classList.add('listening');
@@ -426,10 +481,10 @@
             timeUpdateInterval = setInterval(() => {
                 const elapsed = Math.floor((Date.now() - recognitionStartTime) / 1000);
                 const remaining = LISTEN_DURATION - elapsed;
-                listenButton.textContent = remaining > 0 ? 
-                    `Listening... (${remaining}s)` : 
+                listenButton.textContent = remaining > 0 ?
+                    `Listening... (${remaining}s)` :
                     "Listen for start";
-                
+
                 if (remaining <= 0) {
                     clearInterval(timeUpdateInterval);
                     stopListening();
@@ -443,4 +498,5 @@
         listenButton.addEventListener('click', startListening);
     </script>
 </body>
+
 </html>
