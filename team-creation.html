@@ -183,7 +183,7 @@
         //return `<img src="${role.img}" alt="${role.name}" title="${role.name}"> ${role.name}`;
         // prefer role.discordtext when it's not null/undefined; otherwise use role.name
         //  return `<img src="${role.img}" alt="${role.discordtext ?? role.name}" title="${role.name}"> ${role.name}`;
-          return `<img src="${role.img}" alt="${role.discordtext}" title="${role.name}"> ${role.name}`;
+          return `<img src="${role.img}" alt="${role.name}" title="${role.discordtext ?? role.name}"> ${role.name}`;
       }
     }
 
