@@ -184,17 +184,8 @@
 
     let playerAssignments = [];
 
-    function isEmojiChar(code) {
-      return (
-        (code >= 0x1F600 && code <= 0x1F64F) ||
-        (code >= 0x1F300 && code <= 0x1F5FF) ||
-        (code >= 0x1F680 && code <= 0x1F6FF) ||
-        (code >= 0x1F1E6 && code <= 0x1F1FF) ||
-        (code >= 0x1F900 && code <= 0x1F9FF) ||
-        (code >= 0x2600 && code <= 0x26FF) ||
-        (code >= 0x2700 && code <= 0x27BF)
-      );
-    }
+    // Emojis to remove from the player name (but not from role selection)
+    const nonRoleEmojis = ['🚹', '🚺', '👥', '👤', '💫'];
 
     function parsePlayers() {
       const text = document.getElementById('inputPlayers').value.trim();
@@ -204,28 +195,31 @@
       container.innerHTML = '';
       playerAssignments = [];
 
-      const nonRoleEmojis = ['🚹', '🚺', '👥', '👤', '💫'];
-
       lines.forEach((line, index) => {
+        // Remove leading number and dot (e.g., "1.", "10.")
         let cleanLine = line.replace(/^\d+\.\s*/, '').trim();
 
+        // Find 📧 to split name and suffix
         const emailIndex = cleanLine.indexOf('📧');
         let namePart, suffixPart;
 
         if (emailIndex !== -1) {
           namePart = cleanLine.substring(0, emailIndex).trim();
-          suffixPart = cleanLine.substring(emailIndex);
+          suffixPart = cleanLine.substring(emailIndex); // Keep 📧 and everything after
         } else {
+          // If no 📧, treat last ~15 chars as potential emoji zone
           const cutoff = Math.max(0, cleanLine.length - 15);
           suffixPart = cleanLine.substring(cutoff);
           namePart = cleanLine.substring(0, cutoff).trim();
         }
 
+        // Clean name: remove non-role emojis that are decorative
         let name = namePart;
         nonRoleEmojis.forEach(e => {
-          name = name.split(e).join('');
+          // Remove all occurrences (some may appear in name)
+          name = name.replace(new RegExp(e, 'g'), '');
         });
-        name = name.replace(/\s+/g, ' ').trim();
+        name = name.replace(/\s+/g, ' ').trim() || 'Unknown';
 
         const assignment = {
           id: index,
@@ -236,6 +230,7 @@
         };
         playerAssignments.push(assignment);
 
+        // --- Build UI element ---
         const playerItem = document.createElement('div');
         playerItem.className = 'player-item';
 
@@ -245,24 +240,39 @@
 
         const emojisDiv = document.createElement('div');
         emojisDiv.className = 'player-emojis';
-        for (const char of suffixPart) {
-          const code = char.codePointAt(0);
-          if (isEmojiChar(code)) {
-            const span = document.createElement('span');
-            span.textContent = char;
-            span.addEventListener('click', () => {
-              span.classList.toggle('selected');
-              if (span.classList.contains('selected')) {
-                assignment.customRoles.add(char);
-              } else {
-                assignment.customRoles.delete(char);
-              }
-              renderGroups();
-            });
-            emojisDiv.appendChild(span);
-          }
-        }
 
+        // 🌟 NEW: Extract FULL emoji sequences (including 🛡️, 🕵️‍♂️, etc.)
+        const emojiRegex = /\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic}|\u200D[\u2640\u2642]\uFE0F)*/gu;
+        const emojiMatches = [...suffixPart.matchAll(emojiRegex)];
+
+        emojiMatches.forEach(match => {
+          const emoji = match[0];
+
+          // Skip emojis that are just decorative (not roles)
+          if (nonRoleEmojis.includes(emoji)) {
+            return;
+          }
+
+          // Also skip 📧 (we don't want it as a clickable role)
+          if (emoji === '📧') {
+            return;
+          }
+
+          const span = document.createElement('span');
+          span.textContent = emoji;
+          span.addEventListener('click', () => {
+            span.classList.toggle('selected');
+            if (span.classList.contains('selected')) {
+              assignment.customRoles.add(emoji);
+            } else {
+              assignment.customRoles.delete(emoji);
+            }
+            renderGroups();
+          });
+          emojisDiv.appendChild(span);
+        });
+
+        // Group selector
         const groupSelect = document.createElement('select');
         for (let i = 1; i <= 10; i++) {
           const opt = document.createElement('option');
@@ -276,6 +286,7 @@
           renderGroups();
         });
 
+        // Predefined role selector
         const roleSelector = document.createElement('div');
         roleSelector.className = 'role-selector';
         predefinedRoles.forEach(role => {
@@ -302,8 +313,10 @@
           roleSelector.appendChild(el);
         });
 
+        // Assemble player item
         playerItem.appendChild(nameDiv);
         playerItem.appendChild(emojisDiv);
+
         const groupLabel = document.createElement('span');
         groupLabel.textContent = 'Group:';
         playerItem.appendChild(groupLabel);
@@ -368,7 +381,6 @@
           return getRoleDisplayHtml(name);
         });
 
-        // Combine: custom roles (plain text) + predefined (HTML)
         const allParts = [...customRoles, ...predefinedHtml];
         const rolesHtml = allParts.length > 0 ? allParts.join(', ') : 'None';
 
