@@ -35,7 +35,6 @@
       background: #0056b3;
     }
 
-    /* Player row:紧凑布局 */
     .player-item {
       background: white;
       padding: 10px;
@@ -44,20 +43,19 @@
       display: flex;
       align-items: center;
       flex-wrap: wrap;
-      gap: 8px; /* reduced gap */
+      gap: 8px;
     }
     .player-name {
       font-weight: bold;
       flex: 1;
       min-width: 180px;
-      /* Prevent excessive whitespace */
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .player-emojis {
       display: flex;
-      gap: 4px; /* tighter emoji spacing */
+      gap: 4px;
       font-size: 20px;
     }
     .player-emojis span {
@@ -98,7 +96,6 @@
       object-fit: contain;
     }
 
-    /* Group summary: side-by-side pairs */
     #groupSummary {
       display: flex;
       flex-direction: column;
@@ -127,9 +124,15 @@
       padding: 3px 0;
       font-family: monospace;
       font-size: 0.95em;
+      line-height: 1.4;
+    }
+    .assigned-player img {
+      vertical-align: middle;
+      height: 1em;
+      width: auto;
+      margin-right: 4px;
     }
 
-    /* Responsive: on small screens, stack groups */
     @media (max-width: 768px) {
       .group-container {
         min-width: 100%;
@@ -165,6 +168,19 @@
       { name: 'DPS', text: '⚔️' },
       { name: 'Heals', text: '🛡️' },
     ];
+
+    // Create a function to get HTML for a role
+    function getRoleDisplayHtml(roleName) {
+      const role = predefinedRoles.find(r => r.name === roleName);
+      if (!role) return roleName;
+
+      if (role.text) {
+        return `${role.text} ${role.name}`;
+      } else {
+        // Return image + name
+        return `<img src="${role.img}" alt="${role.name}" title="${role.name}"> ${role.name}`;
+      }
+    }
 
     let playerAssignments = [];
 
@@ -248,7 +264,6 @@
         }
 
         const groupSelect = document.createElement('select');
-        // ✅ Support up to 10 groups
         for (let i = 1; i <= 10; i++) {
           const opt = document.createElement('option');
           opt.value = `Group ${i}`;
@@ -315,21 +330,17 @@
       const summaryDiv = document.createElement('div');
       summaryDiv.id = 'groupSummary';
 
-      // Get group names in order: Group 1, Group 2, ..., Group 10
       const groupNames = Array.from({length: 10}, (_, i) => `Group ${i + 1}`);
       const activeGroups = groupNames.filter(name => groups[name] && groups[name].length > 0);
 
-      // Render in pairs
       for (let i = 0; i < activeGroups.length; i += 2) {
         const row = document.createElement('div');
         row.className = 'group-row';
 
-        // First group
         const g1 = activeGroups[i];
         const col1 = createGroupElement(g1, groups[g1]);
         row.appendChild(col1);
 
-        // Second group (if exists)
         if (i + 1 < activeGroups.length) {
           const g2 = activeGroups[i + 1];
           const col2 = createGroupElement(g2, groups[g2]);
@@ -352,14 +363,18 @@
       groupDiv.appendChild(header);
 
       players.forEach(player => {
-        const allRoles = [
-          ...Array.from(player.customRoles),
-          ...Array.from(player.predefinedRoles)
-        ];
-        const rolesText = allRoles.length > 0 ? allRoles.join(', ') : 'None';
+        const customRoles = Array.from(player.customRoles); // e.g., ['🔥', '🛡️']
+        const predefinedHtml = Array.from(player.predefinedRoles).map(name => {
+          return getRoleDisplayHtml(name);
+        });
+
+        // Combine: custom roles (plain text) + predefined (HTML)
+        const allParts = [...customRoles, ...predefinedHtml];
+        const rolesHtml = allParts.length > 0 ? allParts.join(', ') : 'None';
+
         const line = document.createElement('div');
         line.className = 'assigned-player';
-        line.textContent = `${player.name} → ${rolesText}`;
+        line.innerHTML = `${player.name} → ${rolesHtml}`;
         groupDiv.appendChild(line);
       });
 
