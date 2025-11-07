@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GW2 Team Builder</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+      margin-bottom: 10px;
+      font-family: monospace;
+    }
+    button {
+      padding: 8px 16px;
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+    .player-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .player-item {
+      background: white;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .player-name {
+      flex: 1;
+      min-width: 200px;
+    }
+    .player-emojis {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      margin-right: 10px;
+    }
+    .role-selector {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+    .role-icon {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+      cursor: pointer;
+      border: 1px solid transparent;
+      padding: 2px;
+    }
+    .role-icon.selected {
+      border: 1px solid #007BFF;
+      background: #e6f2ff;
+    }
+    select {
+      padding: 5px;
+      font-size: 14px;
+    }
+    .group-header {
+      font-weight: bold;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    .group-container {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>GW2 Team Builder</h2>
+    <p>Paste player list below (one per line). Each line can include emojis like 🚹, 📧, 🔥, etc.</p>
+
+    <textarea id="inputPlayers" placeholder="Paste players here... e.g.:
+1.Swiftwrath.8954 🚹 📧
+2.Terror (Spooky.2749) 🚹 📧 🐥
+..."></textarea>
+
+    <button onclick="parsePlayers()">Parse Players</button>
+
+    <div id="outputContainer">
+      <!-- Dynamically generated -->
+    </div>
+  </div>
+
+  <script>
+    const roleIcons = [
+      { emoji: '0BoonsQuickDPS', img: 'https://i.imgur.com/8JZKzQd.png' }, // Replace with actual URLs
+      { emoji: '0BoonsQuickHeal', img: 'https://i.imgur.com/8JZKzQd.png' },
+      { emoji: '0BoonsAlacHeal', img: 'https://i.imgur.com/8JZKzQd.png' },
+      { emoji: '0BoonsAlacDPS', img: 'https://i.imgur.com/8JZKzQd.png' },
+      { emoji: 'crossed_swords', img: 'https://i.imgur.com/8JZKzQd.png' },
+    ];
+
+    function parsePlayers() {
+      const text = document.getElementById('inputPlayers').value.trim();
+      const lines = text.split('\n').filter(line => line.trim());
+
+      const container = document.getElementById('outputContainer');
+      container.innerHTML = '';
+
+      const groups = { 'Group 1': [], 'Group 2': [], 'Group 3': [] };
+
+      lines.forEach((line, index) => {
+        const match = line.match(/^(\d+\.\s*)(.+?)(\s+([^\d]+))?$/);
+        let playerName = match ? match[2].trim() : line.trim();
+        let emojis = [];
+
+        if (match && match[4]) {
+          emojis = [...match[4]].filter(c => c !== ' ').join('').split(/(?=[^\u0000-\u007F])/g).filter(Boolean);
+        }
+
+        const playerItem = document.createElement('div');
+        playerItem.className = 'player-item';
+
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'player-name';
+        nameDiv.textContent = playerName;
+
+        const emojisDiv = document.createElement('div');
+        emojisDiv.className = 'player-emojis';
+        emojis.forEach(emoji => {
+          const span = document.createElement('span');
+          span.textContent = emoji;
+          emojisDiv.appendChild(span);
+        });
+
+        const groupSelect = document.createElement('select');
+        Object.keys(groups).forEach(group => {
+          const opt = document.createElement('option');
+          opt.value = group;
+          opt.textContent = group;
+          groupSelect.appendChild(opt);
+        });
+        groupSelect.addEventListener('change', () => {
+          const selectedGroup = groupSelect.value;
+          groups[selectedGroup] = groups[selectedGroup] || [];
+          groups[selectedGroup].push({ name: playerName, emojis, assignedRoles: [] });
+          renderGroups(groups);
+        });
+
+        const roleSelector = document.createElement('div');
+        roleSelector.className = 'role-selector';
+        roleIcons.forEach(role => {
+          const img = document.createElement('img');
+          img.src = role.img;
+          img.title = role.emoji;
+          img.className = 'role-icon';
+          img.onclick = function() {
+            this.classList.toggle('selected');
+            const isSelected = this.classList.contains('selected');
+            // You could store this selection in state if needed
+          };
+          roleSelector.appendChild(img);
+        });
+
+        playerItem.appendChild(nameDiv);
+        playerItem.appendChild(emojisDiv);
+        playerItem.appendChild(document.createTextNode(' → Group: '));
+        playerItem.appendChild(groupSelect);
+        playerItem.appendChild(document.createTextNode(' | Roles: '));
+        playerItem.appendChild(roleSelector);
+
+        container.appendChild(playerItem);
+      });
+
+      renderGroups(groups);
+    }
+
+    function renderGroups(groups) {
+      const container = document.getElementById('outputContainer');
+      const groupDisplay = document.createElement('div');
+      groupDisplay.id = 'groupDisplay';
+
+      Object.entries(groups).forEach(([groupName, players]) => {
+        if (players.length === 0) return;
+
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'group-container';
+
+        const header = document.createElement('div');
+        header.className = 'group-header';
+        header.textContent = groupName + ` (${players.length} players)`;
+
+        groupDiv.appendChild(header);
+
+        players.forEach(player => {
+          const p = document.createElement('div');
+          p.style.padding = '5px';
+          p.textContent = `${player.name} - Roles: ${player.assignedRoles.join(', ') || 'None'}`;
+          groupDiv.appendChild(p);
+        });
+
+        groupDisplay.appendChild(groupDiv);
+      });
+
+      container.appendChild(groupDisplay);
+    }
+  </script>
+</body>
+</html>
