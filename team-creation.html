@@ -148,7 +148,7 @@
 <body>
   <div class="container">
     <h2>⚔️ Guild Wars 2 Team Builder</h2>
-    <p>Paste your player list below. Emojis or Discord codes (e.g., <code>:0BoonsQuickDPS:</code>) at the end are shown as clickable roles.</p>
+    <p>Paste your player list below. Trailing emojis or Discord codes (e.g., <code>:0BoonsQuickDPS:</code>) are parsed as clickable roles.</p>
 
     <textarea id="inputPlayers" placeholder="Example:
 1.DethKnighter666.8954 🚹                              📧
@@ -158,7 +158,8 @@
 5.johnnytwotoes.8214                                 📧  🔥
 6.💫Gart Finderboom.5020                       📧  🛡️  🔥  🐥  🕵️‍♂️
 7.💫SkielaBaby.4201                                📧
-8.NewPlayer.1234                                 :0BoonsQuickDPS: :healheart:"></textarea>
+8.NewPlayer.1234:0BoonsQuickDPS:
+9.Another.9999 :healheart: 🛡️"></textarea>
 
     <button onclick="parsePlayers()">Parse Players</button>
 
@@ -200,61 +201,50 @@
       playerAssignments = [];
 
       // Regexes
-      const emojiRegex = /\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic}|\u200D[\u2640\u2642]\uFE0F)*/gu;
-      const discordEmojiRegex = /:[a-zA-Z0-9_]+:/g;
+      const emojiRegex = /\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic}|\u200D[\u2640\u2642]\uFE0F)*$/u;
+      const discordEmojiRegex = /^:[a-zA-Z0-9_]+:$/;
 
       lines.forEach((line, index) => {
+        // Remove leading number and dot (e.g., "1.", "10.")
         let cleanLine = line.replace(/^\d+\.\s*/, '').trim();
         if (!cleanLine) return;
 
-        // Split into tokens by whitespace
-        const tokens = cleanLine.split(/\s+/).filter(t => t !== '');
-        const trailingTokens = [];
-        let nameTokens = [];
+        // Step: Extract trailing role indicators from the END
+        const roleTokens = [];
+        let working = cleanLine;
 
-        // Walk backward to collect trailing role indicators
-        for (let i = tokens.length - 1; i >= 0; i--) {
-          const token = tokens[i];
+        while (working) {
+          working = working.trimEnd();
+          if (!working) break;
 
-          // Skip empty
-          if (!token) continue;
-
-          // Check for Discord emoji code
-          if (discordEmojiRegex.test(token)) {
-            trailingTokens.unshift(token);
-            continue;
-          }
-
-          // Check if token is ONLY Unicode emojis (possibly multiple)
-          const emojiMatches = [...token.matchAll(emojiRegex)];
-          if (emojiMatches.length > 0) {
-            // Reconstruct the emoji string from matches
-            let reconstructed = '';
-            let lastEnd = 0;
-            for (const m of emojiMatches) {
-              reconstructed += token.slice(lastEnd, m.index) + m[0];
-              lastEnd = m.index + m[0].length;
-            }
-            reconstructed += token.slice(lastEnd);
-            // If the entire token is emojis (no letters/numbers)
-            if (reconstructed === token) {
-              trailingTokens.unshift(token);
+          // Check for Discord emoji code at the end (with optional leading spaces)
+          let match = working.match(/(\s*:[a-zA-Z0-9_]+:)$/);
+          if (match) {
+            const token = match[1].trim();
+            if (discordEmojiRegex.test(token)) {
+              roleTokens.unshift(token);
+              working = working.slice(0, match.index);
               continue;
             }
           }
 
-          // If we reach here, it's part of the name → stop scanning backward
-          nameTokens = tokens.slice(0, i + 1);
+          // Check for Unicode emoji at the very end
+          const emojiMatch = working.match(emojiRegex);
+          if (emojiMatch) {
+            const emoji = emojiMatch[0];
+            roleTokens.unshift(emoji);
+            working = working.slice(0, -emoji.length);
+            continue;
+          }
+
+          // If neither, stop — rest is name
           break;
         }
 
-        if (nameTokens.length === 0) {
-          nameTokens = tokens.slice(0, tokens.length - trailingTokens.length);
-        }
+        // Clean the remaining part as the name
+        let name = working.trim();
 
-        let name = nameTokens.join(' ');
-
-        // Clean non-role markers from name
+        // Remove non-role decorative emojis from name
         nonRoleEmojis.forEach(e => {
           name = name.replace(new RegExp(e, 'g'), '');
         });
@@ -269,7 +259,7 @@
         };
         playerAssignments.push(assignment);
 
-        // --- Build UI ---
+        // --- Build UI element ---
         const playerItem = document.createElement('div');
         playerItem.className = 'player-item';
 
@@ -280,64 +270,55 @@
         const emojisDiv = document.createElement('div');
         emojisDiv.className = 'player-emojis';
 
-        // Process each trailing token
-        trailingTokens.forEach(token => {
-          // Skip non-role emojis and email
-          if (nonRoleEmojis.includes(token) || token === '📧') {
+        // Add clickable role indicators
+        roleTokens.forEach(token => {
+          if (token === '📧' || nonRoleEmojis.includes(token)) {
             return;
           }
 
-          // Try to match Discord-style emoji code
+          // Match Discord-style code
           const matchedRole = predefinedRoles.find(r => r.discordtext === token);
           if (matchedRole) {
             const span = document.createElement('span');
             span.title = matchedRole.name;
-            span.className = 'discord-role-icon';
-
             if (matchedRole.text) {
               span.textContent = matchedRole.text;
             } else {
               const img = document.createElement('img');
               img.src = matchedRole.img;
               img.alt = matchedRole.name;
-              img.style.width = '18px';
-              img.style.height = '18px';
-              img.style.objectFit = 'contain';
               span.appendChild(img);
             }
-
             span.addEventListener('click', () => {
               span.classList.toggle('selected');
+              const set = assignment.predefinedRoles;
               if (span.classList.contains('selected')) {
-                assignment.predefinedRoles.add(matchedRole.name);
+                set.add(matchedRole.name);
               } else {
-                assignment.predefinedRoles.delete(matchedRole.name);
+                set.delete(matchedRole.name);
               }
               renderGroups();
             });
-
             emojisDiv.appendChild(span);
             return;
           }
 
-          // Otherwise, treat as custom Unicode emoji role
-          if (emojiRegex.test(token)) {
+          // Treat as custom Unicode emoji role
+          if (/\p{Extended_Pictographic}/u.test(token)) {
             const span = document.createElement('span');
             span.textContent = token;
             span.addEventListener('click', () => {
               span.classList.toggle('selected');
+              const set = assignment.customRoles;
               if (span.classList.contains('selected')) {
-                assignment.customRoles.add(token);
+                set.add(token);
               } else {
-                assignment.customRoles.delete(token);
+                set.delete(token);
               }
               renderGroups();
             });
             emojisDiv.appendChild(span);
-            return;
           }
-
-          // Unknown token – ignore
         });
 
         // Group selector
@@ -371,17 +352,18 @@
           }
           el.addEventListener('click', () => {
             el.classList.toggle('selected');
+            const set = assignment.predefinedRoles;
             if (el.classList.contains('selected')) {
-              assignment.predefinedRoles.add(role.name);
+              set.add(role.name);
             } else {
-              assignment.predefinedRoles.delete(role.name);
+              set.delete(role.name);
             }
             renderGroups();
           });
           roleSelector.appendChild(el);
         });
 
-        // Assemble
+        // Assemble player item
         playerItem.appendChild(nameDiv);
         playerItem.appendChild(emojisDiv);
 
