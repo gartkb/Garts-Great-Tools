@@ -57,6 +57,15 @@
       margin: 0 10px;
       font-size: 20px;
     }
+    .player-emojis span {
+      padding: 2px 4px;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    .player-emojis span.selected {
+      background: #e6f2ff;
+      border: 1px solid #007BFF;
+    }
     .role-selector {
       display: flex;
       gap: 6px;
@@ -108,7 +117,7 @@
 <body>
   <div class="container">
     <h2>⚔️ Guild Wars 2 Team Builder</h2>
-    <p>Paste your player list below. All emojis after 📧 (or at end) are preserved.</p>
+    <p>Paste your player list below. Emojis after 📧 (or at end) are shown and clickable.</p>
 
     <textarea id="inputPlayers" placeholder="Example:
 1.Swiftwrath.8954 🚹                              📧
@@ -125,31 +134,29 @@
   </div>
 
   <script>
-    // Predefined roles
-    const roleIcons = [
-      { emoji: 'QuickDPS', img: 'https://cdn.discordapp.com/emojis/1038159940164014090.png' },
-      { emoji: 'QuickHeal', img: 'https://cdn.discordapp.com/emojis/1038159941472620655.png' },
-      { emoji: 'AlacHeal', img: 'https://cdn.discordapp.com/emojis/1038159938335277140.png' },
-      { emoji: 'AlacDPS', img: 'https://cdn.discordapp.com/emojis/1038159937391562843.png' },
-      { emoji: 'DPS', text: '⚔️' },
-      { emoji: 'Heals', text: '🛡️' },
+    // Predefined roles (right-side selector)
+    const predefinedRoles = [
+      { name: 'QuickDPS', img: 'https://cdn.discordapp.com/emojis/1038159940164014090.png' },
+      { name: 'QuickHeal', img: 'https://cdn.discordapp.com/emojis/1038159941472620655.png' },
+      { name: 'AlacHeal', img: 'https://cdn.discordapp.com/emojis/1038159938335277140.png' },
+      { name: 'AlacDPS', img: 'https://cdn.discordapp.com/emojis/1038159937391562843.png' },
+      { name: 'DPS', text: '⚔️' },
+      { name: 'Heals', text: '🛡️' },
     ];
-
-    // Map emoji characters to role names (for auto-assignment if desired later)
-    const emojiToRole = {
-      '🛡️': 'Heals',
-      '⚔️': 'DPS',
-      // You can add more mappings later if needed
-    };
 
     let playerAssignments = [];
 
-    // Robust emoji regex (covers ZWJ, variation selectors, etc.)
-    const emojiRegex = /\p{EmojiModifierBase}\p{EmojiModifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F/gu;
-
-    function extractEmojis(str) {
-      // Comprehensive emoji regex (supports ZWJ, skin tones, flags, variation selectors)
-      const emojiRegex = /(?:\uD83C\uDFF4\uDB40\uDC67\uDB40\uDC62(?:\uDB40\uDC65\uDB40\uDC6E\uDB40\uDC67|\uDB40\uDC77\uDB40\uDC6C\uDB40\uDC73|\uDB40\uDC73\uDB40\uDC63\uDB40\uDC74)\uDB40\uDC7F|\uD83D\uDC69\u200D\uD83D\uDC69\u200D(?:\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC67\u200D(?:\uD83D\uDC66|\uD83D\uDC67))|\uD83D\uDC68\u200D\uD83D\uDC68\u200D(?:\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC67\u200D(?:\uD83D\uDC66|\uD83D\uDC67))|\uD83D\uDC69\u200D\uD83D\uDC69\u200D(?:\uD83D\uDC66|\uD83D\uDC67)|\uD83D\uDC68\u200D\uD83D\uDC68\u200D(?:\uD83D\uDC66|\uD83D\uDC67)|\uD83D\uDC69\u200D(?:\uD83D\uDC69\u200D\uD83D\uDC67|\uD83D\uDC66\u200D\uD83D\uDC66)|\uD83D\uDC68\u200D(?:\uD83D\uDC68\u200D\uD83D\uDC67|\uD83D\uDC66\u200D\uD83D\uDC66)|\uD83D\uDC69\u200D\u2764\uFE0F\u200D(?:\uD83D\uDC68|\uD83D\uDC69)|\uD83D\uDC68\u200D\u2764\uFE0F\u200D(?:\uD83D\uDC68|\uD83D\uDC69)|\uD83D\uDC69\u200D(?:\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC67\u200D(?:\uD83D\uDC66|\uD83D\uDC67))|\uD83D\uDC68\u200D(?:\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC67\u200D(?:\uD83D\uDC66|\uD83D\uDC67))|\uD83C\uDFF3\uFE0F\u200D\uD83C\uDF08|\uD83C\uDDF6|\uD83C\uDDF4|\uD83C\uDDFF|\uD83C\uDDFC|\uD83C\uDDF8|\uD83C\uDDF5|\uD83C\uDDF3|\uD83C\uDDFD|\uD83C\uDDFA|\uD83C\uDDF9|\uD83C\uDDF7|\uD83C\uDDFB|\uD83C\uDDFE|\uD83C\uDDF1|\uD83C\uDDF0|\uD83C\uDDF2|\uD83C\uDDEC|\uD83C\uDDEA|\uD83C\uDDE8|\uD83C\uDDE6|\uD83C\uDDEE|\uD83C\uDDEF|\uD83C\uDDF4|\uD83C\uDDF6|\uD83C\uDDF8|\uD83C\uDDF9|\uD83C\uDDFA|\uD83C\uDDFB|\uD83C\uDDFC|\uD83C\uDDFD|\uD83C\uDDFE|\uD83C\uDDFF|\uD83D\uDC69\u200D\uD83D\uDC67\u200D(?:\uD83D\uDC66|\uD83D\uDC67)|\uD83D\uDC68\u200D\uD83D\uDC67\u200D(?:\uD83D\uDC66|\uD83D\uDC67)|\uD83D\uDC69\u200D\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC68\u200D\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC69\u200D\uD83D\uDC67|\uD83D\uDC68\u200D\uD83D\uDC67|\uD83D\uDC69\u200D\uD83D\uDC66|\uD83D\uDC68\u200D\uD83D\uDC66|\uD83D\uDC69\u200D\uD83C\uDFFB\u200D\uD83C\uDF3E|\uD83D\uDC69\u200D\uD83C\uDFFB\u200D\uD83D\uDCBB|\uD83D\uDC69\u200D\uD83C\uDFFB\u200D\uD83D\uDCBC|\uD83D\uDC69\u200D\uD83C\uDFFB\u200D\uD83D\uDD27|\uD83D\uDC69\u200D\uD83C\uDFFB\u200D\uD83D\uDD2C|\uD83D\uDC69\u200D\uD83C\uDFFB\u200D\uD83C\uDFA4|\uD83D\uDC69\u200D\uD83C\uDFFB\u200D\uD83C\uDF93|\uD83D\uDC69\u200D\uD83C\uDFFB\u200D\u2695\uFE0F|\uD83D\uDC69\u200D\uD83C\uDFFB\u200D\uD83C\uDFEB|\uD83D\uDC69\u200D\uD83C\uDFFB\u200D\uD83C\uDF92|\uD83D\uDC69\u200D\uD83C\uDFFB\u200D\uD83D\uDC69|\uD83D\uDC69\u200D\uD83C\uDFFB\u200D\uD83D\uDC66|\uD83D\uDC69\u200D\uD83C\uDFFB\u200D\uD83D\uDC67|\uD83D\uDC69\u200D\uD83C\uDFFB\u2
+    // Simple emoji detection by Unicode range
+    function isEmojiChar(code) {
+      return (
+        (code >= 0x1F600 && code <= 0x1F64F) || // Emoticons
+        (code >= 0x1F300 && code <= 0x1F5FF) || // Misc Symbols & Pictographs
+        (code >= 0x1F680 && code <= 0x1F6FF) || // Transport & Map Symbols
+        (code >= 0x1F1E6 && code <= 0x1F1FF) || // Flags
+        (code >= 0x1F900 && code <= 0x1F9FF) || // Supplemental Symbols
+        (code >= 0x2600 && code <= 0x26FF)   || // Misc Symbols
+        (code >= 0x2700 && code <= 0x27BF)      // Dingbats
+      );
     }
 
     function parsePlayers() {
@@ -160,74 +167,77 @@
       container.innerHTML = '';
       playerAssignments = [];
 
-      const nonRoleEmojis = new Set(['🚹', '🚺', '👥', '👤', '💫']);
+      const nonRoleEmojis = ['🚹', '🚺', '👥', '👤', '💫'];
 
       lines.forEach((line, index) => {
+        // Remove leading number + dot
         let cleanLine = line.replace(/^\d+\.\s*/, '').trim();
 
+        // Split at 📧
         const emailIndex = cleanLine.indexOf('📧');
-        let namePart, rolePart;
+        let namePart, suffixPart;
 
         if (emailIndex !== -1) {
           namePart = cleanLine.substring(0, emailIndex).trim();
-          rolePart = cleanLine.substring(emailIndex).trim(); // includes 📧
+          suffixPart = cleanLine.substring(emailIndex); // includes 📧 and everything after
         } else {
-          namePart = cleanLine;
-          rolePart = '';
+          // No 📧 → use last 12 characters as potential emoji area
+          const cutoff = Math.max(0, cleanLine.length - 12);
+          suffixPart = cleanLine.substring(cutoff);
+          namePart = cleanLine.substring(0, cutoff).trim();
         }
 
-        // Clean name: remove only specified non-role emojis
+        // Clean name: remove non-role emojis
         let name = namePart;
-        nonRoleEmojis.forEach(emoji => {
-          // Escape for regex if needed, but literal replace is safer for single chars
-          name = name.split(emoji).join('');
+        nonRoleEmojis.forEach(e => {
+          name = name.split(e).join('');
         });
         name = name.replace(/\s+/g, ' ').trim();
 
-        // Extract ALL emojis from rolePart (or fallback)
-        let roleEmojis = [];
-        if (rolePart) {
-          roleEmojis = extractEmojis(rolePart);
-        } else {
-          // Fallback: no 📧 → extract from whole line, assume trailing
-          const allEmojis = extractEmojis(cleanLine);
-          roleEmojis = allEmojis.slice(-6); // up to 6 trailing
-          // Remove these from name for display
-          let tempName = cleanLine;
-          roleEmojis.forEach(e => {
-            tempName = tempName.split(e).join('');
-          });
-          name = tempName;
-          nonRoleEmojis.forEach(emoji => {
-            name = name.split(emoji).join('');
-          });
-          name = name.replace(/\s+/g, ' ').trim();
-        }
-
-        playerAssignments.push({
+        // Player state
+        const assignment = {
           id: index,
           name: name,
-          emojis: roleEmojis,
           group: 'Group 1',
-          selectedRoles: new Set()
-        });
+          customRoles: new Set(),      // from clicking emojis in list
+          predefinedRoles: new Set()   // from right-side icons
+        };
+        playerAssignments.push(assignment);
 
         // --- Render UI ---
         const playerItem = document.createElement('div');
         playerItem.className = 'player-item';
 
+        // Player name
         const nameDiv = document.createElement('div');
         nameDiv.className = 'player-name';
         nameDiv.textContent = name;
 
+        // Clickable emojis from suffix
         const emojisDiv = document.createElement('div');
         emojisDiv.className = 'player-emojis';
-        roleEmojis.forEach(emoji => {
-          const span = document.createElement('span');
-          span.textContent = emoji;
-          emojisDiv.appendChild(span);
-        });
 
+        for (let i = 0; i < suffixPart.length; i++) {
+          const char = suffixPart[i];
+          const code = char.codePointAt(0);
+          if (isEmojiChar(code)) {
+            const span = document.createElement('span');
+            span.textContent = char;
+            span.style.cursor = 'pointer';
+            span.addEventListener('click', () => {
+              span.classList.toggle('selected');
+              if (span.classList.contains('selected')) {
+                assignment.customRoles.add(char);
+              } else {
+                assignment.customRoles.delete(char);
+              }
+              renderGroups();
+            });
+            emojisDiv.appendChild(span);
+          }
+        }
+
+        // Group selector
         const groupSelect = document.createElement('select');
         ['Group 1', 'Group 2', 'Group 3', 'Group 4'].forEach(group => {
           const opt = document.createElement('option');
@@ -236,43 +246,39 @@
           if (group === 'Group 1') opt.selected = true;
           groupSelect.appendChild(opt);
         });
-
         groupSelect.addEventListener('change', (e) => {
-          playerAssignments[index].group = e.target.value;
+          assignment.group = e.target.value;
           renderGroups();
         });
 
+        // Predefined role selector
         const roleSelector = document.createElement('div');
         roleSelector.className = 'role-selector';
-
-        roleIcons.forEach(role => {
-          const roleElement = document.createElement('span');
-          roleElement.className = 'role-icon';
-          roleElement.title = role.emoji;
-
+        predefinedRoles.forEach(role => {
+          const el = document.createElement('span');
+          el.className = 'role-icon';
+          el.title = role.name;
           if (role.text) {
-            roleElement.textContent = role.text;
-          } else if (role.img) {
+            el.textContent = role.text;
+          } else {
             const img = document.createElement('img');
             img.src = role.img;
-            img.alt = role.emoji;
-            roleElement.appendChild(img);
+            img.alt = role.name;
+            el.appendChild(img);
           }
-
-          roleElement.onclick = function () {
-            this.classList.toggle('selected');
-            const isSelected = this.classList.contains('selected');
-            if (isSelected) {
-              playerAssignments[index].selectedRoles.add(role.emoji);
+          el.addEventListener('click', () => {
+            el.classList.toggle('selected');
+            if (el.classList.contains('selected')) {
+              assignment.predefinedRoles.add(role.name);
             } else {
-              playerAssignments[index].selectedRoles.delete(role.emoji);
+              assignment.predefinedRoles.delete(role.name);
             }
             renderGroups();
-          };
-
-          roleSelector.appendChild(roleElement);
+          });
+          roleSelector.appendChild(el);
         });
 
+        // Assemble player row
         playerItem.appendChild(nameDiv);
         playerItem.appendChild(emojisDiv);
         const groupLabel = document.createElement('span');
@@ -288,17 +294,18 @@
     }
 
     function renderGroups() {
-      const groupDisplay = document.getElementById('groupSummary');
-      if (groupDisplay) groupDisplay.remove();
-
-      const summaryDiv = document.createElement('div');
-      summaryDiv.id = 'groupSummary';
+      const oldSummary = document.getElementById('groupSummary');
+      if (oldSummary) oldSummary.remove();
 
       const groups = {};
       playerAssignments.forEach(p => {
-        if (!groups[p.group]) groups[p.group] = [];
-        groups[p.group].push(p);
+        const g = p.group || 'Group 1';
+        if (!groups[g]) groups[g] = [];
+        groups[g].push(p);
       });
+
+      const summaryDiv = document.createElement('div');
+      summaryDiv.id = 'groupSummary';
 
       Object.entries(groups).forEach(([groupName, players]) => {
         if (players.length === 0) return;
@@ -309,14 +316,17 @@
         const header = document.createElement('div');
         header.className = 'group-header';
         header.textContent = `${groupName} (${players.length} player${players.length !== 1 ? 's' : ''})`;
-
         groupDiv.appendChild(header);
 
         players.forEach(player => {
+          const allRoles = [
+            ...Array.from(player.customRoles),
+            ...Array.from(player.predefinedRoles)
+          ];
+          const rolesText = allRoles.length > 0 ? allRoles.join(', ') : 'None';
           const pDiv = document.createElement('div');
           pDiv.className = 'assigned-player';
-          const roles = Array.from(player.selectedRoles).join(', ') || 'None';
-          pDiv.textContent = `${player.name} → Roles: ${roles}`;
+          pDiv.textContent = `${player.name} → ${rolesText}`;
           groupDiv.appendChild(pDiv);
         });
 
