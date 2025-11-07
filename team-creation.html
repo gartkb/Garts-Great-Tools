@@ -143,7 +143,7 @@
 <body>
   <div class="container">
     <h2>⚔️ Guild Wars 2 Team Builder</h2>
-    <p>Paste your player list below. Emojis after 📧 (or at end) are shown and clickable.</p>
+    <p>Paste your player list below. Emojis at the end are shown and clickable (except gender/name markers).</p>
 
     <textarea id="inputPlayers" placeholder="Example:
 1.DethKnighter666.8954 🚹                              📧
@@ -179,11 +179,7 @@
       if (role.text) {
         return `${role.text} ${role.name}`;
       } else {
-        // Return image + name
-        //return `<img src="${role.img}" alt="${role.name}" title="${role.name}"> ${role.name}`;
-        // prefer role.discordtext when it's not null/undefined; otherwise use role.name
-        //  return `<img src="${role.img}" alt="${role.discordtext ?? role.name}" title="${role.name}"> ${role.name}`;
-          return `<img src="${role.img}" alt="${role.discordtext ?? role.name}" title="${role.name}"> ${role.name}`;
+        return `<img src="${role.img}" alt="${role.discordtext ?? role.name}" title="${role.name}"> ${role.name}`;
       }
     }
 
@@ -200,30 +196,41 @@
       container.innerHTML = '';
       playerAssignments = [];
 
+      // Robust emoji regex (supports ZWJ sequences, skin tones, etc.)
+      const emojiRegex = /\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic}|\u200D[\u2640\u2642]\uFE0F)*/gu;
+
       lines.forEach((line, index) => {
         // Remove leading number and dot (e.g., "1.", "10.")
         let cleanLine = line.replace(/^\d+\.\s*/, '').trim();
 
-        // Find 📧 to split name and suffix
-        const emailIndex = cleanLine.indexOf('📧');
-        let namePart, suffixPart;
+        if (!cleanLine) return;
 
-        if (emailIndex !== -1) {
-          namePart = cleanLine.substring(0, emailIndex).trim();
-          suffixPart = cleanLine.substring(emailIndex); // Keep 📧 and everything after
-        } else {
-          // If no 📧, treat last ~15 chars as potential emoji zone
-          const cutoff = Math.max(0, cleanLine.length - 15);
-          suffixPart = cleanLine.substring(cutoff);
-          namePart = cleanLine.substring(0, cutoff).trim();
+        // Extract trailing emojis by repeatedly matching from the end
+        let namePart = cleanLine;
+        const trailingEmojis = [];
+
+        let match;
+        while ((match = emojiRegex.exec(namePart)) !== null) {
+          const emoji = match[0];
+          const endIndex = match.index + emoji.length;
+          // Only accept emoji if it's at the very end
+          if (endIndex === namePart.length) {
+            trailingEmojis.unshift(emoji); // preserve left-to-right order
+            namePart = namePart.slice(0, match.index).trim();
+            emojiRegex.lastIndex = 0; // reset after mutation
+          } else {
+            // Emoji found not at end → stop (e.g., in middle of name)
+            break;
+          }
         }
 
-        // Clean name: remove non-role emojis that are decorative
+        // Clean name: remove any decorative non-role emojis anywhere in the name
         let name = namePart;
         nonRoleEmojis.forEach(e => {
-          // Remove all occurrences (some may appear in name)
           name = name.replace(new RegExp(e, 'g'), '');
         });
+        // Also remove 📧 if somehow still in name (unlikely, but safe)
+        name = name.replace(/📧/g, '');
         name = name.replace(/\s+/g, ' ').trim() || 'Unknown';
 
         const assignment = {
@@ -246,20 +253,9 @@
         const emojisDiv = document.createElement('div');
         emojisDiv.className = 'player-emojis';
 
-        // 🌟 NEW: Extract FULL emoji sequences (including 🛡️, 🕵️‍♂️, etc.)
-        const emojiRegex = /\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic}|\u200D[\u2640\u2642]\uFE0F)*/gu;
-        const emojiMatches = [...suffixPart.matchAll(emojiRegex)];
-
-        emojiMatches.forEach(match => {
-          const emoji = match[0];
-
-          // Skip emojis that are just decorative (not roles)
-          if (nonRoleEmojis.includes(emoji)) {
-            return;
-          }
-
-          // Also skip 📧 (we don't want it as a clickable role)
-          if (emoji === '📧') {
+        // Process trailing emojis: skip non-role and 📧
+        trailingEmojis.forEach(emoji => {
+          if (nonRoleEmojis.includes(emoji) || emoji === '📧') {
             return;
           }
 
