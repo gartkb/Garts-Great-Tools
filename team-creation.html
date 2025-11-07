@@ -108,7 +108,7 @@
 <body>
   <div class="container">
     <h2>⚔️ Guild Wars 2 Team Builder</h2>
-    <p>Paste your player list below. Emojis after 📧 (or at end) are shown as-is.</p>
+    <p>Paste your player list below. All emojis after 📧 (or at end) are preserved.</p>
 
     <textarea id="inputPlayers" placeholder="Example:
 1.Swiftwrath.8954 🚹                              📧
@@ -125,7 +125,7 @@
   </div>
 
   <script>
-    // Predefined roles (4 custom icons + 2 emojis)
+    // Predefined roles
     const roleIcons = [
       { emoji: 'QuickDPS', img: 'https://cdn.discordapp.com/emojis/1038159940164014090.png' },
       { emoji: 'QuickHeal', img: 'https://cdn.discordapp.com/emojis/1038159941472620655.png' },
@@ -135,7 +135,22 @@
       { emoji: 'Heals', text: '🛡️' },
     ];
 
+    // Map emoji characters to role names (for auto-assignment if desired later)
+    const emojiToRole = {
+      '🛡️': 'Heals',
+      '⚔️': 'DPS',
+      // You can add more mappings later if needed
+    };
+
     let playerAssignments = [];
+
+    // Robust emoji regex (covers ZWJ, variation selectors, etc.)
+    const emojiRegex = /\p{EmojiModifierBase}\p{EmojiModifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F/gu;
+
+    function extractEmojis(str) {
+      const matches = str.match(emojiRegex);
+      return matches || [];
+    }
 
     function parsePlayers() {
       const text = document.getElementById('inputPlayers').value.trim();
@@ -155,36 +170,36 @@
 
         if (emailIndex !== -1) {
           namePart = cleanLine.substring(0, emailIndex).trim();
-          rolePart = cleanLine.substring(emailIndex).trim(); // Keeps 📧
+          rolePart = cleanLine.substring(emailIndex).trim(); // includes 📧
         } else {
           namePart = cleanLine;
           rolePart = '';
         }
 
-        // Clean name: remove only known non-role emojis
+        // Clean name: remove only specified non-role emojis
         let name = namePart;
         nonRoleEmojis.forEach(emoji => {
-          name = name.replace(new RegExp(emoji, 'g'), '');
+          // Escape for regex if needed, but literal replace is safer for single chars
+          name = name.split(emoji).join('');
         });
         name = name.replace(/\s+/g, ' ').trim();
 
-        // Extract emojis from rolePart (including 📧!)
+        // Extract ALL emojis from rolePart (or fallback)
         let roleEmojis = [];
         if (rolePart) {
-          const emojiRegex = /[\p{Emoji_Presentation}\u{1F3FB}-\u{1F3FF}\u{1F9B0}-\u{1F9B3}]/gu;
-          roleEmojis = (rolePart.match(emojiRegex) || []);
+          roleEmojis = extractEmojis(rolePart);
         } else {
-          // Fallback: no 📧 → use trailing emojis
-          const emojiRegex = /[\p{Emoji_Presentation}\u{1F3FB}-\u{1F3FF}\u{1F9B0}-\u{1F9B3}]/gu;
-          const allEmojis = cleanLine.match(emojiRegex) || [];
-          roleEmojis = allEmojis.slice(-5); // last up to 5
+          // Fallback: no 📧 → extract from whole line, assume trailing
+          const allEmojis = extractEmojis(cleanLine);
+          roleEmojis = allEmojis.slice(-6); // up to 6 trailing
+          // Remove these from name for display
           let tempName = cleanLine;
           roleEmojis.forEach(e => {
-            tempName = tempName.replace(e, '');
+            tempName = tempName.split(e).join('');
           });
           name = tempName;
           nonRoleEmojis.forEach(emoji => {
-            name = name.replace(new RegExp(emoji, 'g'), '');
+            name = name.split(emoji).join('');
           });
           name = name.replace(/\s+/g, ' ').trim();
         }
