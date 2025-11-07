@@ -11,7 +11,7 @@
       background: #f5f5f5;
     }
     .container {
-      max-width: 900px;
+      max-width: 1000px;
       margin: auto;
     }
     textarea {
@@ -34,55 +34,57 @@
     button:hover {
       background: #0056b3;
     }
+
+    /* Player row:紧凑布局 */
     .player-item {
       background: white;
-      padding: 12px;
+      padding: 10px;
       border: 1px solid #ccc;
       border-radius: 6px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px; /* reduced gap */
     }
     .player-name {
-      flex: 1;
-      min-width: 200px;
       font-weight: bold;
+      flex: 1;
+      min-width: 180px;
+      /* Prevent excessive whitespace */
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .player-emojis {
       display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin: 0 10px;
+      gap: 4px; /* tighter emoji spacing */
       font-size: 20px;
     }
     .player-emojis span {
-      padding: 2px 4px;
-      border-radius: 4px;
+      padding: 2px 3px;
+      border-radius: 3px;
       cursor: pointer;
-      transition: background 0.2s;
     }
     .player-emojis span.selected {
       background: #e6f2ff;
       border: 1px solid #007BFF;
     }
+
     .role-selector {
       display: flex;
-      gap: 6px;
+      gap: 5px;
       align-items: center;
     }
     .role-icon {
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       border: 1px solid transparent;
-      padding: 2px;
-      font-size: 24px;
-      line-height: 1;
+      padding: 1px;
+      font-size: 22px;
       background: white;
       border-radius: 4px;
     }
@@ -95,23 +97,43 @@
       height: 100%;
       object-fit: contain;
     }
-    .group-header {
-      font-weight: bold;
-      margin-top: 25px;
-      margin-bottom: 10px;
-      color: #222;
-      font-size: 1.1em;
+
+    /* Group summary: side-by-side pairs */
+    #groupSummary {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .group-row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
     }
     .group-container {
-      margin-bottom: 20px;
+      flex: 1;
+      min-width: 250px;
       background: #fafafa;
       padding: 12px;
       border-radius: 6px;
       border-left: 3px solid #007BFF;
     }
+    .group-header {
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #222;
+      font-size: 1.05em;
+    }
     .assigned-player {
-      padding: 4px 0;
+      padding: 3px 0;
       font-family: monospace;
+      font-size: 0.95em;
+    }
+
+    /* Responsive: on small screens, stack groups */
+    @media (max-width: 768px) {
+      .group-container {
+        min-width: 100%;
+      }
     }
   </style>
 </head>
@@ -135,7 +157,6 @@
   </div>
 
   <script>
-    // Predefined GW2 roles (right-side selector)
     const predefinedRoles = [
       { name: 'QuickDPS', img: 'https://cdn.discordapp.com/emojis/1038159940164014090.png' },
       { name: 'QuickHeal', img: 'https://cdn.discordapp.com/emojis/1038159941472620655.png' },
@@ -147,16 +168,15 @@
 
     let playerAssignments = [];
 
-    // Check if a Unicode code point is likely an emoji
     function isEmojiChar(code) {
       return (
-        (code >= 0x1F600 && code <= 0x1F64F) || // Emoticons
-        (code >= 0x1F300 && code <= 0x1F5FF) || // Misc Symbols & Pictographs
-        (code >= 0x1F680 && code <= 0x1F6FF) || // Transport & Map
-        (code >= 0x1F1E6 && code <= 0x1F1FF) || // Regional Flags
-        (code >= 0x1F900 && code <= 0x1F9FF) || // Supplemental Symbols
-        (code >= 0x2600 && code <= 0x26FF)   || // Misc Symbols
-        (code >= 0x2700 && code <= 0x27BF)      // Dingbats
+        (code >= 0x1F600 && code <= 0x1F64F) ||
+        (code >= 0x1F300 && code <= 0x1F5FF) ||
+        (code >= 0x1F680 && code <= 0x1F6FF) ||
+        (code >= 0x1F1E6 && code <= 0x1F1FF) ||
+        (code >= 0x1F900 && code <= 0x1F9FF) ||
+        (code >= 0x2600 && code <= 0x26FF) ||
+        (code >= 0x2700 && code <= 0x27BF)
       );
     }
 
@@ -171,54 +191,44 @@
       const nonRoleEmojis = ['🚹', '🚺', '👥', '👤', '💫'];
 
       lines.forEach((line, index) => {
-        // Remove leading number + dot (e.g., "6.")
         let cleanLine = line.replace(/^\d+\.\s*/, '').trim();
 
-        // Split at first 📧
         const emailIndex = cleanLine.indexOf('📧');
         let namePart, suffixPart;
 
         if (emailIndex !== -1) {
           namePart = cleanLine.substring(0, emailIndex).trim();
-          suffixPart = cleanLine.substring(emailIndex); // includes 📧 and everything after
+          suffixPart = cleanLine.substring(emailIndex);
         } else {
-          // No 📧 → treat last 15 chars as potential role emoji zone
           const cutoff = Math.max(0, cleanLine.length - 15);
           suffixPart = cleanLine.substring(cutoff);
           namePart = cleanLine.substring(0, cutoff).trim();
         }
 
-        // Clean name: remove only specified non-role emojis
         let name = namePart;
         nonRoleEmojis.forEach(e => {
           name = name.split(e).join('');
         });
         name = name.replace(/\s+/g, ' ').trim();
 
-        // Player assignment state
         const assignment = {
           id: index,
           name: name,
           group: 'Group 1',
-          customRoles: new Set(),      // from clicking emojis in the list
-          predefinedRoles: new Set()   // from right-side role icons
+          customRoles: new Set(),
+          predefinedRoles: new Set()
         };
         playerAssignments.push(assignment);
 
-        // --- Render player row ---
         const playerItem = document.createElement('div');
         playerItem.className = 'player-item';
 
-        // Name
         const nameDiv = document.createElement('div');
         nameDiv.className = 'player-name';
         nameDiv.textContent = name;
 
-        // Clickable emojis from suffix
         const emojisDiv = document.createElement('div');
         emojisDiv.className = 'player-emojis';
-
-        // ✅ FIXED: Iterate by full Unicode code point (not char index)
         for (const char of suffixPart) {
           const code = char.codePointAt(0);
           if (isEmojiChar(code)) {
@@ -237,21 +247,20 @@
           }
         }
 
-        // Group selector
         const groupSelect = document.createElement('select');
-        ['Group 1', 'Group 2', 'Group 3', 'Group 4'].forEach(group => {
+        // ✅ Support up to 10 groups
+        for (let i = 1; i <= 10; i++) {
           const opt = document.createElement('option');
-          opt.value = group;
-          opt.textContent = group;
-          if (group === 'Group 1') opt.selected = true;
+          opt.value = `Group ${i}`;
+          opt.textContent = `Group ${i}`;
+          if (i === 1) opt.selected = true;
           groupSelect.appendChild(opt);
-        });
+        }
         groupSelect.addEventListener('change', (e) => {
           assignment.group = e.target.value;
           renderGroups();
         });
 
-        // Predefined role icons
         const roleSelector = document.createElement('div');
         roleSelector.className = 'role-selector';
         predefinedRoles.forEach(role => {
@@ -278,7 +287,6 @@
           roleSelector.appendChild(el);
         });
 
-        // Assemble row
         playerItem.appendChild(nameDiv);
         playerItem.appendChild(emojisDiv);
         const groupLabel = document.createElement('span');
@@ -307,33 +315,55 @@
       const summaryDiv = document.createElement('div');
       summaryDiv.id = 'groupSummary';
 
-      Object.entries(groups).forEach(([groupName, players]) => {
-        if (players.length === 0) return;
+      // Get group names in order: Group 1, Group 2, ..., Group 10
+      const groupNames = Array.from({length: 10}, (_, i) => `Group ${i + 1}`);
+      const activeGroups = groupNames.filter(name => groups[name] && groups[name].length > 0);
 
-        const groupDiv = document.createElement('div');
-        groupDiv.className = 'group-container';
+      // Render in pairs
+      for (let i = 0; i < activeGroups.length; i += 2) {
+        const row = document.createElement('div');
+        row.className = 'group-row';
 
-        const header = document.createElement('div');
-        header.className = 'group-header';
-        header.textContent = `${groupName} (${players.length} player${players.length !== 1 ? 's' : ''})`;
-        groupDiv.appendChild(header);
+        // First group
+        const g1 = activeGroups[i];
+        const col1 = createGroupElement(g1, groups[g1]);
+        row.appendChild(col1);
 
-        players.forEach(player => {
-          const allRoles = [
-            ...Array.from(player.customRoles),
-            ...Array.from(player.predefinedRoles)
-          ];
-          const rolesText = allRoles.length > 0 ? allRoles.join(', ') : 'None';
-          const line = document.createElement('div');
-          line.className = 'assigned-player';
-          line.textContent = `${player.name} → ${rolesText}`;
-          groupDiv.appendChild(line);
-        });
+        // Second group (if exists)
+        if (i + 1 < activeGroups.length) {
+          const g2 = activeGroups[i + 1];
+          const col2 = createGroupElement(g2, groups[g2]);
+          row.appendChild(col2);
+        }
 
-        summaryDiv.appendChild(groupDiv);
-      });
+        summaryDiv.appendChild(row);
+      }
 
       document.getElementById('outputContainer').appendChild(summaryDiv);
+    }
+
+    function createGroupElement(groupName, players) {
+      const groupDiv = document.createElement('div');
+      groupDiv.className = 'group-container';
+
+      const header = document.createElement('div');
+      header.className = 'group-header';
+      header.textContent = `${groupName} (${players.length} player${players.length !== 1 ? 's' : ''})`;
+      groupDiv.appendChild(header);
+
+      players.forEach(player => {
+        const allRoles = [
+          ...Array.from(player.customRoles),
+          ...Array.from(player.predefinedRoles)
+        ];
+        const rolesText = allRoles.length > 0 ? allRoles.join(', ') : 'None';
+        const line = document.createElement('div');
+        line.className = 'assigned-player';
+        line.textContent = `${player.name} → ${rolesText}`;
+        groupDiv.appendChild(line);
+      });
+
+      return groupDiv;
     }
   </script>
 </body>
