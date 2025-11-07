@@ -171,7 +171,6 @@
       { name: 'BoonDPS', text: '⚡' },
     ];
 
-    // Create a function to get HTML for a role
     function getRoleDisplayHtml(roleName) {
       const role = predefinedRoles.find(r => r.name === roleName);
       if (!role) return roleName;
@@ -184,8 +183,6 @@
     }
 
     let playerAssignments = [];
-
-    // Emojis to remove from the player name (but not from role selection)
     const nonRoleEmojis = ['🚹', '🚺', '👥', '👤', '💫'];
 
     function parsePlayers() {
@@ -196,42 +193,53 @@
       container.innerHTML = '';
       playerAssignments = [];
 
-      // Robust emoji regex (supports ZWJ sequences, skin tones, etc.)
+      // Robust emoji regex (supports skin tones, ZWJ sequences, variation selectors)
       const emojiRegex = /\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic}|\u200D[\u2640\u2642]\uFE0F)*/gu;
 
       lines.forEach((line, index) => {
         // Remove leading number and dot (e.g., "1.", "10.")
         let cleanLine = line.replace(/^\d+\.\s*/, '').trim();
-
         if (!cleanLine) return;
 
-        // Extract trailing emojis by repeatedly matching from the end
-        let namePart = cleanLine;
-        const trailingEmojis = [];
+        // Find all emojis in the line with their positions
+        const emojiMatches = [...cleanLine.matchAll(emojiRegex)];
 
-        let match;
-        while ((match = emojiRegex.exec(namePart)) !== null) {
-          const emoji = match[0];
-          const endIndex = match.index + emoji.length;
-          // Only accept emoji if it's at the very end
-          if (endIndex === namePart.length) {
-            trailingEmojis.unshift(emoji); // preserve left-to-right order
-            namePart = namePart.slice(0, match.index).trim();
-            emojiRegex.lastIndex = 0; // reset after mutation
+        // Start from the end of the string
+        let nameEndIndex = cleanLine.length;
+
+        // Walk backwards through emoji matches to find the start of the trailing emoji block
+        for (let i = emojiMatches.length - 1; i >= 0; i--) {
+          const match = emojiMatches[i];
+          const emojiEnd = match.index + match[0].length;
+
+          // Skip if this emoji appears after our current cutoff (shouldn't happen, but safe)
+          if (emojiEnd > nameEndIndex) continue;
+
+          // Check if the gap between this emoji and the current end is only whitespace
+          const gap = cleanLine.slice(emojiEnd, nameEndIndex);
+          if (/^\s*$/.test(gap)) {
+            // This emoji is part of the trailing block — extend the block to include it
+            nameEndIndex = match.index;
           } else {
-            // Emoji found not at end → stop (e.g., in middle of name)
+            // Non-whitespace found → stop (e.g., letters, dots, etc.)
             break;
           }
         }
 
-        // Clean name: remove any decorative non-role emojis anywhere in the name
+        // Split into name and trailing block
+        const namePart = cleanLine.slice(0, nameEndIndex).trim();
+        const trailingBlock = cleanLine.slice(nameEndIndex);
+
+        // Extract emojis from the trailing block
+        const trailingEmojis = [...trailingBlock.matchAll(emojiRegex)].map(m => m[0]);
+
+        // Clean the name: remove decorative emojis anywhere in the name
         let name = namePart;
         nonRoleEmojis.forEach(e => {
           name = name.replace(new RegExp(e, 'g'), '');
         });
-        // Also remove 📧 if somehow still in name (unlikely, but safe)
-        name = name.replace(/📧/g, '');
-        name = name.replace(/\s+/g, ' ').trim() || 'Unknown';
+        // Also remove 📧 if present in name (shouldn't be, but safe)
+        name = name.replace(/📧/g, '').replace(/\s+/g, ' ').trim() || 'Unknown';
 
         const assignment = {
           id: index,
@@ -253,12 +261,11 @@
         const emojisDiv = document.createElement('div');
         emojisDiv.className = 'player-emojis';
 
-        // Process trailing emojis: skip non-role and 📧
+        // Add clickable role emojis (skip non-role and 📧)
         trailingEmojis.forEach(emoji => {
           if (nonRoleEmojis.includes(emoji) || emoji === '📧') {
             return;
           }
-
           const span = document.createElement('span');
           span.textContent = emoji;
           span.addEventListener('click', () => {
@@ -377,11 +384,8 @@
       groupDiv.appendChild(header);
 
       players.forEach(player => {
-        const customRoles = Array.from(player.customRoles); // e.g., ['🔥', '🛡️']
-        const predefinedHtml = Array.from(player.predefinedRoles).map(name => {
-          return getRoleDisplayHtml(name);
-        });
-
+        const customRoles = Array.from(player.customRoles);
+        const predefinedHtml = Array.from(player.predefinedRoles).map(name => getRoleDisplayHtml(name));
         const allParts = [...customRoles, ...predefinedHtml];
         const rolesHtml = allParts.length > 0 ? allParts.join(', ') : 'None';
 
