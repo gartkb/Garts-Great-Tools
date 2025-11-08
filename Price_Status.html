@@ -137,24 +137,6 @@
             background: rgba(52, 152, 219, 0.2);
         }
         
-        .search-result-img {
-            width: 32px;
-            height: 32px;
-            margin-right: 10px;
-            border-radius: 3px;
-            flex-shrink: 0;
-            background: #1c1c1c;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .search-result-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        
         .search-result-text {
             flex: 1;
             font-size: 0.95rem;
@@ -412,7 +394,6 @@
         const errorContainer = document.getElementById('error-container');
         const searchResultsContainer = document.getElementById('search-results');
         
-        // Use reserved numeric IDs for special items (safe range)
         const GOLD_TO_GEMS_ID = 9990001;
         const GEMS_TO_GOLD_ID = 9990002;
 
@@ -431,8 +412,7 @@
             }
         };
 
-        // Initialize with numeric ID
-        let trackedItems = [19721]; // Glob of Ectoplasm (number)
+        let trackedItems = [19721];
         let staticItemData = null;
         const DEBOUNCE_DELAY = 300;
         let debounceTimer = null;
@@ -441,8 +421,7 @@
         function loadTrackedItems() {
             const savedItems = localStorage.getItem('gw2_tracked_items');
             if (savedItems) {
-                // Ensure all loaded IDs are numbers
-                trackedItems = JSON.parse(savedItems).map(id => Number(id));
+                trackedItems = JSON.parse(savedItems).map(id => Number(id)); // ensure numeric
             }
         }
 
@@ -473,7 +452,7 @@
             elem.innerHTML = `
                 ${gold > 0 ? `<span class="gold">${gold}</span>` : ''}
                 ${silver > 0 || gold > 0 ? `<span class="silver">${silver}</span>` : ''}
-                <span class="${copper > 0 || (gold === 0 && silver === 0) ? 'copper' : 'copper'}">${copper}</span>
+                <span class="copper">${copper}</span>
             `;
             return elem;
         }
@@ -481,25 +460,22 @@
         function createItemCard(itemData) {
             const card = document.createElement('div');
             card.className = 'item-card';
-            card.dataset.itemId = itemData.id; // stored as number, becomes string in DOM
+            card.dataset.itemId = itemData.id;
             card.draggable = true;
 
-            // Check if it's a special item
             const isSpecial = itemData.id === GOLD_TO_GEMS_ID || itemData.id === GEMS_TO_GOLD_ID;
 
             if (isSpecial) {
                 const imageElem = `
                     <div class="item-image">
-                        <img src="${itemData.icon}" alt="${itemData.name}" 
-                             onerror="this.parentElement.innerHTML='<div style=\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#e74c3c;font-size:0.8rem;text-align:center;\'>Image<br>Unavailable</div>'">
+                        <img src="${itemData.icon}" alt="${itemData.name}">
                     </div>
                 `;
-
                 let priceLabel, priceValue;
                 if (itemData.id === GOLD_TO_GEMS_ID) {
                     priceLabel = 'Cost for 400 Gems:';
                     priceValue = createCurrencyElement(itemData.costFor400Gems);
-                } else if (itemData.id === GEMS_TO_GOLD_ID) {
+                } else {
                     priceLabel = 'Return for 400 Gems:';
                     priceValue = createCurrencyElement(itemData.returnFor400Gems);
                 }
@@ -523,14 +499,11 @@
             } else {
                 const buyPrice = itemData.buyPrice;
                 const sellPrice = itemData.sellPrice;
-                
                 const imageElem = `
                     <div class="item-image">
-                        <img src="${itemData.icon}" alt="${itemData.name}" 
-                             onerror="this.parentElement.innerHTML='<div style=\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#e74c3c;font-size:0.8rem;text-align:center;\'>Image<br>Unavailable</div>'">
+                        <img src="${itemData.icon}" alt="${itemData.name}">
                     </div>
                 `;
-                
                 card.innerHTML = `
                     <div class="item-header">
                         ${imageElem}
@@ -553,9 +526,9 @@
                 `;
             }
             
-            card.querySelector('.remove-btn-small').addEventListener('click', function(e) {
+            card.querySelector('.remove-btn-small').addEventListener('click', e => {
                 e.stopPropagation();
-                const itemId = parseInt(this.dataset.itemId, 10);
+                const itemId = Number(e.target.dataset.itemId);
                 removeItem(itemId);
             });
             
@@ -563,7 +536,6 @@
             card.addEventListener('dragover', handleDragOver);
             card.addEventListener('drop', handleDrop);
             card.addEventListener('dragend', handleDragEnd);
-            
             return card;
         }
 
@@ -573,378 +545,171 @@
             fetchAndDisplayItems();
         }
 
-        function showError(message) {
-            errorContainer.innerHTML = `<div class="error">${message}</div>`;
-            setTimeout(() => {
-                errorContainer.innerHTML = '';
-            }, 5000);
+        function showError(msg) {
+            errorContainer.innerHTML = `<div class="error">${msg}</div>`;
+            setTimeout(() => errorContainer.innerHTML = '', 4000);
         }
 
         async function fetchItemData(itemIds) {
             const regularIds = [];
             const specialIds = [];
             const results = [];
-
             for (const id of itemIds) {
-                if (id === GOLD_TO_GEMS_ID || id === GEMS_TO_GOLD_ID) {
-                    specialIds.push(id);
-                } else {
-                    regularIds.push(id);
-                }
+                if (id === GOLD_TO_GEMS_ID || id === GEMS_TO_GOLD_ID) specialIds.push(id);
+                else regularIds.push(id);
             }
 
-            // Fetch regular items
             if (regularIds.length > 0) {
                 try {
-                    const itemDetailsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${regularIds.join(',')}`);
-                    if (!itemDetailsResponse.ok) throw new Error('Failed to fetch item details');
-                    const itemDetails = await itemDetailsResponse.json();
-                    
-                    const commerceResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${regularIds.join(',')}`);
-                    const commerceData = commerceResponse.ok ? await commerceResponse.json() : [];
-                    
-                    for (const item of itemDetails) {
-                        const commerceItem = commerceData.find(c => c.id === item.id);
+                    const [itemRes, priceRes] = await Promise.all([
+                        fetch(`https://api.guildwars2.com/v2/items?ids=${regularIds.join(',')}`),
+                        fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${regularIds.join(',')}`)
+                    ]);
+                    const items = await itemRes.json();
+                    const prices = await priceRes.json();
+                    for (const it of items) {
+                        const p = prices.find(x => x.id === it.id);
                         results.push({
-                            id: item.id,
-                            name: item.name,
-                            icon: item.icon,
-                            buyPrice: commerceItem ? commerceItem.buys.unit_price : null,
-                            sellPrice: commerceItem ? commerceItem.sells.unit_price : null
+                            id: it.id,
+                            name: it.name,
+                            icon: it.icon,
+                            buyPrice: p ? p.buys.unit_price : null,
+                            sellPrice: p ? p.sells.unit_price : null
                         });
                     }
-                } catch (error) {
-                    console.error('Error fetching regular item ', error);
-                    showError('Failed to fetch item data.');
+                } catch {
+                    showError('Error fetching item data.');
                 }
             }
 
-            // Fetch special items
             for (const sid of specialIds) {
-                const def = SPECIAL_ITEMS[sid];
-                try {
-                    if (sid === GEMS_TO_GOLD_ID) {
-                        const res = await fetch('https://api.guildwars2.com/v2/commerce/exchange/gems?quantity=400');
-                        if (!res.ok) throw new Error(`Exchange API error: ${res.status}`);
-                        const data = await res.json();
-                        if (typeof data.quantity !== 'number' || data.quantity <= 0) {
-                            throw new Error('Invalid copper amount');
-                        }
-                        results.push({
-                            ...def,
-                            returnFor400Gems: data.quantity
-                        });
-                    } else if (sid === GOLD_TO_GEMS_ID) {
-                        const res = await fetch('https://api.guildwars2.com/v2/commerce/exchange/coins?quantity=10000000');
-                        if (!res.ok) throw new Error(`Exchange API error: ${res.status}`);
-                        const data = await res.json();
-                        const gemsFrom1000g = data.quantity;
-                        if (typeof gemsFrom1000g !== 'number' || gemsFrom1000g <= 0) {
-                            throw new Error('Invalid gem amount');
-                        }
-                        const gemsPerGold = gemsFrom1000g / 1000;
-                        const goldFor400 = 400 / gemsPerGold;
-                        const copperFor400 = Math.round(goldFor400 * 10000);
-                        if (!isFinite(copperFor400) || copperFor400 <= 0) {
-                            throw new Error('Invalid copper result');
-                        }
-                        results.push({
-                            ...def,
-                            costFor400Gems: copperFor400
-                        });
-                    }
-                } catch (error) {
-                    console.error(`Failed to load special item ${sid}:`, error);
-                    showError(`Failed to load ${def.name}.`);
-                    results.push({
-                        ...def,
-                        costFor400Gems: null,
-                        returnFor400Gems: null
-                    });
-                }
+                results.push(await fetchSpecialItem(sid));
             }
-
             return results;
         }
 
+        async function fetchSpecialItem(id) {
+            try {
+                const res = await fetch(`https://api.guildwars2.com/v2/commerce/exchange/${id === GOLD_TO_GEMS_ID ? 'gems' : 'coins'}?quantity=400`);
+                const data = await res.json();
+                if (id === GOLD_TO_GEMS_ID) return { ...SPECIAL_ITEMS[id], costFor400Gems: data.coins_per_gem * 400 };
+                else return { ...SPECIAL_ITEMS[id], returnFor400Gems: data.quantity };
+            } catch {
+                return { ...SPECIAL_ITEMS[id] };
+            }
+        }
+
         async function fetchAndDisplayItems() {
-            if (trackedItems.length === 0) {
-                itemsContainer.innerHTML = '<div class="loading">No items tracked. Add an item to get started!</div>';
-                return;
-            }
-            
             itemsContainer.innerHTML = '<div class="loading">Loading items...</div>';
-            
-            try {
-                const items = await fetchItemData(trackedItems);
-                itemsContainer.innerHTML = '';
-                if (items.length === 0) {
-                    itemsContainer.innerHTML = '<div class="loading">No items found.</div>';
-                    return;
-                }
-                items.forEach(item => {
-                    const card = createItemCard(item);
-                    itemsContainer.appendChild(card);
-                });
-            } catch (error) {
-                console.error('Error displaying items:', error);
-                showError('An error occurred while loading items.');
+            const items = await fetchItemData(trackedItems);
+            itemsContainer.innerHTML = '';
+            for (const it of items) {
+                itemsContainer.appendChild(createItemCard(it));
             }
         }
 
-        async function loadStaticItemData() {
-            if (staticItemData) return staticItemData;
-            try {
-                const response = await fetch('datawars_items.json');
-                if (!response.ok) throw new Error('Failed to load datawars_items.json');
-                staticItemData = await response.json();
-                console.log('Loaded static item data for search:', staticItemData.length, 'items');
-                return staticItemData;
-            } catch (error) {
-                console.error('Error loading datawars_items.json:', error);
-                showError('Failed to load item search data. Ensure "datawars_items.json" is in the same folder.');
-                staticItemData = [];
-                return staticItemData;
+        async function searchItems(query) {
+            if (!staticItemData) {
+                const res = await fetch('https://api.guildwars2.com/v2/items?ids=all');
+                staticItemData = await res.json();
             }
+            const lower = query.toLowerCase();
+            return staticItemData.filter(it => it.name && it.name.toLowerCase().includes(lower)).slice(0, 20);
         }
 
-        async function searchItemsByName(query) {
-            const lowerQuery = query.toLowerCase().trim();
-            const results = [];
-
-            if (
-                (lowerQuery.includes('gold') && lowerQuery.includes('gem')) ||
-                lowerQuery.includes('gold to gems') ||
-                lowerQuery === 'gold to gems'
-            ) {
-                results.push(SPECIAL_ITEMS[GOLD_TO_GEMS_ID]);
-            }
-            if (
-                (lowerQuery.includes('gem') && lowerQuery.includes('gold')) ||
-                lowerQuery.includes('gems to gold') ||
-                lowerQuery === 'gems to gold'
-            ) {
-                results.push(SPECIAL_ITEMS[GEMS_TO_GOLD_ID]);
-            }
-
-            await loadStaticItemData();
-            if (staticItemData && staticItemData.length > 0) {
-                for (const item of staticItemData) {
-                    if (item.name && item.name.toLowerCase().includes(lowerQuery)) {
-                        results.push({ id: item.id, name: item.name });
-                        if (results.length >= 15) break;
-                    }
-                }
-            }
-
-            const seen = new Set();
-            return results.filter(item => {
-                if (seen.has(item.id)) return false;
-                seen.add(item.id);
-                return true;
-            }).slice(0, 15);
-        }
-
-        function showSearchResults(results) {
-            if (results.length === 0) {
+        async function handleSearchInput() {
+            const query = itemInput.value.trim();
+            if (!query) {
                 searchResultsContainer.style.display = 'none';
                 return;
             }
-            
-            searchResultsContainer.innerHTML = '';
-            results.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'search-result-item';
-                const idText = (item.id === GOLD_TO_GEMS_ID || item.id === GEMS_TO_GOLD_ID) ? 'Special' : `ID: ${item.id}`;
-                div.innerHTML = `
-                    <div class="search-result-text">
-                        <div>${item.name}</div>
-                        <div class="search-result-id">${idText}</div>
-                    </div>
-                `;
-                div.addEventListener('click', () => {
-                    if (!trackedItems.includes(item.id)) {
-                        trackedItems.push(item.id);
-                        saveTrackedItems();
-                        fetchAndDisplayItems();
-                    } else {
-                        showError('This item is already being tracked');
-                    }
-                    itemInput.value = '';
-                    searchResultsContainer.style.display = 'none';
-                });
-                searchResultsContainer.appendChild(div);
-            });
-            
-            searchResultsContainer.style.display = 'block';
+
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(async () => {
+                const results = await searchItems(query);
+                searchResultsContainer.innerHTML = '';
+                for (const r of results) {
+                    const div = document.createElement('div');
+                    div.className = 'search-result-item';
+                    div.innerHTML = `<div class="search-result-text">${r.name}</div><div class="search-result-id">ID: ${r.id}</div>`;
+                    div.addEventListener('click', () => {
+                        itemInput.value = r.id;
+                        searchResultsContainer.style.display = 'none';
+                    });
+                    searchResultsContainer.appendChild(div);
+                }
+                searchResultsContainer.style.display = 'block';
+            }, DEBOUNCE_DELAY);
         }
 
-        function hideSearchResults() {
+        async function handleAddItem() {
+            const val = itemInput.value.trim();
+            if (!val) return;
+
+            let id = null;
+            if (val.toLowerCase() === 'gold to gems') id = GOLD_TO_GEMS_ID;
+            else if (val.toLowerCase() === 'gems to gold') id = GEMS_TO_GOLD_ID;
+            else if (!isNaN(val)) id = Number(val);
+            else {
+                const matches = await searchItems(val);
+                if (matches.length > 0) id = matches[0].id;
+            }
+
+            if (id && !trackedItems.includes(Number(id))) {
+                trackedItems.push(Number(id));
+                saveTrackedItems();
+                fetchAndDisplayItems();
+            } else {
+                showError('Invalid or duplicate item.');
+            }
+
+            itemInput.value = '';
             searchResultsContainer.style.display = 'none';
         }
 
-        async function addItemById(itemId) {
-            if (trackedItems.includes(itemId)) {
-                showError('This item is already being tracked');
-                return;
-            }
-            
-            addItemBtn.disabled = true;
-            addItemBtn.innerHTML = '<span class="spinner"></span> Adding...';
-            
-            try {
-                const response = await fetch(`https://api.guildwars2.com/v2/items/${itemId}`);
-                if (!response.ok) throw new Error('Invalid item ID');
-                const item = await response.json();
-                
-                trackedItems.push(item.id);
-                saveTrackedItems();
-                fetchAndDisplayItems();
-                itemInput.value = '';
-            } catch (error) {
-                console.error('Add by ID error:', error);
-                showError('Invalid item ID or API error.');
-            } finally {
-                addItemBtn.disabled = false;
-                addItemBtn.textContent = 'Add Item';
-            }
-        }
-
-        async function handleAdd() {
-            const query = itemInput.value.trim();
-            if (!query) {
-                showError('Please enter an item ID or name');
-                return;
-            }
-            
-            const id = parseInt(query, 10);
-            if (!isNaN(id) && id > 0) {
-                await addItemById(id);
-                return;
-            }
-            
-            // Exact match for special items
-            if (query.toLowerCase() === 'gold to gems') {
-                if (!trackedItems.includes(GOLD_TO_GEMS_ID)) {
-                    trackedItems.push(GOLD_TO_GEMS_ID);
-                    saveTrackedItems();
-                    fetchAndDisplayItems();
-                    itemInput.value = '';
-                } else {
-                    showError('This item is already being tracked');
-                }
-                return;
-            }
-            if (query.toLowerCase() === 'gems to gold') {
-                if (!trackedItems.includes(GEMS_TO_GOLD_ID)) {
-                    trackedItems.push(GEMS_TO_GOLD_ID);
-                    saveTrackedItems();
-                    fetchAndDisplayItems();
-                    itemInput.value = '';
-                } else {
-                    showError('This item is already being tracked');
-                }
-                return;
-            }
-            
-            addItemBtn.disabled = true;
-            addItemBtn.innerHTML = '<span class="spinner"></span> Searching...';
-            
-            try {
-                const results = await searchItemsByName(query);
-                if (results.length === 0) {
-                    showError('No items found. Try an item ID.');
-                } else {
-                    showSearchResults(results);
-                }
-            } catch (error) {
-                console.error('Search error:', error);
-                showError('Search failed. Try using an item ID.');
-            } finally {
-                addItemBtn.disabled = false;
-                addItemBtn.textContent = 'Add Item';
-            }
-        }
-
-        // ✅ DRAG-AND-DROP — Now works with consistent number IDs
+        // Drag and drop reorder logic
         function handleDragStart(e) {
-            if (e.target.closest('.item-id')) {
-                e.preventDefault();
-                return;
-            }
             draggedCard = this;
-            e.dataTransfer.effectAllowed = 'move';
             this.style.opacity = '0.5';
-            this.style.cursor = 'grabbing';
         }
 
         function handleDragOver(e) {
             e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-            return false;
+            const targetCard = this;
+            if (!draggedCard || draggedCard === targetCard) return;
+            const draggedIndex = Array.from(itemsContainer.children).indexOf(draggedCard);
+            const targetIndex = Array.from(itemsContainer.children).indexOf(targetCard);
+            if (draggedIndex < targetIndex)
+                itemsContainer.insertBefore(draggedCard, targetCard.nextSibling);
+            else
+                itemsContainer.insertBefore(draggedCard, targetCard);
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const newOrder = Array.from(itemsContainer.children).map(card => Number(card.dataset.itemId));
+            trackedItems = newOrder;
+            saveTrackedItems();
         }
 
         function handleDragEnd(e) {
             this.style.opacity = '1';
-            this.style.cursor = 'grab';
+            draggedCard = null;
         }
 
-        function handleDrop(e) {
-            e.stopPropagation();
-            e.preventDefault(); // ← ADD THIS (required for drop to work reliably)
-            if (draggedCard && draggedCard !== this) {
-                const draggedId = Number(draggedCard.dataset.itemId);
-                const targetId = Number(this.dataset.itemId);
-        
-                const currentIndex = trackedItems.indexOf(draggedId);
-                const targetIndex = trackedItems.indexOf(targetId);
-        
-                if (currentIndex !== -1 && targetIndex !== -1 && currentIndex !== targetIndex) {
-                    const [removed] = trackedItems.splice(currentIndex, 1);
-                    trackedItems.splice(targetIndex, 0, removed);
-                    saveTrackedItems();
-                    fetchAndDisplayItems();
-                }
+        loadTrackedItems();
+        fetchAndDisplayItems();
+
+        itemInput.addEventListener('input', handleSearchInput);
+        addItemBtn.addEventListener('click', handleAddItem);
+        itemInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter') handleAddItem();
+        });
+        document.addEventListener('click', e => {
+            if (!searchResultsContainer.contains(e.target) && e.target !== itemInput) {
+                searchResultsContainer.style.display = 'none';
             }
-            return false;
-        }
-        
-        function init() {
-            loadTrackedItems();
-            fetchAndDisplayItems();
-            
-            addItemBtn.addEventListener('click', handleAdd);
-            
-            itemInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    handleAdd();
-                }
-            });
-            
-            document.addEventListener('click', (e) => {
-                if (!e.target.closest('.controls')) {
-                    hideSearchResults();
-                }
-            });
-            
-            itemInput.addEventListener('input', () => {
-                const query = itemInput.value.trim();
-                if (!query || /^\d+$/.test(query)) {
-                    hideSearchResults();
-                    return;
-                }
-                
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(async () => {
-                    if (itemInput.value.trim() === query) {
-                        const results = await searchItemsByName(query);
-                        showSearchResults(results);
-                    }
-                }, DEBOUNCE_DELAY);
-            });
-        }
-        
-        init();
+        });
     </script>
 </body>
 </html>
