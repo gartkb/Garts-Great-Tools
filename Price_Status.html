@@ -181,15 +181,18 @@
             flex-direction: column;
             height: 100%;
             position: relative;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
+            /* user-select: none REMOVED to allow copying ID */
+            cursor: grab; /* 👈 drag affordance */
         }
         
         .item-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .item-card:active {
+            cursor: grabbing;
+            transform: translateY(-2px);
         }
         
         .item-header {
@@ -235,6 +238,8 @@
         .item-id {
             color: #95a5a6;
             font-size: 0.9rem;
+            user-select: text; /* Explicitly allow selection */
+            cursor: text; /* Visual hint that it's selectable */
         }
         
         .item-prices {
@@ -695,11 +700,17 @@
             }
         }
 
-        // Drag-and-drop handlers
+        // ✅ Updated drag handlers to allow ID copying
         function handleDragStart(e) {
+            // 👇 Cancel drag if started on the ID text
+            if (e.target.closest('.item-id')) {
+                e.preventDefault();
+                return;
+            }
             draggedCard = this;
             e.dataTransfer.effectAllowed = 'move';
-            this.style.opacity = '0.4';
+            this.style.opacity = '0.5';
+            this.style.cursor = 'grabbing';
         }
 
         function handleDragOver(e) {
@@ -710,6 +721,7 @@
 
         function handleDragEnd(e) {
             this.style.opacity = '1';
+            this.style.cursor = 'grab';
         }
 
         function handleDrop(e) {
