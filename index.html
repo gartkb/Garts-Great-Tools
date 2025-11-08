@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>gartkb's GitHub Pages</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+        
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .project-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.2);
+            background: #f0f4ff;
+        }
+        
+        .project-card h3 {
+            margin-bottom: 10px;
+            color: #495057;
+            font-size: 1.3rem;
+        }
+        
+        .project-card p {
+            color: #6c757d;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .github-link {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .github-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .github-link a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>gartkb's Projects</h1>
+        <p class="subtitle">Welcome to my collection of GitHub Pages</p>
+        
+        <div class="projects-grid">
+            <!-- Add your projects here -->
+            <a href="https://gartkb.github.io/Price_Status.html" class="project-card">
+                <h3>TP Favorites</h3>
+                <p>Trading Post Favorites Items</p>
+            </a>
+            
+            <a href="https://gartkb.github.io/dhuum-timers.html" class="project-card">
+                <h3>Dhuum Timers</h3>
+                <p>Dhuum Timers</p>
+            </a>
+            
+            <a href="https://gartkb.github.io/sabetha-timers.html" class="project-card">
+                <h3>Sabetha Timers</h3>
+                <p>Guild Wars 2 Sabetha Timer Tool</p>
+            </a>
+
+          <a href="https://gartkb.github.io/team-creation.html" class="project-card">
+                <h3>Gart's Team Creation Tool</h3>
+                <p>Guild Wars 2 Team Creation tool</p>
+            </a>
+            
+            <!-- Add more projects as needed -->
+        </div>
+        
+        <div class="github-link">
+            <a href="https://github.com/gartkb" target="_blank">
+                Visit my GitHub profile →
+            </a>
+        </div>
+    </div>
+</body>
+</html>
