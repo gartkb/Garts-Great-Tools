@@ -181,8 +181,7 @@
             flex-direction: column;
             height: 100%;
             position: relative;
-            /* user-select: none REMOVED to allow copying ID */
-            cursor: grab; /* 👈 drag affordance */
+            cursor: grab;
         }
         
         .item-card:hover {
@@ -238,8 +237,8 @@
         .item-id {
             color: #95a5a6;
             font-size: 0.9rem;
-            user-select: text; /* Explicitly allow selection */
-            cursor: text; /* Visual hint that it's selectable */
+            user-select: text;
+            cursor: text;
         }
         
         .item-prices {
@@ -395,7 +394,7 @@
                 <input type="text" id="item-input" placeholder="Enter Item ID, Name, or Partial Name">
                 <button id="add-item-btn">Add Item</button>
             </div>
-            <p class="search-hint">Examples: "Ectoplasm", "19721", "Gossamer"</p>
+            <p class="search-hint">Examples: "Ectoplasm", "19721", "Gossamer", "Gold to Gems", "Gems to Gold"</p>
             <div id="search-results" class="search-results"></div>
         </div>
         
@@ -418,6 +417,22 @@
         const DEBOUNCE_DELAY = 300;
         let debounceTimer = null;
         let draggedCard = null;
+
+        // Special virtual item definitions
+        const VIRTUAL_ITEMS = {
+            'gold-to-gems': {
+                id: 'gold-to-gems',
+                name: 'Gold to Gems',
+                icon: 'https://wiki.guildwars2.com/images/2/2b/Gem_%28highres%29.png',
+                type: 'gold-to-gems'
+            },
+            'gems-to-gold': {
+                id: 'gems-to-gold',
+                name: 'Gems to Gold',
+                icon: 'https://wiki.guildwars2.com/images/d/d1/Gold_coin.png',
+                type: 'gems-to-gold'
+            }
+        };
 
         function loadTrackedItems() {
             const savedItems = localStorage.getItem('gw2_tracked_items');
@@ -464,40 +479,75 @@
             card.dataset.itemId = itemData.id;
             card.draggable = true;
 
-            const buyPrice = itemData.buyPrice;
-            const sellPrice = itemData.sellPrice;
-            
-            const imageElem = `
-                <div class="item-image">
-                    <img src="${itemData.icon}" alt="${itemData.name}" 
-                         onerror="this.parentElement.innerHTML='<div style=\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#e74c3c;font-size:0.8rem;text-align:center;\'>Image<br>Unavailable</div>'">
-                </div>
-            `;
-            
-            card.innerHTML = `
-                <div class="item-header">
-                    ${imageElem}
-                    <div class="item-info">
-                        <div class="item-name">${itemData.name}</div>
-                        <div class="item-id">ID: ${itemData.id}</div>
+            if (itemData.isVirtual) {
+                const imageElem = `
+                    <div class="item-image">
+                        <img src="${itemData.icon}" alt="${itemData.name}" 
+                             onerror="this.parentElement.innerHTML='<div style=\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#e74c3c;font-size:0.8rem;text-align:center;\'>Image<br>Unavailable</div>'">
                     </div>
-                    <button class="remove-btn-small" data-item-id="${itemData.id}">×</button>
-                </div>
-                <div class="item-prices">
-                    <div class="price-row">
-                        <div class="price-label">Buy Price:</div>
-                        ${createCurrencyElement(buyPrice).outerHTML}
+                `;
+
+                let priceLabel, priceValue;
+                if (itemData.type === 'gold-to-gems') {
+                    priceLabel = 'Cost for 400 Gems:';
+                    priceValue = createCurrencyElement(itemData.costFor400Gems);
+                } else if (itemData.type === 'gems-to-gold') {
+                    priceLabel = 'Return for 400 Gems:';
+                    priceValue = createCurrencyElement(itemData.returnFor400Gems);
+                }
+
+                card.innerHTML = `
+                    <div class="item-header">
+                        ${imageElem}
+                        <div class="item-info">
+                            <div class="item-name">${itemData.name}</div>
+                            <div class="item-id">Special</div>
+                        </div>
+                        <button class="remove-btn-small" data-item-id="${itemData.id}">×</button>
                     </div>
-                    <div class="price-row">
-                        <div class="price-label">Sell Price:</div>
-                        ${createCurrencyElement(sellPrice).outerHTML}
+                    <div class="item-prices">
+                        <div class="price-row">
+                            <div class="price-label">${priceLabel}</div>
+                            ${priceValue.outerHTML}
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            } else {
+                const buyPrice = itemData.buyPrice;
+                const sellPrice = itemData.sellPrice;
+                
+                const imageElem = `
+                    <div class="item-image">
+                        <img src="${itemData.icon}" alt="${itemData.name}" 
+                             onerror="this.parentElement.innerHTML='<div style=\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#e74c3c;font-size:0.8rem;text-align:center;\'>Image<br>Unavailable</div>'">
+                    </div>
+                `;
+                
+                card.innerHTML = `
+                    <div class="item-header">
+                        ${imageElem}
+                        <div class="item-info">
+                            <div class="item-name">${itemData.name}</div>
+                            <div class="item-id">ID: ${itemData.id}</div>
+                        </div>
+                        <button class="remove-btn-small" data-item-id="${itemData.id}">×</button>
+                    </div>
+                    <div class="item-prices">
+                        <div class="price-row">
+                            <div class="price-label">Buy Price:</div>
+                            ${createCurrencyElement(buyPrice).outerHTML}
+                        </div>
+                        <div class="price-row">
+                            <div class="price-label">Sell Price:</div>
+                            ${createCurrencyElement(sellPrice).outerHTML}
+                        </div>
+                    </div>
+                `;
+            }
             
             card.querySelector('.remove-btn-small').addEventListener('click', function(e) {
                 e.stopPropagation();
-                const itemId = parseInt(this.dataset.itemId);
+                const itemId = this.dataset.itemId;
                 removeItem(itemId);
             });
             
@@ -510,7 +560,7 @@
         }
 
         function removeItem(itemId) {
-            trackedItems = trackedItems.filter(id => id !== itemId);
+            trackedItems = trackedItems.filter(id => String(id) !== String(itemId));
             saveTrackedItems();
             fetchAndDisplayItems();
         }
@@ -523,30 +573,85 @@
         }
 
         async function fetchItemData(itemIds) {
-            if (itemIds.length === 0) return [];
-            try {
-                const itemDetailsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${itemIds.join(',')}`);
-                if (!itemDetailsResponse.ok) throw new Error('Failed to fetch item details');
-                const itemDetails = await itemDetailsResponse.json();
-                
-                const commerceResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${itemIds.join(',')}`);
-                const commerceData = commerceResponse.ok ? await commerceResponse.json() : [];
-                
-                return itemDetails.map(item => {
-                    const commerceItem = commerceData.find(c => c.id === item.id);
-                    return {
-                        id: item.id,
-                        name: item.name,
-                        icon: item.icon,
-                        buyPrice: commerceItem ? commerceItem.buys.unit_price : null,
-                        sellPrice: commerceItem ? commerceItem.sells.unit_price : null
-                    };
-                });
-            } catch (error) {
-                console.error('Error fetching item data:', error);
-                showError('Failed to fetch item data.');
-                return [];
+            const regularIds = [];
+            const virtualIds = [];
+            const results = [];
+
+            for (const id of itemIds) {
+                if (id in VIRTUAL_ITEMS) {
+                    virtualIds.push(id);
+                } else {
+                    regularIds.push(id);
+                }
             }
+
+            // Fetch regular items
+            if (regularIds.length > 0) {
+                try {
+                    const itemDetailsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${regularIds.join(',')}`);
+                    if (!itemDetailsResponse.ok) throw new Error('Failed to fetch item details');
+                    const itemDetails = await itemDetailsResponse.json();
+                    
+                    const commerceResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${regularIds.join(',')}`);
+                    const commerceData = commerceResponse.ok ? await commerceResponse.json() : [];
+                    
+                    for (const item of itemDetails) {
+                        const commerceItem = commerceData.find(c => c.id === item.id);
+                        results.push({
+                            id: item.id,
+                            name: item.name,
+                            icon: item.icon,
+                            buyPrice: commerceItem ? commerceItem.buys.unit_price : null,
+                            sellPrice: commerceItem ? commerceItem.sells.unit_price : null
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error fetching regular item data:', error);
+                    showError('Failed to fetch item data.');
+                }
+            }
+
+            // Fetch virtual exchange items
+            for (const vid of virtualIds) {
+                const virtualDef = VIRTUAL_ITEMS[vid];
+                try {
+                    if (vid === 'gems-to-gold') {
+                        const res = await fetch(`https://api.guildwars2.com/v2/commerce/exchange/gems?quantity=400`);
+                        if (!res.ok) throw new Error('Exchange API error');
+                        const data = await res.json();
+                        results.push({
+                            ...virtualDef,
+                            isVirtual: true,
+                            returnFor400Gems: data.coins
+                        });
+                    } else if (vid === 'gold-to-gems') {
+                        const res = await fetch(`https://api.guildwars2.com/v2/commerce/exchange/coins?quantity=10000000`);
+                        if (!res.ok) throw new Error('Exchange API error');
+                        const data = await res.json();
+                        const gemsFrom1000g = data.gems;
+                        if (gemsFrom1000g <= 0) throw new Error('Invalid gem rate');
+                        const gemsPerGold = gemsFrom1000g / 1000;
+                        const goldFor400 = 400 / gemsPerGold;
+                        const copperFor400 = Math.round(goldFor400 * 10000);
+                        results.push({
+                            ...virtualDef,
+                            isVirtual: true,
+                            costFor400Gems: copperFor400
+                        });
+                    }
+                } catch (error) {
+                    console.error(`Error fetching virtual item ${vid}:`, error);
+                    showError(`Failed to load ${virtualDef.name}.`);
+                    results.push({
+                        ...virtualDef,
+                        isVirtual: true,
+                        costFor400Gems: null,
+                        returnFor400Gems: null
+                    });
+                }
+            }
+
+            return results;
         }
 
         async function fetchAndDisplayItems() {
@@ -591,23 +696,43 @@
         }
 
         async function searchItemsByName(query) {
+            const lowerQuery = query.toLowerCase().trim();
+            const results = [];
+
+            // Add virtual items on relevant queries
+            if (
+                (lowerQuery.includes('gold') && lowerQuery.includes('gem')) ||
+                lowerQuery.includes('gold to gems') ||
+                lowerQuery === 'gold to gems'
+            ) {
+                results.push(VIRTUAL_ITEMS['gold-to-gems']);
+            }
+            if (
+                (lowerQuery.includes('gem') && lowerQuery.includes('gold')) ||
+                lowerQuery.includes('gems to gold') ||
+                lowerQuery === 'gems to gold'
+            ) {
+                results.push(VIRTUAL_ITEMS['gems-to-gold']);
+            }
+
+            // Search static item data
             await loadStaticItemData();
-            if (!staticItemData || staticItemData.length === 0) return [];
-            
-            const lowerQuery = query.toLowerCase();
-            const matches = [];
-            const maxMatches = 15;
-            
-            for (const item of staticItemData) {
-                if (item.name && item.name.toLowerCase().includes(lowerQuery)) {
-                    matches.push({
-                        id: item.id,
-                        name: item.name
-                    });
-                    if (matches.length >= maxMatches) break;
+            if (staticItemData && staticItemData.length > 0) {
+                for (const item of staticItemData) {
+                    if (item.name && item.name.toLowerCase().includes(lowerQuery)) {
+                        results.push({ id: item.id, name: item.name });
+                        if (results.length >= 15) break;
+                    }
                 }
             }
-            return matches;
+
+            // Deduplicate and limit
+            const seen = new Set();
+            return results.filter(item => {
+                if (seen.has(item.id)) return false;
+                seen.add(item.id);
+                return true;
+            }).slice(0, 15);
         }
 
         function showSearchResults(results) {
@@ -620,14 +745,25 @@
             results.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'search-result-item';
+                const idText = typeof item.id === 'string' ? 'Special' : `ID: ${item.id}`;
                 div.innerHTML = `
                     <div class="search-result-text">
                         <div>${item.name}</div>
-                        <div class="search-result-id">ID: ${item.id}</div>
+                        <div class="search-result-id">${idText}</div>
                     </div>
                 `;
                 div.addEventListener('click', () => {
-                    addItemById(item.id);
+                    if (typeof item.id === 'string') {
+                        if (!trackedItems.includes(item.id)) {
+                            trackedItems.push(item.id);
+                            saveTrackedItems();
+                            fetchAndDisplayItems();
+                        } else {
+                            showError('This item is already being tracked');
+                        }
+                    } else {
+                        addItemById(item.id);
+                    }
                     itemInput.value = '';
                     searchResultsContainer.style.display = 'none';
                 });
@@ -681,6 +817,32 @@
                 return;
             }
             
+            // Direct match for virtual items
+            if (query.toLowerCase() === 'gold to gems') {
+                const vId = 'gold-to-gems';
+                if (trackedItems.includes(vId)) {
+                    showError('This item is already being tracked');
+                } else {
+                    trackedItems.push(vId);
+                    saveTrackedItems();
+                    fetchAndDisplayItems();
+                    itemInput.value = '';
+                }
+                return;
+            }
+            if (query.toLowerCase() === 'gems to gold') {
+                const vId = 'gems-to-gold';
+                if (trackedItems.includes(vId)) {
+                    showError('This item is already being tracked');
+                } else {
+                    trackedItems.push(vId);
+                    saveTrackedItems();
+                    fetchAndDisplayItems();
+                    itemInput.value = '';
+                }
+                return;
+            }
+            
             addItemBtn.disabled = true;
             addItemBtn.innerHTML = '<span class="spinner"></span> Searching...';
             
@@ -700,9 +862,7 @@
             }
         }
 
-        // ✅ Updated drag handlers to allow ID copying
         function handleDragStart(e) {
-            // 👇 Cancel drag if started on the ID text
             if (e.target.closest('.item-id')) {
                 e.preventDefault();
                 return;
@@ -727,8 +887,8 @@
         function handleDrop(e) {
             e.stopPropagation();
             if (draggedCard !== this) {
-                const draggedId = parseInt(draggedCard.dataset.itemId);
-                const targetId = parseInt(this.dataset.itemId);
+                const draggedId = draggedCard.dataset.itemId;
+                const targetId = this.dataset.itemId;
 
                 const currentIndex = trackedItems.indexOf(draggedId);
                 const targetIndex = trackedItems.indexOf(targetId);
