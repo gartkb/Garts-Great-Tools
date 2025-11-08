@@ -891,15 +891,15 @@
 
         function handleDrop(e) {
             e.stopPropagation();
-            if (draggedCard !== this) {
-                // ✅ Now safe: dataset.itemId is string, but we convert to number
-                const draggedId = parseInt(draggedCard.dataset.itemId, 10);
-                const targetId = parseInt(this.dataset.itemId, 10);
-
+            e.preventDefault(); // ← ADD THIS (required for drop to work reliably)
+            if (draggedCard && draggedCard !== this) {
+                const draggedId = Number(draggedCard.dataset.itemId);
+                const targetId = Number(this.dataset.itemId);
+        
                 const currentIndex = trackedItems.indexOf(draggedId);
                 const targetIndex = trackedItems.indexOf(targetId);
-
-                if (currentIndex !== -1 && targetIndex !== -1) {
+        
+                if (currentIndex !== -1 && targetIndex !== -1 && currentIndex !== targetIndex) {
                     const [removed] = trackedItems.splice(currentIndex, 1);
                     trackedItems.splice(targetIndex, 0, removed);
                     saveTrackedItems();
@@ -908,7 +908,7 @@
             }
             return false;
         }
-
+        
         function init() {
             loadTrackedItems();
             fetchAndDisplayItems();
