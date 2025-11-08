@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Guild Wars 2 Trading Post Tracker</title>
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: linear-gradient(135deg,#1a2a6c,#2c3e50); color:#ecf0f1; padding:20px; min-height:100vh; }
         .container { max-width:1200px; margin:0 auto; }
         header { text-align:center; padding:20px 0; margin-bottom:30px; border-bottom:2px solid #3498db; }
@@ -83,7 +83,6 @@
         const errorContainer = document.getElementById('error-container');
         const searchResultsContainer = document.getElementById('search-results');
 
-        // Special IDs
         const GOLD_TO_GEMS_ID = 9990001;
         const GEMS_TO_GOLD_ID = 9990002;
 
@@ -102,8 +101,7 @@
             }
         };
 
-        // trackedItems stored as numbers
-        let trackedItems = [19721]; // example starting item (glob of ectoplasm)
+        let trackedItems = [19721]; // start example
         let staticItemData = null;
         const DEBOUNCE_DELAY = 300;
         let debounceTimer = null;
@@ -149,115 +147,14 @@
             return elem;
         }
 
-        function createItemCard(itemData) {
-            const card = document.createElement('div');
-            card.className = 'item-card';
-            // store numeric id but dataset becomes string - that's OK as we always coerce back to Number
-            card.dataset.itemId = itemData.id;
-            card.draggable = true;
-
-            const isSpecial = itemData.id === GOLD_TO_GEMS_ID || itemData.id === GEMS_TO_GOLD_ID;
-
-            if (isSpecial) {
-                const imageElem = `
-                    <div class="item-image">
-                        <img src="${itemData.icon}" alt="${itemData.name}"
-                             onerror="this.parentElement.innerHTML='<div style=\\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#e74c3c;font-size:0.8rem;text-align:center;\\'>Image<br>Unavailable</div>'">
-                    </div>
-                `;
-                let priceLabel = '';
-                let priceValueElem = document.createElement('div');
-
-                if (itemData.id === GOLD_TO_GEMS_ID) {
-                    priceLabel = 'Cost for 400 Gems:';
-                    priceValueElem = createCurrencyElement(itemData.costFor400Gems);
-                } else {
-                    priceLabel = 'Return for 400 Gems:';
-                    priceValueElem = createCurrencyElement(itemData.returnFor400Gems);
-                }
-
-                card.innerHTML = `
-                    <div class="item-header">
-                        ${imageElem}
-                        <div class="item-info">
-                            <div class="item-name">${itemData.name}</div>
-                            <div class="item-id">Special</div>
-                        </div>
-                        <button class="remove-btn-small" data-item-id="${itemData.id}">×</button>
-                    </div>
-                    <div class="item-prices">
-                        <div class="price-row">
-                            <div class="price-label">${priceLabel}</div>
-                            ${priceValueElem.outerHTML}
-                        </div>
-                    </div>
-                `;
-            } else {
-                const imageElem = `
-                    <div class="item-image">
-                        <img src="${itemData.icon}" alt="${itemData.name}"
-                             onerror="this.parentElement.innerHTML='<div style=\\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#e74c3c;font-size:0.8rem;text-align:center;\\'>Image<br>Unavailable</div>'">
-                    </div>
-                `;
-                card.innerHTML = `
-                    <div class="item-header">
-                        ${imageElem}
-                        <div class="item-info">
-                            <div class="item-name">${itemData.name}</div>
-                            <div class="item-id">ID: ${itemData.id}</div>
-                        </div>
-                        <button class="remove-btn-small" data-item-id="${itemData.id}">×</button>
-                    </div>
-                    <div class="item-prices">
-                        <div class="price-row">
-                            <div class="price-label">Buy Price:</div>
-                            ${createCurrencyElement(itemData.buyPrice).outerHTML}
-                        </div>
-                        <div class="price-row">
-                            <div class="price-label">Sell Price:</div>
-                            ${createCurrencyElement(itemData.sellPrice).outerHTML}
-                        </div>
-                    </div>
-                `;
-            }
-
-            const removeBtn = card.querySelector('.remove-btn-small');
-            removeBtn.addEventListener('click', function (e) {
-                e.stopPropagation();
-                const itemId = Number(this.dataset.itemId);
-                removeItem(itemId);
-            });
-
-            card.addEventListener('dragstart', handleDragStart);
-            card.addEventListener('dragover', handleDragOver);
-            card.addEventListener('drop', handleDrop);
-            card.addEventListener('dragend', handleDragEnd);
-
-            return card;
-        }
-
-        function removeItem(itemId) {
-            trackedItems = trackedItems.filter(id => id !== Number(itemId));
-            saveTrackedItems();
-            fetchAndDisplayItems();
-        }
-
-        function showError(message) {
-            errorContainer.innerHTML = `<div class="error">${message}</div>`;
-            setTimeout(() => { errorContainer.innerHTML = ''; }, 5000);
-        }
-
+        // Unified fetch: fetch regular & special to a map, then return ordered array
         async function fetchItemData(itemIds) {
-            const regularIds = [];
-            const specialIds = [];
-            const results = [];
+            const resultsMap = new Map();
 
-            for (const id of itemIds) {
-                if (id === GOLD_TO_GEMS_ID || id === GEMS_TO_GOLD_ID) specialIds.push(id);
-                else regularIds.push(id);
-            }
+            const regularIds = itemIds.filter(id => id !== GOLD_TO_GEMS_ID && id !== GEMS_TO_GOLD_ID);
+            const specialIds = itemIds.filter(id => id === GOLD_TO_GEMS_ID || id === GEMS_TO_GOLD_ID);
 
-            // Fetch regular items
+            // Regular items
             if (regularIds.length > 0) {
                 try {
                     const itemDetailsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${regularIds.join(',')}`);
@@ -269,7 +166,7 @@
 
                     for (const item of itemDetails) {
                         const commerceItem = commerceData.find(c => c.id === item.id);
-                        results.push({
+                        resultsMap.set(item.id, {
                             id: item.id,
                             name: item.name,
                             icon: item.icon,
@@ -283,42 +180,32 @@
                 }
             }
 
-            // Fetch special items with correct logic
+            // Special items
             for (const sid of specialIds) {
                 const def = SPECIAL_ITEMS[sid];
                 try {
                     if (sid === GEMS_TO_GOLD_ID) {
-                        // Gems -> coins (return for 400 gems)
+                        // gems -> coins (return for 400 gems)
                         const res = await fetch('https://api.guildwars2.com/v2/commerce/exchange/gems?quantity=400');
                         if (!res.ok) throw new Error(`Exchange API error: ${res.status}`);
                         const data = await res.json();
-                        // API returns { quantity: <coins returned> } for gems endpoint
-                        if (typeof data.quantity !== 'number' || data.quantity <= 0) {
-                            throw new Error('Invalid coin amount');
-                        }
-                        results.push({
+                        if (typeof data.quantity !== 'number' || data.quantity <= 0) throw new Error('Invalid coin amount');
+                        resultsMap.set(sid, {
                             ...def,
                             returnFor400Gems: data.quantity
                         });
                     } else if (sid === GOLD_TO_GEMS_ID) {
-                        // Gold -> gems: fetch a large coin quantity to deduce gems per gold
-                        // Previously we asked for coins?quantity=10000000 and used data.quantity
-                        // We'll do the same safe math:
+                        // coins -> gems: ask for large coin quantity and compute
                         const res = await fetch('https://api.guildwars2.com/v2/commerce/exchange/coins?quantity=10000000');
                         if (!res.ok) throw new Error(`Exchange API error: ${res.status}`);
                         const data = await res.json();
-                        // data.quantity === gems returned for the given coin quantity
-                        const gemsFrom10000kCoins = data.quantity; // gems for 10,000,000 coins
-                        if (typeof gemsFrom10000kCoins !== 'number' || gemsFrom10000kCoins <= 0) {
-                            throw new Error('Invalid gem amount');
-                        }
-                        // Convert: 1 gold = 10000 coins. We asked for 10,000,000 coins -> that's 1000 gold.
-                        // gemsFrom10000kCoins is gems for 1000 gold -> gemsPerGold = gemsFrom1000g / 1000
-                        const gemsPerGold = gemsFrom10000kCoins / 1000;
-                        const goldFor400 = 400 / gemsPerGold; // how many gold needed to buy 400 gems
-                        const copperFor400 = Math.round(goldFor400 * 10000); // convert gold -> copper
+                        const gemsFrom1000g = data.quantity; // gems for 1,000 gold (10,000,000 coins)
+                        if (typeof gemsFrom1000g !== 'number' || gemsFrom1000g <= 0) throw new Error('Invalid gem amount');
+                        const gemsPerGold = gemsFrom1000g / 1000;
+                        const goldFor400 = 400 / gemsPerGold;
+                        const copperFor400 = Math.round(goldFor400 * 10000);
                         if (!isFinite(copperFor400) || copperFor400 <= 0) throw new Error('Invalid copper result');
-                        results.push({
+                        resultsMap.set(sid, {
                             ...def,
                             costFor400Gems: copperFor400
                         });
@@ -326,15 +213,16 @@
                 } catch (error) {
                     console.error(`Failed to load special item ${sid}:`, error);
                     showError(`Failed to load ${def.name}.`);
-                    results.push({
-                        ...def,
-                        costFor400Gems: null,
-                        returnFor400Gems: null
-                    });
+                    resultsMap.set(sid, { ...def, costFor400Gems: null, returnFor400Gems: null });
                 }
             }
 
-            return results;
+            // preserve original tracked order
+            const orderedResults = [];
+            for (const id of itemIds) {
+                if (resultsMap.has(id)) orderedResults.push(resultsMap.get(id));
+            }
+            return orderedResults;
         }
 
         async function fetchAndDisplayItems() {
@@ -362,7 +250,6 @@
             }
         }
 
-        // Static search data loader (expects datawars_items.json in same folder)
         async function loadStaticItemData() {
             if (staticItemData) return staticItemData;
             try {
@@ -383,7 +270,6 @@
             const lowerQuery = query.toLowerCase().trim();
             const results = [];
 
-            // special item keywords
             if (
                 (lowerQuery.includes('gold') && lowerQuery.includes('gem')) ||
                 lowerQuery.includes('gold to gems') ||
@@ -467,7 +353,6 @@
             addItemBtn.innerHTML = '<span class="spinner"></span> Adding...';
 
             try {
-                // For special IDs we don't need to fetch from API
                 if (numericId === GOLD_TO_GEMS_ID || numericId === GEMS_TO_GOLD_ID) {
                     trackedItems.push(numericId);
                     saveTrackedItems();
@@ -549,9 +434,105 @@
             }
         }
 
-        // DRAG-AND-DROP — works with numeric IDs consistently
+        function createItemCard(itemData) {
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            card.dataset.itemId = itemData.id;
+            card.draggable = true;
+
+            const isSpecial = itemData.id === GOLD_TO_GEMS_ID || itemData.id === GEMS_TO_GOLD_ID;
+
+            if (isSpecial) {
+                const imageElem = `
+                    <div class="item-image">
+                        <img src="${itemData.icon}" alt="${itemData.name}" 
+                             onerror="this.parentElement.innerHTML='<div style=\\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#e74c3c;font-size:0.8rem;text-align:center;\\'>Image<br>Unavailable</div>'">
+                    </div>
+                `;
+
+                let priceLabel, priceValue;
+                if (itemData.id === GOLD_TO_GEMS_ID) {
+                    priceLabel = 'Cost for 400 Gems:';
+                    priceValue = createCurrencyElement(itemData.costFor400Gems);
+                } else {
+                    priceLabel = 'Return for 400 Gems:';
+                    priceValue = createCurrencyElement(itemData.returnFor400Gems);
+                }
+
+                card.innerHTML = `
+                    <div class="item-header">
+                        ${imageElem}
+                        <div class="item-info">
+                            <div class="item-name">${itemData.name}</div>
+                            <div class="item-id">Special</div>
+                        </div>
+                        <button class="remove-btn-small" data-item-id="${itemData.id}">×</button>
+                    </div>
+                    <div class="item-prices">
+                        <div class="price-row">
+                            <div class="price-label">${priceLabel}</div>
+                            ${priceValue.outerHTML}
+                        </div>
+                    </div>
+                `;
+            } else {
+                const imageElem = `
+                    <div class="item-image">
+                        <img src="${itemData.icon}" alt="${itemData.name}" 
+                             onerror="this.parentElement.innerHTML='<div style=\\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#e74c3c;font-size:0.8rem;text-align:center;\\'>Image<br>Unavailable</div>'">
+                    </div>
+                `;
+
+                card.innerHTML = `
+                    <div class="item-header">
+                        ${imageElem}
+                        <div class="item-info">
+                            <div class="item-name">${itemData.name}</div>
+                            <div class="item-id">ID: ${itemData.id}</div>
+                        </div>
+                        <button class="remove-btn-small" data-item-id="${itemData.id}">×</button>
+                    </div>
+                    <div class="item-prices">
+                        <div class="price-row">
+                            <div class="price-label">Buy Price:</div>
+                            ${createCurrencyElement(itemData.buyPrice).outerHTML}
+                        </div>
+                        <div class="price-row">
+                            <div class="price-label">Sell Price:</div>
+                            ${createCurrencyElement(itemData.sellPrice).outerHTML}
+                        </div>
+                    </div>
+                `;
+            }
+
+            const removeBtn = card.querySelector('.remove-btn-small');
+            removeBtn.addEventListener('click', e => {
+                e.stopPropagation();
+                const itemId = Number(e.target.dataset.itemId);
+                removeItem(itemId);
+            });
+
+            card.addEventListener('dragstart', handleDragStart);
+            card.addEventListener('dragover', handleDragOver);
+            card.addEventListener('drop', handleDrop);
+            card.addEventListener('dragend', handleDragEnd);
+
+            return card;
+        }
+
+        function removeItem(itemId) {
+            trackedItems = trackedItems.filter(id => id !== Number(itemId));
+            saveTrackedItems();
+            fetchAndDisplayItems();
+        }
+
+        function showError(message) {
+            errorContainer.innerHTML = `<div class="error">${message}</div>`;
+            setTimeout(() => { errorContainer.innerHTML = ''; }, 5000);
+        }
+
+        // Drag & drop handlers
         function handleDragStart(e) {
-            // allow drag even if clicking inner elements
             draggedCard = this;
             e.dataTransfer.effectAllowed = 'move';
             this.style.opacity = '0.5';
@@ -597,15 +578,11 @@
             addItemBtn.addEventListener('click', handleAdd);
 
             itemInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    handleAdd();
-                }
+                if (e.key === 'Enter') handleAdd();
             });
 
             document.addEventListener('click', (e) => {
-                if (!e.target.closest('.controls')) {
-                    hideSearchResults();
-                }
+                if (!e.target.closest('.controls')) hideSearchResults();
             });
 
             itemInput.addEventListener('input', () => {
