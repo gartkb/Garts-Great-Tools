@@ -412,31 +412,37 @@
         const errorContainer = document.getElementById('error-container');
         const searchResultsContainer = document.getElementById('search-results');
         
-        let trackedItems = [19721]; // Glob of Ectoplasm
-        let staticItemData = null;
-        const DEBOUNCE_DELAY = 300;
-        let debounceTimer = null;
-        let draggedCard = null;
+        // Use reserved numeric IDs for special items (safe range)
+        const GOLD_TO_GEMS_ID = 9990001;
+        const GEMS_TO_GOLD_ID = 9990002;
 
-        const VIRTUAL_ITEMS = {
-            'gold-to-gems': {
-                id: 'gold-to-gems',
+        const SPECIAL_ITEMS = {
+            [GOLD_TO_GEMS_ID]: {
+                id: GOLD_TO_GEMS_ID,
                 name: 'Gold to Gems',
                 icon: 'https://wiki.guildwars2.com/images/2/2b/Gem_%28highres%29.png',
                 type: 'gold-to-gems'
             },
-            'gems-to-gold': {
-                id: 'gems-to-gold',
+            [GEMS_TO_GOLD_ID]: {
+                id: GEMS_TO_GOLD_ID,
                 name: 'Gems to Gold',
                 icon: 'https://wiki.guildwars2.com/images/d/d1/Gold_coin.png',
                 type: 'gems-to-gold'
             }
         };
 
+        // Initialize with numeric ID
+        let trackedItems = [19721]; // Glob of Ectoplasm (number)
+        let staticItemData = null;
+        const DEBOUNCE_DELAY = 300;
+        let debounceTimer = null;
+        let draggedCard = null;
+
         function loadTrackedItems() {
             const savedItems = localStorage.getItem('gw2_tracked_items');
             if (savedItems) {
-                trackedItems = JSON.parse(savedItems);
+                // Ensure all loaded IDs are numbers
+                trackedItems = JSON.parse(savedItems).map(id => Number(id));
             }
         }
 
@@ -475,10 +481,13 @@
         function createItemCard(itemData) {
             const card = document.createElement('div');
             card.className = 'item-card';
-            card.dataset.itemId = itemData.id;
+            card.dataset.itemId = itemData.id; // stored as number, becomes string in DOM
             card.draggable = true;
 
-            if (itemData.isVirtual) {
+            // Check if it's a special item
+            const isSpecial = itemData.id === GOLD_TO_GEMS_ID || itemData.id === GEMS_TO_GOLD_ID;
+
+            if (isSpecial) {
                 const imageElem = `
                     <div class="item-image">
                         <img src="${itemData.icon}" alt="${itemData.name}" 
@@ -487,10 +496,10 @@
                 `;
 
                 let priceLabel, priceValue;
-                if (itemData.type === 'gold-to-gems') {
+                if (itemData.id === GOLD_TO_GEMS_ID) {
                     priceLabel = 'Cost for 400 Gems:';
                     priceValue = createCurrencyElement(itemData.costFor400Gems);
-                } else if (itemData.type === 'gems-to-gold') {
+                } else if (itemData.id === GEMS_TO_GOLD_ID) {
                     priceLabel = 'Return for 400 Gems:';
                     priceValue = createCurrencyElement(itemData.returnFor400Gems);
                 }
@@ -546,7 +555,7 @@
             
             card.querySelector('.remove-btn-small').addEventListener('click', function(e) {
                 e.stopPropagation();
-                const itemId = this.dataset.itemId;
+                const itemId = parseInt(this.dataset.itemId, 10);
                 removeItem(itemId);
             });
             
@@ -559,7 +568,7 @@
         }
 
         function removeItem(itemId) {
-            trackedItems = trackedItems.filter(id => String(id) !== String(itemId));
+            trackedItems = trackedItems.filter(id => id !== itemId);
             saveTrackedItems();
             fetchAndDisplayItems();
         }
@@ -573,17 +582,18 @@
 
         async function fetchItemData(itemIds) {
             const regularIds = [];
-            const virtualIds = [];
+            const specialIds = [];
             const results = [];
 
             for (const id of itemIds) {
-                if (id in VIRTUAL_ITEMS) {
-                    virtualIds.push(id);
+                if (id === GOLD_TO_GEMS_ID || id === GEMS_TO_GOLD_ID) {
+                    specialIds.push(id);
                 } else {
                     regularIds.push(id);
                 }
             }
 
+            // Fetch regular items
             if (regularIds.length > 0) {
                 try {
                     const itemDetailsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${regularIds.join(',')}`);
@@ -609,10 +619,11 @@
                 }
             }
 
-            for (const vid of virtualIds) {
-                const virtualDef = VIRTUAL_ITEMS[vid];
+            // Fetch special items
+            for (const sid of specialIds) {
+                const def = SPECIAL_ITEMS[sid];
                 try {
-                    if (vid === 'gems-to-gold') {
+                    if (sid === GEMS_TO_GOLD_ID) {
                         const res = await fetch('https://api.guildwars2.com/v2/commerce/exchange/gems?quantity=400');
                         if (!res.ok) throw new Error(`Exchange API error: ${res.status}`);
                         const data = await res.json();
@@ -620,11 +631,10 @@
                             throw new Error('Invalid copper amount');
                         }
                         results.push({
-                            ...virtualDef,
-                            isVirtual: true,
+                            ...def,
                             returnFor400Gems: data.quantity
                         });
-                    } else if (vid === 'gold-to-gems') {
+                    } else if (sid === GOLD_TO_GEMS_ID) {
                         const res = await fetch('https://api.guildwars2.com/v2/commerce/exchange/coins?quantity=10000000');
                         if (!res.ok) throw new Error(`Exchange API error: ${res.status}`);
                         const data = await res.json();
@@ -639,17 +649,15 @@
                             throw new Error('Invalid copper result');
                         }
                         results.push({
-                            ...virtualDef,
-                            isVirtual: true,
+                            ...def,
                             costFor400Gems: copperFor400
                         });
                     }
                 } catch (error) {
-                    console.error(`Failed to load virtual item "${vid}":`, error);
-                    showError(`Failed to load ${virtualDef.name}.`);
+                    console.error(`Failed to load special item ${sid}:`, error);
+                    showError(`Failed to load ${def.name}.`);
                     results.push({
-                        ...virtualDef,
-                        isVirtual: true,
+                        ...def,
                         costFor400Gems: null,
                         returnFor400Gems: null
                     });
@@ -709,14 +717,14 @@
                 lowerQuery.includes('gold to gems') ||
                 lowerQuery === 'gold to gems'
             ) {
-                results.push(VIRTUAL_ITEMS['gold-to-gems']);
+                results.push(SPECIAL_ITEMS[GOLD_TO_GEMS_ID]);
             }
             if (
                 (lowerQuery.includes('gem') && lowerQuery.includes('gold')) ||
                 lowerQuery.includes('gems to gold') ||
                 lowerQuery === 'gems to gold'
             ) {
-                results.push(VIRTUAL_ITEMS['gems-to-gold']);
+                results.push(SPECIAL_ITEMS[GEMS_TO_GOLD_ID]);
             }
 
             await loadStaticItemData();
@@ -747,7 +755,7 @@
             results.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'search-result-item';
-                const idText = typeof item.id === 'string' ? 'Special' : `ID: ${item.id}`;
+                const idText = (item.id === GOLD_TO_GEMS_ID || item.id === GEMS_TO_GOLD_ID) ? 'Special' : `ID: ${item.id}`;
                 div.innerHTML = `
                     <div class="search-result-text">
                         <div>${item.name}</div>
@@ -755,16 +763,12 @@
                     </div>
                 `;
                 div.addEventListener('click', () => {
-                    if (typeof item.id === 'string') {
-                        if (!trackedItems.includes(item.id)) {
-                            trackedItems.push(item.id);
-                            saveTrackedItems();
-                            fetchAndDisplayItems();
-                        } else {
-                            showError('This item is already being tracked');
-                        }
+                    if (!trackedItems.includes(item.id)) {
+                        trackedItems.push(item.id);
+                        saveTrackedItems();
+                        fetchAndDisplayItems();
                     } else {
-                        addItemById(item.id);
+                        showError('This item is already being tracked');
                     }
                     itemInput.value = '';
                     searchResultsContainer.style.display = 'none';
@@ -813,33 +817,32 @@
                 return;
             }
             
-            const id = parseInt(query);
+            const id = parseInt(query, 10);
             if (!isNaN(id) && id > 0) {
                 await addItemById(id);
                 return;
             }
             
+            // Exact match for special items
             if (query.toLowerCase() === 'gold to gems') {
-                const vId = 'gold-to-gems';
-                if (trackedItems.includes(vId)) {
-                    showError('This item is already being tracked');
-                } else {
-                    trackedItems.push(vId);
+                if (!trackedItems.includes(GOLD_TO_GEMS_ID)) {
+                    trackedItems.push(GOLD_TO_GEMS_ID);
                     saveTrackedItems();
                     fetchAndDisplayItems();
                     itemInput.value = '';
+                } else {
+                    showError('This item is already being tracked');
                 }
                 return;
             }
             if (query.toLowerCase() === 'gems to gold') {
-                const vId = 'gems-to-gold';
-                if (trackedItems.includes(vId)) {
-                    showError('This item is already being tracked');
-                } else {
-                    trackedItems.push(vId);
+                if (!trackedItems.includes(GEMS_TO_GOLD_ID)) {
+                    trackedItems.push(GEMS_TO_GOLD_ID);
                     saveTrackedItems();
                     fetchAndDisplayItems();
                     itemInput.value = '';
+                } else {
+                    showError('This item is already being tracked');
                 }
                 return;
             }
@@ -863,7 +866,7 @@
             }
         }
 
-        // ✅ FIXED DRAG HANDLERS — NO MORE PARSEINT!
+        // ✅ DRAG-AND-DROP — Now works with consistent number IDs
         function handleDragStart(e) {
             if (e.target.closest('.item-id')) {
                 e.preventDefault();
@@ -889,9 +892,9 @@
         function handleDrop(e) {
             e.stopPropagation();
             if (draggedCard !== this) {
-                // ✅ Use IDs as-is (string or number) — NO parseInt!
-                const draggedId = draggedCard.dataset.itemId;
-                const targetId = this.dataset.itemId;
+                // ✅ Now safe: dataset.itemId is string, but we convert to number
+                const draggedId = parseInt(draggedCard.dataset.itemId, 10);
+                const targetId = parseInt(this.dataset.itemId, 10);
 
                 const currentIndex = trackedItems.indexOf(draggedId);
                 const targetIndex = trackedItems.indexOf(targetId);
