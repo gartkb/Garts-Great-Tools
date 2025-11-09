@@ -224,7 +224,7 @@
       playerAssignments = [];
 
       // Regexes
-      const emojiRegex = /\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic}|\u200D[\u2640\u2642]\uFE0F)*$/u;
+      const emojiRegex = /(?:(?:\p{Extended_Pictographic}(?:\u200D\p{Extended_Pictographic}|\uFE0F|\u200D[\u2640\u2642]\uFE0F)*)|\d\uFE0F?\u20E3)$/u;
       const discordEmojiRegex = /^:[a-zA-Z0-9_]+:$/;
 
       lines.forEach((line, index) => {
