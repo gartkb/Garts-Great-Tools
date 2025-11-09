@@ -41,7 +41,7 @@
       border: 1px solid #ccc;
       border-radius: 6px;
       display: grid;
-      grid-template-columns: minmax(120px, 150px) auto auto auto;
+      grid-template-columns: minmax(120px, 150px) 1fr auto;
       gap: 8px;
       align-items: center;
     }
@@ -409,18 +409,24 @@
           roleSelector.appendChild(el);
         });
 
-        playerItem.appendChild(nameDiv);
-        playerItem.appendChild(emojisDiv);
         const groupWrapper = document.createElement('div');
         groupWrapper.style.display = 'flex';
         groupWrapper.style.alignItems = 'center';
-        groupWrapper.style.gap = '4px'; // matches your existing spacing feel
-        groupWrapper.style.justifySelf = 'end';
+        groupWrapper.style.gap = '4px';
         groupWrapper.appendChild(document.createTextNode('Group:'));
         groupWrapper.appendChild(groupSelect);
-        playerItem.appendChild(groupWrapper);
-        playerItem.appendChild(roleSelector);
-        container.appendChild(playerItem);
+        
+        const rightBlock = document.createElement('div');
+        rightBlock.style.display = 'flex';
+        rightBlock.style.alignItems = 'center';
+        rightBlock.style.gap = '12px'; // space between group selector and role icons
+        rightBlock.appendChild(groupWrapper);
+        rightBlock.appendChild(roleSelector);
+        
+        playerItem.appendChild(nameDiv);
+        playerItem.appendChild(emojisDiv);
+        playerItem.appendChild(rightBlock);
+        container.appendChild(playerItem); #??
       });
 
       // Insert checkboxes below player list
