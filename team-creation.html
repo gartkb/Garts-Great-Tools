@@ -138,6 +138,20 @@
       margin-right: 4px;
     }
 
+    .options-row {
+      margin: 15px 0;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .options-row label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+    }
+
     @media (max-width: 768px) {
       .group-container {
         min-width: 100%;
@@ -159,9 +173,20 @@
 6.💫Gart Finderboom.5020                       📧  🛡️  🔥  🐥  🕵️‍♂️
 7.💫SkielaBaby.4201                                📧
 8.NewPlayer.1234:0BoonsQuickDPS:
-9.Another.9999 :healheart: 🛡️"></textarea>
+9.Another.9999 :healheart: 🛡️
+10.<797945111794810930> DiscordUser#1234 🛡️"></textarea>
 
     <button onclick="parsePlayers()">Parse Players</button>
+
+    <!-- Checkboxes will be inserted here by JS after parsing -->
+    <div id="summaryOptions" class="options-row" style="display: none;">
+      <label>
+        <input type="checkbox" id="includeMentions"> Include discord mentions
+      </label>
+      <label>
+        <input type="checkbox" id="hideNames"> Hide text names
+      </label>
+    </div>
 
     <div id="outputContainer"></div>
   </div>
@@ -200,18 +225,37 @@
       container.innerHTML = '';
       playerAssignments = [];
 
+      // Show options once parsing is done
+      document.getElementById('summaryOptions').style.display = 'flex';
+
       // Regexes
       const emojiRegex = /\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic}|\u200D[\u2640\u2642]\uFE0F)*$/u;
       const discordEmojiRegex = /^:[a-zA-Z0-9_]+:$/;
+      // Match optional <17-20 digit> at start (after any number prefix)
+      const idRegex = /^\d*\.\s*<(\d{17,20})>\s+/;
 
       lines.forEach((line, index) => {
         // Remove leading number and dot (e.g., "1.", "10.")
         let cleanLine = line.replace(/^\d+\.\s*/, '').trim();
         if (!cleanLine) return;
 
+        let discordMention = null;
+        let namePart = cleanLine;
+
+        // Try to extract Discord ID
+        const idMatch = cleanLine.match(idRegex);
+        if (idMatch) {
+          const rawId = idMatch[1];
+          discordMention = `<@${rawId}>`;
+          // Remove the matched ID part (including trailing space)
+          namePart = cleanLine.slice(idMatch[0].length).trim();
+        } else {
+          namePart = cleanLine;
+        }
+
         // Step: Extract trailing role indicators from the END
         const roleTokens = [];
-        let working = cleanLine;
+        let working = namePart;
 
         while (working) {
           working = working.trimEnd();
@@ -253,6 +297,7 @@
         const assignment = {
           id: index,
           name: name,
+          discordMention: discordMention, // may be null
           group: 'Group 1',
           customRoles: new Set(),
           predefinedRoles: new Set()
@@ -414,6 +459,12 @@
       }
 
       document.getElementById('outputContainer').appendChild(summaryDiv);
+
+      // Attach event listeners to checkboxes
+      const includeMentions = document.getElementById('includeMentions');
+      const hideNames = document.getElementById('hideNames');
+      if (includeMentions) includeMentions.addEventListener('change', renderGroups);
+      if (hideNames) hideNames.addEventListener('change', renderGroups);
     }
 
     function createGroupElement(groupName, players) {
@@ -425,15 +476,39 @@
       header.textContent = `${groupName} (${players.length} player${players.length !== 1 ? 's' : ''})`;
       groupDiv.appendChild(header);
 
+      // Get current checkbox states
+      const includeMentions = document.getElementById('includeMentions')?.checked || false;
+      const hideNames = document.getElementById('hideNames')?.checked || false;
+
       players.forEach(player => {
         const customRoles = Array.from(player.customRoles);
         const predefinedHtml = Array.from(player.predefinedRoles).map(name => getRoleDisplayHtml(name));
         const allParts = [...customRoles, ...predefinedHtml];
         const rolesHtml = allParts.length > 0 ? allParts.join(', ') : 'None';
 
+        let displayName = '';
+
+        if (includeMentions && player.discordMention) {
+          displayName += player.discordMention;
+          if (!hideNames) {
+            displayName += ' ';
+          }
+        }
+
+        if (!hideNames) {
+          displayName += player.name;
+        }
+
+        // If both mentions off + names hidden + no ID → skip display
+        if (displayName === '' && (!includeMentions || !player.discordMention)) {
+          // Show nothing — but we still need a line? Or skip entirely?
+          // We'll show an empty line to preserve count, but you could skip.
+          displayName = '(no name or ID)';
+        }
+
         const line = document.createElement('div');
         line.className = 'assigned-player';
-        line.innerHTML = `${player.name} → ${rolesHtml}`;
+        line.innerHTML = `${displayName} → ${rolesHtml}`;
         groupDiv.appendChild(line);
       });
 
@@ -441,5 +516,5 @@
     }
   </script>
 </body>
-  <a href="https://gartkb.github.io/Garts-Great-Tools/">Gart's Great Tools</a>
+<a href="https://gartkb.github.io/Garts-Great-Tools/">Gart's Great Tools</a>
 </html>
