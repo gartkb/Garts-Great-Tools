@@ -542,6 +542,8 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
       return data ? JSON.parse(data) : {};
     }
 
+
+    
     function saveRosters(rosters) {
       localStorage.setItem('gw2Rosters', JSON.stringify(rosters));
     }
@@ -577,18 +579,16 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
       alert(`Roster "${name}" saved.`);
     }
 
-    function loadRoster() {
-      const name = document.getElementById('rosterList').value;
-      if (!name) {
-        alert('Please select a roster to load.');
-        return;
-      }
+    function loadRosterByName(name) {
       const rosters = getSavedRosters();
       if (rosters[name] !== undefined) {
         document.getElementById('inputPlayers').value = rosters[name];
         document.getElementById('rosterName').value = name;
       }
     }
+
+    
+    
 
     function renameRoster() {
       const oldName = document.getElementById('rosterList').value;
