@@ -51,7 +51,7 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      min-width: 0; /* critical for grid to respect overflow */
+      min-width: 0;
       font-size: .8em;
     }
     
@@ -61,7 +61,6 @@
       font-size: 20px;
       flex-wrap: wrap;
       justify-content: flex-end;
-      /* Remove max-width — let it use available space */
     }
     .player-emojis span {
       padding: 2px 3px;
@@ -160,7 +159,6 @@
       cursor: pointer;
     }
 
-    /* Style for "Unassigned" dropdown */
     select.unassigned {
       color: #888 !important;
       font-style: italic;
@@ -176,19 +174,15 @@
 <body>
   <div class="container">
     <h2>⚔️ Guild Wars 2 Team Builder</h2>
-    <p>Paste your player list below. Trailing emojis or supported Discord codes (e.g., <code>:0BoonsQuickDPS:</code>) are parsed as clickable roles.</p>
+    <p>Paste your player list below. Format: <code>[Optional <DiscordID>] Name, 🛡️ :healheart:</code></p>
+    <p>Decorative emojis (📧, 💫, 🚹, etc.) in names are auto-removed.</p>
 
     <textarea id="inputPlayers" placeholder="Example:
-1.DethKnighter666.8954 🚹                              📧
-2.Terrence (Jason.2014) 🚹                         📧  🐥
-3.Zojja (Viblise.8417)                        📧  🐥
-4.light109 (humanfemale.9635) 🚹                       📧  🔥
-5.johnnytwotoes.8214                                 📧  🔥
-6.💫Gart Finderboom.5020                       📧  🛡️  🔥  🐥  🕵️‍♂️
-7.💫SkielaBaby.4201                                📧
-8.NewPlayer.1234:0BoonsQuickDPS:
-9.Another.9999 :healheart: 🛡️
-10.<797945111794810930> DiscordUser#1234 🛡️"></textarea>
+<797945111794810930> DiscordUser#1234, 🛡️ :healheart:
+1.Light109, 📧 💫 ⚔️ 🛡️
+#2.Zojja, :0BoonsQuickDPS: 🔥
+##3.NewPlayer.1234, :0BoonsAlacHeal:
+Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
 
     <button onclick="parsePlayers()">Parse Players</button>
 
@@ -219,7 +213,7 @@
     }
 
     let playerAssignments = [];
-    const nonRoleEmojis = ['🚹', '🚺', '👥', '👤', '💫'];
+    const nonRoleEmojis = ['🚹', '🚺', '👥', '👤', '💫', '📧'];
 
     function parsePlayers() {
       const text = document.getElementById('inputPlayers').value.trim();
@@ -229,69 +223,44 @@
       container.innerHTML = '';
       playerAssignments = [];
 
-      // Regexes
-      const emojiRegex = /(?:(?:\p{Extended_Pictographic}(?:\u200D\p{Extended_Pictographic}|\uFE0F|\u200D[\u2640\u2642]\uFE0F)*)|\d\uFE0F?\u20E3)$/u;
-      const discordEmojiRegex = /^:[a-zA-Z0-9_]+:$/;
+      // Regex to remove optional numbered prefix like "1.", "#2.", "##10.", etc.
+      const prefixRegex = /^(?:#*\d+\.?\s*)/;
 
       lines.forEach((line, index) => {
-        // Parse optional number prefix and optional Discord ID
-        const lineRegex = /^\s*(?:\d+\.\s*)?(?:<(\d{17,20})>\s+)?(.+?)\s*$/;
-        const match = line.match(lineRegex);
+        let cleanLine = line.trim();
+        if (!cleanLine) return;
 
+        // Step 1: Remove optional prefix (e.g., "1.", "#3.", "##10.")
+        cleanLine = cleanLine.replace(prefixRegex, '');
+
+        // Step 2: Require a comma to split name and emojis
+        const lastCommaIndex = cleanLine.lastIndexOf(',');
+        if (lastCommaIndex === -1) {
+          console.warn(`Skipping invalid line (no comma): "${line}"`);
+          return;
+        }
+
+        const namePart = cleanLine.substring(0, lastCommaIndex).trim();
+        const emojiPart = cleanLine.substring(lastCommaIndex + 1).trim();
+
+        // Step 3: Extract Discord ID if present
         let discordMention = null;
-        let namePart = '';
-
-        if (match) {
-          const rawId = match[1];
-          namePart = match[2] || '';
-          if (rawId) {
-            discordMention = `<@${rawId}>`;
-          }
-        } else {
-          namePart = line.trim();
-        }
-        if (!namePart) return;
-
-        // Step: Extract trailing role indicators from the END
-        const roleTokens = [];
-        let working = namePart;
-
-        while (working) {
-          working = working.trimEnd();
-          if (!working) break;
-
-          // Check for Discord emoji code at the end
-          let matchEnd = working.match(/(\s*:[a-zA-Z0-9_]+:)$/);
-          if (matchEnd) {
-            const token = matchEnd[1].trim();
-            if (discordEmojiRegex.test(token)) {
-              roleTokens.unshift(token);
-              working = working.slice(0, matchEnd.index);
-              continue;
-            }
-          }
-
-          // Check for Unicode emoji at the very end
-          const emojiMatch = working.match(emojiRegex);
-          if (emojiMatch) {
-            const emoji = emojiMatch[0];
-            roleTokens.unshift(emoji);
-            working = working.slice(0, -emoji.length);
-            continue;
-          }
-
-          // If neither, stop — rest is name
-          break;
+        let name = namePart;
+        const discordIdMatch = namePart.match(/^<(\d{17,20})>\s+(.+)$/);
+        if (discordIdMatch) {
+          const rawId = discordIdMatch[1];
+          name = discordIdMatch[2];
+          discordMention = `<@${rawId}>`;
         }
 
-        // Clean the remaining part as the name
-        let name = working.trim();
-
-        // Remove non-role decorative emojis from name
+        // Step 4: Strip decorative emojis and normalize name
         nonRoleEmojis.forEach(e => {
           name = name.replace(new RegExp(e, 'g'), '');
         });
-        name = name.replace(/📧/g, '').replace(/\s+/g, ' ').trim() || 'Unknown';
+        name = name.replace(/\s+/g, ' ').trim() || 'Unknown';
+
+        // Step 5: Tokenize emojiPart
+        const tokens = emojiPart.split(/\s+/).filter(t => t);
 
         const assignment = {
           id: index,
@@ -314,8 +283,8 @@
         const emojisDiv = document.createElement('div');
         emojisDiv.className = 'player-emojis';
 
-        roleTokens.forEach(token => {
-          if (token === '📧' || nonRoleEmojis.includes(token)) return;
+        tokens.forEach(token => {
+          if (nonRoleEmojis.includes(token) || token === '📧') return;
 
           const matchedRole = predefinedRoles.find(r => r.discordtext === token);
           if (matchedRole) {
@@ -343,7 +312,8 @@
             return;
           }
 
-          if (/\p{Extended_Pictographic}/u.test(token)) {
+          // Check if it's a Unicode emoji
+          if (/^\p{Extended_Pictographic}+(\uFE0F|\u200D\p{Extended_Pictographic})*$/u.test(token)) {
             const span = document.createElement('span');
             span.textContent = token;
             span.addEventListener('click', () => {
@@ -358,8 +328,10 @@
             });
             emojisDiv.appendChild(span);
           }
+          // Silently ignore unrecognized tokens (e.g., typos)
         });
 
+        // Group selector
         const groupSelect = document.createElement('select');
         const unassignedOpt = document.createElement('option');
         unassignedOpt.value = 'Unassigned';
@@ -374,15 +346,14 @@
           groupSelect.appendChild(opt);
         }
 
-        // Apply initial unassigned styling
         groupSelect.className = 'unassigned';
-
         groupSelect.addEventListener('change', (e) => {
           assignment.group = e.target.value;
           e.target.className = e.target.value === 'Unassigned' ? 'unassigned' : '';
           renderGroups();
         });
 
+        // Role selector (predefined)
         const roleSelector = document.createElement('div');
         roleSelector.className = 'role-selector';
         predefinedRoles.forEach(role => {
@@ -420,7 +391,7 @@
         const rightBlock = document.createElement('div');
         rightBlock.style.display = 'flex';
         rightBlock.style.alignItems = 'center';
-        rightBlock.style.gap = '12px'; // space between group selector and role icons
+        rightBlock.style.gap = '12px';
         rightBlock.appendChild(groupWrapper);
         rightBlock.appendChild(roleSelector);
         
@@ -430,7 +401,7 @@
         container.appendChild(playerItem); 
       });
 
-      // Insert checkboxes below player list
+      // Options row
       const optionsDiv = document.createElement('div');
       optionsDiv.className = 'options-row';
       optionsDiv.innerHTML = `
