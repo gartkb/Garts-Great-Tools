@@ -214,8 +214,8 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
     <div class="roster-controls">
       <input type="text" id="rosterName" placeholder="Roster name">
       <button onclick="saveRoster()">Save/Update Roster</button>
-      <button onclick="loadRoster()">Load Roster</button>
-      <select id="rosterList">
+      
+      <select id="rosterList" onchange="if(this.value) loadRosterByName(this.value)">
         <option value="">-- Saved Rosters --</option>
       </select>
       <button onclick="deleteRoster()">Delete</button>
