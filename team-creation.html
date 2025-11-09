@@ -410,10 +410,13 @@
 
         playerItem.appendChild(nameDiv);
         playerItem.appendChild(emojisDiv);
-        const groupLabel = document.createElement('span');
-        groupLabel.textContent = 'Group:';
-        playerItem.appendChild(groupLabel);
-        playerItem.appendChild(groupSelect);
+        const groupWrapper = document.createElement('div');
+        groupWrapper.style.display = 'flex';
+        groupWrapper.style.alignItems = 'center';
+        groupWrapper.style.gap = '4px'; // matches your existing spacing feel
+        groupWrapper.appendChild(document.createTextNode('Group:'));
+        groupWrapper.appendChild(groupSelect);
+        playerItem.appendChild(groupWrapper);
         playerItem.appendChild(roleSelector);
         container.appendChild(playerItem);
       });
