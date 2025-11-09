@@ -47,8 +47,8 @@
     }
     .player-name {
       font-weight: bold;
-      flex: 1 1 150px;
-      min-width: 0; /* Allows proper shrinking in flex layout */
+      flex: 0 1 auto; /* Do not grow, allow shrink, base size = content */
+      min-width: 120px; /* Prevent collapse on very short names */
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -58,8 +58,8 @@
       display: flex;
       gap: 4px;
       font-size: 20px;
-      flex-wrap: wrap; /* Allows emojis to wrap if there are many */
-      max-width: 220px; /* Prevents runaway width */
+      flex-wrap: wrap;
+      /* Remove max-width — let it use available space */
     }
     .player-emojis span {
       padding: 2px 3px;
