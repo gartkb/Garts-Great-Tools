@@ -34,24 +34,24 @@
     button:hover {
       background: #0056b3;
     }
-
+    
     .player-item {
       background: white;
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 6px;
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: minmax(150px, 1fr) auto auto auto;
       gap: 8px;
+      align-items: center;
     }
+
     .player-name {
       font-weight: bold;
-      flex: 0 1 auto; /* Do not grow, allow shrink, base size = content */
-      min-width: 120px; /* Prevent collapse on very short names */
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      min-width: 0; /* critical for grid to respect overflow */
     }
     
     .player-emojis {
