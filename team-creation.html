@@ -1,3 +1,6 @@
+Here's the complete HTML file with the **roster save/load/delete/rename** functionality integrated, using `localStorage` and positioned beside the "Parse Players" button as requested. No auto-parse is included.
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,6 +33,7 @@
       color: white;
       border: none;
       border-radius: 4px;
+      white-space: nowrap;
     }
     button:hover {
       background: #0056b3;
@@ -164,9 +168,35 @@
       font-style: italic;
     }
 
+    .roster-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0;
+      align-items: center;
+    }
+    .roster-controls input,
+    .roster-controls select {
+      padding: 6px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .roster-controls input {
+      flex: 1;
+      min-width: 120px;
+    }
+    .roster-controls select {
+      min-width: 140px;
+    }
+
     @media (max-width: 768px) {
       .group-container {
         min-width: 100%;
+      }
+      .roster-controls {
+        flex-direction: column;
+        align-items: stretch;
       }
     }
   </style>
@@ -184,6 +214,17 @@
 ##3.NewPlayer.1234, :0BoonsAlacHeal:
 Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
 
+    <div class="roster-controls">
+      <input type="text" id="rosterName" placeholder="Roster name">
+      <button onclick="saveRoster()">Save/Update Roster</button>
+      <button onclick="loadRoster()">Load Roster</button>
+      <select id="rosterList">
+        <option value="">-- Saved Rosters --</option>
+      </select>
+      <button onclick="renameRoster()">Rename</button>
+      <button onclick="deleteRoster()">Delete</button>
+    </div>
+
     <button onclick="parsePlayers()">Parse Players</button>
 
     <div id="outputContainer"></div>
@@ -191,12 +232,12 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
 
   <script>
     const predefinedRoles = [
-      { name: 'QuickDPS', discordtext: ':0BoonsQuickDPS:', img: 'https://cdn.discordapp.com/emojis/1038159940164014090.png' },
-      { name: 'QuickHeal', discordtext: ':0BoonsQuickHeal:', img: 'https://cdn.discordapp.com/emojis/1038159941472620655.png' },
-      { name: 'AlacHeal', discordtext: ':0BoonsAlacHeal:', img: 'https://cdn.discordapp.com/emojis/1038159938335277140.png' },
-      { name: 'AlacDPS', discordtext: ':0BoonsAlacDPS:', img: 'https://cdn.discordapp.com/emojis/1038159937391562843.png' },
+      { name: 'QuickDPS', discordtext: ':0BoonsQuickDPS:', img: 'https://cdn.discordapp.com/emojis/1038159940164014090.png  ' },
+      { name: 'QuickHeal', discordtext: ':0BoonsQuickHeal:', img: 'https://cdn.discordapp.com/emojis/1038159941472620655.png  ' },
+      { name: 'AlacHeal', discordtext: ':0BoonsAlacHeal:', img: 'https://cdn.discordapp.com/emojis/1038159938335277140.png  ' },
+      { name: 'AlacDPS', discordtext: ':0BoonsAlacDPS:', img: 'https://cdn.discordapp.com/emojis/1038159937391562843.png  ' },
       { name: 'DPS', text: '⚔️' },
-      { name: 'Heals', discordtext: ':healheart:', img: 'https://cdn.discordapp.com/emojis/1436465472509050982.png' },
+      { name: 'Heals', discordtext: ':healheart:', img: 'https://cdn.discordapp.com/emojis/1436465472509050982.png  ' },
       { name: 'Tank', text: '🛡️' },
       { name: 'BoonDPS', text: '⚡' },
     ];
@@ -495,7 +536,104 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
 
       return groupDiv;
     }
+
+    // ================ ROSTER MANAGEMENT ================
+
+    window.addEventListener('DOMContentLoaded', populateRosterList);
+
+    function getSavedRosters() {
+      const data = localStorage.getItem('gw2Rosters');
+      return data ? JSON.parse(data) : {};
+    }
+
+    function saveRosters(rosters) {
+      localStorage.setItem('gw2Rosters', JSON.stringify(rosters));
+    }
+
+    function populateRosterList() {
+      const select = document.getElementById('rosterList');
+      const current = select.value;
+      select.innerHTML = '<option value="">-- Saved Rosters --</option>';
+      const rosters = getSavedRosters();
+      Object.keys(rosters).sort().forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name;
+        select.appendChild(opt);
+      });
+      if (current && rosters[current]) {
+        select.value = current;
+      }
+    }
+
+    function saveRoster() {
+      const name = document.getElementById('rosterName').value.trim();
+      if (!name) {
+        alert('Please enter a roster name.');
+        return;
+      }
+      const content = document.getElementById('inputPlayers').value;
+      const rosters = getSavedRosters();
+      rosters[name] = content;
+      saveRosters(rosters);
+      populateRosterList();
+      document.getElementById('rosterList').value = name;
+      alert(`Roster "${name}" saved.`);
+    }
+
+    function loadRoster() {
+      const name = document.getElementById('rosterList').value;
+      if (!name) {
+        alert('Please select a roster to load.');
+        return;
+      }
+      const rosters = getSavedRosters();
+      if (rosters[name] !== undefined) {
+        document.getElementById('inputPlayers').value = rosters[name];
+        document.getElementById('rosterName').value = name;
+      }
+    }
+
+    function renameRoster() {
+      const oldName = document.getElementById('rosterList').value;
+      const newName = document.getElementById('rosterName').value.trim();
+      if (!oldName) {
+        alert('Select a roster to rename.');
+        return;
+      }
+      if (!newName || newName === oldName) {
+        alert('Enter a new, different roster name.');
+        return;
+      }
+      const rosters = getSavedRosters();
+      if (rosters[oldName] === undefined) {
+        alert('Roster not found.');
+        return;
+      }
+      rosters[newName] = rosters[oldName];
+      delete rosters[oldName];
+      saveRosters(rosters);
+      populateRosterList();
+      document.getElementById('rosterList').value = newName;
+      alert(`Roster renamed to "${newName}".`);
+    }
+
+    function deleteRoster() {
+      const name = document.getElementById('rosterList').value;
+      if (!name) {
+        alert('Select a roster to delete.');
+        return;
+      }
+      if (!confirm(`Delete roster "${name}"? This cannot be undone.`)) return;
+      const rosters = getSavedRosters();
+      delete rosters[name];
+      saveRosters(rosters);
+      populateRosterList();
+      document.getElementById('rosterName').value = '';
+      alert(`Roster "${name}" deleted.`);
+    }
   </script>
 </body>
 <a href="https://gartkb.github.io/Garts-Great-Tools/">Gart's Great Tools</a>
 </html>
+```
