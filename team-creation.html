@@ -217,92 +217,92 @@
     let playerAssignments = [];
     const nonRoleEmojis = ['🚹', '🚺', '👥', '👤', '💫'];
 
-    function parsePlayers() {
-      const text = document.getElementById('inputPlayers').value.trim();
-      const lines = text.split('\n').filter(line => line.trim());
+function parsePlayers() {
+  const text = document.getElementById('inputPlayers').value.trim();
+  const lines = text.split('\n').filter(line => line.trim());
 
-      const container = document.getElementById('outputContainer');
-      container.innerHTML = '';
-      playerAssignments = [];
+  const container = document.getElementById('outputContainer');
+  container.innerHTML = '';
+  playerAssignments = [];
 
-      // Show options once parsing is done
-      document.getElementById('summaryOptions').style.display = 'flex';
+  // Show options once parsing is done
+  document.getElementById('summaryOptions').style.display = 'flex';
 
-      // Regexes
-      const emojiRegex = /\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic}|\u200D[\u2640\u2642]\uFE0F)*$/u;
-      const discordEmojiRegex = /^:[a-zA-Z0-9_]+:$/;
-      // Match optional <17-20 digit> at start (after any number prefix)
-      const idRegex = /^\d*\.\s*<(\d{17,20})>\s+/;
+  // Regexes
+  const emojiRegex = /\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic}|\u200D[\u2640\u2642]\uFE0F)*$/u;
+  const discordEmojiRegex = /^:[a-zA-Z0-9_]+:$/;
 
-      lines.forEach((line, index) => {
-        // Remove leading number and dot (e.g., "1.", "10.")
-        let cleanLine = line.replace(/^\d+\.\s*/, '').trim();
-        if (!cleanLine) return;
+  lines.forEach((line, index) => {
+    // Parse optional number prefix and optional Discord ID
+    const lineRegex = /^\s*(?:\d+\.\s*)?(?:<(\d{17,20})>\s+)?(.+?)\s*$/;
+    const match = line.match(lineRegex);
 
-        let discordMention = null;
-        let namePart = cleanLine;
+    let discordMention = null;
+    let namePart = '';
 
-        // Try to extract Discord ID
-        const idMatch = cleanLine.match(idRegex);
-        if (idMatch) {
-          const rawId = idMatch[1];
-          discordMention = `<@${rawId}>`;
-          // Remove the matched ID part (including trailing space)
-          namePart = cleanLine.slice(idMatch[0].length).trim();
-        } else {
-          namePart = cleanLine;
+    if (match) {
+      const rawId = match[1];
+      namePart = match[2] || '';
+      if (rawId) {
+        discordMention = `<@${rawId}>`;
+      }
+    } else {
+      namePart = line.trim();
+    }
+    if (!namePart) return;
+
+    // Step: Extract trailing role indicators from the END
+    const roleTokens = [];
+    let working = namePart;
+
+    while (working) {
+      working = working.trimEnd();
+      if (!working) break;
+
+      // Check for Discord emoji code at the end (with optional leading spaces)
+      let matchEnd = working.match(/(\s*:[a-zA-Z0-9_]+:)$/);
+      if (matchEnd) {
+        const token = matchEnd[1].trim();
+        if (discordEmojiRegex.test(token)) {
+          roleTokens.unshift(token);
+          working = working.slice(0, matchEnd.index);
+          continue;
         }
+      }
 
-        // Step: Extract trailing role indicators from the END
-        const roleTokens = [];
-        let working = namePart;
+      // Check for Unicode emoji at the very end
+      const emojiMatch = working.match(emojiRegex);
+      if (emojiMatch) {
+        const emoji = emojiMatch[0];
+        roleTokens.unshift(emoji);
+        working = working.slice(0, -emoji.length);
+        continue;
+      }
 
-        while (working) {
-          working = working.trimEnd();
-          if (!working) break;
+      // If neither, stop — rest is name
+      break;
+    }
 
-          // Check for Discord emoji code at the end (with optional leading spaces)
-          let match = working.match(/(\s*:[a-zA-Z0-9_]+:)$/);
-          if (match) {
-            const token = match[1].trim();
-            if (discordEmojiRegex.test(token)) {
-              roleTokens.unshift(token);
-              working = working.slice(0, match.index);
-              continue;
-            }
-          }
+    // Clean the remaining part as the name
+    let name = working.trim();
 
-          // Check for Unicode emoji at the very end
-          const emojiMatch = working.match(emojiRegex);
-          if (emojiMatch) {
-            const emoji = emojiMatch[0];
-            roleTokens.unshift(emoji);
-            working = working.slice(0, -emoji.length);
-            continue;
-          }
+    // Remove non-role decorative emojis from name
+    nonRoleEmojis.forEach(e => {
+      name = name.replace(new RegExp(e, 'g'), '');
+    });
+    name = name.replace(/📧/g, '').replace(/\s+/g, ' ').trim() || 'Unknown';
 
-          // If neither, stop — rest is name
-          break;
-        }
+    const assignment = {
+      id: index,
+      name: name,
+      discordMention: discordMention, // may be null
+      group: 'Group 1',
+      customRoles: new Set(),
+      predefinedRoles: new Set()
+    };
+    playerAssignments.push(assignment);
 
-        // Clean the remaining part as the name
-        let name = working.trim();
-
-        // Remove non-role decorative emojis from name
-        nonRoleEmojis.forEach(e => {
-          name = name.replace(new RegExp(e, 'g'), '');
-        });
-        name = name.replace(/📧/g, '').replace(/\s+/g, ' ').trim() || 'Unknown';
-
-        const assignment = {
-          id: index,
-          name: name,
-          discordMention: discordMention, // may be null
-          group: 'Group 1',
-          customRoles: new Set(),
-          predefinedRoles: new Set()
-        };
-        playerAssignments.push(assignment);
+   
 
         // --- Build UI element ---
         const playerItem = document.createElement('div');
