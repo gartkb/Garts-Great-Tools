@@ -1,6 +1,3 @@
-Here's the complete HTML file with the **roster save/load/delete/rename** functionality integrated, using `localStorage` and positioned beside the "Parse Players" button as requested. No auto-parse is included.
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -221,7 +218,6 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
       <select id="rosterList">
         <option value="">-- Saved Rosters --</option>
       </select>
-      <button onclick="renameRoster()">Rename</button>
       <button onclick="deleteRoster()">Delete</button>
     </div>
 
@@ -287,7 +283,7 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
         // Step 3: Extract Discord ID if present
         let discordMention = null;
         let name = namePart;
-        const discordIdMatch = namePart.match(/^<(\d{17,20})>\s+(.+)$/);
+        const discordIdMatch = namePart.match(/^<@?(\d{17,20})>\s+(.+)$/);
         if (discordIdMatch) {
           const rawId = discordIdMatch[1];
           name = discordIdMatch[2];
@@ -636,4 +632,4 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
 </body>
 <a href="https://gartkb.github.io/Garts-Great-Tools/">Gart's Great Tools</a>
 </html>
-```
+
