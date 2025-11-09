@@ -139,11 +139,13 @@
     }
 
     .options-row {
-      margin: 15px 0;
+      margin: 20px 0 10px;
       display: flex;
       gap: 15px;
       flex-wrap: wrap;
       align-items: center;
+      padding: 10px 0;
+      border-top: 1px solid #eee;
     }
     .options-row label {
       display: flex;
@@ -178,16 +180,6 @@
 
     <button onclick="parsePlayers()">Parse Players</button>
 
-    <!-- Checkboxes will be inserted here by JS after parsing -->
-    <div id="summaryOptions" class="options-row" style="display: none;">
-      <label>
-        <input type="checkbox" id="includeMentions"> Include discord mentions
-      </label>
-      <label>
-        <input type="checkbox" id="hideNames"> Hide text names
-      </label>
-    </div>
-
     <div id="outputContainer"></div>
   </div>
 
@@ -217,92 +209,87 @@
     let playerAssignments = [];
     const nonRoleEmojis = ['🚹', '🚺', '👥', '👤', '💫'];
 
-function parsePlayers() {
-  const text = document.getElementById('inputPlayers').value.trim();
-  const lines = text.split('\n').filter(line => line.trim());
+    function parsePlayers() {
+      const text = document.getElementById('inputPlayers').value.trim();
+      const lines = text.split('\n').filter(line => line.trim());
 
-  const container = document.getElementById('outputContainer');
-  container.innerHTML = '';
-  playerAssignments = [];
+      const container = document.getElementById('outputContainer');
+      container.innerHTML = '';
+      playerAssignments = [];
 
-  // Show options once parsing is done
-  document.getElementById('summaryOptions').style.display = 'flex';
+      // Regexes
+      const emojiRegex = /\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic}|\u200D[\u2640\u2642]\uFE0F)*$/u;
+      const discordEmojiRegex = /^:[a-zA-Z0-9_]+:$/;
 
-  // Regexes
-  const emojiRegex = /\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic}|\u200D[\u2640\u2642]\uFE0F)*$/u;
-  const discordEmojiRegex = /^:[a-zA-Z0-9_]+:$/;
+      lines.forEach((line, index) => {
+        // Parse optional number prefix and optional Discord ID
+        const lineRegex = /^\s*(?:\d+\.\s*)?(?:<(\d{17,20})>\s+)?(.+?)\s*$/;
+        const match = line.match(lineRegex);
 
-  lines.forEach((line, index) => {
-    // Parse optional number prefix and optional Discord ID
-    const lineRegex = /^\s*(?:\d+\.\s*)?(?:<(\d{17,20})>\s+)?(.+?)\s*$/;
-    const match = line.match(lineRegex);
+        let discordMention = null;
+        let namePart = '';
 
-    let discordMention = null;
-    let namePart = '';
-
-    if (match) {
-      const rawId = match[1];
-      namePart = match[2] || '';
-      if (rawId) {
-        discordMention = `<@${rawId}>`;
-      }
-    } else {
-      namePart = line.trim();
-    }
-    if (!namePart) return;
-
-    // Step: Extract trailing role indicators from the END
-    const roleTokens = [];
-    let working = namePart;
-
-    while (working) {
-      working = working.trimEnd();
-      if (!working) break;
-
-      // Check for Discord emoji code at the end (with optional leading spaces)
-      let matchEnd = working.match(/(\s*:[a-zA-Z0-9_]+:)$/);
-      if (matchEnd) {
-        const token = matchEnd[1].trim();
-        if (discordEmojiRegex.test(token)) {
-          roleTokens.unshift(token);
-          working = working.slice(0, matchEnd.index);
-          continue;
+        if (match) {
+          const rawId = match[1];
+          namePart = match[2] || '';
+          if (rawId) {
+            discordMention = `<@${rawId}>`;
+          }
+        } else {
+          namePart = line.trim();
         }
-      }
+        if (!namePart) return;
 
-      // Check for Unicode emoji at the very end
-      const emojiMatch = working.match(emojiRegex);
-      if (emojiMatch) {
-        const emoji = emojiMatch[0];
-        roleTokens.unshift(emoji);
-        working = working.slice(0, -emoji.length);
-        continue;
-      }
+        // Step: Extract trailing role indicators from the END
+        const roleTokens = [];
+        let working = namePart;
 
-      // If neither, stop — rest is name
-      break;
-    }
+        while (working) {
+          working = working.trimEnd();
+          if (!working) break;
 
-    // Clean the remaining part as the name
-    let name = working.trim();
+          // Check for Discord emoji code at the end
+          let matchEnd = working.match(/(\s*:[a-zA-Z0-9_]+:)$/);
+          if (matchEnd) {
+            const token = matchEnd[1].trim();
+            if (discordEmojiRegex.test(token)) {
+              roleTokens.unshift(token);
+              working = working.slice(0, matchEnd.index);
+              continue;
+            }
+          }
 
-    // Remove non-role decorative emojis from name
-    nonRoleEmojis.forEach(e => {
-      name = name.replace(new RegExp(e, 'g'), '');
-    });
-    name = name.replace(/📧/g, '').replace(/\s+/g, ' ').trim() || 'Unknown';
+          // Check for Unicode emoji at the very end
+          const emojiMatch = working.match(emojiRegex);
+          if (emojiMatch) {
+            const emoji = emojiMatch[0];
+            roleTokens.unshift(emoji);
+            working = working.slice(0, -emoji.length);
+            continue;
+          }
 
-    const assignment = {
-      id: index,
-      name: name,
-      discordMention: discordMention, // may be null
-      group: 'Group 1',
-      customRoles: new Set(),
-      predefinedRoles: new Set()
-    };
-    playerAssignments.push(assignment);
+          // If neither, stop — rest is name
+          break;
+        }
 
-   
+        // Clean the remaining part as the name
+        let name = working.trim();
+
+        // Remove non-role decorative emojis from name
+        nonRoleEmojis.forEach(e => {
+          name = name.replace(new RegExp(e, 'g'), '');
+        });
+        name = name.replace(/📧/g, '').replace(/\s+/g, ' ').trim() || 'Unknown';
+
+        const assignment = {
+          id: index,
+          name: name,
+          discordMention: discordMention,
+          group: 'Group 1',
+          customRoles: new Set(),
+          predefinedRoles: new Set()
+        };
+        playerAssignments.push(assignment);
 
         // --- Build UI element ---
         const playerItem = document.createElement('div');
@@ -315,13 +302,9 @@ function parsePlayers() {
         const emojisDiv = document.createElement('div');
         emojisDiv.className = 'player-emojis';
 
-        // Add clickable role indicators
         roleTokens.forEach(token => {
-          if (token === '📧' || nonRoleEmojis.includes(token)) {
-            return;
-          }
+          if (token === '📧' || nonRoleEmojis.includes(token)) return;
 
-          // Match Discord-style code
           const matchedRole = predefinedRoles.find(r => r.discordtext === token);
           if (matchedRole) {
             const span = document.createElement('span');
@@ -348,7 +331,6 @@ function parsePlayers() {
             return;
           }
 
-          // Treat as custom Unicode emoji role
           if (/\p{Extended_Pictographic}/u.test(token)) {
             const span = document.createElement('span');
             span.textContent = token;
@@ -366,7 +348,6 @@ function parsePlayers() {
           }
         });
 
-        // Group selector
         const groupSelect = document.createElement('select');
         for (let i = 1; i <= 10; i++) {
           const opt = document.createElement('option');
@@ -380,7 +361,6 @@ function parsePlayers() {
           renderGroups();
         });
 
-        // Predefined role selector (manual assignment panel)
         const roleSelector = document.createElement('div');
         roleSelector.className = 'role-selector';
         predefinedRoles.forEach(role => {
@@ -408,18 +388,32 @@ function parsePlayers() {
           roleSelector.appendChild(el);
         });
 
-        // Assemble player item
         playerItem.appendChild(nameDiv);
         playerItem.appendChild(emojisDiv);
-
         const groupLabel = document.createElement('span');
         groupLabel.textContent = 'Group:';
         playerItem.appendChild(groupLabel);
         playerItem.appendChild(groupSelect);
         playerItem.appendChild(roleSelector);
-
         container.appendChild(playerItem);
       });
+
+      // --- Insert checkboxes right before group summary ---
+      const optionsDiv = document.createElement('div');
+      optionsDiv.className = 'options-row';
+      optionsDiv.innerHTML = `
+        <label>
+          <input type="checkbox" id="includeMentions"> Include discord mentions
+        </label>
+        <label>
+          <input type="checkbox" id="hideNames"> Hide text names
+        </label>
+      `;
+      container.appendChild(optionsDiv);
+
+      // Attach event listeners after insertion
+      document.getElementById('includeMentions').addEventListener('change', renderGroups);
+      document.getElementById('hideNames').addEventListener('change', renderGroups);
 
       renderGroups();
     }
@@ -459,12 +453,6 @@ function parsePlayers() {
       }
 
       document.getElementById('outputContainer').appendChild(summaryDiv);
-
-      // Attach event listeners to checkboxes
-      const includeMentions = document.getElementById('includeMentions');
-      const hideNames = document.getElementById('hideNames');
-      if (includeMentions) includeMentions.addEventListener('change', renderGroups);
-      if (hideNames) hideNames.addEventListener('change', renderGroups);
     }
 
     function createGroupElement(groupName, players) {
@@ -476,7 +464,6 @@ function parsePlayers() {
       header.textContent = `${groupName} (${players.length} player${players.length !== 1 ? 's' : ''})`;
       groupDiv.appendChild(header);
 
-      // Get current checkbox states
       const includeMentions = document.getElementById('includeMentions')?.checked || false;
       const hideNames = document.getElementById('hideNames')?.checked || false;
 
@@ -490,25 +477,21 @@ function parsePlayers() {
 
         if (includeMentions && player.discordMention) {
           displayName += player.discordMention;
-          if (!hideNames) {
-            displayName += ' ';
-          }
+          if (!hideNames) displayName += ' ';
         }
 
         if (!hideNames) {
           displayName += player.name;
         }
 
-        // If both mentions off + names hidden + no ID → skip display
-        if (displayName === '' && (!includeMentions || !player.discordMention)) {
-          // Show nothing — but we still need a line? Or skip entirely?
-          // We'll show an empty line to preserve count, but you could skip.
-          displayName = '(no name or ID)';
+        // If nothing to show, leave it blank (or show placeholder if desired)
+        if (displayName === '') {
+          displayName = ''; // blank line
         }
 
         const line = document.createElement('div');
         line.className = 'assigned-player';
-        line.innerHTML = `${displayName} → ${rolesHtml}`;
+        line.innerHTML = displayName ? `${displayName} → ${rolesHtml}` : `→ ${rolesHtml}`;
         groupDiv.appendChild(line);
       });
 
