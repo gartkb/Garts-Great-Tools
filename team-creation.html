@@ -154,6 +154,12 @@
       cursor: pointer;
     }
 
+    /* Style for "Unassigned" dropdown */
+    select.unassigned {
+      color: #888 !important;
+      font-style: italic;
+    }
+
     @media (max-width: 768px) {
       .group-container {
         min-width: 100%;
@@ -285,7 +291,7 @@
           id: index,
           name: name,
           discordMention: discordMention,
-          group: 'Unassigned', // default
+          group: 'Unassigned',
           customRoles: new Set(),
           predefinedRoles: new Set()
         };
@@ -349,21 +355,25 @@
         });
 
         const groupSelect = document.createElement('select');
-        // Add "Unassigned" as default
         const unassignedOpt = document.createElement('option');
         unassignedOpt.value = 'Unassigned';
         unassignedOpt.textContent = 'Unassigned';
         unassignedOpt.selected = true;
         groupSelect.appendChild(unassignedOpt);
-        // Add Group 1–10
+
         for (let i = 1; i <= 10; i++) {
           const opt = document.createElement('option');
           opt.value = `Group ${i}`;
           opt.textContent = `Group ${i}`;
           groupSelect.appendChild(opt);
         }
+
+        // Apply initial unassigned styling
+        groupSelect.className = 'unassigned';
+
         groupSelect.addEventListener('change', (e) => {
           assignment.group = e.target.value;
+          e.target.className = e.target.value === 'Unassigned' ? 'unassigned' : '';
           renderGroups();
         });
 
@@ -404,7 +414,7 @@
         container.appendChild(playerItem);
       });
 
-      // Insert checkboxes
+      // Insert checkboxes below player list
       const optionsDiv = document.createElement('div');
       optionsDiv.className = 'options-row';
       optionsDiv.innerHTML = `
@@ -428,7 +438,6 @@
       if (existing) existing.remove();
 
       const groups = {};
-      // Only include players NOT in "Unassigned"
       playerAssignments.forEach(p => {
         if (p.group === 'Unassigned') return;
         const g = p.group;
