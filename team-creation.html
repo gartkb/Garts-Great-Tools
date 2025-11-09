@@ -47,16 +47,19 @@
     }
     .player-name {
       font-weight: bold;
-      flex: 1;
-      min-width: 180px;
+      flex: 1 1 150px;
+      min-width: 0; /* Allows proper shrinking in flex layout */
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    
     .player-emojis {
       display: flex;
       gap: 4px;
       font-size: 20px;
+      flex-wrap: wrap; /* Allows emojis to wrap if there are many */
+      max-width: 220px; /* Prevents runaway width */
     }
     .player-emojis span {
       padding: 2px 3px;
