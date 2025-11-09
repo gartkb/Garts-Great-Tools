@@ -285,7 +285,7 @@
           id: index,
           name: name,
           discordMention: discordMention,
-          group: 'Group 1',
+          group: 'Unassigned', // default
           customRoles: new Set(),
           predefinedRoles: new Set()
         };
@@ -349,11 +349,17 @@
         });
 
         const groupSelect = document.createElement('select');
+        // Add "Unassigned" as default
+        const unassignedOpt = document.createElement('option');
+        unassignedOpt.value = 'Unassigned';
+        unassignedOpt.textContent = 'Unassigned';
+        unassignedOpt.selected = true;
+        groupSelect.appendChild(unassignedOpt);
+        // Add Group 1–10
         for (let i = 1; i <= 10; i++) {
           const opt = document.createElement('option');
           opt.value = `Group ${i}`;
           opt.textContent = `Group ${i}`;
-          if (i === 1) opt.selected = true;
           groupSelect.appendChild(opt);
         }
         groupSelect.addEventListener('change', (e) => {
@@ -398,7 +404,7 @@
         container.appendChild(playerItem);
       });
 
-      // --- Insert checkboxes right before group summary ---
+      // Insert checkboxes
       const optionsDiv = document.createElement('div');
       optionsDiv.className = 'options-row';
       optionsDiv.innerHTML = `
@@ -411,7 +417,6 @@
       `;
       container.appendChild(optionsDiv);
 
-      // Attach event listeners after insertion
       document.getElementById('includeMentions').addEventListener('change', renderGroups);
       document.getElementById('hideNames').addEventListener('change', renderGroups);
 
@@ -423,8 +428,10 @@
       if (existing) existing.remove();
 
       const groups = {};
+      // Only include players NOT in "Unassigned"
       playerAssignments.forEach(p => {
-        const g = p.group || 'Group 1';
+        if (p.group === 'Unassigned') return;
+        const g = p.group;
         if (!groups[g]) groups[g] = [];
         groups[g].push(p);
       });
@@ -482,11 +489,6 @@
 
         if (!hideNames) {
           displayName += player.name;
-        }
-
-        // If nothing to show, leave it blank (or show placeholder if desired)
-        if (displayName === '') {
-          displayName = ''; // blank line
         }
 
         const line = document.createElement('div');
