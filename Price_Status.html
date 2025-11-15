@@ -32,7 +32,7 @@
         .item-image { width:60px; height:60px; background:#1c1c1c; border-radius:5px; margin-right:15px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
         .item-image img { max-width:100%; max-height:100%; object-fit:contain; }
         .item-info { flex:1; overflow:hidden; }
-        .item-name { font-size:1.2rem; font-weight:bold; margin-bottom:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .item-name { font-size:1.2rem; font-weight:bold; margin-bottom:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:flex; align-items:center; }
         .item-id { color:#95a5a6; font-size:.9rem; user-select:text; cursor:text; }
         .item-prices { padding:20px; flex:1; }
         .price-row { display:flex; justify-content:space-between; margin-bottom:15px; padding-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.1); }
@@ -61,6 +61,22 @@
         .manual-refresh button:hover {
             background: rgba(46, 204, 113, 0.3);
         }
+
+        /* --- NEW: Graph Link Styling --- */
+        .graph-link {
+            color: #3498db;
+            text-decoration: none;
+            margin-left: 6px;
+            font-size: 1.1rem;
+            vertical-align: middle;
+            opacity: 0.9;
+            transition: opacity 0.2s, color 0.2s;
+        }
+        .graph-link:hover {
+            opacity: 1;
+            color: #2980b9;
+        }
+
         @media (max-width:768px) { .items-container{grid-template-columns:1fr;} h1{font-size:2rem;} .controls{position:relative;} .search-results{width:95%; left:50%; transform:translateX(-50%);} }
     </style>
 </head>
@@ -101,6 +117,11 @@
 
         const GOLD_TO_GEMS_ID = 9990001;
         const GEMS_TO_GOLD_ID = 9990002;
+
+        // --- Graph Link Configuration ---
+        // Choose ONE URL template by uncommenting the line you want:
+        const GRAPH_URL_TEMPLATE = 'https://en.gw2treasures.com/item/{id}#tp';
+        // const GRAPH_URL_TEMPLATE = 'https://www.gw2bltc.com/en/item/{id}';
 
         const SPECIAL_ITEMS = {
             [GOLD_TO_GEMS_ID]: {
@@ -560,6 +581,9 @@
                     </div>
                 `;
             } else {
+                // Generate graph URL by replacing {id} placeholder
+                const graphUrl = GRAPH_URL_TEMPLATE.replace('{id}', itemData.id);
+
                 const imageElem = `
                     <div class="item-image">
                         <img src="${itemData.icon}" alt="${itemData.name}" 
@@ -571,7 +595,15 @@
                     <div class="item-header">
                         ${imageElem}
                         <div class="item-info">
-                            <div class="item-name">${itemData.name}</div>
+                            <div class="item-name">
+                                ${itemData.name}
+                                <a href="${graphUrl}" 
+                                   target="_blank" 
+                                   rel="noopener" 
+                                   class="graph-link" 
+                                   aria-label="View price graph"
+                                   title="View price graph">📈</a>
+                            </div>
                             <div class="item-id">ID: ${itemData.id}</div>
                         </div>
                         <button class="remove-btn-small" data-item-id="${itemData.id}">×</button>
