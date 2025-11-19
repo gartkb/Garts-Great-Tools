@@ -92,7 +92,7 @@
             font-size: 0.85rem;
             box-shadow: 0 4px 10px rgba(0,0,0,0.4);
             margin-bottom: 8px;
-            display: none; /* controlled by JS */
+            display: none;
         }
         .tooltip-title {
             font-weight: bold;
@@ -149,6 +149,7 @@
         const refreshItemsBtn = document.getElementById('refresh-items-btn');
         const GOLD_TO_GEMS_ID = 9990001;
         const GEMS_TO_GOLD_ID = 9990002;
+        // --- Graph Link Configuration ---
         const GRAPH_URL_TEMPLATE = 'https://en.gw2treasures.com/item/{id}';
         const SPECIAL_ITEMS = {
             [GOLD_TO_GEMS_ID]: {
@@ -164,7 +165,7 @@
                 type: 'gems-to-gold'
             }
         };
-
+        // ✅✅✅ CONTAINER ITEMS DEFINITION ✅✅✅
         const CONTAINER_ITEMS = {
             39121: {
                 items: [
@@ -203,11 +204,9 @@
                 ]
             }
         };
-
         function isContainer(id) {
             return CONTAINER_ITEMS.hasOwnProperty(id);
         }
-
         let trackedItems = [19721];
         let staticItemData = null;
         const DEBOUNCE_DELAY = 300;
@@ -376,7 +375,7 @@
                 }
             }
 
-            // Resolve container values
+            // Resolve container values — ENHANCED to include child names and breakdown
             for (const cid of containerIds) {
                 const def = CONTAINER_ITEMS[cid];
                 let totalValue = 0;
@@ -412,7 +411,7 @@
 
                 for (const drop of def.items) {
                     const price = childPriceMap.get(drop.id);
-                    const childName = childNameMap.get(drop.id) || `Unknown Item (${drop.id})`;
+                    const childName = childNameMap.get(drop.id) || `Unknown (${drop.id})`;
                     if (price == null) {
                         valid = false;
                         childDetails.push({
@@ -732,7 +731,7 @@
                         return `<div class="tooltip-line"><span class="child-name">${child.name}</span> • ${qtyProb} • ≈ ${parts.join(' ')}</div>`;
                     }).join('');
                 } else {
-                    tooltipContent = '<div class="tooltip-line">No contents data available</div>';
+                    tooltipContent = '<div class="tooltip-line">No contents data</div>';
                 }
 
                 card.innerHTML = `
