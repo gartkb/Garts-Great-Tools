@@ -62,7 +62,7 @@
             background: rgba(46, 204, 113, 0.3);
         }
 
-        /* --- NEW: Graph Link Styling --- */
+        /* --- Graph Link Styling --- */
         .graph-link {
             color: #3498db;
             text-decoration: none;
@@ -119,9 +119,7 @@
         const GEMS_TO_GOLD_ID = 9990002;
 
         // --- Graph Link Configuration ---
-        // Choose ONE URL template by uncommenting the line you want:
-        const GRAPH_URL_TEMPLATE = 'https://en.gw2treasures.com/item/{id}#tp';
-        // const GRAPH_URL_TEMPLATE = 'https://www.gw2bltc.com/en/item/{id}';
+        const GRAPH_URL_TEMPLATE = 'https://en.gw2treasures.com/item/{id}';
 
         const SPECIAL_ITEMS = {
             [GOLD_TO_GEMS_ID]: {
@@ -138,13 +136,69 @@
             }
         };
 
+        // ✅✅✅ CONTAINER ITEMS DEFINITION ✅✅✅
+        // For each container item ID, define its possible outputs.
+        // For each output item, provide:
+        //   - id: GW2 item ID
+        //   - avgQuantity: average number received IF it drops (e.g., 3–5 → avg 4)
+        //   - dropProb: probability (0.0 to 1.0) that this item type appears when container is used
+        //
+        // Expected value = sum( child_sell_price * avgQuantity * dropProb )
+        const CONTAINER_ITEMS = {
+            // Light Crafting Bag (ID 39121)
+            // Source: https://wiki.guildwars2.com/wiki/Light_Crafting_Bag
+            // "Gives 5 of the following 8 items (each 3–5 units)"
+            // → Each has 5/8 = 0.625 chance of being selected
+            // → Avg quantity per selected item = 4
+            39121: {
+                items: [
+                    { id: 24344, avgQuantity: 3, dropProb: 0.625 }, // Bone
+                    { id: 24348, avgQuantity: 3, dropProb: 0.625 }, // Claw
+                    { id: 24274, avgQuantity: 3, dropProb: 0.625 }, // Radiant Dust
+                    { id: 24354, avgQuantity: 3, dropProb: 0.625 }, // Fang
+                    { id: 24286, avgQuantity: 3, dropProb: 0.625 }, // Scale
+                    { id: 24280, avgQuantity: 3, dropProb: 0.625 }, // Venom Sac
+                    { id: 24298, avgQuantity: 3, dropProb: 0.625 }, // Totem
+                    { id: 24292, avgQuantity: 3, dropProb: 0.625 }  // Vial of Blood
+                ]
+            },
+
+            // 🔸 ADD MORE CONTAINERS BELOW 🔸
+            // Example: Black Lion Salvage Kit (ID 43319)
+            // (Use real data from community sources)
+            /*
+            43319: {
+                items: [
+                    { id: 19721, avgQuantity: 1.5, dropProb: 0.70 }, // Ectoplasm: 70% chance, avg 1.5
+                    { id: 24277, avgQuantity: 5.0, dropProb: 1.00 }, // Always drops 5 Crystalline Dust
+                    { id: 24295, avgQuantity: 1.0, dropProb: 0.40 }  // 40% chance of 1 Glob
+                ]
+            },
+            */
+
+            // Another example: Mystic Forge Stone Bag (fictional)
+            /*
+            98765: {
+                items: [
+                    { id: 24528, avgQuantity: 10, dropProb: 1.0 },
+                    { id: 19924, avgQuantity: 1,  dropProb: 0.25 }
+                ]
+            }
+            */
+        };
+
+        // Helper: check if an ID is a container
+        function isContainer(id) {
+            return CONTAINER_ITEMS.hasOwnProperty(id);
+        }
+
         let trackedItems = [19721];
         let staticItemData = null;
         const DEBOUNCE_DELAY = 300;
         let debounceTimer = null;
         let draggedCard = null;
 
-        // --- IndexedDB Helpers ---
+        // --- IndexedDB Helpers (unchanged) ---
         function getDb() {
             return new Promise((resolve, reject) => {
                 const req = indexedDB.open('GW2Cache', 1);
@@ -231,9 +285,11 @@
         // --- Fetch Item Data (API) ---
         async function fetchItemData(itemIds) {
             const resultsMap = new Map();
-            const regularIds = itemIds.filter(id => ![GOLD_TO_GEMS_ID, GEMS_TO_GOLD_ID].includes(id));
-            const specialIds = itemIds.filter(id => [GOLD_TO_GEMS_ID, GEMS_TO_GOLD_ID].includes(id));
+            const specialIds = itemIds.filter(id => id === GOLD_TO_GEMS_ID || id === GEMS_TO_GOLD_ID);
+            const containerIds = itemIds.filter(isContainer);
+            const regularIds = itemIds.filter(id => ![GOLD_TO_GEMS_ID, GEMS_TO_GOLD_ID].includes(id) && !isContainer(id));
 
+            // Fetch regular item details and prices
             if (regularIds.length > 0) {
                 try {
                     const itemDetailsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${regularIds.join(',')}`);
@@ -259,6 +315,7 @@
                 }
             }
 
+            // Handle special items (gold/gems)
             for (const sid of specialIds) {
                 const def = SPECIAL_ITEMS[sid];
                 try {
@@ -291,6 +348,72 @@
                 }
             }
 
+            // Fetch child item prices needed for containers
+            const childItemIds = new Set();
+            for (const cid of containerIds) {
+                const def = CONTAINER_ITEMS[cid];
+                for (const drop of def.items) {
+                    childItemIds.add(drop.id);
+                }
+            }
+
+            let childPriceMap = new Map();
+            if (childItemIds.size > 0) {
+                try {
+                    const childIds = Array.from(childItemIds);
+                    const childRes = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${childIds.join(',')}`);
+                    if (childRes.ok) {
+                        const childPrices = await childRes.json();
+                        for (const c of childPrices) {
+                            childPriceMap.set(c.id, c.sells?.unit_price || null);
+                        }
+                    }
+                } catch (err) {
+                    console.warn('Failed to fetch child prices for containers:', err);
+                }
+            }
+
+            // Resolve container values
+            for (const cid of containerIds) {
+                const def = CONTAINER_ITEMS[cid];
+                let totalValue = 0;
+                let valid = true;
+
+                // First fetch container name/icon from API
+                let name = 'Unknown Container';
+                let icon = null;
+                try {
+                    const itemRes = await fetch(`https://api.guildwars2.com/v2/items/${cid}`);
+                    if (itemRes.ok) {
+                        const itemData = await itemRes.json();
+                        name = itemData.name;
+                        icon = itemData.icon;
+                    }
+                } catch (e) {
+                    console.warn(`Could not fetch container metadata for ${cid}`);
+                }
+
+                // Compute expected value
+                for (const drop of def.items) {
+                    const price = childPriceMap.get(drop.id);
+                    if (price == null) {
+                        valid = false;
+                        break;
+                    }
+                    totalValue += price * (drop.avgQuantity || 0) * (drop.dropProb || 0);
+                }
+
+                resultsMap.set(cid, {
+                    id: cid,
+                    name: name,
+                    icon: icon,
+                    buyPrice: null,
+                    sellPrice: valid ? Math.round(totalValue) : null,
+                    isContainer: true
+                });
+            }
+
+            // Return results in input order
             const orderedResults = [];
             for (const id of itemIds) {
                 if (resultsMap.has(id)) orderedResults.push(resultsMap.get(id));
@@ -323,7 +446,7 @@
             }
         }
 
-        // --- Load Static Item Data with Caching ---
+        // --- Load Static Item Data with Caching (unchanged) ---
         const CACHE_KEY = 'datawars_items';
         const CACHE_TIMESTAMP_KEY = 'datawars_items_timestamp';
         const CACHE_MAX_AGE = 45 * 24 * 60 * 60 * 1000; // 45 days
@@ -352,14 +475,12 @@
                 return staticItemData;
             }
 
-            // Fetch fresh
             console.log(forceRefresh ? '🔄 Forced refresh of item data' : '📥 Fetching fresh item data (cache expired or missing)');
             try {
-                const response = await fetch('datawars_items.json?' + now); // cache-bust
+                const response = await fetch('datawars_items.json?' + now);
                 if (!response.ok) throw new Error('Failed to load datawars_items.json');
                 staticItemData = await response.json();
 
-                // Save to cache
                 await setCachedData(CACHE_KEY, staticItemData);
                 localStorage.setItem(CACHE_TIMESTAMP_KEY, String(now));
 
@@ -371,6 +492,8 @@
                 return cachedData || [];
             }
         }
+
+        // --- Search, UI, and other logic (unchanged below) ---
 
         async function searchItemsByName(query) {
             const lowerQuery = query.toLowerCase().trim();
@@ -546,6 +669,7 @@
             card.draggable = true;
 
             const isSpecial = [GOLD_TO_GEMS_ID, GEMS_TO_GOLD_ID].includes(itemData.id);
+            const isContainer = itemData.isContainer;
 
             if (isSpecial) {
                 const imageElem = `
@@ -580,10 +704,41 @@
                         </div>
                     </div>
                 `;
-            } else {
-                // Generate graph URL by replacing {id} placeholder
+            } else if (isContainer) {
                 const graphUrl = GRAPH_URL_TEMPLATE.replace('{id}', itemData.id);
+                const imageElem = `
+                    <div class="item-image">
+                        <img src="${itemData.icon || 'https://wiki.guildwars2.com/images/d/d1/Inventory_icon.png'}" 
+                             alt="${itemData.name}"
+                             onerror="this.parentElement.innerHTML='<div style=\\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#e74c3c;font-size:0.8rem;text-align:center;\\'>Image<br>Unavailable</div>'">
+                    </div>
+                `;
 
+                card.innerHTML = `
+                    <div class="item-header">
+                        ${imageElem}
+                        <div class="item-info">
+                            <div class="item-name">
+                                <a href="${graphUrl}" target="_blank" rel="noopener" class="graph-link" title="View price graph">📈</a>
+                                ${itemData.name} <span style="color:#f39c12; font-size:0.9em;">(Container)</span>
+                            </div>
+                            <div class="item-id">ID: ${itemData.id} • Expected Value</div>
+                        </div>
+                        <button class="remove-btn-small" data-item-id="${itemData.id}">×</button>
+                    </div>
+                    <div class="item-prices">
+                        <div class="price-row">
+                            <div class="price-label">Expected Value:</div>
+                            ${createCurrencyElement(itemData.sellPrice).outerHTML}
+                        </div>
+                        <div class="price-row">
+                            <div class="price-label">Buy Price:</div>
+                            <span style="color:#e74c3c;">Not Tradable</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                const graphUrl = GRAPH_URL_TEMPLATE.replace('{id}', itemData.id);
                 const imageElem = `
                     <div class="item-image">
                         <img src="${itemData.icon}" alt="${itemData.name}" 
@@ -596,14 +751,8 @@
                         ${imageElem}
                         <div class="item-info">
                             <div class="item-name">
-                                <a href="${graphUrl}" 
-                                   target="_blank" 
-                                   rel="noopener" 
-                                   class="graph-link" 
-                                   aria-label="View price graph"
-                                   title="View price graph">📈</a>
+                                <a href="${graphUrl}" target="_blank" rel="noopener" class="graph-link" title="View price graph">📈</a>
                                 ${itemData.name}
-                                
                             </div>
                             <div class="item-id">ID: ${itemData.id}</div>
                         </div>
@@ -687,16 +836,13 @@
             return false;
         }
 
-        // --- Manual Refresh Handler ---
         async function handleManualRefresh() {
             refreshItemsBtn.disabled = true;
             refreshItemsBtn.textContent = 'Refreshing...';
 
-            // Clear cache
             staticItemData = null;
             localStorage.removeItem(CACHE_TIMESTAMP_KEY);
-            // Optional: also clear IndexedDB entry (but we'll overwrite anyway)
-            await loadStaticItemData(true); // force refresh
+            await loadStaticItemData(true);
 
             refreshItemsBtn.disabled = false;
             refreshItemsBtn.textContent = 'Refresh item IDs from server';
