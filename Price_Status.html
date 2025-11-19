@@ -75,7 +75,6 @@
             opacity: 1;
             color: #2980b9;
         }
-
         /* Container hover tooltip */
         .container-tooltip {
             position: absolute;
@@ -114,7 +113,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
         @media (max-width:768px) { .items-container{grid-template-columns:1fr;} h1{font-size:2rem;} .controls{position:relative;} .search-results{width:95%; left:50%; transform:translateX(-50%);} }
     </style>
 </head>
@@ -412,7 +410,6 @@
                 let totalValue = 0;
                 let valid = true;
                 let childDetails = [];
-
                 let name = 'Unknown Container';
                 let icon = null;
                 try {
@@ -425,7 +422,6 @@
                 } catch (e) {
                     console.warn(`Could not fetch container metadata for ${cid}`);
                 }
-
                 // Fetch child item NAMES
                 const childIds = def.items.map(drop => drop.id);
                 let childNameMap = new Map();
@@ -440,7 +436,6 @@
                 } catch (err) {
                     console.warn('Failed to fetch child names for container', cid, err);
                 }
-
                 // Compute expected value AND store per-child data
                 for (const drop of def.items) {
                     const price = childPriceMap.get(drop.id);
@@ -459,7 +454,6 @@
                         expectedCopper: Math.round(expected)
                     });
                 }
-
                 resultsMap.set(cid, {
                     id: cid,
                     name: name,
@@ -735,7 +729,6 @@
                              onerror="this.parentElement.innerHTML='<div style=\\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#e74c3c;font-size:0.8rem;text-align:center;\\'>Image<br>Unavailable</div>'">
                     </div>
                 `;
-
                 let tooltipContent = '';
                 if (itemData.containerContents && itemData.containerContents.length > 0) {
                     tooltipContent = itemData.containerContents.map(child => {
@@ -753,7 +746,6 @@
                 } else {
                     tooltipContent = '<div class="tooltip-line">No contents data</div>';
                 }
-
                 card.innerHTML = `
                     <div class="item-header">
                         ${imageElem}
@@ -781,15 +773,8 @@
                         ${tooltipContent}
                     </div>
                 `;
-
-                const tooltip = card.querySelector('.container-tooltip');
-                card.addEventListener('mouseenter', () => {
-                    if (draggedCard) return;
-                    tooltip.style.display = 'block';
-                });
-                card.addEventListener('mouseleave', () => {
-                    tooltip.style.display = 'none';
-                });
+                // Do NOT add event listeners here for the specific card
+                // The global listener added later will handle it
             } else {
                 const graphUrl = GRAPH_URL_TEMPLATE.replace('{id}', itemData.id);
                 const imageElem = `
@@ -913,6 +898,34 @@
             });
         }
         init();
+
+        // --- Add this block after the init() function ---
+        // Add event listeners for container tooltips using event delegation
+        itemsContainer.addEventListener('mouseenter', (e) => {
+            const card = e.target.closest('.item-card'); // Find the card element that was actually hovered
+            if (!card) return; // If not hovering directly on a card element, do nothing
+
+            const tooltip = card.querySelector('.container-tooltip');
+            if (tooltip) { // Check if the card has a tooltip (i.e., it's a container)
+                // Prevent showing tooltip if dragging
+                if (draggedCard) {
+                    return;
+                }
+                tooltip.style.display = 'block'; // Show the tooltip found within this specific card
+            }
+        });
+
+        itemsContainer.addEventListener('mouseleave', (e) => {
+            const card = e.target.closest('.item-card'); // Find the card element that the mouse left
+            if (!card) return; // If not leaving directly from a card element, do nothing
+
+            const tooltip = card.querySelector('.container-tooltip');
+            if (tooltip) { // Check if the card has a tooltip
+                tooltip.style.display = 'none'; // Hide the tooltip found within this specific card
+            }
+        });
+        // --- End of new block ---
+
     </script>
     <p></p>
     <a href="https://gartkb.github.io/Garts-Great-Tools/" style="color: yellow; text-decoration: underline;">Gart's Great Tools</a>
