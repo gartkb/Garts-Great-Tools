@@ -164,19 +164,8 @@
             }
         };
         // ✅✅✅ CONTAINER ITEMS DEFINITION ✅✅✅
-        // For each container item ID, define its possible outputs.
-        // For each output item, provide:
-        //   - id: GW2 item ID
-        //   - avgQuantity: average number received IF it drops (e.g., 3–5 → avg 4)
-        //   - dropProb: probability (0.0 to 1.0) that this item type appears when container is used
-        //
-        // Expected value = sum( child_sell_price * avgQuantity * dropProb )
         const CONTAINER_ITEMS = {
             // Light Crafting Bag (ID 39121)
-            // Source: https://wiki.guildwars2.com/wiki/Light_Crafting_Bag
-            // "Gives 5 of the following 8 items (each 3–5 units)"
-            // → Each has 5/8 = 0.625 chance of being selected
-            // → Avg quantity per selected item = 4
             39121: {
                 items: [
                     { id: 24344, avgQuantity: 3, dropProb: 0.625 }, // Bone
@@ -189,18 +178,7 @@
                     { id: 24292, avgQuantity: 3, dropProb: 0.625 }  // Vial of Blood
                 ]
             },
-            // 🔸 ADD MORE CONTAINERS BELOW 🔸
-            // Example: Black Lion Salvage Kit (ID 43319)
-            // (Use real data from community sources)
-            /*
-            43319: {
-                items: [
-                    { id: 19721, avgQuantity: 1.5, dropProb: 0.70 }, // Ectoplasm: 70% chance, avg 1.5
-                    { id: 24277, avgQuantity: 5.0, dropProb: 1.00 }, // Always drops 5 Crystalline Dust
-                    { id: 24295, avgQuantity: 1.0, dropProb: 0.40 }  // 40% chance of 1 Glob
-                ]
-            }, */
-39122: { // Medium Crafting Bag
+            39122: { // Medium Crafting Bag
                 items: [
                     { id: 24275, avgQuantity: 3, dropProb: 0.625 }, // Luminous Dust
                     { id: 24345, avgQuantity: 3, dropProb: 0.625 }, // Heavy Bone
@@ -212,7 +190,7 @@
                     { id: 24293, avgQuantity: 3, dropProb: 0.625 }  // Vial of Thick Blood
                 ]
             },          
- 39124: {  // Heavy Crafting Bag
+            39124: {  // Heavy Crafting Bag
                 items: [
                     { id: 24295, avgQuantity: 1, dropProb: 0.375 }, 
                     { id: 24357, avgQuantity: 1, dropProb: 0.375 }, 
@@ -223,16 +201,7 @@
                     { id: 24351, avgQuantity: 1, dropProb: 0.375 }, 
                     { id: 24283, avgQuantity: 1, dropProb: 0.375 }  
                 ]
-            },                     
-            // Another example: Mystic Forge Stone Bag (fictional)
-            /*
-            98765: {
-                items: [
-                    { id: 24528, avgQuantity: 10, dropProb: 1.0 },
-                    { id: 19924, avgQuantity: 1,  dropProb: 0.25 }
-                ]
             }
-            */
         };
         // Helper: check if an ID is a container
         function isContainer(id) {
@@ -404,7 +373,7 @@
                     console.warn('Failed to fetch child prices for containers:', err);
                 }
             }
-            // Resolve container values — ENHANCED to include breakdown
+            // Resolve container values
             for (const cid of containerIds) {
                 const def = CONTAINER_ITEMS[cid];
                 let totalValue = 0;
@@ -532,7 +501,6 @@
                 return cachedData || [];
             }
         }
-        // --- Search, UI, and other logic (unchanged below) ---
         async function searchItemsByName(query) {
             const lowerQuery = query.toLowerCase().trim();
             const results = [];
@@ -773,8 +741,6 @@
                         ${tooltipContent}
                     </div>
                 `;
-                // Do NOT add event listeners here for the specific card
-                // The global listener added later will handle it
             } else {
                 const graphUrl = GRAPH_URL_TEMPLATE.replace('{id}', itemData.id);
                 const imageElem = `
@@ -807,12 +773,30 @@
                     </div>
                 `;
             }
+            
             const removeBtn = card.querySelector('.remove-btn-small');
             removeBtn.addEventListener('click', e => {
                 e.stopPropagation();
                 const itemId = Number(e.target.dataset.itemId);
                 removeItem(itemId);
             });
+
+            // ✅✅✅ HOVER EVENTS ATTACHED DIRECTLY TO CARD ✅✅✅
+            card.addEventListener('mouseenter', () => {
+                const tooltip = card.querySelector('.container-tooltip');
+                // Only show tooltip if it exists AND we are NOT dragging an item
+                if (tooltip && !draggedCard) { 
+                    tooltip.style.display = 'block';
+                }
+            });
+
+            card.addEventListener('mouseleave', () => {
+                const tooltip = card.querySelector('.container-tooltip');
+                if (tooltip) {
+                    tooltip.style.display = 'none';
+                }
+            });
+
             card.addEventListener('dragstart', handleDragStart);
             card.addEventListener('dragover', handleDragOver);
             card.addEventListener('drop', handleDrop);
@@ -885,49 +869,4 @@
             itemInput.addEventListener('input', () => {
                 const query = itemInput.value.trim();
                 if (!query || /^\d+$/.test(query)) {
-                    hideSearchResults();
-                    return;
-                }
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(async () => {
-                    if (itemInput.value.trim() === query) {
-                        const results = await searchItemsByName(query);
-                        showSearchResults(results);
-                    }
-                }, DEBOUNCE_DELAY);
-            });
-        }
-        init();
-
-        // --- Add this block after the init() function ---
-        // Add event listeners for container tooltips using event delegation
-        itemsContainer.addEventListener('mouseenter', (e) => {
-            const card = e.target.closest('.item-card'); // Find the card element that was actually hovered
-            if (!card) return; // If not hovering directly on a card element, do nothing
-
-            const tooltip = card.querySelector('.container-tooltip');
-            if (tooltip) { // Check if the card has a tooltip (i.e., it's a container)
-                // Prevent showing tooltip if dragging
-                if (draggedCard) {
-                    return;
-                }
-                tooltip.style.display = 'block'; // Show the tooltip found within this specific card
-            }
-        });
-
-        itemsContainer.addEventListener('mouseleave', (e) => {
-            const card = e.target.closest('.item-card'); // Find the card element that the mouse left
-            if (!card) return; // If not leaving directly from a card element, do nothing
-
-            const tooltip = card.querySelector('.container-tooltip');
-            if (tooltip) { // Check if the card has a tooltip
-                tooltip.style.display = 'none'; // Hide the tooltip found within this specific card
-            }
-        });
-        // --- End of new block ---
-
-    </script>
-    <p></p>
-    <a href="https://gartkb.github.io/Garts-Great-Tools/" style="color: yellow; text-decoration: underline;">Gart's Great Tools</a>
-</body>
-</html>
+                    hideSearchResults
