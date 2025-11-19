@@ -166,32 +166,55 @@
             }
         };
         // ✅✅✅ CONTAINER ITEMS DEFINITION ✅✅✅
+        // For each container item ID, define its possible outputs.
+        // For each output item, provide:
+        //   - id: GW2 item ID
+        //   - avgQuantity: average number received IF it drops (e.g., 3–5 → avg 4)
+        //   - dropProb: probability (0.0 to 1.0) that this item type appears when container is used
+        //
+        // Expected value = sum( child_sell_price * avgQuantity * dropProb )
         const CONTAINER_ITEMS = {
+            // Light Crafting Bag (ID 39121)
+            // Source: https://wiki.guildwars2.com/wiki/Light_Crafting_Bag
+            // "Gives 5 of the following 8 items (each 3–5 units)"
+            // → Each has 5/8 = 0.625 chance of being selected
+            // → Avg quantity per selected item = 4
             39121: {
                 items: [
-                    { id: 24344, avgQuantity: 3, dropProb: 0.625 },
-                    { id: 24348, avgQuantity: 3, dropProb: 0.625 },
-                    { id: 24274, avgQuantity: 3, dropProb: 0.625 },
-                    { id: 24354, avgQuantity: 3, dropProb: 0.625 },
-                    { id: 24286, avgQuantity: 3, dropProb: 0.625 },
-                    { id: 24280, avgQuantity: 3, dropProb: 0.625 },
-                    { id: 24298, avgQuantity: 3, dropProb: 0.625 },
-                    { id: 24292, avgQuantity: 3, dropProb: 0.625 }
+                    { id: 24344, avgQuantity: 3, dropProb: 0.625 }, // Bone
+                    { id: 24348, avgQuantity: 3, dropProb: 0.625 }, // Claw
+                    { id: 24274, avgQuantity: 3, dropProb: 0.625 }, // Radiant Dust
+                    { id: 24354, avgQuantity: 3, dropProb: 0.625 }, // Fang
+                    { id: 24286, avgQuantity: 3, dropProb: 0.625 }, // Scale
+                    { id: 24280, avgQuantity: 3, dropProb: 0.625 }, // Venom Sac
+                    { id: 24298, avgQuantity: 3, dropProb: 0.625 }, // Totem
+                    { id: 24292, avgQuantity: 3, dropProb: 0.625 }  // Vial of Blood
                 ]
             },
-            39122: {
+            // 🔸 ADD MORE CONTAINERS BELOW 🔸
+            // Example: Black Lion Salvage Kit (ID 43319)
+            // (Use real data from community sources)
+            /*
+            43319: {
                 items: [
-                    { id: 24275, avgQuantity: 3, dropProb: 0.625 },
-                    { id: 24345, avgQuantity: 3, dropProb: 0.625 },
-                    { id: 24281, avgQuantity: 3, dropProb: 0.625 },
-                    { id: 24349, avgQuantity: 3, dropProb: 0.625 },
-                    { id: 24363, avgQuantity: 3, dropProb: 0.625 },
-                    { id: 24287, avgQuantity: 3, dropProb: 0.625 },
-                    { id: 24355, avgQuantity: 3, dropProb: 0.625 },
-                    { id: 24293, avgQuantity: 3, dropProb: 0.625 }
+                    { id: 19721, avgQuantity: 1.5, dropProb: 0.70 }, // Ectoplasm: 70% chance, avg 1.5
+                    { id: 24277, avgQuantity: 5.0, dropProb: 1.00 }, // Always drops 5 Crystalline Dust
+                    { id: 24295, avgQuantity: 1.0, dropProb: 0.40 }  // 40% chance of 1 Glob
+                ]
+            }, */
+39122: { // Medium Crafting Bag
+                items: [
+                    { id: 24275, avgQuantity: 3, dropProb: 0.625 }, // Luminous Dust
+                    { id: 24345, avgQuantity: 3, dropProb: 0.625 }, // Heavy Bone
+                    { id: 24281, avgQuantity: 3, dropProb: 0.625 }, // Full Venom Sac
+                    { id: 24349, avgQuantity: 3, dropProb: 0.625 }, // Sharp Claw
+                    { id: 24363, avgQuantity: 3, dropProb: 0.625 }, // Engraved Totem
+                    { id: 24287, avgQuantity: 3, dropProb: 0.625 }, // Smooth Scale
+                    { id: 24355, avgQuantity: 3, dropProb: 0.625 }, // Sharp Fang
+                    { id: 24293, avgQuantity: 3, dropProb: 0.625 }  // Vial of Thick Blood
                 ]
             },          
-            39124: {
+ 39124: {  // Heavy Crafting Bag
                 items: [
                     { id: 24295, avgQuantity: 1, dropProb: 0.375 }, 
                     { id: 24357, avgQuantity: 1, dropProb: 0.375 }, 
@@ -202,8 +225,18 @@
                     { id: 24351, avgQuantity: 1, dropProb: 0.375 }, 
                     { id: 24283, avgQuantity: 1, dropProb: 0.375 }  
                 ]
+            },                     
+            // Another example: Mystic Forge Stone Bag (fictional)
+            /*
+            98765: {
+                items: [
+                    { id: 24528, avgQuantity: 10, dropProb: 1.0 },
+                    { id: 19924, avgQuantity: 1,  dropProb: 0.25 }
+                ]
             }
+            */
         };
+        // Helper: check if an ID is a container
         function isContainer(id) {
             return CONTAINER_ITEMS.hasOwnProperty(id);
         }
@@ -212,8 +245,7 @@
         const DEBOUNCE_DELAY = 300;
         let debounceTimer = null;
         let draggedCard = null;
-
-        // --- IndexedDB Helpers ---
+        // --- IndexedDB Helpers (unchanged) ---
         function getDb() {
             return new Promise((resolve, reject) => {
                 const req = indexedDB.open('GW2Cache', 1);
@@ -253,7 +285,7 @@
                 console.warn('Failed to write to IndexedDB:', e);
             }
         }
-
+        // --- Load Tracked Items ---
         function loadTrackedItems() {
             const saved = localStorage.getItem('gw2_tracked_items');
             if (saved) {
@@ -267,7 +299,7 @@
         function saveTrackedItems() {
             localStorage.setItem('gw2_tracked_items', JSON.stringify(trackedItems));
         }
-
+        // --- Currency Formatting ---
         function formatCurrency(copper) {
             if (copper === null || copper === undefined) return { gold: '-', silver: '-', copper: '-' };
             const gold = Math.floor(copper / 10000);
@@ -290,13 +322,13 @@
             `;
             return elem;
         }
-
+        // --- Fetch Item Data (API) ---
         async function fetchItemData(itemIds) {
             const resultsMap = new Map();
             const specialIds = itemIds.filter(id => id === GOLD_TO_GEMS_ID || id === GEMS_TO_GOLD_ID);
             const containerIds = itemIds.filter(isContainer);
             const regularIds = itemIds.filter(id => ![GOLD_TO_GEMS_ID, GEMS_TO_GOLD_ID].includes(id) && !isContainer(id));
-
+            // Fetch regular item details and prices
             if (regularIds.length > 0) {
                 try {
                     const itemDetailsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${regularIds.join(',')}`);
@@ -319,7 +351,7 @@
                     showError('Failed to fetch item data.');
                 }
             }
-
+            // Handle special items (gold/gems)
             for (const sid of specialIds) {
                 const def = SPECIAL_ITEMS[sid];
                 try {
@@ -351,7 +383,7 @@
                     resultsMap.set(sid, { ...def, costFor400Gems: null, returnFor400Gems: null });
                 }
             }
-
+            // Fetch child item prices needed for containers
             const childItemIds = new Set();
             for (const cid of containerIds) {
                 const def = CONTAINER_ITEMS[cid];
@@ -374,8 +406,7 @@
                     console.warn('Failed to fetch child prices for containers:', err);
                 }
             }
-
-            // Resolve container values — ENHANCED to include child names and breakdown
+            // Resolve container values — ENHANCED to include breakdown
             for (const cid of containerIds) {
                 const def = CONTAINER_ITEMS[cid];
                 let totalValue = 0;
@@ -395,6 +426,7 @@
                     console.warn(`Could not fetch container metadata for ${cid}`);
                 }
 
+                // Fetch child item NAMES
                 const childIds = def.items.map(drop => drop.id);
                 let childNameMap = new Map();
                 try {
@@ -409,17 +441,13 @@
                     console.warn('Failed to fetch child names for container', cid, err);
                 }
 
+                // Compute expected value AND store per-child data
                 for (const drop of def.items) {
                     const price = childPriceMap.get(drop.id);
                     const childName = childNameMap.get(drop.id) || `Unknown (${drop.id})`;
                     if (price == null) {
                         valid = false;
-                        childDetails.push({
-                            name: childName,
-                            avgQty: drop.avgQuantity,
-                            prob: drop.dropProb,
-                            expectedCopper: null
-                        });
+                        childDetails.push({ name: childName, avgQty: drop.avgQuantity, prob: drop.dropProb, expectedCopper: null });
                         continue;
                     }
                     const expected = price * (drop.avgQuantity || 0) * (drop.dropProb || 0);
@@ -442,14 +470,13 @@
                     containerContents: childDetails
                 });
             }
-
+            // Return results in input order
             const orderedResults = [];
             for (const id of itemIds) {
                 if (resultsMap.has(id)) orderedResults.push(resultsMap.get(id));
             }
             return orderedResults;
         }
-
         async function fetchAndDisplayItems() {
             if (!trackedItems || trackedItems.length === 0) {
                 itemsContainer.innerHTML = '<div class="loading">No items tracked. Add an item to get started!</div>';
@@ -472,11 +499,10 @@
                 showError('An error occurred while loading items.');
             }
         }
-
+        // --- Load Static Item Data with Caching (unchanged) ---
         const CACHE_KEY = 'datawars_items';
         const CACHE_TIMESTAMP_KEY = 'datawars_items_timestamp';
-        const CACHE_MAX_AGE = 45 * 24 * 60 * 60 * 1000;
-
+        const CACHE_MAX_AGE = 45 * 24 * 60 * 60 * 1000; // 45 days
         async function loadStaticItemData(forceRefresh = false) {
             if (staticItemData && !forceRefresh) return staticItemData;
             const now = Date.now();
@@ -512,7 +538,7 @@
                 return cachedData || [];
             }
         }
-
+        // --- Search, UI, and other logic (unchanged below) ---
         async function searchItemsByName(query) {
             const lowerQuery = query.toLowerCase().trim();
             const results = [];
@@ -546,7 +572,6 @@
                 return true;
             }).slice(0, 15);
         }
-
         function showSearchResults(results) {
             if (!results || results.length === 0) {
                 searchResultsContainer.style.display = 'none';
@@ -579,11 +604,9 @@
             });
             searchResultsContainer.style.display = 'block';
         }
-
         function hideSearchResults() {
             searchResultsContainer.style.display = 'none';
         }
-
         async function addItemById(itemId) {
             const numericId = Number(itemId);
             if (trackedItems.includes(numericId)) {
@@ -615,7 +638,6 @@
                 addItemBtn.textContent = 'Add Item';
             }
         }
-
         async function handleAdd() {
             const query = itemInput.value.trim();
             if (!query) {
@@ -666,7 +688,6 @@
                 addItemBtn.textContent = 'Add Item';
             }
         }
-
         function createItemCard(itemData) {
             const card = document.createElement('div');
             card.className = 'item-card';
@@ -674,7 +695,6 @@
             card.draggable = true;
             const isSpecial = [GOLD_TO_GEMS_ID, GEMS_TO_GOLD_ID].includes(itemData.id);
             const isContainer = itemData.isContainer;
-
             if (isSpecial) {
                 const imageElem = `
                     <div class="item-image">
@@ -802,52 +822,43 @@
                     </div>
                 `;
             }
-
             const removeBtn = card.querySelector('.remove-btn-small');
             removeBtn.addEventListener('click', e => {
                 e.stopPropagation();
                 const itemId = Number(e.target.dataset.itemId);
                 removeItem(itemId);
             });
-
             card.addEventListener('dragstart', handleDragStart);
             card.addEventListener('dragover', handleDragOver);
             card.addEventListener('drop', handleDrop);
             card.addEventListener('dragend', handleDragEnd);
-
             return card;
         }
-
         function removeItem(itemId) {
             trackedItems = trackedItems.filter(id => id !== Number(itemId));
             saveTrackedItems();
             fetchAndDisplayItems();
         }
-
         function showError(message) {
             errorContainer.innerHTML = `<div class="error">${message}</div>`;
             setTimeout(() => { errorContainer.innerHTML = ''; }, 5000);
         }
-
         function handleDragStart(e) {
             draggedCard = this;
             e.dataTransfer.effectAllowed = 'move';
             this.style.opacity = '0.5';
             this.style.cursor = 'grabbing';
         }
-
         function handleDragOver(e) {
             e.preventDefault();
             e.dataTransfer.dropEffect = 'move';
             return false;
         }
-
         function handleDragEnd(e) {
             this.style.opacity = '1';
             this.style.cursor = 'grab';
             draggedCard = null;
         }
-
         function handleDrop(e) {
             e.stopPropagation();
             e.preventDefault();
@@ -865,7 +876,6 @@
             }
             return false;
         }
-
         async function handleManualRefresh() {
             refreshItemsBtn.disabled = true;
             refreshItemsBtn.textContent = 'Refreshing...';
@@ -876,7 +886,6 @@
             refreshItemsBtn.textContent = 'Refresh item IDs from server';
             showError('Item ID database refreshed from server.');
         }
-
         function init() {
             loadTrackedItems();
             fetchAndDisplayItems();
@@ -903,7 +912,6 @@
                 }, DEBOUNCE_DELAY);
             });
         }
-
         init();
     </script>
     <p></p>
