@@ -61,7 +61,6 @@
         .manual-refresh button:hover {
             background: rgba(46, 204, 113, 0.3);
         }
-
         /* --- Graph Link Styling --- */
         .graph-link {
             color: #3498db;
@@ -77,6 +76,45 @@
             color: #2980b9;
         }
 
+        /* Container hover tooltip */
+        .container-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid #3498db;
+            border-radius: 6px;
+            padding: 10px;
+            width: calc(100% - 20px);
+            max-width: 350px;
+            z-index: 5;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            margin-bottom: 8px;
+            display: none; /* controlled by JS */
+        }
+        .tooltip-title {
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+        .tooltip-line {
+            margin: 4px 0;
+            color: #ecf0f1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .child-name {
+            flex: 1;
+            min-width: 120px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         @media (max-width:768px) { .items-container{grid-template-columns:1fr;} h1{font-size:2rem;} .controls{position:relative;} .search-results{width:95%; left:50%; transform:translateX(-50%);} }
     </style>
 </head>
@@ -86,7 +124,6 @@
             <h1>Guild Wars 2 Trading Post Tracker</h1>
             <p class="subtitle">Monitor prices for your favorite items</p>
         </header>
-
         <div class="controls">
             <div class="input-group">
                 <input type="text" id="item-input" placeholder="Enter Item ID, Name, or Partial Name">
@@ -95,18 +132,14 @@
             <p class="search-hint">Examples: "Ectoplasm", "19721", "Gossamer", "Gold to Gems", "Gems to Gold"</p>
             <div id="search-results" class="search-results"></div>
         </div>
-
         <div id="error-container"></div>
-
         <div id="items-container" class="items-container">
             <div class="loading">Loading items...</div>
         </div>
-
         <div class="manual-refresh">
             <button id="refresh-items-btn">Refresh item IDs from server</button>
         </div>
     </div>
-
     <script>
         const itemInput = document.getElementById('item-input');
         const addItemBtn = document.getElementById('add-item-btn');
@@ -114,13 +147,9 @@
         const errorContainer = document.getElementById('error-container');
         const searchResultsContainer = document.getElementById('search-results');
         const refreshItemsBtn = document.getElementById('refresh-items-btn');
-
         const GOLD_TO_GEMS_ID = 9990001;
         const GEMS_TO_GOLD_ID = 9990002;
-
-        // --- Graph Link Configuration ---
         const GRAPH_URL_TEMPLATE = 'https://en.gw2treasures.com/item/{id}';
-
         const SPECIAL_ITEMS = {
             [GOLD_TO_GEMS_ID]: {
                 id: GOLD_TO_GEMS_ID,
@@ -136,59 +165,32 @@
             }
         };
 
-        // ✅✅✅ CONTAINER ITEMS DEFINITION ✅✅✅
-        // For each container item ID, define its possible outputs.
-        // For each output item, provide:
-        //   - id: GW2 item ID
-        //   - avgQuantity: average number received IF it drops (e.g., 3–5 → avg 4)
-        //   - dropProb: probability (0.0 to 1.0) that this item type appears when container is used
-        //
-        // Expected value = sum( child_sell_price * avgQuantity * dropProb )
         const CONTAINER_ITEMS = {
-            // Light Crafting Bag (ID 39121)
-            // Source: https://wiki.guildwars2.com/wiki/Light_Crafting_Bag
-            // "Gives 5 of the following 8 items (each 3–5 units)"
-            // → Each has 5/8 = 0.625 chance of being selected
-            // → Avg quantity per selected item = 4
             39121: {
                 items: [
-                    { id: 24344, avgQuantity: 3, dropProb: 0.625 }, // Bone
-                    { id: 24348, avgQuantity: 3, dropProb: 0.625 }, // Claw
-                    { id: 24274, avgQuantity: 3, dropProb: 0.625 }, // Radiant Dust
-                    { id: 24354, avgQuantity: 3, dropProb: 0.625 }, // Fang
-                    { id: 24286, avgQuantity: 3, dropProb: 0.625 }, // Scale
-                    { id: 24280, avgQuantity: 3, dropProb: 0.625 }, // Venom Sac
-                    { id: 24298, avgQuantity: 3, dropProb: 0.625 }, // Totem
-                    { id: 24292, avgQuantity: 3, dropProb: 0.625 }  // Vial of Blood
+                    { id: 24344, avgQuantity: 3, dropProb: 0.625 },
+                    { id: 24348, avgQuantity: 3, dropProb: 0.625 },
+                    { id: 24274, avgQuantity: 3, dropProb: 0.625 },
+                    { id: 24354, avgQuantity: 3, dropProb: 0.625 },
+                    { id: 24286, avgQuantity: 3, dropProb: 0.625 },
+                    { id: 24280, avgQuantity: 3, dropProb: 0.625 },
+                    { id: 24298, avgQuantity: 3, dropProb: 0.625 },
+                    { id: 24292, avgQuantity: 3, dropProb: 0.625 }
                 ]
             },
-
-            // 🔸 ADD MORE CONTAINERS BELOW 🔸
-            // Example: Black Lion Salvage Kit (ID 43319)
-            // (Use real data from community sources)
-            /*
-            43319: {
+            39122: {
                 items: [
-                    { id: 19721, avgQuantity: 1.5, dropProb: 0.70 }, // Ectoplasm: 70% chance, avg 1.5
-                    { id: 24277, avgQuantity: 5.0, dropProb: 1.00 }, // Always drops 5 Crystalline Dust
-                    { id: 24295, avgQuantity: 1.0, dropProb: 0.40 }  // 40% chance of 1 Glob
-                ]
-            }, */
-            
-39122: { // Medium Crafting Bag
-                items: [
-                    { id: 24275, avgQuantity: 3, dropProb: 0.625 }, // Luminous Dust
-                    { id: 24345, avgQuantity: 3, dropProb: 0.625 }, // Heavy Bone
-                    { id: 24281, avgQuantity: 3, dropProb: 0.625 }, // Full Venom Sac
-                    { id: 24349, avgQuantity: 3, dropProb: 0.625 }, // Sharp Claw
-                    { id: 24363, avgQuantity: 3, dropProb: 0.625 }, // Engraved Totem
-                    { id: 24287, avgQuantity: 3, dropProb: 0.625 }, // Smooth Scale
-                    { id: 24355, avgQuantity: 3, dropProb: 0.625 }, // Sharp Fang
-                    { id: 24293, avgQuantity: 3, dropProb: 0.625 }  // Vial of Thick Blood
+                    { id: 24275, avgQuantity: 3, dropProb: 0.625 },
+                    { id: 24345, avgQuantity: 3, dropProb: 0.625 },
+                    { id: 24281, avgQuantity: 3, dropProb: 0.625 },
+                    { id: 24349, avgQuantity: 3, dropProb: 0.625 },
+                    { id: 24363, avgQuantity: 3, dropProb: 0.625 },
+                    { id: 24287, avgQuantity: 3, dropProb: 0.625 },
+                    { id: 24355, avgQuantity: 3, dropProb: 0.625 },
+                    { id: 24293, avgQuantity: 3, dropProb: 0.625 }
                 ]
             },          
-            
- 39124: {  // Heavy Crafting Bag
+            39124: {
                 items: [
                     { id: 24295, avgQuantity: 1, dropProb: 0.375 }, 
                     { id: 24357, avgQuantity: 1, dropProb: 0.375 }, 
@@ -199,22 +201,9 @@
                     { id: 24351, avgQuantity: 1, dropProb: 0.375 }, 
                     { id: 24283, avgQuantity: 1, dropProb: 0.375 }  
                 ]
-            },                     
-            
-            
-
-            // Another example: Mystic Forge Stone Bag (fictional)
-            /*
-            98765: {
-                items: [
-                    { id: 24528, avgQuantity: 10, dropProb: 1.0 },
-                    { id: 19924, avgQuantity: 1,  dropProb: 0.25 }
-                ]
             }
-            */
         };
 
-        // Helper: check if an ID is a container
         function isContainer(id) {
             return CONTAINER_ITEMS.hasOwnProperty(id);
         }
@@ -225,7 +214,7 @@
         let debounceTimer = null;
         let draggedCard = null;
 
-        // --- IndexedDB Helpers (unchanged) ---
+        // --- IndexedDB Helpers ---
         function getDb() {
             return new Promise((resolve, reject) => {
                 const req = indexedDB.open('GW2Cache', 1);
@@ -239,7 +228,6 @@
                 };
             });
         }
-
         async function getCachedData(key) {
             try {
                 const db = await getDb();
@@ -255,7 +243,6 @@
                 return null;
             }
         }
-
         async function setCachedData(key, data) {
             try {
                 const db = await getDb();
@@ -268,7 +255,6 @@
             }
         }
 
-        // --- Load Tracked Items ---
         function loadTrackedItems() {
             const saved = localStorage.getItem('gw2_tracked_items');
             if (saved) {
@@ -279,12 +265,10 @@
                 }
             }
         }
-
         function saveTrackedItems() {
             localStorage.setItem('gw2_tracked_items', JSON.stringify(trackedItems));
         }
 
-        // --- Currency Formatting ---
         function formatCurrency(copper) {
             if (copper === null || copper === undefined) return { gold: '-', silver: '-', copper: '-' };
             const gold = Math.floor(copper / 10000);
@@ -292,7 +276,6 @@
             const copperRemainder = copper % 100;
             return { gold, silver, copper: copperRemainder };
         }
-
         function createCurrencyElement(copperValue) {
             const { gold, silver, copper } = formatCurrency(copperValue);
             const elem = document.createElement('div');
@@ -309,23 +292,19 @@
             return elem;
         }
 
-        // --- Fetch Item Data (API) ---
         async function fetchItemData(itemIds) {
             const resultsMap = new Map();
             const specialIds = itemIds.filter(id => id === GOLD_TO_GEMS_ID || id === GEMS_TO_GOLD_ID);
             const containerIds = itemIds.filter(isContainer);
             const regularIds = itemIds.filter(id => ![GOLD_TO_GEMS_ID, GEMS_TO_GOLD_ID].includes(id) && !isContainer(id));
 
-            // Fetch regular item details and prices
             if (regularIds.length > 0) {
                 try {
                     const itemDetailsResponse = await fetch(`https://api.guildwars2.com/v2/items?ids=${regularIds.join(',')}`);
                     if (!itemDetailsResponse.ok) throw new Error('Failed to fetch item details');
                     const itemDetails = await itemDetailsResponse.json();
-
                     const commerceResponse = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${regularIds.join(',')}`);
                     const commerceData = commerceResponse.ok ? await commerceResponse.json() : [];
-
                     for (const item of itemDetails) {
                         const commerceItem = commerceData.find(c => c.id === item.id);
                         resultsMap.set(item.id, {
@@ -342,7 +321,6 @@
                 }
             }
 
-            // Handle special items (gold/gems)
             for (const sid of specialIds) {
                 const def = SPECIAL_ITEMS[sid];
                 try {
@@ -375,7 +353,6 @@
                 }
             }
 
-            // Fetch child item prices needed for containers
             const childItemIds = new Set();
             for (const cid of containerIds) {
                 const def = CONTAINER_ITEMS[cid];
@@ -383,7 +360,6 @@
                     childItemIds.add(drop.id);
                 }
             }
-
             let childPriceMap = new Map();
             if (childItemIds.size > 0) {
                 try {
@@ -405,8 +381,8 @@
                 const def = CONTAINER_ITEMS[cid];
                 let totalValue = 0;
                 let valid = true;
+                let childDetails = [];
 
-                // First fetch container name/icon from API
                 let name = 'Unknown Container';
                 let icon = null;
                 try {
@@ -420,14 +396,41 @@
                     console.warn(`Could not fetch container metadata for ${cid}`);
                 }
 
-                // Compute expected value
+                const childIds = def.items.map(drop => drop.id);
+                let childNameMap = new Map();
+                try {
+                    const namesRes = await fetch(`https://api.guildwars2.com/v2/items?ids=${childIds.join(',')}`);
+                    if (namesRes.ok) {
+                        const nameData = await namesRes.json();
+                        for (const n of nameData) {
+                            childNameMap.set(n.id, n.name);
+                        }
+                    }
+                } catch (err) {
+                    console.warn('Failed to fetch child names for container', cid, err);
+                }
+
                 for (const drop of def.items) {
                     const price = childPriceMap.get(drop.id);
+                    const childName = childNameMap.get(drop.id) || `Unknown Item (${drop.id})`;
                     if (price == null) {
                         valid = false;
-                        break;
+                        childDetails.push({
+                            name: childName,
+                            avgQty: drop.avgQuantity,
+                            prob: drop.dropProb,
+                            expectedCopper: null
+                        });
+                        continue;
                     }
-                    totalValue += price * (drop.avgQuantity || 0) * (drop.dropProb || 0);
+                    const expected = price * (drop.avgQuantity || 0) * (drop.dropProb || 0);
+                    totalValue += expected;
+                    childDetails.push({
+                        name: childName,
+                        avgQty: drop.avgQuantity,
+                        prob: drop.dropProb,
+                        expectedCopper: Math.round(expected)
+                    });
                 }
 
                 resultsMap.set(cid, {
@@ -436,11 +439,11 @@
                     icon: icon,
                     buyPrice: null,
                     sellPrice: valid ? Math.round(totalValue) : null,
-                    isContainer: true
+                    isContainer: true,
+                    containerContents: childDetails
                 });
             }
 
-            // Return results in input order
             const orderedResults = [];
             for (const id of itemIds) {
                 if (resultsMap.has(id)) orderedResults.push(resultsMap.get(id));
@@ -453,9 +456,7 @@
                 itemsContainer.innerHTML = '<div class="loading">No items tracked. Add an item to get started!</div>';
                 return;
             }
-
             itemsContainer.innerHTML = '<div class="loading">Loading items...</div>';
-
             try {
                 const items = await fetchItemData(trackedItems);
                 itemsContainer.innerHTML = '';
@@ -473,18 +474,15 @@
             }
         }
 
-        // --- Load Static Item Data with Caching (unchanged) ---
         const CACHE_KEY = 'datawars_items';
         const CACHE_TIMESTAMP_KEY = 'datawars_items_timestamp';
-        const CACHE_MAX_AGE = 45 * 24 * 60 * 60 * 1000; // 45 days
+        const CACHE_MAX_AGE = 45 * 24 * 60 * 60 * 1000;
 
         async function loadStaticItemData(forceRefresh = false) {
             if (staticItemData && !forceRefresh) return staticItemData;
-
             const now = Date.now();
             let useCache = false;
             let cachedData = null;
-
             if (!forceRefresh) {
                 const cachedAt = localStorage.getItem(CACHE_TIMESTAMP_KEY);
                 const isStale = !cachedAt || (now - Number(cachedAt) > CACHE_MAX_AGE);
@@ -495,22 +493,18 @@
                     }
                 }
             }
-
             if (useCache) {
                 staticItemData = cachedData;
                 console.log('✅ Loaded item data from IndexedDB cache');
                 return staticItemData;
             }
-
             console.log(forceRefresh ? '🔄 Forced refresh of item data' : '📥 Fetching fresh item data (cache expired or missing)');
             try {
                 const response = await fetch('datawars_items.json?' + now);
                 if (!response.ok) throw new Error('Failed to load datawars_items.json');
                 staticItemData = await response.json();
-
                 await setCachedData(CACHE_KEY, staticItemData);
                 localStorage.setItem(CACHE_TIMESTAMP_KEY, String(now));
-
                 console.log('💾 Cached item data to IndexedDB');
                 return staticItemData;
             } catch (error) {
@@ -520,12 +514,9 @@
             }
         }
 
-        // --- Search, UI, and other logic (unchanged below) ---
-
         async function searchItemsByName(query) {
             const lowerQuery = query.toLowerCase().trim();
             const results = [];
-
             if (
                 (lowerQuery.includes('gold') && lowerQuery.includes('gem')) ||
                 lowerQuery.includes('gold to gems') ||
@@ -540,7 +531,6 @@
             ) {
                 results.push(SPECIAL_ITEMS[GEMS_TO_GOLD_ID]);
             }
-
             await loadStaticItemData();
             if (staticItemData && staticItemData.length > 0) {
                 for (const item of staticItemData) {
@@ -550,7 +540,6 @@
                     }
                 }
             }
-
             const seen = new Set();
             return results.filter(item => {
                 if (seen.has(item.id)) return false;
@@ -564,7 +553,6 @@
                 searchResultsContainer.style.display = 'none';
                 return;
             }
-
             searchResultsContainer.innerHTML = '';
             results.forEach(item => {
                 const div = document.createElement('div');
@@ -590,7 +578,6 @@
                 });
                 searchResultsContainer.appendChild(div);
             });
-
             searchResultsContainer.style.display = 'block';
         }
 
@@ -604,10 +591,8 @@
                 showError('This item is already being tracked');
                 return;
             }
-
             addItemBtn.disabled = true;
             addItemBtn.innerHTML = '<span class="spinner"></span> Adding...';
-
             try {
                 if ([GOLD_TO_GEMS_ID, GEMS_TO_GOLD_ID].includes(numericId)) {
                     trackedItems.push(numericId);
@@ -616,11 +601,9 @@
                     itemInput.value = '';
                     return;
                 }
-
                 const response = await fetch(`https://api.guildwars2.com/v2/items/${numericId}`);
                 if (!response.ok) throw new Error('Invalid item ID');
                 const item = await response.json();
-
                 trackedItems.push(Number(item.id));
                 saveTrackedItems();
                 fetchAndDisplayItems();
@@ -640,13 +623,11 @@
                 showError('Please enter an item ID or name');
                 return;
             }
-
             const id = parseInt(query, 10);
             if (!isNaN(id) && id > 0) {
                 await addItemById(id);
                 return;
             }
-
             if (query.toLowerCase() === 'gold to gems') {
                 if (!trackedItems.includes(GOLD_TO_GEMS_ID)) {
                     trackedItems.push(GOLD_TO_GEMS_ID);
@@ -669,10 +650,8 @@
                 }
                 return;
             }
-
             addItemBtn.disabled = true;
             addItemBtn.innerHTML = '<span class="spinner"></span> Searching...';
-
             try {
                 const results = await searchItemsByName(query);
                 if (results.length === 0) {
@@ -694,7 +673,6 @@
             card.className = 'item-card';
             card.dataset.itemId = itemData.id;
             card.draggable = true;
-
             const isSpecial = [GOLD_TO_GEMS_ID, GEMS_TO_GOLD_ID].includes(itemData.id);
             const isContainer = itemData.isContainer;
 
@@ -705,7 +683,6 @@
                              onerror="this.parentElement.innerHTML='<div style=\\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#e74c3c;font-size:0.8rem;text-align:center;\\'>Image<br>Unavailable</div>'">
                     </div>
                 `;
-
                 let priceLabel, priceValue;
                 if (itemData.id === GOLD_TO_GEMS_ID) {
                     priceLabel = 'Cost for 400 Gems:';
@@ -714,7 +691,6 @@
                     priceLabel = 'Return for 400 Gems:';
                     priceValue = createCurrencyElement(itemData.returnFor400Gems);
                 }
-
                 card.innerHTML = `
                     <div class="item-header">
                         ${imageElem}
@@ -741,6 +717,24 @@
                     </div>
                 `;
 
+                let tooltipContent = '';
+                if (itemData.containerContents && itemData.containerContents.length > 0) {
+                    tooltipContent = itemData.containerContents.map(child => {
+                        const qtyProb = `${child.avgQty} × ${(child.prob * 100).toFixed(1)}%`;
+                        if (child.expectedCopper === null) {
+                            return `<div class="tooltip-line"><span class="child-name">${child.name}</span> • ${qtyProb} • <span style="color:#e74c3c">Price N/A</span></div>`;
+                        }
+                        const { gold, silver, copper } = formatCurrency(child.expectedCopper);
+                        const parts = [];
+                        if (gold > 0) parts.push(`<span class="gold">${gold}g</span>`);
+                        if (silver > 0) parts.push(`<span class="silver">${silver}s</span>`);
+                        parts.push(`<span class="copper">${copper}c</span>`);
+                        return `<div class="tooltip-line"><span class="child-name">${child.name}</span> • ${qtyProb} • ≈ ${parts.join(' ')}</div>`;
+                    }).join('');
+                } else {
+                    tooltipContent = '<div class="tooltip-line">No contents data available</div>';
+                }
+
                 card.innerHTML = `
                     <div class="item-header">
                         ${imageElem}
@@ -763,7 +757,20 @@
                             <span style="color:#e74c3c;">Not Tradable</span>
                         </div>
                     </div>
+                    <div class="container-tooltip" style="display:none;">
+                        <div class="tooltip-title">Contents Breakdown:</div>
+                        ${tooltipContent}
+                    </div>
                 `;
+
+                const tooltip = card.querySelector('.container-tooltip');
+                card.addEventListener('mouseenter', () => {
+                    if (draggedCard) return;
+                    tooltip.style.display = 'block';
+                });
+                card.addEventListener('mouseleave', () => {
+                    tooltip.style.display = 'none';
+                });
             } else {
                 const graphUrl = GRAPH_URL_TEMPLATE.replace('{id}', itemData.id);
                 const imageElem = `
@@ -772,7 +779,6 @@
                              onerror="this.parentElement.innerHTML='<div style=\\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#e74c3c;font-size:0.8rem;text-align:center;\\'>Image<br>Unavailable</div>'">
                     </div>
                 `;
-
                 card.innerHTML = `
                     <div class="item-header">
                         ${imageElem}
@@ -849,10 +855,8 @@
             if (draggedCard && draggedCard !== this) {
                 const draggedId = Number(draggedCard.dataset.itemId);
                 const targetId = Number(this.dataset.itemId);
-
                 const currentIndex = trackedItems.indexOf(draggedId);
                 const targetIndex = trackedItems.indexOf(targetId);
-
                 if (currentIndex !== -1 && targetIndex !== -1 && currentIndex !== targetIndex) {
                     const [removed] = trackedItems.splice(currentIndex, 1);
                     trackedItems.splice(targetIndex, 0, removed);
@@ -866,11 +870,9 @@
         async function handleManualRefresh() {
             refreshItemsBtn.disabled = true;
             refreshItemsBtn.textContent = 'Refreshing...';
-
             staticItemData = null;
             localStorage.removeItem(CACHE_TIMESTAMP_KEY);
             await loadStaticItemData(true);
-
             refreshItemsBtn.disabled = false;
             refreshItemsBtn.textContent = 'Refresh item IDs from server';
             showError('Item ID database refreshed from server.');
@@ -879,25 +881,20 @@
         function init() {
             loadTrackedItems();
             fetchAndDisplayItems();
-
             addItemBtn.addEventListener('click', handleAdd);
             refreshItemsBtn.addEventListener('click', handleManualRefresh);
-
             itemInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') handleAdd();
             });
-
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('.controls')) hideSearchResults();
             });
-
             itemInput.addEventListener('input', () => {
                 const query = itemInput.value.trim();
                 if (!query || /^\d+$/.test(query)) {
                     hideSearchResults();
                     return;
                 }
-
                 clearTimeout(debounceTimer);
                 debounceTimer = setTimeout(async () => {
                     if (itemInput.value.trim() === query) {
@@ -910,7 +907,6 @@
 
         init();
     </script>
-
     <p></p>
     <a href="https://gartkb.github.io/Garts-Great-Tools/" style="color: yellow; text-decoration: underline;">Gart's Great Tools</a>
 </body>
