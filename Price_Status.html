@@ -70,8 +70,11 @@
         .item-header { position:relative; padding:15px; background:rgba(52,152,219,0.2); display:flex; align-items:center; border-radius: 10px 10px 0 0; }
         .item-image { width:60px; height:60px; background:#1c1c1c; border-radius:5px; margin-right:15px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
         .item-image img { max-width:100%; max-height:100%; object-fit:contain; }
-        .item-info { flex:1; overflow:visible; } 
-        .item-name { font-size:1rem; font-weight:bold; margin-bottom:5px; white-space:nowrap; display:flex; align-items:center; }
+        
+        .item-info { flex: 1; overflow: hidden; min-width: 0; margin-right: 45px; } 
+        .item-name { font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; white-space: nowrap; display: block; overflow: hidden; text-overflow: ellipsis; }
+        .item-name a, .item-name span { vertical-align: middle; display: inline-block; }
+
         .item-id { color:#95a5a6; font-size:.9rem; display:flex; align-items:center; gap: 10px; min-height: 24px; }
         
         .order-icon { cursor: pointer; font-size: 1.2rem; transition: transform 0.2s; display: inline-flex; align-items: center; justify-content: center; border-radius: 4px; padding: 0 2px; }
@@ -105,12 +108,6 @@
         .graph-link { color: #3498db; text-decoration: none; margin-left: 6px; font-size: 1.1rem; vertical-align: middle; opacity: 0.9; transition: opacity 0.2s, color 0.2s; }
         .graph-link:hover { opacity: 1; color: #2980b9; }
 
-        .info-icon-wrapper { display: inline-block; position: relative; cursor: help; margin-left: 8px; font-size: 1.2rem; line-height: 1; }
-        .container-tooltip { display: none; position: absolute; bottom: 125%; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.95); border: 1px solid #3498db; border-radius: 6px; padding: 10px; width: 280px; z-index: 1000; font-size: 0.85rem; box-shadow: 0 4px 15px rgba(0,0,0,0.6); text-align: left; pointer-events: none; white-space: normal; }
-        .info-icon-wrapper:hover .container-tooltip { display: block; }
-        .tooltip-title { font-weight: bold; color: #3498db; margin-bottom: 6px; font-size: 0.9rem; border-bottom: 1px solid rgba(52,152,219,0.3); padding-bottom: 4px; }
-        .tooltip-line { margin: 4px 0; color: #ecf0f1; display: flex; justify-content: space-between; }
-
         /* --- MODAL STYLES --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
         .modal-content { background: #2c3e50; border: 1px solid #3498db; border-radius: 8px; width: 95%; max-width: 900px; padding: 20px; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.5); max-height: 90vh; display: flex; flex-direction: column; }
@@ -126,11 +123,9 @@
         .api-key-mask { color: #95a5a6; font-family: monospace; font-size: 0.8rem; margin-left: 10px; }
         .delete-key-btn { background: #e74c3c; padding: 5px 10px; font-size: 0.8rem; }
 
-        /* Global Toggle */
         .global-toggle { margin-bottom: 20px; padding: 15px; background: rgba(46, 204, 113, 0.1); border-radius: 5px; display:flex; align-items: center; border: 1px solid rgba(46, 204, 113, 0.3); }
         .global-toggle label { cursor: pointer; font-weight: bold; color: #2ecc71; margin-left: 10px; font-size: 1.05rem; }
 
-        /* Guild List in Modal */
         .guild-list { margin-top: 10px; display: flex; flex-direction: column; gap: 5px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
         .guild-item { display: flex; align-items: center; background: rgba(0,0,0,0.2); padding: 8px 12px; border-radius: 4px; }
         .guild-item label { flex: 1; margin-left: 10px; cursor: pointer; color: #ecf0f1; display: flex; justify-content: space-between; }
@@ -142,7 +137,7 @@
         .data-table th { text-align: left; color: #95a5a6; padding: 8px; border-bottom: 1px solid #3498db; }
         .data-table td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); vertical-align: middle; }
         .col-account { font-weight: bold; color: #2ecc71; }
-        .col-guild { font-weight: bold; color: #e67e22; } /* Orange for guilds */
+        .col-guild { font-weight: bold; color: #e67e22; } 
         .col-qty { color: #f1c40f; font-weight: bold; }
         .col-date { font-size: 0.8rem; color: #bdc3c7; }
         
@@ -251,6 +246,19 @@
             </div>
             <div class="modal-body">
                 <div id="inventory-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Container Content Modal -->
+    <div id="container-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="container-modal-title">Container Contents</span>
+                <button class="modal-close" onclick="closeModal('container-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="container-content"></div>
             </div>
         </div>
     </div>
@@ -595,6 +603,7 @@
         async function discoverGuilds() {
             if(apiKeys.length === 0) return;
             let newGuildsFound = false;
+            const currentValidGuilds = new Set();
 
             const promises = apiKeys.map(async (account) => {
                 try {
@@ -602,29 +611,36 @@
                     if(!accRes.ok) return;
                     const accInfo = await accRes.json();
                     
-                    // "Lightweight" means we ONLY use what v2/account tells us.
-                    // accInfo.guild_leader contains ONLY IDs where the account has leader privs.
-                    // This avoids trial-and-error stash fetching.
-                    
                     if(accInfo.guild_leader && Array.isArray(accInfo.guild_leader)) {
                         for (const guildId of accInfo.guild_leader) {
-                            if(knownGuilds[guildId]) continue; // Already known
+                            currentValidGuilds.add(guildId);
                             
-                            // 3. Get Guild Details (Public)
-                            try {
-                                const gRes = await fetch(`https://api.guildwars2.com/v2/guild/${guildId}`);
-                                if(gRes.ok) {
-                                    const gInfo = await gRes.json();
-                                    knownGuilds[guildId] = { name: gInfo.name, tag: gInfo.tag };
-                                    newGuildsFound = true;
-                                }
-                            } catch(e) {}
+                            if(!knownGuilds[guildId]) {
+                                try {
+                                    const gRes = await fetch(`https://api.guildwars2.com/v2/guild/${guildId}`);
+                                    if(gRes.ok) {
+                                        const gInfo = await gRes.json();
+                                        knownGuilds[guildId] = { name: gInfo.name, tag: gInfo.tag };
+                                        newGuildsFound = true;
+                                    }
+                                } catch(e) {}
+                            }
                         }
                     }
                 } catch(e) {}
             });
 
             await Promise.all(promises);
+
+            // Clean up old/removed guilds from list
+            Object.keys(knownGuilds).forEach(gid => {
+                if(!currentValidGuilds.has(gid)) {
+                    delete knownGuilds[gid];
+                    disabledGuilds.delete(gid);
+                    newGuildsFound = true;
+                }
+            });
+
             if(newGuildsFound) {
                 saveSettings();
                 renderGuildSettings();
@@ -636,7 +652,6 @@
         async function fetchGlobalData() {
             itemsContainer.innerHTML = '<div class="loading">Loading all tracked items...</div>';
             
-            // Trigger lightweight guild discovery in background
             discoverGuilds();
 
             const allIds = [...new Set(itemTabs.flatMap(t => t.items))];
@@ -646,12 +661,11 @@
                 fetchAccountData()
             ];
 
-            // Only fetch Inventory if enabled
             if(enableInventory) {
                 itemsContainer.innerHTML = '<div class="loading">Loading items and scanning inventories...</div>';
                 promises.push(fetchAccountInventories());
             } else {
-                globalInventoryMap.clear(); // Clear old data
+                globalInventoryMap.clear(); 
             }
             
             try {
@@ -664,7 +678,6 @@
                 });
 
                 renderActiveTab();
-                // Refresh settings UI with any newly discovered guilds
                 if(enableInventory) renderGuildSettings(); 
 
             } catch (e) {
@@ -727,10 +740,8 @@
                 });
 
                 const deliveryNameMap = new Map();
-                // Resolve names if we have IDs to lookup
                 if (deliveryItemIds.size > 0) {
                     const idsToFetch = Array.from(deliveryItemIds);
-                    // First check cache
                     if (!staticItemData) await loadStaticItemData();
                     const fromCache = (staticItemData || []).filter(i => idsToFetch.includes(i.id));
                     fromCache.forEach(i => deliveryNameMap.set(i.id, { name: i.name, icon: i.icon }));
@@ -748,7 +759,6 @@
                     if (res.data.coins > 0 || res.data.items.length > 0) {
                         hasDeliveryItems = true;
                         const enrichedItems = res.data.items.map(i => {
-                            // Fallback if name resolution failed
                             const info = deliveryNameMap.get(i.id) || { name: `Item ${i.id}`, icon: '' };
                             return { ...i, ...info };
                         });
@@ -840,13 +850,11 @@
                     // 5. Guild Stashes (Strict Access Check)
                     try {
                         const accInfo = await fetch(`https://api.guildwars2.com/v2/account?access_token=${account.key}`).then(r=>r.json());
-                        // Only scan guilds present in guild_leader array
                         if(accInfo.guild_leader && Array.isArray(accInfo.guild_leader)) {
                             for (const guildId of accInfo.guild_leader) {
                                 if(processedGuilds.has(guildId)) continue;
                                 processedGuilds.add(guildId);
 
-                                // Skip if explicitly disabled by user
                                 if(disabledGuilds.has(guildId)) continue;
                                 
                                 try {
@@ -855,7 +863,6 @@
                                         return res.json();
                                     });
 
-                                    // If we are here, we have access.
                                     const guildDetails = knownGuilds[guildId] || { name: 'Unknown Guild', tag: '???' };
                                     const guildName = `Guild: ${guildDetails.name} [${guildDetails.tag}]`;
 
@@ -897,7 +904,6 @@
                 return;
             }
             
-            // Group by Owner -> then Source (Aggregate)
             const groups = {};
             let grandTotal = 0;
 
@@ -942,7 +948,6 @@
             content.innerHTML = html;
         }
 
-        // Restored Function to Fix Emojis
         function openOrderModal(type, itemId, itemName) {
             const modalTitle = document.getElementById('order-modal-title');
             const content = document.getElementById('order-content');
@@ -976,6 +981,38 @@
                     <td class="col-date">${dateStr}</td>
                 </tr>`;
             });
+            html += `</tbody></table>`;
+            content.innerHTML = html;
+        }
+
+        function openContainerModal(itemId) {
+            const modal = document.getElementById('container-modal');
+            const content = document.getElementById('container-content');
+            const title = document.getElementById('container-modal-title');
+            const itemData = globalItemData.get(itemId);
+
+            if (!itemData || !itemData.isContainer) return;
+
+            title.textContent = `Container: ${itemData.name}`;
+            modal.style.display = 'flex';
+
+            let html = `<table class="data-table"><thead><tr><th>Item Name</th><th>Chance / Qty</th><th>Expected Value</th></tr></thead><tbody>`;
+
+            itemData.containerContents.forEach(c => {
+                const probText = `${c.avgQty}x (${(c.prob*100).toFixed(0)}%)`;
+                let valueHtml = '<span style="color:#7f8c8d;">N/A</span>';
+                
+                if (c.expectedCopper !== null) {
+                    valueHtml = createCurrencyElement(c.expectedCopper).outerHTML;
+                }
+
+                html += `<tr>
+                    <td>${c.name}</td>
+                    <td>${probText}</td>
+                    <td>${valueHtml}</td>
+                </tr>`;
+            });
+
             html += `</tbody></table>`;
             content.innerHTML = html;
         }
@@ -1168,7 +1205,12 @@
             if (orders.sells.length > 0) emojisHtml += `<span class="order-icon icon-sell" onclick="openOrderModal('sells', ${itemData.id}, '${safeName}')" title="You have active Sell Orders">🏷️</span>`;
             if (inventory.length > 0) emojisHtml += `<span class="order-icon icon-inv" onclick="openInventoryModal(${itemData.id}, '${safeName}')" title="You possess this item">👜</span>`;
 
-            const idHtml = isSpecial ? 'Special' : `ID: ${itemData.id} ${emojisHtml}`;
+            let containerEmoji = '';
+            if (itemData.isContainer) {
+                containerEmoji = `<span class="order-icon icon-info" onclick="openContainerModal(${itemData.id})" title="View Contents">ℹ️</span>`;
+            }
+
+            const idHtml = isSpecial ? 'Special' : `ID: ${itemData.id} ${emojisHtml} ${containerEmoji}`;
             
             const actionBtns = `
                 <div class="card-actions">
@@ -1194,19 +1236,11 @@
                         <div class="price-row"><div class="price-label">${label}</div>${createCurrencyElement(val).outerHTML}</div>
                     </div>`;
             } else if (itemData.isContainer) {
-                const content = itemData.containerContents.map(c => {
-                    const probText = `${c.avgQty}x (${(c.prob*100).toFixed(0)}%)`;
-                    if (c.expectedCopper === null) return `<div class="tooltip-line"><span>${c.name}</span><span>N/A</span></div>`;
-                    const { gold, silver, copper } = formatCurrency(c.expectedCopper);
-                    const pHtml = `${gold>0?gold+'g ':''}${silver>0?silver+'s ':''}${copper}c`;
-                    return `<div class="tooltip-line"><span class="child-name">${c.name} (${probText})</span><span style="color:#f1c40f">${pHtml}</span></div>`;
-                }).join('');
-                const infoEmoji = `<span class="info-icon-wrapper">ℹ️<div class="container-tooltip"><div class="tooltip-title">Expected Value Breakdown</div>${content}</div></span>`;
                 mainContent = `
                     <div class="item-header">
                         <div class="item-image"><img src="${itemData.icon}"></div>
                         <div class="item-info">
-                            <div class="item-name"><a href="${graphUrl}" target="_blank" class="graph-link">📈</a> ${itemData.name} ${infoEmoji}</div>
+                            <div class="item-name"><a href="${graphUrl}" target="_blank" class="graph-link">📈</a> ${itemData.name}</div>
                             <div class="item-id">${idHtml} • Container</div>
                         </div>
                         ${actionBtns}
