@@ -17,7 +17,7 @@
         .input-wrapper { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; width:100%; max-width:700px; align-items: flex-start; }
         .input-col { display: flex; flex-direction: column; flex: 1; min-width: 200px; position: relative; }
 
-        input { padding:12px 15px; border:none; border-radius:5px; background:rgba(255,255,255,0.1); color:white; width:100%; font-size:1rem; border:1px solid #3498db; }
+        input[type="text"] { padding:12px 15px; border:none; border-radius:5px; background:rgba(255,255,255,0.1); color:white; width:100%; font-size:1rem; border:1px solid #3498db; }
         input::placeholder { color:#95a5a6; }
         
         button { padding:12px 20px; background:#3498db; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold; transition:all .3s; white-space:nowrap; height: 46px; }
@@ -126,6 +126,17 @@
         .api-key-mask { color: #95a5a6; font-family: monospace; font-size: 0.8rem; margin-left: 10px; }
         .delete-key-btn { background: #e74c3c; padding: 5px 10px; font-size: 0.8rem; }
 
+        /* Global Toggle */
+        .global-toggle { margin-bottom: 20px; padding: 15px; background: rgba(46, 204, 113, 0.1); border-radius: 5px; display:flex; align-items: center; border: 1px solid rgba(46, 204, 113, 0.3); }
+        .global-toggle label { cursor: pointer; font-weight: bold; color: #2ecc71; margin-left: 10px; font-size: 1.05rem; }
+
+        /* Guild List in Modal */
+        .guild-list { margin-top: 10px; display: flex; flex-direction: column; gap: 5px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
+        .guild-item { display: flex; align-items: center; background: rgba(0,0,0,0.2); padding: 8px 12px; border-radius: 4px; }
+        .guild-item label { flex: 1; margin-left: 10px; cursor: pointer; color: #ecf0f1; display: flex; justify-content: space-between; }
+        .guild-tag { color: #f39c12; font-weight: bold; margin-left: 5px; }
+        .section-title { color: #3498db; font-weight: bold; margin-bottom: 10px; font-size: 1.1rem; margin-top: 20px; }
+
         /* Table Styles */
         .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
         .data-table th { text-align: left; color: #95a5a6; padding: 8px; border-bottom: 1px solid #3498db; }
@@ -135,18 +146,8 @@
         .col-qty { color: #f1c40f; font-weight: bold; }
         .col-date { font-size: 0.8rem; color: #bdc3c7; }
         
-        /* Inventory Sub-header styling */
-        .inv-owner-header {
-            background: rgba(52, 152, 219, 0.1);
-            color: #3498db;
-            font-weight: bold;
-            padding: 8px;
-        }
-        .inv-total-row {
-            background: rgba(241, 196, 15, 0.1);
-            font-weight: bold;
-        }
-
+        .inv-owner-header { background: rgba(52, 152, 219, 0.1); color: #3498db; font-weight: bold; padding: 8px; }
+        .inv-total-row { background: rgba(241, 196, 15, 0.1); font-weight: bold; }
         .delivery-icon { width: 24px; height: 24px; vertical-align: middle; margin-right: 8px; border-radius: 3px; }
         .delivery-item-name { vertical-align: middle; }
 
@@ -203,21 +204,27 @@
                 <button class="modal-close" onclick="closeModal('api-modal')">&times;</button>
             </div>
             <div class="modal-body">
+                <div class="global-toggle">
+                    <input type="checkbox" id="enable-inventory-chk" checked>
+                    <label for="enable-inventory-chk">Scan Inventories & Characters</label>
+                </div>
+
+                <div class="section-title" style="margin-top:0;">API Keys</div>
                 <div class="api-input-row">
                     <input type="text" id="new-api-key" placeholder="Paste API Key" style="flex:2">
                     <input type="text" id="new-api-name" placeholder="Nickname" style="flex:1">
                     <button onclick="addApiKey()">Add</button>
                 </div>
                 <div id="api-key-list" class="api-list"></div>
-                <p style="margin-top:15px; font-size:0.8rem; color:#95a5a6;">
-                    Keys are saved in your browser's Local Storage.<br>
-                    <strong>Permissions Required:</strong>
-                    <ul style="padding-left: 20px; margin-top: 5px;">
-                        <li><em>tradingpost</em> - for Orders and Delivery Box.</li>
-                        <li><em>inventories, characters</em> - for Material Storage, Bank, Bags.</li>
-                        <li><em>guilds</em> - for Guild Stash scanning (Must be Guild Leader/Officer).</li>
-                    </ul>
+                <p style="margin-top:10px; font-size:0.8rem; color:#95a5a6;">
+                    Required scopes: <em>tradingpost, inventories, characters, guilds</em>.
                 </p>
+
+                <div class="section-title">Monitored Guilds</div>
+                <div style="font-size:0.85rem; color:#bdc3c7; margin-bottom: 5px;">Only accessible guilds (Leader permission) appear here. Uncheck to disable polling.</div>
+                <div id="guild-list-container" class="guild-list">
+                    <div style="color:#95a5a6; font-style:italic;">Accessible guilds will appear here after data is loaded.</div>
+                </div>
             </div>
         </div>
     </div>
@@ -308,6 +315,11 @@
         let deliveryData = []; 
         let globalItemData = new Map(); 
         
+        // Settings
+        let enableInventory = true;
+        let disabledGuilds = new Set();
+        let knownGuilds = {}; // Map: guildId -> { name, tag }
+
         const DEBOUNCE_DELAY = 300;
         let debounceTimer = null;
         let draggedCard = null;
@@ -477,7 +489,7 @@
             renderActiveTab();
         }
 
-        // --- API Key Management ---
+        // --- API & Settings Management ---
         function loadApiKeys() {
             const stored = localStorage.getItem('gw2_api_keys');
             if (stored) {
@@ -489,6 +501,29 @@
             localStorage.setItem('gw2_api_keys', JSON.stringify(apiKeys));
             renderApiKeys();
         }
+
+        function loadSettings() {
+            const invSetting = localStorage.getItem('gw2_enable_inventory');
+            if(invSetting !== null) enableInventory = invSetting === 'true';
+            document.getElementById('enable-inventory-chk').checked = enableInventory;
+
+            const disabled = localStorage.getItem('gw2_disabled_guilds');
+            if(disabled) {
+                try { disabledGuilds = new Set(JSON.parse(disabled)); } catch {}
+            }
+            const known = localStorage.getItem('gw2_known_guilds');
+            if(known) {
+                try { knownGuilds = JSON.parse(known); } catch {}
+            }
+            renderGuildSettings();
+        }
+
+        function saveSettings() {
+            localStorage.setItem('gw2_enable_inventory', enableInventory);
+            localStorage.setItem('gw2_disabled_guilds', JSON.stringify([...disabledGuilds]));
+            localStorage.setItem('gw2_known_guilds', JSON.stringify(knownGuilds));
+        }
+
         function addApiKey() {
             const keyInput = document.getElementById('new-api-key');
             const nameInput = document.getElementById('new-api-name');
@@ -498,7 +533,7 @@
             apiKeys.push({ key, name });
             saveApiKeys();
             keyInput.value = ''; nameInput.value = '';
-            fetchGlobalData(); 
+            fetchGlobalData(); // Also triggers guild discovery
         }
         function removeApiKey(index) {
             if(confirm('Remove this API key?')) {
@@ -512,29 +547,116 @@
             list.innerHTML = '';
             if(apiKeys.length === 0) {
                 list.innerHTML = '<div style="color:#95a5a6; text-align:center;">No API keys configured.</div>';
+            } else {
+                apiKeys.forEach((k, i) => {
+                    const div = document.createElement('div');
+                    div.className = 'api-item';
+                    div.innerHTML = `<div><span class="api-name">${k.name}</span><span class="api-key-mask">${k.key.substring(0,8)}...</span></div><button class="delete-key-btn" onclick="removeApiKey(${i})">Delete</button>`;
+                    list.appendChild(div);
+                });
+            }
+        }
+
+        function renderGuildSettings() {
+            const container = document.getElementById('guild-list-container');
+            container.innerHTML = '';
+            const guildIds = Object.keys(knownGuilds);
+            
+            if(guildIds.length === 0) {
+                container.innerHTML = '<div style="color:#95a5a6; font-style:italic; text-align:center;">Accessible guilds will appear here after data is loaded.</div>';
                 return;
             }
-            apiKeys.forEach((k, i) => {
+
+            guildIds.forEach(gid => {
+                const g = knownGuilds[gid];
                 const div = document.createElement('div');
-                div.className = 'api-item';
-                div.innerHTML = `<div><span class="api-name">${k.name}</span><span class="api-key-mask">${k.key.substring(0,8)}...</span></div><button class="delete-key-btn" onclick="removeApiKey(${i})">Delete</button>`;
-                list.appendChild(div);
+                div.className = 'guild-item';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = !disabledGuilds.has(gid);
+                checkbox.onchange = () => {
+                    if(checkbox.checked) disabledGuilds.delete(gid);
+                    else disabledGuilds.add(gid);
+                    saveSettings();
+                };
+                
+                const label = document.createElement('label');
+                label.innerHTML = `<span>${g.name} <span class="guild-tag">[${g.tag}]</span></span>`;
+                label.onclick = () => checkbox.click();
+
+                div.appendChild(checkbox);
+                div.appendChild(label);
+                container.appendChild(div);
             });
+        }
+
+        // --- GUILD DISCOVERY (Lightweight) ---
+        async function discoverGuilds() {
+            if(apiKeys.length === 0) return;
+            let newGuildsFound = false;
+
+            const promises = apiKeys.map(async (account) => {
+                try {
+                    const accRes = await fetch(`https://api.guildwars2.com/v2/account?access_token=${account.key}`);
+                    if(!accRes.ok) return;
+                    const accInfo = await accRes.json();
+                    
+                    // "Lightweight" means we ONLY use what v2/account tells us.
+                    // accInfo.guild_leader contains ONLY IDs where the account has leader privs.
+                    // This avoids trial-and-error stash fetching.
+                    
+                    if(accInfo.guild_leader && Array.isArray(accInfo.guild_leader)) {
+                        for (const guildId of accInfo.guild_leader) {
+                            if(knownGuilds[guildId]) continue; // Already known
+                            
+                            // 3. Get Guild Details (Public)
+                            try {
+                                const gRes = await fetch(`https://api.guildwars2.com/v2/guild/${guildId}`);
+                                if(gRes.ok) {
+                                    const gInfo = await gRes.json();
+                                    knownGuilds[guildId] = { name: gInfo.name, tag: gInfo.tag };
+                                    newGuildsFound = true;
+                                }
+                            } catch(e) {}
+                        }
+                    }
+                } catch(e) {}
+            });
+
+            await Promise.all(promises);
+            if(newGuildsFound) {
+                saveSettings();
+                renderGuildSettings();
+            }
         }
 
         // --- DATA FETCHING LOGIC ---
 
         async function fetchGlobalData() {
-            itemsContainer.innerHTML = '<div class="loading">Loading all tracked items and scanning inventories...</div>';
+            itemsContainer.innerHTML = '<div class="loading">Loading all tracked items...</div>';
             
+            // Trigger lightweight guild discovery in background
+            discoverGuilds();
+
             const allIds = [...new Set(itemTabs.flatMap(t => t.items))];
             
+            const promises = [
+                fetchItemData(allIds),
+                fetchAccountData()
+            ];
+
+            // Only fetch Inventory if enabled
+            if(enableInventory) {
+                itemsContainer.innerHTML = '<div class="loading">Loading items and scanning inventories...</div>';
+                promises.push(fetchAccountInventories());
+            } else {
+                globalInventoryMap.clear(); // Clear old data
+            }
+            
             try {
-                const [itemResults, _, __] = await Promise.all([
-                    fetchItemData(allIds),
-                    fetchAccountData(),
-                    fetchAccountInventories() 
-                ]);
+                const results = await Promise.all(promises);
+                const itemResults = results[0];
 
                 globalItemData.clear();
                 itemResults.forEach(item => {
@@ -542,6 +664,8 @@
                 });
 
                 renderActiveTab();
+                // Refresh settings UI with any newly discovered guilds
+                if(enableInventory) renderGuildSettings(); 
 
             } catch (e) {
                 console.error(e);
@@ -595,13 +719,18 @@
                 const deliveryResults = results.filter(r => r.type === 'delivery' && r.data);
                 let hasDeliveryItems = false;
                 const deliveryItemIds = new Set();
+                
                 deliveryResults.forEach(res => {
-                    if (res.data.items && res.data.items.length > 0) res.data.items.forEach(i => deliveryItemIds.add(i.id));
+                    if (res.data.items && res.data.items.length > 0) {
+                        res.data.items.forEach(i => deliveryItemIds.add(i.id));
+                    }
                 });
 
                 const deliveryNameMap = new Map();
+                // Resolve names if we have IDs to lookup
                 if (deliveryItemIds.size > 0) {
                     const idsToFetch = Array.from(deliveryItemIds);
+                    // First check cache
                     if (!staticItemData) await loadStaticItemData();
                     const fromCache = (staticItemData || []).filter(i => idsToFetch.includes(i.id));
                     fromCache.forEach(i => deliveryNameMap.set(i.id, { name: i.name, icon: i.icon }));
@@ -619,6 +748,7 @@
                     if (res.data.coins > 0 || res.data.items.length > 0) {
                         hasDeliveryItems = true;
                         const enrichedItems = res.data.items.map(i => {
+                            // Fallback if name resolution failed
                             const info = deliveryNameMap.get(i.id) || { name: `Item ${i.id}`, icon: '' };
                             return { ...i, ...info };
                         });
@@ -643,10 +773,10 @@
             }
         }
 
-        // --- INVENTORY FETCHING (Now with Guilds & Aggregation) ---
+        // --- INVENTORY FETCHING ---
         async function fetchAccountInventories() {
             globalInventoryMap.clear();
-            if(apiKeys.length === 0) return;
+            if(apiKeys.length === 0 || !enableInventory) return;
 
             const processedGuilds = new Set();
             const UPGRADE_MAP = { 58: 'Guild Stash', 377: 'Treasure Trove', 59: 'Deep Cave' };
@@ -707,14 +837,17 @@
                         }
                     } catch(e) {}
 
-                    // 5. Guild Stashes
+                    // 5. Guild Stashes (Strict Access Check)
                     try {
-                        // Get Account Guilds
                         const accInfo = await fetch(`https://api.guildwars2.com/v2/account?access_token=${account.key}`).then(r=>r.json());
-                        if(accInfo.guilds && Array.isArray(accInfo.guilds)) {
-                            for (const guildId of accInfo.guilds) {
+                        // Only scan guilds present in guild_leader array
+                        if(accInfo.guild_leader && Array.isArray(accInfo.guild_leader)) {
+                            for (const guildId of accInfo.guild_leader) {
                                 if(processedGuilds.has(guildId)) continue;
                                 processedGuilds.add(guildId);
+
+                                // Skip if explicitly disabled by user
+                                if(disabledGuilds.has(guildId)) continue;
                                 
                                 try {
                                     const stash = await fetch(`https://api.guildwars2.com/v2/guild/${guildId}/stash?access_token=${account.key}`).then(res => {
@@ -722,21 +855,20 @@
                                         return res.json();
                                     });
 
-                                    const guildDetails = await fetch(`https://api.guildwars2.com/v2/guild/${guildId}`).then(r=>r.json());
+                                    // If we are here, we have access.
+                                    const guildDetails = knownGuilds[guildId] || { name: 'Unknown Guild', tag: '???' };
                                     const guildName = `Guild: ${guildDetails.name} [${guildDetails.tag}]`;
 
                                     stash.forEach(tab => {
                                         if(tab.inventory) {
-                                            // Resolve Tab Name via Upgrade ID
                                             const tabName = UPGRADE_MAP[tab.upgrade_id] || 'Vault Section';
-                                            
                                             tab.inventory.forEach(item => {
                                                 if(item) addItemToMap(item.id, item.count, guildName, tabName, true);
                                             });
                                         }
                                     });
                                 } catch (permErr) {
-                                    // Silent fail on individual guild permission errors
+                                    // Silent fail
                                 }
                             }
                         }
@@ -772,7 +904,6 @@
             items.forEach(i => {
                 if (!groups[i.owner]) groups[i.owner] = { isGuild: i.isGuild, total: 0, sources: {} };
                 
-                // Aggregate identical sources within the same owner (e.g. merges multiple stacks in Bank)
                 if (!groups[i.owner].sources[i.source]) {
                     groups[i.owner].sources[i.source] = 0;
                 }
@@ -781,10 +912,9 @@
                 grandTotal += i.count;
             });
             
-            // Sort owners (Accounts first, then Guilds)
             const owners = Object.keys(groups).sort((a, b) => {
                 const ga = groups[a], gb = groups[b];
-                if (ga.isGuild !== gb.isGuild) return ga.isGuild ? 1 : -1; // Guilds last
+                if (ga.isGuild !== gb.isGuild) return ga.isGuild ? 1 : -1; 
                 return a.localeCompare(b);
             });
             
@@ -794,11 +924,8 @@
                 const group = groups[ownerName];
                 const ownerClass = group.isGuild ? 'col-guild' : 'col-account';
                 
-                // Owner Header Row
                 html += `<tr class="inv-owner-header"><td class="${ownerClass}">${ownerName}</td><td style="font-weight:bold;">Total: ${group.total}</td></tr>`;
                 
-                // Detail Rows (Aggregated)
-                // Sort sources alphabetically
                 const sources = Object.keys(group.sources).sort();
                 
                 sources.forEach(src => {
@@ -812,6 +939,82 @@
             html += `<tr style="border-top: 2px solid #3498db; background: rgba(255,255,255,0.05);"><td style="text-align:right; font-weight:bold;">Grand Total:</td><td class="col-qty" style="font-size:1.1em;">${grandTotal}</td></tr>`;
             html += `</tbody></table>`;
             
+            content.innerHTML = html;
+        }
+
+        // Restored Function to Fix Emojis
+        function openOrderModal(type, itemId, itemName) {
+            const modalTitle = document.getElementById('order-modal-title');
+            const content = document.getElementById('order-content');
+            const modal = document.getElementById('order-modal');
+            
+            const orders = accountOrdersMap.get(itemId)?.[type] || [];
+
+            modalTitle.textContent = `${type === 'buys' ? 'Buy' : 'Sell'} Orders for ${itemName}`;
+            modal.style.display = 'flex';
+            
+            if (orders.length === 0) {
+                content.innerHTML = '<div style="text-align:center; padding:20px;">No active orders found.</div>';
+                return;
+            }
+
+            orders.sort((a, b) => type === 'buys' ? b.price - a.price : a.price - b.price);
+            
+            let html = `
+            <table class="data-table">
+                <thead><tr><th>Account</th><th>Qty</th><th>Unit Price</th><th>Total Value</th><th>Date Placed</th></tr></thead>
+                <tbody>`;
+            
+            orders.forEach(order => {
+                const totalVal = order.quantity * order.price;
+                const dateStr = new Date(order.created).toLocaleString();
+                html += `<tr>
+                    <td class="col-account">${order.accountName}</td>
+                    <td class="col-qty">${order.quantity}</td>
+                    <td>${createCurrencyElement(order.price).outerHTML}</td>
+                    <td>${createCurrencyElement(totalVal).outerHTML}</td>
+                    <td class="col-date">${dateStr}</td>
+                </tr>`;
+            });
+            html += `</tbody></table>`;
+            content.innerHTML = html;
+        }
+
+        function openDeliveryModal() {
+            const content = document.getElementById('delivery-content');
+            const modal = document.getElementById('delivery-modal');
+            modal.style.display = 'flex';
+
+            if (deliveryData.length === 0) {
+                content.innerHTML = '<div style="text-align:center; padding:20px;">No items or coins waiting for pickup.</div>';
+                return;
+            }
+
+            let html = `<table class="data-table"><thead><tr><th>Account</th><th>Coins</th><th>Items</th></tr></thead><tbody>`;
+            
+            deliveryData.forEach(d => {
+                let itemsHtml = '';
+                if (d.items.length > 0) {
+                    d.items.forEach(item => {
+                        itemsHtml += `<div style="margin-bottom:4px;">
+                            ${item.icon ? `<img src="${item.icon}" class="delivery-icon">` : ''}
+                            <span class="delivery-item-name">${item.name}</span> 
+                            <span class="col-qty">x${item.count}</span>
+                        </div>`;
+                    });
+                } else {
+                    itemsHtml = '<span style="color:#7f8c8d;">None</span>';
+                }
+
+                const coinsHtml = d.coins > 0 ? createCurrencyElement(d.coins).outerHTML : '<span style="color:#7f8c8d;">-</span>';
+
+                html += `<tr>
+                    <td class="col-account">${d.accountName}</td>
+                    <td>${coinsHtml}</td>
+                    <td>${itemsHtml}</td>
+                </tr>`;
+            });
+            html += `</tbody></table>`;
             content.innerHTML = html;
         }
 
@@ -1119,11 +1322,18 @@
         // Init
         document.addEventListener('DOMContentLoaded', () => {
             loadApiKeys();
+            loadSettings();
             loadTabs();
             fetchGlobalData(); 
 
             apiSettingsLink.onclick = () => { document.getElementById('api-modal').style.display = 'flex'; };
             deliveryBtn.onclick = () => { openDeliveryModal(); };
+
+            document.getElementById('enable-inventory-chk').onchange = (e) => {
+                enableInventory = e.target.checked;
+                saveSettings();
+                fetchGlobalData(); // Reload with setting applied
+            };
 
             async function triggerAddItem() {
                 const v = itemInput.value.trim();
