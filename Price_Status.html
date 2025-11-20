@@ -45,14 +45,14 @@
             overflow-x: auto;
             padding-bottom: 5px;
             border-bottom: 1px solid rgba(52, 152, 219, 0.3);
-            align-items: flex-end; /* Align bottom */
+            align-items: flex-end; 
         }
         
         .tab-btn {
             background: rgba(0,0,0,0.2);
             border: 1px solid transparent;
             border-bottom: none;
-            padding: 8px 15px; /* Slightly less padding to fit close btn */
+            padding: 8px 15px;
             border-radius: 8px 8px 0 0;
             color: #95a5a6;
             cursor: pointer;
@@ -84,10 +84,7 @@
             transform: translateY(-2px);
         }
 
-        /* Tab content wrapper for text/input */
-        .tab-text-wrapper {
-            pointer-events: none; /* Let clicks pass through to btn unless specific */
-        }
+        .tab-text-wrapper { pointer-events: none; }
         .tab-name-span { pointer-events: auto; }
         .tab-edit-input {
             background: #2c3e50;
@@ -100,7 +97,6 @@
             border-radius: 3px;
         }
 
-        /* Close (Delete) Button Styling */
         .tab-close-btn {
             width: 18px;
             height: 18px;
@@ -110,13 +106,12 @@
             font-size: 12px;
             line-height: 18px;
             text-align: center;
-            display: none; /* Hidden by default */
+            display: none;
             align-items: center;
             justify-content: center;
             transition: background 0.2s;
         }
         
-        /* Show close button on hover */
         .tab-btn:hover .tab-close-btn { display: flex; }
         
         .tab-close-btn:hover {
@@ -133,7 +128,6 @@
         }
         .add-tab-btn:hover { background: rgba(46, 204, 113, 0.2); }
 
-        /* Delivery Button */
         #delivery-btn {
             background: #7f8c8d;
             opacity: 0.4;
@@ -287,7 +281,7 @@
                     <span>📦</span> Delivery Box
                 </button>
             </div>
-            <p class="search-hint">Examples: "Ectoplasm", "19721", "Gossamer", "Gold to Gems", "Gems to Gold", "Heavy Crafting Bag"</p>
+            <p class="search-hint">Examples: "Ectoplasm", "19721", "Gossamer", "Heavy Crafting Bag", "Gold to Gems"</p>
         </div>
         
         <div id="tabs-container" class="tabs-container">
@@ -436,6 +430,7 @@
                 const nameSpan = document.createElement('span');
                 nameSpan.className = 'tab-name-span';
                 nameSpan.textContent = tab.name;
+                nameSpan.title = "Double click to rename";
                 
                 // Edit Input (Hidden by default)
                 const nameInput = document.createElement('input');
@@ -1121,18 +1116,27 @@
             apiSettingsLink.onclick = () => { document.getElementById('api-modal').style.display = 'flex'; };
             deliveryBtn.onclick = () => { openDeliveryModal(); };
 
-            addItemBtn.onclick = async () => {
+            async function triggerAddItem() {
                 const v = itemInput.value.trim();
                 if(!v) return;
                 const id = parseInt(v);
                 if(!isNaN(id)) {
                     addToActiveTab(id);
+                    itemInput.value = '';
                 } else {
                     const res = await searchItemsByName(v);
                     showSearchResults(res);
                 }
                 itemInput.value = '';
-            };
+            }
+
+            addItemBtn.onclick = triggerAddItem;
+            
+            itemInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    triggerAddItem();
+                }
+            });
             
             refreshItemsBtn.onclick = handleManualRefresh;
             
