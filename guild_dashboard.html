@@ -35,8 +35,8 @@
         .filter-label { font-size: 0.9rem; color: #bdc3c7; cursor: pointer; display: flex; align-items: center; gap: 5px; }
 
         .guild-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; }
-        .guild-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; height: 100%; min-height: 300px; }
-        .guild-header { background: rgba(52, 152, 219, 0.15); padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .guild-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; overflow: visible; display: flex; flex-direction: column; height: 100%; min-height: 300px; }
+        .guild-header { background: rgba(52, 152, 219, 0.15); padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; border-radius: 10px 10px 0 0; }
         .guild-name { font-size: 1.3rem; font-weight: bold; color: #3498db; }
         .guild-tag { color: #f1c40f; font-weight: bold; margin-left: 8px; }
         .guild-body { padding: 15px; flex: 1; max-height: 600px; overflow-y: auto; position: relative; }
@@ -46,7 +46,7 @@
         .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); gap: 8px; }
         
         .item-slot { background: rgba(0,0,0,0.3); border-radius: 4px; aspect-ratio: 1; position: relative; border: 1px solid rgba(255,255,255,0.05); transition: transform 0.1s; cursor: help; }
-        .item-slot:hover { border-color: #3498db; background: rgba(52,152,219,0.2); z-index: 2; transform: scale(1.1); }
+        .item-slot:hover { border-color: #3498db; background: rgba(52,152,219,0.2); z-index: 10; transform: scale(1.1); }
         .item-slot img { width: 100%; height: 100%; object-fit: contain; border-radius: 3px; }
         .item-count { position: absolute; bottom: 1px; right: 3px; font-size: 0.8rem; font-weight: bold; color: white; text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; pointer-events: none; }
         .empty-slot { opacity: 0.1; }
@@ -54,22 +54,26 @@
         .item-slot.type-consumable { border-bottom: 3px solid #f1c40f; } 
         .item-slot.type-decoration { border-bottom: 3px solid #3498db; } 
         .item-slot.type-claimable { border-bottom: 3px solid #e74c3c; } 
+        
+        /* Rarity Borders */
         .item-slot.rarity-Ascended { border-color: #fb3985 !important; box-shadow: inset 0 0 8px #fb3985; }
+        .item-slot.rarity-Exotic { border-color: #f39c12 !important; }
+        .item-slot.rarity-Rare { border-color: #f1c40f !important; }
 
         .item-slot.is-zero { opacity: 0.2; filter: grayscale(1); }
-        .item-slot.is-zero .item-count { color: #bdc3c7; text-shadow: none; display: none; }
+        .item-slot.is-zero .item-count { display: none; }
 
-        /* GLOBAL TOOLTIP */
+        /* --- GLOBAL TOOLTIP --- */
         #global-tooltip {
             position: fixed;
-            background: rgba(10, 10, 15, 0.95);
+            background: rgba(15, 15, 20, 0.98);
             border: 1px solid #3498db;
             border-radius: 4px;
             padding: 12px;
             z-index: 9999;
             pointer-events: none;
             display: none;
-            width: 300px;
+            width: 320px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             font-size: 0.9rem;
             line-height: 1.4;
@@ -80,27 +84,27 @@
         .tt-name { font-weight: bold; color: #fff; font-size: 1rem; }
         .tt-type { color: #bdc3c7; font-size: 0.8rem; }
         .tt-desc { color: #bdc3c7; font-style: italic; margin-bottom: 8px; font-size: 0.85rem; }
-        .tt-stats { color: #2ecc71; font-size: 0.85rem; white-space: pre-line; }
+        .tt-stats { color: #2ecc71; font-size: 0.85rem; white-space: pre-line; margin-bottom: 5px; }
         .tt-rarity-Ascended .tt-name { color: #fb3985; }
         .tt-rarity-Exotic .tt-name { color: #f39c12; }
         .tt-rarity-Rare .tt-name { color: #f1c40f; }
-
-        /* Debug */
+        
         .debug-container { background: rgba(0,0,0,0.4); padding: 20px; border-radius: 10px; }
         #debug-output { width: 100%; height: 400px; background: #000; color: #2ecc71; font-family: 'Consolas', monospace; padding: 10px; border: 1px solid #3498db; overflow: auto; white-space: pre-wrap; margin-top: 10px; }
 
         .loading { text-align: center; padding: 30px; color: #95a5a6; font-style: italic; }
         .error-box { padding: 15px; background: rgba(231, 76, 60, 0.15); border: 1px solid rgba(231, 76, 60, 0.3); color: #e74c3c; text-align: center; border-radius: 5px; margin-top: 20px; }
+        .roster-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .roster-table th { text-align: left; border-bottom: 1px solid #3498db; padding: 5px; color: #3498db; position: sticky; top: 0; background: #2c3e50; }
+        .roster-table td { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 6px 5px; }
         
-        /* Modal */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
         .modal-content { background: #2c3e50; border: 1px solid #3498db; border-radius: 8px; width: 95%; max-width: 600px; padding: 20px; box-shadow: 0 0 25px rgba(0,0,0,0.7); display: flex; flex-direction: column; max-height: 90vh; }
         .modal-header { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 15px; font-size: 1.2rem; color: #3498db; }
         .modal-close { background: none; border: none; font-size: 1.5rem; color: #ecf0f1; cursor: pointer; }
         .api-list-item { background: rgba(0,0,0,0.2); padding: 10px; margin-bottom: 8px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
-        .roster-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-        .roster-table th { text-align: left; border-bottom: 1px solid #3498db; padding: 5px; color: #3498db; position: sticky; top: 0; background: #2c3e50; }
-        .roster-table td { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 6px 5px; }
+        .guild-list-item { background: rgba(0,0,0,0.2); padding: 8px 12px; margin-bottom: 8px; border-radius: 4px; display: flex; align-items: center; gap: 10px; border: 1px solid rgba(255,255,255,0.05); }
+        .guild-list-item:hover { background: rgba(255,255,255,0.05); }
     </style>
 </head>
 <body>
@@ -114,8 +118,9 @@
     </header>
 
     <div class="controls">
-        <button onclick="openModal('api-modal')">Manage API Keys</button>
+        <button onclick="openModal('api-modal')">Manage API</button>
         <button onclick="refreshData()">Refresh Data</button>
+        <button onclick="clearCache()" style="background:#e67e22;font-size:0.8rem">Reset Cache</button>
         <span id="status-msg" style="color: #f1c40f; font-size: 0.9rem;"></span>
     </div>
 
@@ -163,11 +168,8 @@
 
     <div id="tab-debug" class="tab-content">
         <div class="debug-container">
-            <h3 style="color:#e74c3c; margin-bottom:10px;">Diagnostic Tools</h3>
-            <div style="display:flex; gap:10px; margin-bottom:10px;">
-                <button onclick="inspectStorage()">Inspect Storage Items</button>
-                <button onclick="testItemLookup()">Test Item Lookup</button>
-            </div>
+            <h3 style="color:#e74c3c; margin-bottom:10px;">Data Inspector</h3>
+            <button onclick="inspectStorage()">Inspect Storage Items</button>
             <textarea id="debug-output" readonly>Waiting...</textarea>
         </div>
     </div>
@@ -180,17 +182,33 @@
             <span>API Configuration</span>
             <button class="modal-close" onclick="closeModal('api-modal')">&times;</button>
         </div>
-        <div style="margin-bottom: 20px;">
+        
+        <!-- Keys Section -->
+        <div style="margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px;">
+            <h4 style="color:#3498db; margin-bottom:10px;">API Keys</h4>
             <p style="font-size: 0.85rem; color: #bdc3c7; margin-bottom: 8px;">
                 Enter a GW2 API Key. <br>
                 <strong>Required Scopes:</strong> <span style="color: #2ecc71; font-family: monospace;">account, guilds, inventories</span>
             </p>
-            <div style="display: flex; gap: 10px;">
+            <div style="display: flex; gap: 10px; margin-bottom:10px;">
                 <input type="text" id="api-key-input" placeholder="Paste key here..." style="flex: 1; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid #3498db; color: white; border-radius: 4px;">
-                <button onclick="addKey()">Add</button>
+                <button onclick="addKey()">Add Key</button>
+            </div>
+            <div id="api-list"></div>
+        </div>
+
+        <!-- Guild Selection Section -->
+        <div style="flex: 1; overflow-y: auto;">
+            <h4 style="color:#3498db; margin-bottom:10px;">Guild Visibility</h4>
+            <p style="font-size: 0.85rem; color: #bdc3c7; margin-bottom: 8px;">
+                Uncheck guilds to hide them from the dashboard.
+            </p>
+            <div id="guild-selection-list">
+                <div style="text-align:center; color:#7f8c8d; font-style:italic; padding:10px;">
+                    No guilds found. Add keys and refresh data.
+                </div>
             </div>
         </div>
-        <div id="api-list"></div>
     </div>
 </div>
 
@@ -208,91 +226,112 @@
 <script>
     let apiKeys = [];
     let guildData = {}; 
-    let itemDetails = new Map();
-    let upgradeDetails = new Map(); 
-    let nameToIdMap = new Map();
+    let itemDetails = new Map(); // Cache for fetched Item API data
+    let upgradeDetails = new Map(); // Cache for Guild Upgrade API data
+    
+    // Map Name -> Array of IDs (to handle collisions like "Flatbread" being both a Gizmo and Food)
+    let nameToIdsMap = new Map(); 
+    
+    // New: Tracking disabled guilds
+    let disabledGuilds = new Set();
+    let allDiscoveredGuilds = []; // Stores basic info for all accessible guilds
+    
     const GW2_API = 'https://api.guildwars2.com/v2';
+    const JSON_URL = 'https://gartkb.github.io/Garts-Great-Tools/gw2-items.json';
 
-    // Tooltip
     const tooltipEl = document.getElementById('global-tooltip');
 
     document.addEventListener('DOMContentLoaded', () => {
-        const stored = localStorage.getItem('gw2_dash_keys');
-        if(stored) try { apiKeys = JSON.parse(stored); } catch(e) {}
+        // Load Keys
+        const storedKeys = localStorage.getItem('gw2_dash_keys');
+        if(storedKeys) try { apiKeys = JSON.parse(storedKeys); } catch(e) {}
+        
+        // Load Disabled Guilds Preference
+        const storedDisabled = localStorage.getItem('gw2_dash_disabled_guilds');
+        if(storedDisabled) try { disabledGuilds = new Set(JSON.parse(storedDisabled)); } catch(e) {}
+
+        loadCache();
         renderKeyList();
         if(apiKeys.length > 0) refreshData();
     });
 
-    // --- DIAGNOSTIC: ITEM LOOKUP ---
-    async function testItemLookup() {
-        const out = document.getElementById('debug-output');
-        out.value = "--- Testing Item Lookup ---\n";
+    // --- HELPER: ASCENDED STAT PARSER ---
+    function getAscendedStats(name) {
+        const baseBuffs = "+10% Karma\n+5% All Experience Gained\n+20% Magic Find\n+20% Gold Find\n+10% WXP Gained";
+        let stats = "";
+        let effect = "";
+        const n = name.toLowerCase();
+
+        // 1. PASSIVE EFFECT
+        if (n.includes("peppercorn") || n.includes("peppered")) effect = "-10% Incoming Damage";
+        else if (n.includes("cilantro"))  effect = "66% Chance to Steal Life on Critical Hit";
+        else if (n.includes("sesame"))    effect = "Gain Health on Kill";
+        else if (n.includes("mint"))      effect = "+10% Outgoing Healing";
+        else if (n.includes("clove"))     effect = "-20% Incoming Condition Duration";
+        else if (n.includes("salsa"))     effect = "+20% Condition Duration";
+
+        // 2. ATTRIBUTES
+        if (n.includes("steak"))            stats = "+100 Power\n+70 Ferocity";
+        else if (n.includes("coq au vin"))  stats = "+100 Power\n+70 Precision";
+        else if (n.includes("carpaccio"))   stats = "+100 Concentration\n+70 Power";
+        else if (n.includes("aspic"))       stats = "+100 Concentration\n+70 Toughness";
+        else if (n.includes("fruit salad")) stats = "+100 Healing Power\n+70 Concentration";
+        else if (n.includes("creme") || n.includes("crème")) stats = "+100 Concentration\n+70 Healing Power"; 
+        else if (n.includes("benedict"))    stats = "+100 Concentration\n+70 Expertise";
+        else if (n.includes("ravioli"))     stats = "+100 Vitality\n+70 Toughness";
+        else if (n.includes("oyster") || n.includes("spherified")) stats = "+45 to All Attributes"; 
+        else if (n.includes("cheesecake"))  stats = "+100 Concentration\n+33% Chance to Gain Might on Critical Hit";
+        else if (n.includes("veggie flatbread")) stats = "+100 Expertise\n+70 Condition Damage";
+        else if (n.includes("flatbread"))        stats = "+100 Condition Damage\n+70 Expertise"; 
+
+        // 3. Assembly
+        let parts = [];
+        if (effect) parts.push(effect);
+        if (stats) parts.push(stats);
         
-        // 1. Check if map is loaded
-        out.value += `Name to ID Map Size: ${nameToIdMap.size}\n`;
-        if(nameToIdMap.size === 0) {
-            out.value += "ERROR: nameToIdMap is empty. 'items-names.json' likely failed to load.\n";
-            return;
+        if (parts.length === 0) return null;
+        return `Nourishment (1h):\n${parts.join('\n')}\n${baseBuffs}`;
+    }
+
+    // --- CACHING ---
+    function loadCache() {
+        const cached = localStorage.getItem('gw2_item_cache');
+        if(cached) {
+            try { JSON.parse(cached).forEach(e => itemDetails.set(Number(e[0]), e[1])); } catch(e){}
         }
+    }
+    function saveCache() {
+        try { localStorage.setItem('gw2_item_cache', JSON.stringify(Array.from(itemDetails.entries()))); } catch(e){}
+    }
+    function clearCache() {
+        localStorage.removeItem('gw2_item_cache');
+        itemDetails.clear();
+        alert("Cache cleared. Refreshing...");
+        location.reload();
+    }
 
-        // 2. Test Sample Upgrade Names
-        // These names come from your previous debug output
-        const samples = [
-            "Bowl of Fruit Salad with Mint Garnish",
-            "Peppercorn-Crusted Sous-Vide Steak",
-            "Peppered Cured Meat Flatbread",
-            "Plate of Coq Au Vin with Salsa"
-        ];
+    // --- TOOLTIP ---
+    function showTooltip(e, data) {
+        let { name, type, desc, stats, rarity, count, icon } = data;
 
-        const idsToFetch = [];
-
-        samples.forEach(name => {
-            const id = nameToIdMap.get(name);
-            out.value += `Lookup "${name}": ${id ? "FOUND ID " + id : "NOT FOUND in JSON"}\n`;
-            if(id) idsToFetch.push(id);
-        });
-
-        // 3. Fetch API Rarity for found IDs
-        if(idsToFetch.length > 0) {
-            out.value += `\nFetching API info for ${idsToFetch.join(',')}...\n`;
-            try {
-                const res = await fetch(`https://api.guildwars2.com/v2/items?ids=${idsToFetch.join(',')}`);
-                const items = await res.json();
-                items.forEach(i => {
-                    out.value += `API ID ${i.id} (${i.name}) -> Rarity: ${i.rarity} | Type: ${i.type}\n`;
-                });
-            } catch(e) {
-                out.value += `API Fetch Error: ${e.message}\n`;
+        // 1. Try to generate "Smart Stats"
+        if(rarity === 'Ascended' && type === 'Consumable') {
+            const ascendedDetails = getAscendedStats(name);
+            if(ascendedDetails) {
+                stats = ascendedDetails; 
+                desc = ""; 
             }
         }
-        out.value += "--- End Test ---";
-    }
 
-    // --- DIAGNOSTIC: STORAGE ---
-    async function inspectStorage() {
-        const out = document.getElementById('debug-output');
-        out.value = "Inspecting Storage (with merged metadata)...\n";
-        Object.keys(guildData).forEach(gid => {
-            const g = guildData[gid];
-            out.value += `\n=== ${g.name} ===\n`;
-            if(!g.storage) return;
-            g.storage.forEach(s => {
-                const u = upgradeDetails.get(s.id);
-                // Merge logic from render to verify
-                let rarity = 'Unknown';
-                if(u && nameToIdMap.has(u.name)) {
-                    const realId = nameToIdMap.get(u.name);
-                    const realItem = itemDetails.get(realId);
-                    if(realItem) rarity = realItem.rarity;
-                }
-                out.value += `[ID:${s.id}] Qty:${s.count} Name:${u?u.name:'Unknown'} Rarity:${rarity}\n`;
-            });
-        });
-    }
+        // 2. Cleanup Duplicates
+        if(stats && stats.includes("Double-click to serve")) {
+            if(!desc) desc = stats;
+            stats = ""; 
+        }
+        if (stats && desc && stats.trim() === desc.trim()) {
+            desc = "";
+        }
 
-    // --- GLOBAL TOOLTIP ---
-    function showTooltip(e, data) {
-        const { name, type, desc, stats, rarity, count, icon } = data;
         tooltipEl.innerHTML = `
             <div class="tt-head tt-rarity-${rarity}">
                 <img src="${icon}" class="tt-icon">
@@ -301,8 +340,8 @@
                     <div class="tt-type">${type} ${rarity ? '• '+rarity : ''}</div>
                 </div>
             </div>
-            <div class="tt-desc">${desc || ''}</div>
             ${stats ? `<div class="tt-stats">${stats}</div>` : ''}
+            ${desc ? `<div class="tt-desc">${desc}</div>` : ''}
             <div style="margin-top:5px;font-weight:bold;color:${count>0?'#2ecc71':'#7f8c8d'}">Count: ${count}</div>
         `;
         tooltipEl.style.display = 'block';
@@ -310,12 +349,13 @@
     }
 
     function moveTooltip(e) {
+        if(tooltipEl.style.display === 'none') return;
         const w = tooltipEl.offsetWidth;
         const h = tooltipEl.offsetHeight;
         const pad = 15;
         let left = e.pageX + pad;
-        let top = e.pageY + pad;
         if(left + w > window.innerWidth) left = e.pageX - w - pad;
+        let top = e.pageY + pad;
         if(top + h > window.innerHeight + window.scrollY) top = e.pageY - h - pad;
         tooltipEl.style.left = left + 'px';
         tooltipEl.style.top = top + 'px';
@@ -324,21 +364,21 @@
     function hideTooltip() { tooltipEl.style.display = 'none'; }
 
     // --- DATA LOADING ---
-    async function loadItemNames() {
-        if(nameToIdMap.size > 0) return;
-        updateStatus("Loading item index...");
+
+    async function loadItemNameMap() {
+        if(nameToIdsMap.size > 0) return;
         try {
-            const res = await fetch('items-names.json');
-            if(!res.ok) throw new Error("File missing");
+            updateStatus("Downloading Item Database...");
+            const res = await fetch(JSON_URL);
+            if(!res.ok) throw new Error("Failed to load JSON");
             const json = await res.json();
-            // json.items is [[id, name], [id, name]...]
             json.items.forEach(pair => {
-                // We map Name -> ID
-                nameToIdMap.set(pair[1], pair[0]);
+                const id = Number(pair[0]);
+                const name = String(pair[1]).trim().toLowerCase();
+                if(!nameToIdsMap.has(name)) nameToIdsMap.set(name, []);
+                nameToIdsMap.get(name).push(id);
             });
-        } catch(e) {
-            console.warn("JSON load failed", e);
-        }
+        } catch(e) { console.error("JSON Error", e); }
     }
 
     async function loadGlobalLibrary() {
@@ -352,33 +392,40 @@
                 const data = await res.json();
                 data.forEach(u => {
                     upgradeDetails.set(u.id, {
-                        name: u.name, icon: u.icon, description: u.description, type: u.type 
+                        name: u.name, 
+                        icon: u.icon, 
+                        description: u.description, 
+                        type: u.type 
                     });
                 });
                 updateStatus(`Loading library... ${Math.min(i+200, allIds.length)}/${allIds.length}`);
             }
-        } catch(e) { console.error(e); }
+        } catch(e) {}
     }
 
     async function enrichLibraryWithStats() {
-        updateStatus("Mapping upgrades to game items...");
+        updateStatus("Linking Upgrades to Game Items...");
         const itemIdsToFetch = new Set();
-        const upgradeIdToItemId = new Map();
+        const upgradeCandidates = new Map();
 
-        // 1. Identify Matches
+        // 1. MATCHING
         upgradeDetails.forEach((u, uid) => {
-            if(u.type === 'Consumable') {
-                const itemId = nameToIdMap.get(u.name);
-                if(itemId) {
-                    itemIdsToFetch.add(itemId);
-                    upgradeIdToItemId.set(uid, itemId);
+            if(['Consumable', 'Decoration', 'Claimable'].includes(u.type)) {
+                const normName = u.name.trim().toLowerCase();
+                const possibleIds = nameToIdsMap.get(normName);
+                
+                if(possibleIds && possibleIds.length > 0) {
+                    upgradeCandidates.set(uid, possibleIds);
+                    possibleIds.forEach(pid => {
+                        if(!itemDetails.has(pid)) itemIdsToFetch.add(pid);
+                    });
                 }
             }
         });
 
-        // 2. Fetch Game Item Details
+        // 2. FETCHING
         if(itemIdsToFetch.size > 0) {
-            updateStatus(`Fetching details for ${itemIdsToFetch.size} linked items...`);
+            updateStatus(`Fetching stats for ${itemIdsToFetch.size} possible items...`);
             const arr = Array.from(itemIdsToFetch);
             for(let i=0; i<arr.length; i+=200) {
                 const chunk = arr.slice(i, i+200);
@@ -386,43 +433,64 @@
                     const res = await fetch(`${GW2_API}/items?ids=${chunk.join(',')}`);
                     const items = await res.json();
                     items.forEach(item => {
-                        // Parse stats from description or details
-                        let stats = "";
-                        if(item.details && item.details.description) stats = item.details.description;
-                        else if(item.description) stats = item.description; // often contains stats for food
-
                         itemDetails.set(item.id, {
                             rarity: item.rarity,
-                            stats: stats
+                            desc: item.description,
+                            details: item.details,
+                            type: item.type
                         });
                     });
                 } catch(e) {}
             }
+            saveCache();
+        }
 
-            // 3. Apply to Upgrades
-            upgradeIdToItemId.forEach((itemId, upgradeId) => {
-                const u = upgradeDetails.get(upgradeId);
-                const i = itemDetails.get(itemId);
-                if(u && i) {
-                    u.rarity = i.rarity;
-                    u.stats = i.stats; // Attach game stats
+        // 3. SELECTION (Collision Logic)
+        upgradeCandidates.forEach((candidates, upgradeId) => {
+            const u = upgradeDetails.get(upgradeId);
+            let bestMatch = null;
+
+            candidates.forEach(cid => {
+                const item = itemDetails.get(cid);
+                if(!item) return;
+                if(!bestMatch) {
+                    bestMatch = item;
+                } else {
+                    // Prioritize Ascended over non-Ascended
+                    if(item.rarity === 'Ascended' && bestMatch.rarity !== 'Ascended') bestMatch = item;
+                    // Prioritize Consumable over Gizmo if rarity matches
+                    else if(item.rarity === bestMatch.rarity && item.type === 'Consumable' && bestMatch.type !== 'Consumable') bestMatch = item;
                 }
             });
-        }
+
+            if(bestMatch) {
+                u.rarity = bestMatch.rarity;
+                if(bestMatch.desc) u.stats = bestMatch.desc; 
+                if(bestMatch.details && bestMatch.details.description) {
+                    u.stats = (u.stats ? u.stats + "\n" : "") + bestMatch.details.description;
+                }
+            }
+        });
+        renderAll();
     }
 
-    // --- MAIN REFRESH ---
+    // --- MAIN ---
     async function refreshData() {
         guildData = {};
-        await loadItemNames();
+        allDiscoveredGuilds = []; 
+        
+        await loadItemNameMap();
         await loadGlobalLibrary();
-        await enrichLibraryWithStats();
+        await fetchGuildData();
+        
+        renderAll(); 
+        enrichLibraryWithStats().then(() => { updateStatus(''); renderAll(); });
+    }
 
-        updateStatus('Discovering guilds...');
-        const grids = ['stash-grid', 'consumables-grid', 'roster-grid', 'log-grid'];
-        grids.forEach(id => document.getElementById(id).innerHTML = '<div class="loading">Loading guild data...</div>');
+    async function fetchGuildData() {
+        // 1. Discover all accessible guild IDs first
+        const potentialGuilds = new Map(); // Map<ID, {key, name, tag}>
 
-        const accessibleGuilds = []; 
         for(const cred of apiKeys) {
             try {
                 const accRes = await fetch(`${GW2_API}/account?access_token=${cred.key}`);
@@ -430,82 +498,134 @@
                 const accInfo = await accRes.json();
                 if(accInfo.guild_leader) {
                     accInfo.guild_leader.forEach(gid => {
-                        if(!guildData[gid]) {
-                            guildData[gid] = { id: gid, key: cred.key, name: 'Unknown', tag: '...' };
-                            accessibleGuilds.push(gid);
+                        if(!potentialGuilds.has(gid)) {
+                            potentialGuilds.set(gid, { id: gid, key: cred.key, name: 'Loading...', tag: '...' });
                         }
                     });
                 }
             } catch(e) {}
         }
 
-        if(accessibleGuilds.length === 0) {
-            updateStatus('');
-            grids.forEach(id => document.getElementById(id).innerHTML = '<div class="error-box">No accessible guilds found.</div>');
+        if(potentialGuilds.size === 0) {
+            document.getElementById('stash-grid').innerHTML = '<div class="error-box">No accessible guilds found.</div>';
+            renderGuildSelectionList();
             return;
         }
 
-        updateStatus('Fetching specific guild data...');
-        const itemIds = new Set();
-
-        await Promise.all(accessibleGuilds.map(async (gid) => {
-            const g = guildData[gid];
+        // 2. Fetch Basic Guild Info (Name/Tag) for ALL found IDs to populate the selection list
+        const guildIds = Array.from(potentialGuilds.keys());
+        await Promise.all(guildIds.map(async (gid) => {
+            const g = potentialGuilds.get(gid);
             const tokenStr = `?access_token=${g.key}`;
             try {
                 const info = await fetch(`${GW2_API}/guild/${gid}${tokenStr}`).then(r=>r.json());
-                g.name = info.name; g.tag = info.tag;
+                g.name = info.name;
+                g.tag = info.tag;
+            } catch(e) {
+                g.name = "Unknown Guild";
+            }
+        }));
 
+        // 3. Populate "Manage API" Guild List
+        allDiscoveredGuilds = Array.from(potentialGuilds.values());
+        renderGuildSelectionList();
+
+        // 4. Filter out Disabled Guilds for fetching Heavy Data (Stash/Log)
+        const activeGuildIds = guildIds.filter(gid => !disabledGuilds.has(gid));
+
+        if(activeGuildIds.length === 0) {
+             document.getElementById('stash-grid').innerHTML = '<div class="error-box">All guilds are hidden. Enable them in "Manage API".</div>';
+             return;
+        }
+
+        // 5. Fetch Heavy Data for Active Guilds only
+        await Promise.all(activeGuildIds.map(async (gid) => {
+            // Initialize main data object
+            guildData[gid] = potentialGuilds.get(gid);
+            const g = guildData[gid];
+            const tokenStr = `?access_token=${g.key}`;
+
+            try {
+                // Stash
                 try {
                     const stash = await fetch(`${GW2_API}/guild/${gid}/stash${tokenStr}`).then(r => { if(!r.ok) throw new Error(); return r.json(); });
                     g.stash = stash;
-                    stash.forEach(tab => { if(tab.inventory) tab.inventory.forEach(i => { if(i) itemIds.add(i.id); }); });
                 } catch(err) { g.stashError = true; }
-
+                
+                // Storage (Consumables)
                 try {
                     g.storage = await fetch(`${GW2_API}/guild/${gid}/storage${tokenStr}`).then(r => r.ok ? r.json() : []);
                 } catch(e) {}
-
+                
+                // Roster
                 try { g.roster = await fetch(`${GW2_API}/guild/${gid}/members${tokenStr}`).then(r => r.ok ? r.json() : []); } catch(e) {}
+                
+                // Logs
                 try { 
                     g.log = await fetch(`${GW2_API}/guild/${gid}/log${tokenStr}`).then(r => r.ok ? r.json() : []); 
                     g.log = g.log.slice(0, 50);
-                    g.log.forEach(l => { if(l.item_id) itemIds.add(l.item_id); });
                 } catch(e) {}
             } catch(e) {}
         }));
+    }
 
-        if(itemIds.size > 0) {
-            updateStatus('Resolving items...');
-            const missing = Array.from(itemIds).filter(id => !itemDetails.has(id));
-            if(missing.length > 0) {
-                for(let i=0; i<missing.length; i+=200) {
-                    const chunk = missing.slice(i, i+200);
-                    try {
-                        const res = await fetch(`${GW2_API}/items?ids=${chunk.join(',')}`);
-                        const data = await res.json();
-                        data.forEach(item => {
-                            itemDetails.set(item.id, { name: item.name, icon: item.icon, rarity: item.rarity });
-                        });
-                    } catch(e){}
-                }
-            }
+    // --- UI RENDERING ---
+
+    function renderGuildSelectionList() {
+        const container = document.getElementById('guild-selection-list');
+        if(allDiscoveredGuilds.length === 0) {
+            container.innerHTML = '<div style="text-align:center; color:#7f8c8d; padding:10px;">No guilds found yet.</div>';
+            return;
         }
+        
+        container.innerHTML = allDiscoveredGuilds.map(g => {
+            const isChecked = !disabledGuilds.has(g.id);
+            return `
+            <div class="guild-list-item">
+                <input type="checkbox" 
+                       id="cb-${g.id}" 
+                       ${isChecked ? 'checked' : ''} 
+                       onchange="toggleGuild('${g.id}')"
+                       style="cursor:pointer; transform:scale(1.2)">
+                <label for="cb-${g.id}" style="flex:1; cursor:pointer; color:#ecf0f1;">
+                    <span style="font-weight:bold; color:#3498db;">[${g.tag}]</span> ${g.name}
+                </label>
+            </div>`;
+        }).join('');
+    }
 
-        updateStatus('');
-        renderAll();
+    function toggleGuild(gid) {
+        if(disabledGuilds.has(gid)) {
+            disabledGuilds.delete(gid);
+        } else {
+            disabledGuilds.add(gid);
+        }
+        localStorage.setItem('gw2_dash_disabled_guilds', JSON.stringify(Array.from(disabledGuilds)));
+        
+        // Trigger a refresh so dashboard updates immediately
+        refreshData();
     }
 
     function renderAll() {
         const grids = ['stash-grid', 'consumables-grid', 'roster-grid', 'log-grid'];
         grids.forEach(id => document.getElementById(id).innerHTML = '');
-        Object.keys(guildData).forEach(gid => {
+        
+        // guildData only contains active guilds now
+        const activeGIDs = Object.keys(guildData);
+
+        if(activeGIDs.length === 0 && allDiscoveredGuilds.length > 0) {
+             // Handle case where guilds exist but all are unchecked
+             return; // Message already handled in fetchGuildData
+        }
+
+        activeGIDs.forEach(gid => {
             const g = guildData[gid];
             renderStashCard(g);
             renderStorageCard(g);
             renderRosterCard(g);
             renderLogCard(g);
         });
-        applyStorageFilter(); 
+        applyStorageFilter();
     }
 
     function renderStorageCard(g) {
@@ -513,24 +633,21 @@
         const grid = document.createElement('div');
         grid.className = 'item-grid'; 
 
-        // Guild Inventory
-        const guildCounts = new Map();
-        if(g.storage) g.storage.forEach(s => guildCounts.set(s.id, s.count));
+        const currentItemsMap = new Map();
+        if(g.storage) g.storage.forEach(s => currentItemsMap.set(s.id, s.count));
 
-        // Iterate Global Library
         let cardItems = [];
         upgradeDetails.forEach((u, id) => {
-            if(!['Consumable','Decoration','Claimable'].includes(u.type)) return;
-            
+            if(!['Consumable', 'Decoration', 'Claimable'].includes(u.type)) return;
             cardItems.push({
                 id: id,
                 name: u.name,
                 icon: u.icon,
                 type: u.type,
-                desc: u.description, // Original guild description
-                stats: u.stats, // Enriched stats from game item
-                rarity: u.rarity || 'Basic',
-                count: guildCounts.has(id) ? guildCounts.get(id) : 0
+                desc: u.description, 
+                stats: u.stats || '', 
+                rarity: u.rarity || '',
+                count: currentItemsMap.has(id) ? currentItemsMap.get(id) : 0
             });
         });
 
@@ -540,20 +657,16 @@
             const d = document.createElement('div');
             let classes = `item-slot storage-slot type-${item.type.toLowerCase()} rarity-${item.rarity}`;
             if(item.count === 0) classes += ' is-zero';
-            
             d.className = classes;
             d.dataset.type = item.type;
             d.dataset.name = item.name.toLowerCase();
             d.dataset.count = item.count;
             d.dataset.rarity = item.rarity; 
-
             d.innerHTML = `<img src="${item.icon}"><div class="item-count">${item.count}</div>`;
             d.addEventListener('mousemove', (e) => showTooltip(e, item));
             d.addEventListener('mouseleave', hideTooltip);
-
             grid.appendChild(d);
         });
-
         ui.body.appendChild(grid);
         document.getElementById('consumables-grid').appendChild(ui.card);
     }
@@ -565,39 +678,31 @@
         
         document.querySelectorAll('.storage-slot').forEach(slot => {
             const type = slot.dataset.type; 
-            const name = slot.dataset.name;
+            const name = slot.dataset.name; 
             const count = parseInt(slot.dataset.count);
-            const rarity = slot.dataset.rarity;
-
-            let visible = true;
-
-            if(search && !name.includes(search)) visible = false;
+            const rarity = slot.dataset.rarity; 
             
+            let visible = true;
+            if(search && !name.includes(search)) visible = false;
             if(visible) {
                 if(filter === 'AscendedFeast') {
-                    if(rarity !== 'Ascended' || type !== 'Consumable') visible = false;
-                } else if (filter !== 'all') {
+                    // Fallback logic: check for 'Ascended' OR check for 'feast' in name
+                    if(type !== 'Consumable') visible = false;
+                    else if(rarity !== 'Ascended' && !name.includes('feast')) visible = false;
+                } else if(filter !== 'all') {
                     if(type !== filter) visible = false;
                 }
             }
-
             if(visible && !showEmpty && count === 0) visible = false;
-
             slot.style.display = visible ? 'block' : 'none';
         });
     }
 
-    // --- BOILERPLATE ---
+    // --- BOILERPLATE RENDER FUNCTIONS ---
     function createCard(g, titleSuffix) {
         const div = document.createElement('div');
         div.className = 'guild-card';
-        div.innerHTML = `
-            <div class="guild-header">
-                <div><span class="guild-name">${g.name}</span> <span class="guild-tag">[${g.tag}]</span></div>
-                <div style="font-size:0.8rem; opacity:0.7">${titleSuffix}</div>
-            </div>
-            <div class="guild-body"></div>
-        `;
+        div.innerHTML = `<div class="guild-header"><div><span class="guild-name">${g.name}</span> <span class="guild-tag">[${g.tag}]</span></div><div style="font-size:0.8rem; opacity:0.7">${titleSuffix}</div></div><div class="guild-body"></div>`;
         return { card: div, body: div.querySelector('.guild-body') };
     }
 
@@ -620,8 +725,10 @@
                     if(!slot) d.className = 'item-slot empty-slot';
                     else {
                         d.className = 'item-slot';
-                        const info = itemDetails.get(slot.id) || {icon:''};
-                        d.innerHTML = `<img src="${info.icon}"><div class="item-count">${slot.count}</div>`;
+                        const info = itemDetails.get(slot.id) || {icon:'', name: 'Loading...'};
+                        d.innerHTML = `<img src="${info.icon || 'https://render.guildwars2.com/file/0000000000000000000000000000000000000000/1.png'}"><div class="item-count">${slot.count}</div>`;
+                        d.title = `${info.name} (x${slot.count})`;
+                        fetchItemIcon(slot.id, d); 
                     }
                     grid.appendChild(d);
                 });
@@ -629,6 +736,22 @@
             });
         }
         document.getElementById('stash-grid').appendChild(ui.card);
+    }
+    
+    async function fetchItemIcon(id, el) {
+        if(itemDetails.has(id)) {
+            const data = itemDetails.get(id);
+            el.innerHTML = `<img src="${data.icon}"><div class="item-count">${el.innerText}</div>`;
+            el.title = data.name;
+            return;
+        }
+        try {
+            const res = await fetch(`${GW2_API}/items/${id}`);
+            const data = await res.json();
+            itemDetails.set(id, {name: data.name, icon: data.icon, rarity: data.rarity}); 
+            el.innerHTML = `<img src="${data.icon}"><div class="item-count">${el.innerText}</div>`;
+            el.title = data.name;
+        } catch(e){}
     }
 
     function renderRosterCard(g) {
@@ -646,8 +769,7 @@
             row.className = 'log-entry';
             let txt = `<span class="log-time">${new Date(l.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span> <span class="log-user">${l.user||''}</span> `;
             if(l.type==='stash'||l.type==='treasury') {
-                const i = itemDetails.get(l.item_id);
-                txt += `${l.operation||'deposit'} <span class="log-val">${l.count}x ${i?i.name:'Item '+l.item_id}</span>`;
+                txt += `${l.operation||'deposit'} <span class="log-val">${l.count}x (Item ${l.item_id})</span>`;
             } else { txt += l.type; }
             row.innerHTML = txt;
             list.appendChild(row);
@@ -668,7 +790,6 @@
         openModal('roster-modal');
     }
 
-    // --- UTILS ---
     function addKey() { 
         const v = document.getElementById('api-key-input').value.trim();
         if(v) { apiKeys.push({key:v}); localStorage.setItem('gw2_dash_keys',JSON.stringify(apiKeys)); renderKeyList(); refreshData(); } 
@@ -689,6 +810,21 @@
     function updateStatus(m) { document.getElementById('status-msg').innerText = m; }
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    
+    async function inspectStorage() {
+        const out = document.getElementById('debug-output');
+        out.value = "Inspecting...\n";
+        out.value += `Name Map Size: ${nameToIdsMap.size}\n`;
+        Object.keys(guildData).forEach(gid => {
+            const g = guildData[gid];
+            out.value += `\n=== ${g.name} ===\n`;
+            if(!g.storage) return;
+            g.storage.forEach(s => {
+                const u = upgradeDetails.get(s.id);
+                out.value += `[ID:${s.id}] Qty:${s.count} Name:${u?u.name:'Unknown'} Rarity:${u?u.rarity:'Unknown'}\n`;
+            });
+        });
+    }
 </script>
 </body>
 </html>
