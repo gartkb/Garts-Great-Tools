@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GW2 Item Database Generator</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #2d2d2d;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            width: 500px;
+            text-align: center;
+        }
+        h1 { color: #00AA99; margin-bottom: 0.5rem; }
+        p { color: #aaa; font-size: 0.9rem; margin-bottom: 1.5rem; }
+        
+        /* Button Styling */
+        button {
+            background-color: #00AA99;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover { background-color: #008f80; }
+        button:disabled { background-color: #555; cursor: not-allowed; opacity: 0.7; }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            background-color: #444;
+            border-radius: 4px;
+            margin: 20px 0;
+            height: 20px;
+            overflow: hidden;
+            display: none; /* Hidden until started */
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #00AA99;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Logs */
+        #status { font-weight: bold; margin-bottom: 10px; min-height: 1.2em; }
+        #log {
+            text-align: left;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: #888;
+            background: #111;
+            padding: 10px;
+            border-radius: 4px;
+            height: 150px;
+            overflow-y: auto;
+            margin-top: 15px;
+            border: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>GW2 Item Scraper</h1>
+    <p>Generates a JSON file with all item IDs and Names.</p>
+
+    <div id="status">Ready to start.</div>
+    
+    <div class="progress-container" id="progressContainer">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <button id="startBtn" onclick="runScraper()">Start Scraping</button>
+    <button id="downloadBtn" onclick="downloadFile()" style="display:none; background-color: #4CAF50;">Download JSON</button>
+
+    <div id="log">Logs will appear here...</div>
+</div>
+
+<script>
+    // CONFIGURATION
+    const API_BASE = "https://api.guildwars2.com/v2/items";
+    const CHUNK_SIZE = 200; // Max allowed by API per request
+    const DELAY_MS = 250;   // Delay between requests to stay under 300/min limit
+
+    let finalData = [];
+
+    function log(msg) {
+        const logBox = document.getElementById('log');
+        const line = document.createElement('div');
+        line.textContent = `> ${msg}`;
+        logBox.appendChild(line);
+        logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    function updateStatus(msg) {
+        document.getElementById('status').textContent = msg;
+    }
+
+    function updateProgress(current, total) {
+        const percent = Math.round((current / total) * 100);
+        document.getElementById('progressBar').style.width = percent + "%";
+    }
+
+    async function runScraper() {
+        const startBtn = document.getElementById('startBtn');
+        startBtn.disabled = true;
+        document.getElementById('progressContainer').style.display = 'block';
+        finalData = []; // Reset
+
+        try {
+            // Step 1: Get the Manifest (List of all IDs)
+            updateStatus("Fetching complete ID manifest...");
+            log("Requesting /v2/items (list of all IDs)...");
+            
+            const response = await fetch(API_BASE);
+            if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+            
+            const allIds = await response.json();
+            const totalItems = allIds.length;
+            log(`Success. Found ${totalItems} items.`);
+
+            // Step 2: Batch Processing
+            let processedCount = 0;
+            const totalBatches = Math.ceil(totalItems / CHUNK_SIZE);
+
+            for (let i = 0; i < totalItems; i += CHUNK_SIZE) {
+                const batchIds = allIds.slice(i, i + CHUNK_SIZE);
+                const idsParam = batchIds.join(',');
+                
+                try {
+                    const batchRes = await fetch(`${API_BASE}?ids=${idsParam}`);
+                    
+                    if (batchRes.status === 429) {
+                        log("Rate limit hit! Pausing for 5 seconds...");
+                        await new Promise(r => setTimeout(r, 5000));
+                        i -= CHUNK_SIZE; // Retry this batch
+                        continue;
+                    }
+
+                    if (!batchRes.ok) {
+                        log(`Failed batch ${i}. Skipping.`);
+                        continue;
+                    }
+
+                    const items = await batchRes.json();
+                    
+                    // Store minimal data
+                    items.forEach(item => {
+                        finalData.push({
+                            id: item.id,
+                            name: item.name,
+                            // Optional: chat_link: item.chat_link
+                        });
+                    });
+
+                    processedCount += batchIds.length;
+                    updateProgress(processedCount, totalItems);
+                    updateStatus(`Processed ${processedCount} / ${totalItems} items`);
+
+                } catch (e) {
+                    log(`Error in batch: ${e.message}`);
+                }
+
+                // Artificial delay to be nice to the API
+                await new Promise(r => setTimeout(r, DELAY_MS));
+            }
+
+            // Finished
+            updateStatus("Complete!");
+            log(`Finished. Extracted ${finalData.length} names.`);
+            startBtn.style.display = 'none';
+            document.getElementById('downloadBtn').style.display = 'inline-block';
+
+        } catch (err) {
+            console.error(err);
+            updateStatus("Error occurred");
+            log("CRITICAL ERROR: " + err.message);
+            log("If this is a CORS error, try running this on a local server (localhost) instead of file://");
+            startBtn.disabled = false;
+        }
+    }
+
+    function downloadFile() {
+        const fileName = "gw2-items.json";
+        const jsonStr = JSON.stringify(finalData, null, 2);
+        const blob = new Blob([jsonStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+</script>
+
+</body>
+</html>
