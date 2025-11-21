@@ -29,13 +29,11 @@
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
 
-        /* Filter Bar */
         .filter-bar { margin-bottom: 15px; display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 15px; background: rgba(0,0,0,0.2); padding: 10px 15px; border-radius: 5px; }
         .filter-group { display: flex; align-items: center; gap: 8px; }
         .filter-input { background: #2c3e50; color: white; border: 1px solid #3498db; padding: 6px 10px; border-radius: 4px; outline: none; }
         .filter-label { font-size: 0.9rem; color: #bdc3c7; cursor: pointer; display: flex; align-items: center; gap: 5px; }
 
-        /* Layout */
         .guild-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; }
         .guild-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; height: 100%; min-height: 300px; }
         .guild-header { background: rgba(52, 152, 219, 0.15); padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; }
@@ -53,18 +51,15 @@
         .item-count { position: absolute; bottom: 1px; right: 3px; font-size: 0.8rem; font-weight: bold; color: white; text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; pointer-events: none; }
         .empty-slot { opacity: 0.1; }
         
-        /* Indicators */
         .item-slot.type-consumable { border-bottom: 3px solid #f1c40f; } 
         .item-slot.type-decoration { border-bottom: 3px solid #3498db; } 
         .item-slot.type-claimable { border-bottom: 3px solid #e74c3c; } 
-        
-        /* Rarity Borders (Ascended is Pink) */
         .item-slot.rarity-Ascended { border-color: #fb3985 !important; box-shadow: inset 0 0 8px #fb3985; }
 
         .item-slot.is-zero { opacity: 0.2; filter: grayscale(1); }
-        .item-slot.is-zero .item-count { color: #bdc3c7; text-shadow: none; display: none; } /* Hide count if zero for cleaner look */
+        .item-slot.is-zero .item-count { color: #bdc3c7; text-shadow: none; display: none; }
 
-        /* --- GLOBAL TOOLTIP --- */
+        /* GLOBAL TOOLTIP */
         #global-tooltip {
             position: fixed;
             background: rgba(10, 10, 15, 0.95);
@@ -90,22 +85,12 @@
         .tt-rarity-Exotic .tt-name { color: #f39c12; }
         .tt-rarity-Rare .tt-name { color: #f1c40f; }
 
-        /* Logs */
-        .log-list { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; }
-        .log-entry { padding: 6px 10px; background: rgba(0,0,0,0.2); border-radius: 3px; color: #bdc3c7; }
-        .log-time { color: #7f8c8d; margin-right: 5px; font-family: monospace; }
-        .log-user { color: #3498db; font-weight: bold; }
-        .log-val { color: #f1c40f; }
-
         /* Debug */
         .debug-container { background: rgba(0,0,0,0.4); padding: 20px; border-radius: 10px; }
         #debug-output { width: 100%; height: 400px; background: #000; color: #2ecc71; font-family: 'Consolas', monospace; padding: 10px; border: 1px solid #3498db; overflow: auto; white-space: pre-wrap; margin-top: 10px; }
 
         .loading { text-align: center; padding: 30px; color: #95a5a6; font-style: italic; }
         .error-box { padding: 15px; background: rgba(231, 76, 60, 0.15); border: 1px solid rgba(231, 76, 60, 0.3); color: #e74c3c; text-align: center; border-radius: 5px; margin-top: 20px; }
-        .roster-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-        .roster-table th { text-align: left; border-bottom: 1px solid #3498db; padding: 5px; color: #3498db; position: sticky; top: 0; background: #2c3e50; }
-        .roster-table td { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 6px 5px; }
         
         /* Modal */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
@@ -113,6 +98,9 @@
         .modal-header { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 15px; font-size: 1.2rem; color: #3498db; }
         .modal-close { background: none; border: none; font-size: 1.5rem; color: #ecf0f1; cursor: pointer; }
         .api-list-item { background: rgba(0,0,0,0.2); padding: 10px; margin-bottom: 8px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+        .roster-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .roster-table th { text-align: left; border-bottom: 1px solid #3498db; padding: 5px; color: #3498db; position: sticky; top: 0; background: #2c3e50; }
+        .roster-table td { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 6px 5px; }
     </style>
 </head>
 <body>
@@ -152,7 +140,7 @@
                 <select id="storage-filter" class="filter-input" onchange="applyStorageFilter()">
                     <option value="all">Show All Types</option>
                     <option value="Consumable">Consumables (All)</option>
-                    <option value="AscendedFeast">Ascended Feasts (By Rarity)</option>
+                    <option value="AscendedFeast">Ascended Feasts</option>
                     <option value="Decoration">Decorations</option>
                     <option value="Claimable">WvW/Claimable</option>
                 </select>
@@ -175,8 +163,11 @@
 
     <div id="tab-debug" class="tab-content">
         <div class="debug-container">
-            <h3 style="color:#e74c3c; margin-bottom:10px;">Data Inspector</h3>
-            <button onclick="inspectStorage()">Inspect Storage Items</button>
+            <h3 style="color:#e74c3c; margin-bottom:10px;">Diagnostic Tools</h3>
+            <div style="display:flex; gap:10px; margin-bottom:10px;">
+                <button onclick="inspectStorage()">Inspect Storage Items</button>
+                <button onclick="testItemLookup()">Test Item Lookup</button>
+            </div>
             <textarea id="debug-output" readonly>Waiting...</textarea>
         </div>
     </div>
@@ -222,7 +213,7 @@
     let nameToIdMap = new Map();
     const GW2_API = 'https://api.guildwars2.com/v2';
 
-    // Tooltip Elements
+    // Tooltip
     const tooltipEl = document.getElementById('global-tooltip');
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -232,7 +223,74 @@
         if(apiKeys.length > 0) refreshData();
     });
 
-    // --- GLOBAL TOOLTIP LOGIC ---
+    // --- DIAGNOSTIC: ITEM LOOKUP ---
+    async function testItemLookup() {
+        const out = document.getElementById('debug-output');
+        out.value = "--- Testing Item Lookup ---\n";
+        
+        // 1. Check if map is loaded
+        out.value += `Name to ID Map Size: ${nameToIdMap.size}\n`;
+        if(nameToIdMap.size === 0) {
+            out.value += "ERROR: nameToIdMap is empty. 'items-names.json' likely failed to load.\n";
+            return;
+        }
+
+        // 2. Test Sample Upgrade Names
+        // These names come from your previous debug output
+        const samples = [
+            "Bowl of Fruit Salad with Mint Garnish",
+            "Peppercorn-Crusted Sous-Vide Steak",
+            "Peppered Cured Meat Flatbread",
+            "Plate of Coq Au Vin with Salsa"
+        ];
+
+        const idsToFetch = [];
+
+        samples.forEach(name => {
+            const id = nameToIdMap.get(name);
+            out.value += `Lookup "${name}": ${id ? "FOUND ID " + id : "NOT FOUND in JSON"}\n`;
+            if(id) idsToFetch.push(id);
+        });
+
+        // 3. Fetch API Rarity for found IDs
+        if(idsToFetch.length > 0) {
+            out.value += `\nFetching API info for ${idsToFetch.join(',')}...\n`;
+            try {
+                const res = await fetch(`https://api.guildwars2.com/v2/items?ids=${idsToFetch.join(',')}`);
+                const items = await res.json();
+                items.forEach(i => {
+                    out.value += `API ID ${i.id} (${i.name}) -> Rarity: ${i.rarity} | Type: ${i.type}\n`;
+                });
+            } catch(e) {
+                out.value += `API Fetch Error: ${e.message}\n`;
+            }
+        }
+        out.value += "--- End Test ---";
+    }
+
+    // --- DIAGNOSTIC: STORAGE ---
+    async function inspectStorage() {
+        const out = document.getElementById('debug-output');
+        out.value = "Inspecting Storage (with merged metadata)...\n";
+        Object.keys(guildData).forEach(gid => {
+            const g = guildData[gid];
+            out.value += `\n=== ${g.name} ===\n`;
+            if(!g.storage) return;
+            g.storage.forEach(s => {
+                const u = upgradeDetails.get(s.id);
+                // Merge logic from render to verify
+                let rarity = 'Unknown';
+                if(u && nameToIdMap.has(u.name)) {
+                    const realId = nameToIdMap.get(u.name);
+                    const realItem = itemDetails.get(realId);
+                    if(realItem) rarity = realItem.rarity;
+                }
+                out.value += `[ID:${s.id}] Qty:${s.count} Name:${u?u.name:'Unknown'} Rarity:${rarity}\n`;
+            });
+        });
+    }
+
+    // --- GLOBAL TOOLTIP ---
     function showTooltip(e, data) {
         const { name, type, desc, stats, rarity, count, icon } = data;
         tooltipEl.innerHTML = `
@@ -255,41 +313,34 @@
         const w = tooltipEl.offsetWidth;
         const h = tooltipEl.offsetHeight;
         const pad = 15;
-        
         let left = e.pageX + pad;
         let top = e.pageY + pad;
-
-        // Boundary checks
         if(left + w > window.innerWidth) left = e.pageX - w - pad;
         if(top + h > window.innerHeight + window.scrollY) top = e.pageY - h - pad;
-
         tooltipEl.style.left = left + 'px';
         tooltipEl.style.top = top + 'px';
     }
 
-    function hideTooltip() {
-        tooltipEl.style.display = 'none';
-    }
+    function hideTooltip() { tooltipEl.style.display = 'none'; }
 
-    // --- DATA PROCESSING ---
-
-    // 1. Load Name->ID Map
+    // --- DATA LOADING ---
     async function loadItemNames() {
         if(nameToIdMap.size > 0) return;
+        updateStatus("Loading item index...");
         try {
-            updateStatus("Loading item index...");
             const res = await fetch('items-names.json');
-            if(!res.ok) throw new Error("File not found");
+            if(!res.ok) throw new Error("File missing");
             const json = await res.json();
+            // json.items is [[id, name], [id, name]...]
             json.items.forEach(pair => {
-                nameToIdMap.set(pair[1], pair[0]); // Name -> ID
+                // We map Name -> ID
+                nameToIdMap.set(pair[1], pair[0]);
             });
         } catch(e) {
-            console.warn("Could not load items-names.json. Advanced stats disabled.");
+            console.warn("JSON load failed", e);
         }
     }
 
-    // 2. Load Global Library (All Upgrades)
     async function loadGlobalLibrary() {
         if(upgradeDetails.size > 500) return;
         updateStatus("Downloading global upgrade library...");
@@ -301,10 +352,7 @@
                 const data = await res.json();
                 data.forEach(u => {
                     upgradeDetails.set(u.id, {
-                        name: u.name, 
-                        icon: u.icon, 
-                        description: u.description, 
-                        type: u.type 
+                        name: u.name, icon: u.icon, description: u.description, type: u.type 
                     });
                 });
                 updateStatus(`Loading library... ${Math.min(i+200, allIds.length)}/${allIds.length}`);
@@ -312,15 +360,13 @@
         } catch(e) { console.error(e); }
     }
 
-    // 3. Enrich Upgrades with Game Item Stats
     async function enrichLibraryWithStats() {
         updateStatus("Mapping upgrades to game items...");
-        // Identify Game Item IDs from Upgrade Names
         const itemIdsToFetch = new Set();
         const upgradeIdToItemId = new Map();
 
+        // 1. Identify Matches
         upgradeDetails.forEach((u, uid) => {
-            // Only care about consumables for stats
             if(u.type === 'Consumable') {
                 const itemId = nameToIdMap.get(u.name);
                 if(itemId) {
@@ -330,6 +376,7 @@
             }
         });
 
+        // 2. Fetch Game Item Details
         if(itemIdsToFetch.size > 0) {
             updateStatus(`Fetching details for ${itemIdsToFetch.size} linked items...`);
             const arr = Array.from(itemIdsToFetch);
@@ -339,24 +386,26 @@
                     const res = await fetch(`${GW2_API}/items?ids=${chunk.join(',')}`);
                     const items = await res.json();
                     items.forEach(item => {
-                        // Store item data temporarily
+                        // Parse stats from description or details
+                        let stats = "";
+                        if(item.details && item.details.description) stats = item.details.description;
+                        else if(item.description) stats = item.description; // often contains stats for food
+
                         itemDetails.set(item.id, {
                             rarity: item.rarity,
-                            description: item.description,
-                            details: item.details
+                            stats: stats
                         });
                     });
                 } catch(e) {}
             }
 
-            // Merge back into upgradeDetails
+            // 3. Apply to Upgrades
             upgradeIdToItemId.forEach((itemId, upgradeId) => {
                 const u = upgradeDetails.get(upgradeId);
                 const i = itemDetails.get(itemId);
                 if(u && i) {
-                    u.rarity = i.rarity; // Apply Real Rarity!
-                    u.realDescription = i.description; // Apply Real Description!
-                    if(i.details && i.details.description) u.realDescription += "\n" + i.details.description;
+                    u.rarity = i.rarity;
+                    u.stats = i.stats; // Attach game stats
                 }
             });
         }
@@ -365,12 +414,14 @@
     // --- MAIN REFRESH ---
     async function refreshData() {
         guildData = {};
-        
         await loadItemNames();
         await loadGlobalLibrary();
         await enrichLibraryWithStats();
 
         updateStatus('Discovering guilds...');
+        const grids = ['stash-grid', 'consumables-grid', 'roster-grid', 'log-grid'];
+        grids.forEach(id => document.getElementById(id).innerHTML = '<div class="loading">Loading guild data...</div>');
+
         const accessibleGuilds = []; 
         for(const cred of apiKeys) {
             try {
@@ -390,11 +441,13 @@
 
         if(accessibleGuilds.length === 0) {
             updateStatus('');
-            document.getElementById('stash-grid').innerHTML = '<div class="error-box">No accessible guilds found.</div>';
+            grids.forEach(id => document.getElementById(id).innerHTML = '<div class="error-box">No accessible guilds found.</div>');
             return;
         }
 
-        updateStatus('Fetching guild storage...');
+        updateStatus('Fetching specific guild data...');
+        const itemIds = new Set();
+
         await Promise.all(accessibleGuilds.map(async (gid) => {
             const g = guildData[gid];
             const tokenStr = `?access_token=${g.key}`;
@@ -405,6 +458,7 @@
                 try {
                     const stash = await fetch(`${GW2_API}/guild/${gid}/stash${tokenStr}`).then(r => { if(!r.ok) throw new Error(); return r.json(); });
                     g.stash = stash;
+                    stash.forEach(tab => { if(tab.inventory) tab.inventory.forEach(i => { if(i) itemIds.add(i.id); }); });
                 } catch(err) { g.stashError = true; }
 
                 try {
@@ -415,28 +469,43 @@
                 try { 
                     g.log = await fetch(`${GW2_API}/guild/${gid}/log${tokenStr}`).then(r => r.ok ? r.json() : []); 
                     g.log = g.log.slice(0, 50);
+                    g.log.forEach(l => { if(l.item_id) itemIds.add(l.item_id); });
                 } catch(e) {}
             } catch(e) {}
         }));
+
+        if(itemIds.size > 0) {
+            updateStatus('Resolving items...');
+            const missing = Array.from(itemIds).filter(id => !itemDetails.has(id));
+            if(missing.length > 0) {
+                for(let i=0; i<missing.length; i+=200) {
+                    const chunk = missing.slice(i, i+200);
+                    try {
+                        const res = await fetch(`${GW2_API}/items?ids=${chunk.join(',')}`);
+                        const data = await res.json();
+                        data.forEach(item => {
+                            itemDetails.set(item.id, { name: item.name, icon: item.icon, rarity: item.rarity });
+                        });
+                    } catch(e){}
+                }
+            }
+        }
 
         updateStatus('');
         renderAll();
     }
 
     function renderAll() {
-        document.getElementById('stash-grid').innerHTML = '';
-        document.getElementById('consumables-grid').innerHTML = '';
-        document.getElementById('roster-grid').innerHTML = '';
-        document.getElementById('log-grid').innerHTML = '';
-
+        const grids = ['stash-grid', 'consumables-grid', 'roster-grid', 'log-grid'];
+        grids.forEach(id => document.getElementById(id).innerHTML = '');
         Object.keys(guildData).forEach(gid => {
             const g = guildData[gid];
             renderStashCard(g);
-            renderStorageCard(g); // This uses the GLOBAL list + Guild Counts
+            renderStorageCard(g);
             renderRosterCard(g);
             renderLogCard(g);
         });
-        applyStorageFilter();
+        applyStorageFilter(); 
     }
 
     function renderStorageCard(g) {
@@ -444,24 +513,22 @@
         const grid = document.createElement('div');
         grid.className = 'item-grid'; 
 
-        // 1. Map current guild inventory
+        // Guild Inventory
         const guildCounts = new Map();
         if(g.storage) g.storage.forEach(s => guildCounts.set(s.id, s.count));
 
-        // 2. Iterate GLOBAL list (upgradeDetails)
-        // This ensures "Show Empty" works for items the guild has never seen
+        // Iterate Global Library
         let cardItems = [];
-        
         upgradeDetails.forEach((u, id) => {
             if(!['Consumable','Decoration','Claimable'].includes(u.type)) return;
-
+            
             cardItems.push({
                 id: id,
                 name: u.name,
                 icon: u.icon,
                 type: u.type,
-                desc: u.realDescription || u.description, // Use enriched desc if available
-                stats: u.realDescription ? u.description : '', // If enriched, orig desc is usually flavour
+                desc: u.description, // Original guild description
+                stats: u.stats, // Enriched stats from game item
                 rarity: u.rarity || 'Basic',
                 count: guildCounts.has(id) ? guildCounts.get(id) : 0
             });
@@ -475,15 +542,12 @@
             if(item.count === 0) classes += ' is-zero';
             
             d.className = classes;
-            // Attributes for Filtering
             d.dataset.type = item.type;
             d.dataset.name = item.name.toLowerCase();
             d.dataset.count = item.count;
             d.dataset.rarity = item.rarity; 
 
             d.innerHTML = `<img src="${item.icon}"><div class="item-count">${item.count}</div>`;
-            
-            // Events for Tooltip
             d.addEventListener('mousemove', (e) => showTooltip(e, item));
             d.addEventListener('mouseleave', hideTooltip);
 
@@ -500,7 +564,7 @@
         const showEmpty = document.getElementById('show-empty').checked;
         
         document.querySelectorAll('.storage-slot').forEach(slot => {
-            const type = slot.dataset.type;
+            const type = slot.dataset.type; 
             const name = slot.dataset.name;
             const count = parseInt(slot.dataset.count);
             const rarity = slot.dataset.rarity;
@@ -511,7 +575,6 @@
             
             if(visible) {
                 if(filter === 'AscendedFeast') {
-                    // Rarity Check!
                     if(rarity !== 'Ascended' || type !== 'Consumable') visible = false;
                 } else if (filter !== 'all') {
                     if(type !== filter) visible = false;
@@ -524,7 +587,7 @@
         });
     }
 
-    // --- BOILERPLATE RENDERERS ---
+    // --- BOILERPLATE ---
     function createCard(g, titleSuffix) {
         const div = document.createElement('div');
         div.className = 'guild-card';
@@ -557,13 +620,8 @@
                     if(!slot) d.className = 'item-slot empty-slot';
                     else {
                         d.className = 'item-slot';
-                        // Stash items don't benefit from the Name Map (usually generic items)
-                        // Can check itemDetails if resolved, otherwise simple img
-                        // We haven't implemented enrichment for Stash items in this pass to keep it fast
-                        d.innerHTML = `<img src="https://render.guildwars2.com/file/0000000000000000000000000000000000000000/1.png"><div class="item-count">${slot.count}</div>`;
-                        // Fetching individual stash item icons on demand is better, strictly placeholder here
-                        // Real app should resolve these IDs too.
-                        fetchItemIcon(slot.id, d);
+                        const info = itemDetails.get(slot.id) || {icon:''};
+                        d.innerHTML = `<img src="${info.icon}"><div class="item-count">${slot.count}</div>`;
                     }
                     grid.appendChild(d);
                 });
@@ -571,16 +629,6 @@
             });
         }
         document.getElementById('stash-grid').appendChild(ui.card);
-    }
-    
-    // Quick fetch for Stash icons since we aren't pre-loading them
-    async function fetchItemIcon(id, el) {
-        try {
-            const res = await fetch(`${GW2_API}/items/${id}`);
-            const data = await res.json();
-            el.innerHTML = `<img src="${data.icon}"><div class="item-count">${el.innerText}</div>`;
-            el.title = data.name;
-        } catch(e){}
     }
 
     function renderRosterCard(g) {
@@ -598,7 +646,8 @@
             row.className = 'log-entry';
             let txt = `<span class="log-time">${new Date(l.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span> <span class="log-user">${l.user||''}</span> `;
             if(l.type==='stash'||l.type==='treasury') {
-                txt += `${l.operation||'deposit'} <span class="log-val">${l.count}x (Item ${l.item_id})</span>`;
+                const i = itemDetails.get(l.item_id);
+                txt += `${l.operation||'deposit'} <span class="log-val">${l.count}x ${i?i.name:'Item '+l.item_id}</span>`;
             } else { txt += l.type; }
             row.innerHTML = txt;
             list.appendChild(row);
@@ -640,19 +689,6 @@
     function updateStatus(m) { document.getElementById('status-msg').innerText = m; }
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-    async function inspectStorage() {
-        const out = document.getElementById('debug-output');
-        out.value = "Inspecting...\n";
-        Object.keys(guildData).forEach(gid => {
-            const g = guildData[gid];
-            out.value += `\n=== ${g.name} ===\n`;
-            if(!g.storage) return;
-            g.storage.forEach(s => {
-                const u = upgradeDetails.get(s.id);
-                out.value += `[ID:${s.id}] Qty:${s.count} Name:${u?u.name:'Unknown'} Rarity:${u?u.rarity:'Unknown'}\n`;
-            });
-        });
-    }
 </script>
 </body>
 </html>
