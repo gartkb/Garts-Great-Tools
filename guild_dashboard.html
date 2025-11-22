@@ -63,6 +63,16 @@
         .item-slot.is-zero { opacity: 0.2; filter: grayscale(1); }
         .item-slot.is-zero .item-count { display: none; }
 
+        /* --- NEW ROSTER TABLE STYLES --- */
+        .roster-container { background: rgba(0,0,0,0.3); border-radius: 10px; padding: 15px; height: 100%; display: flex; flex-direction: column; }
+        .roster-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+        .roster-table th { text-align: left; border-bottom: 2px solid #3498db; padding: 10px; color: #3498db; background: rgba(44, 62, 80, 0.9); position: sticky; top: 0; z-index: 5; cursor: pointer; user-select: none; }
+        .roster-table th:hover { color: #fff; background: #3498db; }
+        .roster-table td { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 8px 10px; color: #ecf0f1; }
+        .roster-table tr:hover td { background: rgba(52, 152, 219, 0.1); }
+        .sort-icon { font-size: 0.8em; margin-left: 5px; opacity: 0.5; }
+        .rank-badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 0.85em; background: rgba(255,255,255,0.05); }
+
         /* --- GLOBAL TOOLTIP --- */
         #global-tooltip {
             position: fixed;
@@ -94,9 +104,6 @@
 
         .loading { text-align: center; padding: 30px; color: #95a5a6; font-style: italic; }
         .error-box { padding: 15px; background: rgba(231, 76, 60, 0.15); border: 1px solid rgba(231, 76, 60, 0.3); color: #e74c3c; text-align: center; border-radius: 5px; margin-top: 20px; }
-        .roster-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-        .roster-table th { text-align: left; border-bottom: 1px solid #3498db; padding: 5px; color: #3498db; position: sticky; top: 0; background: #2c3e50; }
-        .roster-table td { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 6px 5px; }
         
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
         .modal-content { background: #2c3e50; border: 1px solid #3498db; border-radius: 8px; width: 95%; max-width: 600px; padding: 20px; box-shadow: 0 0 25px rgba(0,0,0,0.7); display: flex; flex-direction: column; max-height: 90vh; }
@@ -132,7 +139,18 @@
         <div class="nav-tab debug-tab" onclick="selectTab('debug')">Debug</div>
     </div>
 
+    <!-- NEW: Stash Tab with Search -->
     <div id="tab-stash" class="tab-content active">
+        <div class="filter-bar">
+            <div class="filter-group">
+                <input type="text" id="stash-search" class="filter-input" placeholder="Search stash items..." onkeyup="applyStashFilter()">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label" style="font-size:0.8rem; opacity:0.7;">
+                    (Hides empty slots when searching)
+                </label>
+            </div>
+        </div>
         <div id="stash-grid" class="guild-grid"></div>
     </div>
 
@@ -159,9 +177,19 @@
         <div id="consumables-grid" class="guild-grid"></div>
     </div>
 
+    <!-- NEW: Roster Tab with Sorting/Searching -->
     <div id="tab-roster" class="tab-content">
-        <div id="roster-grid" class="guild-grid"></div>
+        <div class="filter-bar">
+             <div class="filter-group">
+                <input type="text" id="roster-search" class="filter-input" placeholder="Search members..." onkeyup="applyRosterFilter()">
+            </div>
+            <div class="filter-group" style="color:#bdc3c7; font-size:0.9rem;">
+                <span id="roster-total-count">0</span> Members found
+            </div>
+        </div>
+        <div id="roster-grid" class="guild-grid" style="grid-template-columns: 1fr;"></div>
     </div>
+
     <div id="tab-log" class="tab-content">
         <div id="log-grid" class="guild-grid"></div>
     </div>
@@ -212,17 +240,6 @@
     </div>
 </div>
 
-<!-- ROSTER MODAL -->
-<div id="roster-modal" class="modal-overlay">
-    <div class="modal-content" style="max-width: 800px; height: 80vh;">
-        <div class="modal-header">
-            <span id="roster-title">Guild Roster</span>
-            <button class="modal-close" onclick="closeModal('roster-modal')">&times;</button>
-        </div>
-        <div style="flex: 1; overflow-y: auto;" id="roster-body"></div>
-    </div>
-</div>
-
 <script>
     let apiKeys = [];
     let guildData = {}; 
@@ -235,6 +252,9 @@
     // New: Tracking disabled guilds
     let disabledGuilds = new Set();
     let allDiscoveredGuilds = []; // Stores basic info for all accessible guilds
+
+    // Global sort state for rosters
+    let rosterSortState = { column: 'rank', asc: true };
     
     const GW2_API = 'https://api.guildwars2.com/v2';
     const JSON_URL = 'https://gartkb.github.io/Garts-Great-Tools/gw2-items.json';
@@ -365,6 +385,7 @@
 
     // --- DATA LOADING ---
 
+    // ORIGINAL LOGIC PRESERVED FOR ASCENDED FILTERING
     async function loadItemNameMap() {
         if(nameToIdsMap.size > 0) return;
         try {
@@ -403,6 +424,7 @@
         } catch(e) {}
     }
 
+    // ORIGINAL LOGIC PRESERVED FOR ASCENDED FILTERING
     async function enrichLibraryWithStats() {
         updateStatus("Linking Upgrades to Game Items...");
         /* 
@@ -580,6 +602,18 @@
                 
                 // Roster
                 try { g.roster = await fetch(`${GW2_API}/guild/${gid}/members${tokenStr}`).then(r => r.ok ? r.json() : []); } catch(e) {}
+
+                // NEW: Fetch Ranks (For Sorting)
+                try {
+                     const ranks = await fetch(`${GW2_API}/guild/${gid}/ranks${tokenStr}`).then(r => r.ok ? r.json() : []);
+                     // Create simple map: { "Leader": 1, "Member": 5 } etc.
+                     g.rankMap = {};
+                     ranks.forEach(r => {
+                         g.rankMap[r.id] = r.order;
+                     });
+                } catch(e) {
+                    g.rankMap = {}; // Fallback
+                }
                 
                 // Logs
                 try { 
@@ -647,6 +681,8 @@
             renderLogCard(g);
         });
         applyStorageFilter();
+        applyStashFilter();
+        applyRosterFilter();
     }
 
     function renderStorageCard(g) {
@@ -754,16 +790,22 @@
                 title.className = 'stash-section-title';
                 let name = "Stash";
                 if(tab.upgrade_id===58) name="Stash"; if(tab.upgrade_id===377) name="Trove"; if(tab.upgrade_id===59) name="Cave";
-                title.innerText = `${name} (${tab.inventory.filter(x=>x).length})`;
+                
+                const inventory = tab.inventory || [];
+                title.innerText = `${name} (${inventory.filter(x=>x).length})`;
+                
                 ui.body.appendChild(title);
-                (tab.inventory||[]).forEach(slot => {
+                inventory.forEach(slot => {
                     const d = document.createElement('div');
-                    if(!slot) d.className = 'item-slot empty-slot';
-                    else {
+                    if(!slot) {
+                        d.className = 'item-slot empty-slot';
+                    } else {
                         d.className = 'item-slot';
                         const info = itemDetails.get(slot.id) || {icon:'', name: 'Loading...'};
                         d.innerHTML = `<img src="${info.icon || 'https://render.guildwars2.com/file/0000000000000000000000000000000000000000/1.png'}"><div class="item-count">${slot.count}</div>`;
                         d.title = `${info.name} (x${slot.count})`;
+                        // Add name to dataset for search
+                        if(info.name) d.dataset.name = info.name.toLowerCase();
                         fetchItemIcon(slot.id, d); 
                     }
                     grid.appendChild(d);
@@ -779,6 +821,7 @@
             const data = itemDetails.get(id);
             el.innerHTML = `<img src="${data.icon}"><div class="item-count">${el.innerText}</div>`;
             el.title = data.name;
+            if(data.name) el.dataset.name = data.name.toLowerCase();
             return;
         }
         try {
@@ -787,13 +830,139 @@
             itemDetails.set(id, {name: data.name, icon: data.icon, rarity: data.rarity}); 
             el.innerHTML = `<img src="${data.icon}"><div class="item-count">${el.innerText}</div>`;
             el.title = data.name;
+            // Add name to dataset for search
+            if(data.name) el.dataset.name = data.name.toLowerCase();
+            // Re-apply search if one is active
+            const searchInput = document.getElementById('stash-search');
+            if(searchInput && searchInput.value) applyStashFilter();
         } catch(e){}
     }
 
+    // NEW: Apply Stash Search Filter
+    function applyStashFilter() {
+        const searchInput = document.getElementById('stash-search');
+        if(!searchInput) return;
+        const search = searchInput.value.toLowerCase().trim();
+        const slots = document.querySelectorAll('#stash-grid .item-slot');
+        slots.forEach(slot => {
+            if(search === '') { slot.style.display = ''; return; }
+            if(slot.classList.contains('empty-slot')) { slot.style.display = 'none'; } 
+            else {
+                const name = slot.dataset.name || '';
+                slot.style.display = name.includes(search) ? 'block' : 'none';
+            }
+        });
+    }
+
+    // NEW: Render Roster as Table with Sorting
     function renderRosterCard(g) {
         const ui = createCard(g, 'Roster');
-        ui.body.innerHTML = `<div style="text-align:center;margin:20px 0;"><div style="font-size:2.5rem;color:#3498db;font-weight:bold;">${g.roster?g.roster.length:0}</div><div style="color:#bdc3c7">Members</div></div><button style="width:100%;margin-top:10px" onclick="openRoster('${g.id}')">View</button>`;
+        if(!g.roster || g.roster.length === 0) {
+            ui.body.innerHTML = `<div style="padding:20px; text-align:center; color:#7f8c8d;">No roster data available</div>`;
+        } else {
+            const container = document.createElement('div');
+            container.className = 'roster-container';
+            
+            container.innerHTML = `
+            <div style="flex:1; overflow:auto;">
+                <table class="roster-table" id="rt-${g.id}">
+                    <thead>
+                        <tr>
+                            <th onclick="sortRoster('${g.id}', 'name')">Name <span class="sort-icon">⇅</span></th>
+                            <th onclick="sortRoster('${g.id}', 'rank')">Rank <span class="sort-icon">⇅</span></th>
+                            <th onclick="sortRoster('${g.id}', 'joined')">Joined <span class="sort-icon">⇅</span></th>
+                        </tr>
+                    </thead>
+                    <tbody class="roster-body">
+                        ${generateRosterRows(g.roster)}
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top:10px; font-size:0.85rem; color:#7f8c8d; text-align:right;">
+                Total: <span class="roster-count">${g.roster.length}</span>
+            </div>
+            `;
+            ui.body.appendChild(container);
+            ui.body.style.padding = '0'; 
+            ui.body.style.overflow = 'hidden'; 
+        }
+        
         document.getElementById('roster-grid').appendChild(ui.card);
+        
+        // Use 'rank' as initial sort
+        sortRoster(g.id, rosterSortState.column, false);
+    }
+
+    function generateRosterRows(members) {
+        return members.map(m => `
+            <tr class="roster-row" data-name="${m.name.toLowerCase()}" data-rank="${m.rank.toLowerCase()}">
+                <td style="font-weight:bold; color:#ecf0f1;">${m.name}</td>
+                <td style="color:#3498db;"><span class="rank-badge">${m.rank}</span></td>
+                <td style="color:#bdc3c7;">${new Date(m.joined).toLocaleDateString()}</td>
+            </tr>
+        `).join('');
+    }
+
+    function sortRoster(gid, column, toggle = true) {
+        if(toggle) {
+            if(rosterSortState.column === column) {
+                rosterSortState.asc = !rosterSortState.asc;
+            } else {
+                rosterSortState.column = column;
+                rosterSortState.asc = true;
+            }
+        }
+        
+        const g = guildData[gid];
+        if(!g || !g.roster) return;
+
+        g.roster.sort((a, b) => {
+            let valA = a[column];
+            let valB = b[column];
+            
+            // CUSTOM RANK SORTING LOGIC
+            if(column === 'rank' && g.rankMap) {
+                // Lower number = Higher Rank
+                valA = g.rankMap[a.rank] || 999;
+                valB = g.rankMap[b.rank] || 999;
+            } 
+            else if(column === 'joined') {
+                valA = new Date(valA).getTime();
+                valB = new Date(valB).getTime();
+            } else {
+                valA = String(valA).toLowerCase();
+                valB = String(valB).toLowerCase();
+            }
+            
+            if(valA < valB) return rosterSortState.asc ? -1 : 1;
+            if(valA > valB) return rosterSortState.asc ? 1 : -1;
+            return 0;
+        });
+
+        const table = document.querySelector(`#rt-${gid} .roster-body`);
+        if(table) {
+            table.innerHTML = generateRosterRows(g.roster);
+            applyRosterFilter();
+        }
+    }
+
+    function applyRosterFilter() {
+        const search = document.getElementById('roster-search').value.toLowerCase().trim();
+        let totalVisible = 0;
+
+        document.querySelectorAll('.roster-row').forEach(row => {
+            const name = row.dataset.name;
+            const rank = row.dataset.rank;
+            
+            if(search === '' || name.includes(search) || rank.includes(search)) {
+                row.style.display = '';
+                totalVisible++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        document.getElementById('roster-total-count').innerText = totalVisible;
     }
 
     function renderLogCard(g) {
@@ -814,17 +983,7 @@
         document.getElementById('log-grid').appendChild(ui.card);
     }
 
-    function openRoster(gid) {
-        const g = guildData[gid];
-        document.getElementById('roster-title').innerText = `${g.name} Members`;
-        let h = `<table class="roster-table"><thead><tr><th>Name</th><th>Rank</th><th>Joined</th></tr></thead><tbody>`;
-        (g.roster||[]).sort((a,b)=>a.rank.localeCompare(b.rank)).forEach(m => {
-            h += `<tr><td>${m.name}</td><td>${m.rank}</td><td>${new Date(m.joined).toLocaleDateString()}</td></tr>`;
-        });
-        h += `</tbody></table>`;
-        document.getElementById('roster-body').innerHTML = h;
-        openModal('roster-modal');
-    }
+    // REMOVED OLD OPENROSTER MODAL FUNCTION as it is replaced by inline table
 
     function addKey() { 
         const v = document.getElementById('api-key-input').value.trim();
