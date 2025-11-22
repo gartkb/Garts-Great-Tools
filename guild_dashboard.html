@@ -100,7 +100,7 @@
         .tt-rarity-Rare .tt-name { color: #f1c40f; }
         
         .debug-container { background: rgba(0,0,0,0.4); padding: 20px; border-radius: 10px; }
-        #debug-output { width: 100%; height: 400px; background: #000; color: #2ecc71; font-family: 'Consolas', monospace; padding: 10px; border: 1px solid #3498db; overflow: auto; white-space: pre-wrap; margin-top: 10px; }
+        #debug-output { width: 100%; height: 500px; background: #000; color: #2ecc71; font-family: 'Consolas', monospace; padding: 10px; border: 1px solid #3498db; overflow: auto; white-space: pre-wrap; margin-top: 10px; resize: vertical; }
 
         .loading { text-align: center; padding: 30px; color: #95a5a6; font-style: italic; }
         .error-box { padding: 15px; background: rgba(231, 76, 60, 0.15); border: 1px solid rgba(231, 76, 60, 0.3); color: #e74c3c; text-align: center; border-radius: 5px; margin-top: 20px; }
@@ -112,6 +112,31 @@
         .api-list-item { background: rgba(0,0,0,0.2); padding: 10px; margin-bottom: 8px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
         .guild-list-item { background: rgba(0,0,0,0.2); padding: 8px 12px; margin-bottom: 8px; border-radius: 4px; display: flex; align-items: center; gap: 10px; border: 1px solid rgba(255,255,255,0.05); }
         .guild-list-item:hover { background: rgba(255,255,255,0.05); }
+
+        /* --- LOG TAB STYLES --- */
+        .log-list { display: flex; flex-direction: column; gap: 4px; }
+        .log-entry { display: flex; align-items: center; padding: 8px 12px; background: rgba(0,0,0,0.2); border-radius: 4px; border-left: 3px solid transparent; font-size: 0.9rem; transition: background 0.2s; }
+        .log-entry:hover { background: rgba(255,255,255,0.05); }
+        
+        .log-icon { width: 32px; height: 32px; border-radius: 3px; margin-right: 10px; flex-shrink: 0; background: #000; border: 1px solid #444; object-fit: contain; }
+        .log-time { color: #7f8c8d; font-size: 0.8rem; width: 110px; flex-shrink: 0; text-align: right; margin-left: auto; font-family: monospace; }
+        .log-details { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+        .log-main-text { color: #ecf0f1; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+        .log-sub-text { color: #95a5a6; font-size: 0.8rem; }
+        
+        .log-user { font-weight: bold; color: #3498db; cursor: pointer; }
+        .log-val { color: #f1c40f; font-weight: bold; }
+        .log-item-name { color: #bdc3c7; }
+        
+        .entry-deposit { border-left-color: #2ecc71; }
+        .entry-withdraw { border-left-color: #e74c3c; }
+        .entry-upgrade { border-left-color: #9b59b6; }
+        .entry-consumable { border-left-color: #f39c12; }
+        .entry-roster { border-left-color: #3498db; }
+        .entry-left { border-left-color: #e67e22; } /* Orange for leaving */
+        .entry-motd { border-left-color: #ecf0f1; }
+
+        .rarity-Ascended-text { color: #fb3985 !important; font-weight: bold; text-shadow: 0 0 5px rgba(251, 57, 133, 0.3); }
     </style>
 </head>
 <body>
@@ -139,7 +164,7 @@
         <div class="nav-tab debug-tab" onclick="selectTab('debug')">Debug</div>
     </div>
 
-    <!-- NEW: Stash Tab with Search -->
+    <!-- Stash Tab -->
     <div id="tab-stash" class="tab-content active">
         <div class="filter-bar">
             <div class="filter-group">
@@ -154,6 +179,7 @@
         <div id="stash-grid" class="guild-grid"></div>
     </div>
 
+    <!-- Consumables Tab -->
     <div id="tab-consumables" class="tab-content">
         <div class="filter-bar">
             <div class="filter-group">
@@ -177,7 +203,7 @@
         <div id="consumables-grid" class="guild-grid"></div>
     </div>
 
-    <!-- NEW: Roster Tab with Sorting/Searching -->
+    <!-- Roster Tab -->
     <div id="tab-roster" class="tab-content">
         <div class="filter-bar">
              <div class="filter-group">
@@ -187,18 +213,46 @@
                 <span id="roster-total-count">0</span> Members found
             </div>
         </div>
-        <div id="roster-grid" class="guild-grid" style="grid-template-columns: 1fr;"></div>
+        <div id="roster-grid" class="guild-grid"></div>
     </div>
 
+    <!-- Log Tab with new Filter -->
     <div id="tab-log" class="tab-content">
+        <div class="filter-bar">
+            <div class="filter-group">
+                <select id="log-filter" class="filter-input" onchange="applyLogFilter()">
+                    <option value="all">All Events</option>
+                    <option value="stash">Bank & Stash</option>
+                    <option value="consumables">Consumables & Deco</option>
+                    <option value="upgrades">Guild Upgrades</option>
+                    <option value="roster">Roster (Join/Kick/Left)</option>
+                    <option value="mission">Missions</option>
+                    <option value="motd">MOTD</option>
+                </select>
+            </div>
+        </div>
         <div id="log-grid" class="guild-grid"></div>
     </div>
 
     <div id="tab-debug" class="tab-content">
         <div class="debug-container">
-            <h3 style="color:#e74c3c; margin-bottom:10px;">Data Inspector</h3>
-            <button onclick="inspectStorage()">Inspect Storage Items</button>
-            <textarea id="debug-output" readonly>Waiting...</textarea>
+            <h3 style="color:#e74c3c; margin-bottom:10px;">Data Inspector & Tools</h3>
+            
+            <div class="filter-bar" style="justify-content: flex-start; margin-bottom: 10px; background: rgba(0,0,0,0.5);">
+                <div class="filter-group">
+                    <select id="debug-guild-select" class="filter-input">
+                        <option value="">Select a Guild...</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <button onclick="fetchRawLog()">Fetch Raw Log (JSON)</button>
+                </div>
+                <div class="filter-group" style="margin-left: auto;">
+                     <button onclick="inspectStorage()">Inspect Storage Objects</button>
+                </div>
+            </div>
+
+            <textarea id="debug-output" readonly placeholder="Output will appear here..."></textarea>
         </div>
     </div>
 </div>
@@ -243,17 +297,11 @@
 <script>
     let apiKeys = [];
     let guildData = {}; 
-    let itemDetails = new Map(); // Cache for fetched Item API data
-    let upgradeDetails = new Map(); // Cache for Guild Upgrade API data
-    
-    // Map Name -> Array of IDs (to handle collisions like "Flatbread" being both a Gizmo and Food)
+    let itemDetails = new Map(); 
+    let upgradeDetails = new Map(); 
     let nameToIdsMap = new Map(); 
-    
-    // New: Tracking disabled guilds
     let disabledGuilds = new Set();
-    let allDiscoveredGuilds = []; // Stores basic info for all accessible guilds
-
-    // Global sort state for rosters
+    let allDiscoveredGuilds = [];
     let rosterSortState = { column: 'rank', asc: true };
     
     const GW2_API = 'https://api.guildwars2.com/v2';
@@ -262,11 +310,9 @@
     const tooltipEl = document.getElementById('global-tooltip');
 
     document.addEventListener('DOMContentLoaded', () => {
-        // Load Keys
         const storedKeys = localStorage.getItem('gw2_dash_keys');
         if(storedKeys) try { apiKeys = JSON.parse(storedKeys); } catch(e) {}
         
-        // Load Disabled Guilds Preference
         const storedDisabled = localStorage.getItem('gw2_dash_disabled_guilds');
         if(storedDisabled) try { disabledGuilds = new Set(JSON.parse(storedDisabled)); } catch(e) {}
 
@@ -281,16 +327,12 @@
         let stats = "";
         let effect = "";
         const n = name.toLowerCase();
-
-        // 1. PASSIVE EFFECT
         if (n.includes("peppercorn") || n.includes("peppered")) effect = "-10% Incoming Damage";
         else if (n.includes("cilantro"))  effect = "66% Chance to Steal Life on Critical Hit";
         else if (n.includes("sesame"))    effect = "Gain Health on Kill";
         else if (n.includes("mint"))      effect = "+10% Outgoing Healing";
         else if (n.includes("clove"))     effect = "-20% Incoming Condition Duration";
         else if (n.includes("salsa"))     effect = "+20% Condition Duration";
-
-        // 2. ATTRIBUTES
         if (n.includes("steak"))            stats = "+100 Power\n+70 Ferocity";
         else if (n.includes("coq au vin"))  stats = "+100 Power\n+70 Precision";
         else if (n.includes("carpaccio"))   stats = "+100 Concentration\n+70 Power";
@@ -303,12 +345,9 @@
         else if (n.includes("cheesecake"))  stats = "+100 Concentration\n+33% Chance to Gain Might on Critical Hit";
         else if (n.includes("veggie flatbread")) stats = "+100 Expertise\n+70 Condition Damage";
         else if (n.includes("flatbread"))        stats = "+100 Condition Damage\n+70 Expertise"; 
-
-        // 3. Assembly
         let parts = [];
         if (effect) parts.push(effect);
         if (stats) parts.push(stats);
-        
         if (parts.length === 0) return null;
         return `Nourishment (1h):\n${parts.join('\n')}\n${baseBuffs}`;
     }
@@ -333,24 +372,12 @@
     // --- TOOLTIP ---
     function showTooltip(e, data) {
         let { name, type, desc, stats, rarity, count, icon } = data;
-
-        // 1. Try to generate "Smart Stats"
         if(rarity === 'Ascended' && type === 'Consumable') {
             const ascendedDetails = getAscendedStats(name);
-            if(ascendedDetails) {
-                stats = ascendedDetails; 
-                desc = ""; 
-            }
+            if(ascendedDetails) { stats = ascendedDetails; desc = ""; }
         }
-
-        // 2. Cleanup Duplicates
-        if(stats && stats.includes("Double-click to serve")) {
-            if(!desc) desc = stats;
-            stats = ""; 
-        }
-        if (stats && desc && stats.trim() === desc.trim()) {
-            desc = "";
-        }
+        if(stats && stats.includes("Double-click to serve")) { if(!desc) desc = stats; stats = ""; }
+        if (stats && desc && stats.trim() === desc.trim()) { desc = ""; }
 
         tooltipEl.innerHTML = `
             <div class="tt-head tt-rarity-${rarity}">
@@ -385,7 +412,6 @@
 
     // --- DATA LOADING ---
 
-    // ORIGINAL LOGIC PRESERVED FOR ASCENDED FILTERING
     async function loadItemNameMap() {
         if(nameToIdsMap.size > 0) return;
         try {
@@ -424,39 +450,15 @@
         } catch(e) {}
     }
 
-    // ORIGINAL LOGIC PRESERVED FOR ASCENDED FILTERING
     async function enrichLibraryWithStats() {
         updateStatus("Linking Upgrades to Game Items...");
-        /* 
-           ========================================================================
-           HANDLING ASCENDED FOOD (API CONFUSION WARNING)
-           ========================================================================
-           The Guild Wars 2 API treats Guild Storage and Player Inventory differently.
-           
-           1. Guild Storage (/guild/:id/storage) returns UPGRADE IDs, not ITEM IDs.
-           2. An "Upgrade" (e.g., Ascended Feast) has a name and description, but 
-              CRUCIALLY, the API does *not* include Rarity or Stats in the Upgrade object.
-           
-           TO FIX THIS:
-           We bridge the gap by name-matching:
-           1. Get Upgrade Name (e.g., "Peppercorn-Crusted Sous-Vide Steak Feast").
-           2. Look up this name in 'nameToIdsMap' to find the corresponding Item ID.
-           3. Fetch that Item ID from /items to get Rarity ("Ascended").
-           4. Assign that Rarity back to the Upgrade object.
-           
-           The 'Ascended Feasts' filter in the UI relies entirely on this enrichment 
-           process functioning correctly. If this fails, the feast remains "Unknown" rarity.
-        */
-
         const itemIdsToFetch = new Set();
         const upgradeCandidates = new Map();
 
-        // 1. MATCHING
         upgradeDetails.forEach((u, uid) => {
             if(['Consumable', 'Decoration', 'Claimable'].includes(u.type)) {
                 const normName = u.name.trim().toLowerCase();
                 const possibleIds = nameToIdsMap.get(normName);
-                
                 if(possibleIds && possibleIds.length > 0) {
                     upgradeCandidates.set(uid, possibleIds);
                     possibleIds.forEach(pid => {
@@ -466,7 +468,6 @@
             }
         });
 
-        // 2. FETCHING
         if(itemIdsToFetch.size > 0) {
             updateStatus(`Fetching stats for ${itemIdsToFetch.size} possible items...`);
             const arr = Array.from(itemIdsToFetch);
@@ -488,24 +489,17 @@
             saveCache();
         }
 
-        // 3. SELECTION (Collision Logic)
         upgradeCandidates.forEach((candidates, upgradeId) => {
             const u = upgradeDetails.get(upgradeId);
             let bestMatch = null;
-
             candidates.forEach(cid => {
                 const item = itemDetails.get(cid);
                 if(!item) return;
-                if(!bestMatch) {
-                    bestMatch = item;
-                } else {
-                    // Prioritize Ascended over non-Ascended
+                if(!bestMatch) { bestMatch = item; } else {
                     if(item.rarity === 'Ascended' && bestMatch.rarity !== 'Ascended') bestMatch = item;
-                    // Prioritize Consumable over Gizmo if rarity matches
                     else if(item.rarity === bestMatch.rarity && item.type === 'Consumable' && bestMatch.type !== 'Consumable') bestMatch = item;
                 }
             });
-
             if(bestMatch) {
                 u.rarity = bestMatch.rarity;
                 if(bestMatch.desc) u.stats = bestMatch.desc; 
@@ -517,23 +511,19 @@
         renderAll();
     }
 
-    // --- MAIN ---
     async function refreshData() {
         guildData = {};
         allDiscoveredGuilds = []; 
-        
         await loadItemNameMap();
         await loadGlobalLibrary();
         await fetchGuildData();
-        
         renderAll(); 
+        populateDebugGuilds();
         enrichLibraryWithStats().then(() => { updateStatus(''); renderAll(); });
     }
 
     async function fetchGuildData() {
-        // 1. Discover all accessible guild IDs first
-        const potentialGuilds = new Map(); // Map<ID, {key, name, tag}>
-
+        const potentialGuilds = new Map(); 
         for(const cred of apiKeys) {
             try {
                 const accRes = await fetch(`${GW2_API}/account?access_token=${cred.key}`);
@@ -555,7 +545,6 @@
             return;
         }
 
-        // 2. Fetch Basic Guild Info (Name/Tag) for ALL found IDs to populate the selection list
         const guildIds = Array.from(potentialGuilds.keys());
         await Promise.all(guildIds.map(async (gid) => {
             const g = potentialGuilds.get(gid);
@@ -564,16 +553,12 @@
                 const info = await fetch(`${GW2_API}/guild/${gid}${tokenStr}`).then(r=>r.json());
                 g.name = info.name;
                 g.tag = info.tag;
-            } catch(e) {
-                g.name = "Unknown Guild";
-            }
+            } catch(e) { g.name = "Unknown Guild"; }
         }));
 
-        // 3. Populate "Manage API" Guild List
         allDiscoveredGuilds = Array.from(potentialGuilds.values());
         renderGuildSelectionList();
 
-        // 4. Filter out Disabled Guilds for fetching Heavy Data (Stash/Log)
         const activeGuildIds = guildIds.filter(gid => !disabledGuilds.has(gid));
 
         if(activeGuildIds.length === 0) {
@@ -581,97 +566,35 @@
              return;
         }
 
-        // 5. Fetch Heavy Data for Active Guilds only
         await Promise.all(activeGuildIds.map(async (gid) => {
-            // Initialize main data object
             guildData[gid] = potentialGuilds.get(gid);
             const g = guildData[gid];
             const tokenStr = `?access_token=${g.key}`;
 
             try {
-                // Stash
-                try {
-                    const stash = await fetch(`${GW2_API}/guild/${gid}/stash${tokenStr}`).then(r => { if(!r.ok) throw new Error(); return r.json(); });
-                    g.stash = stash;
-                } catch(err) { g.stashError = true; }
-                
-                // Storage (Consumables)
-                try {
-                    g.storage = await fetch(`${GW2_API}/guild/${gid}/storage${tokenStr}`).then(r => r.ok ? r.json() : []);
-                } catch(e) {}
-                
-                // Roster
+                try { g.stash = await fetch(`${GW2_API}/guild/${gid}/stash${tokenStr}`).then(r => { if(!r.ok) throw new Error(); return r.json(); }); } catch(err) { g.stashError = true; }
+                try { g.storage = await fetch(`${GW2_API}/guild/${gid}/storage${tokenStr}`).then(r => r.ok ? r.json() : []); } catch(e) {}
                 try { g.roster = await fetch(`${GW2_API}/guild/${gid}/members${tokenStr}`).then(r => r.ok ? r.json() : []); } catch(e) {}
-
-                // NEW: Fetch Ranks (For Sorting)
                 try {
                      const ranks = await fetch(`${GW2_API}/guild/${gid}/ranks${tokenStr}`).then(r => r.ok ? r.json() : []);
-                     // Create simple map: { "Leader": 1, "Member": 5 } etc.
                      g.rankMap = {};
-                     ranks.forEach(r => {
-                         g.rankMap[r.id] = r.order;
-                     });
-                } catch(e) {
-                    g.rankMap = {}; // Fallback
-                }
+                     ranks.forEach(r => { g.rankMap[r.id] = r.order; });
+                } catch(e) { g.rankMap = {}; }
                 
-                // Logs
-                try { 
-                    g.log = await fetch(`${GW2_API}/guild/${gid}/log${tokenStr}`).then(r => r.ok ? r.json() : []); 
-                    g.log = g.log.slice(0, 50);
-                } catch(e) {}
+                // Fetch logs - Getting default amount (usually 100) is enough for the dashboard UI
+                try { g.log = await fetch(`${GW2_API}/guild/${gid}/log${tokenStr}`).then(r => r.ok ? r.json() : []); } catch(e) {}
             } catch(e) {}
         }));
     }
 
     // --- UI RENDERING ---
 
-    function renderGuildSelectionList() {
-        const container = document.getElementById('guild-selection-list');
-        if(allDiscoveredGuilds.length === 0) {
-            container.innerHTML = '<div style="text-align:center; color:#7f8c8d; padding:10px;">No guilds found yet.</div>';
-            return;
-        }
-        
-        container.innerHTML = allDiscoveredGuilds.map(g => {
-            const isChecked = !disabledGuilds.has(g.id);
-            return `
-            <div class="guild-list-item">
-                <input type="checkbox" 
-                       id="cb-${g.id}" 
-                       ${isChecked ? 'checked' : ''} 
-                       onchange="toggleGuild('${g.id}')"
-                       style="cursor:pointer; transform:scale(1.2)">
-                <label for="cb-${g.id}" style="flex:1; cursor:pointer; color:#ecf0f1;">
-                    <span style="font-weight:bold; color:#3498db;">[${g.tag}]</span> ${g.name}
-                </label>
-            </div>`;
-        }).join('');
-    }
-
-    function toggleGuild(gid) {
-        if(disabledGuilds.has(gid)) {
-            disabledGuilds.delete(gid);
-        } else {
-            disabledGuilds.add(gid);
-        }
-        localStorage.setItem('gw2_dash_disabled_guilds', JSON.stringify(Array.from(disabledGuilds)));
-        
-        // Trigger a refresh so dashboard updates immediately
-        refreshData();
-    }
-
     function renderAll() {
         const grids = ['stash-grid', 'consumables-grid', 'roster-grid', 'log-grid'];
         grids.forEach(id => document.getElementById(id).innerHTML = '');
         
-        // guildData only contains active guilds now
         const activeGIDs = Object.keys(guildData);
-
-        if(activeGIDs.length === 0 && allDiscoveredGuilds.length > 0) {
-             // Handle case where guilds exist but all are unchecked
-             return; // Message already handled in fetchGuildData
-        }
+        if(activeGIDs.length === 0 && allDiscoveredGuilds.length > 0) return;
 
         activeGIDs.forEach(gid => {
             const g = guildData[gid];
@@ -683,18 +606,51 @@
         applyStorageFilter();
         applyStashFilter();
         applyRosterFilter();
+        applyLogFilter();
+    }
+
+    // --- STASH & CONSUMABLES ---
+
+    function renderStashCard(g) {
+        const ui = createCard(g, 'Vault');
+        if(g.stashError) ui.body.innerHTML = '<div style="text-align:center;margin-top:20px;color:#e74c3c">Access Denied</div>';
+        else if(!g.stash || !g.stash.length) ui.body.innerHTML = '<div style="text-align:center;padding:20px;color:#7f8c8d">Empty</div>';
+        else {
+            g.stash.forEach(tab => {
+                const grid = document.createElement('div');
+                grid.className = 'item-grid';
+                const title = document.createElement('div');
+                title.className = 'stash-section-title';
+                let name = "Stash";
+                if(tab.upgrade_id===58) name="Stash"; if(tab.upgrade_id===377) name="Trove"; if(tab.upgrade_id===59) name="Cave";
+                
+                const inventory = tab.inventory || [];
+                title.innerText = `${name} (${inventory.filter(x=>x).length})`;
+                ui.body.appendChild(title);
+                inventory.forEach(slot => {
+                    const d = document.createElement('div');
+                    if(!slot) {
+                        d.className = 'item-slot empty-slot';
+                    } else {
+                        d.className = 'item-slot';
+                        const info = itemDetails.get(slot.id) || {icon:'', name: 'Loading...'};
+                        d.innerHTML = `<img src="${info.icon || 'https://render.guildwars2.com/file/0000000000000000000000000000000000000000/1.png'}"><div class="item-count">${slot.count}</div>`;
+                        d.title = `${info.name} (x${slot.count})`;
+                        if(info.name) d.dataset.name = info.name.toLowerCase();
+                        fetchItemIcon(slot.id, d); 
+                    }
+                    grid.appendChild(d);
+                });
+                ui.body.appendChild(grid);
+            });
+        }
+        document.getElementById('stash-grid').appendChild(ui.card);
     }
 
     function renderStorageCard(g) {
-        /* 
-           NOTE: 'Storage' in GW2 API returns Upgrade IDs.
-           'Stash' returns Item IDs. 
-           These items are UPGRADES (Consumables tab), not generic vault items.
-        */
         const ui = createCard(g, 'Storage');
         const grid = document.createElement('div');
         grid.className = 'item-grid'; 
-
         const currentItemsMap = new Map();
         if(g.storage) g.storage.forEach(s => currentItemsMap.set(s.id, s.count));
 
@@ -712,7 +668,6 @@
                 count: currentItemsMap.has(id) ? currentItemsMap.get(id) : 0
             });
         });
-
         cardItems.sort((a,b) => a.type.localeCompare(b.type) || a.name.localeCompare(b.name));
 
         cardItems.forEach(item => {
@@ -733,128 +688,8 @@
         document.getElementById('consumables-grid').appendChild(ui.card);
     }
 
-    function applyStorageFilter() {
-        const search = document.getElementById('storage-search').value.toLowerCase();
-        const filter = document.getElementById('storage-filter').value;
-        const showEmpty = document.getElementById('show-empty').checked;
-        
-        document.querySelectorAll('.storage-slot').forEach(slot => {
-            const type = slot.dataset.type; 
-            const name = slot.dataset.name; 
-            const count = parseInt(slot.dataset.count);
-            // The 'rarity' data attribute is populated via enrichLibraryWithStats()
-            // by mapping Upgrade Name -> Item ID -> Item Rarity.
-            const rarity = slot.dataset.rarity; 
-            
-            let visible = true;
-            if(search && !name.includes(search)) visible = false;
-            
-            if(visible) {
-                if(filter === 'AscendedFeast') {
-                    // LOGIC EXPLANATION:
-                    // Because Upgrade objects don't natively have Rarity, we rely on the 
-                    // dataset.rarity derived from name matching.
-                    // Fallback: If name matching failed (rarity is null), we allow items containing 'feast'.
-                    if(type !== 'Consumable') {
-                        visible = false;
-                    }
-                    else if(rarity !== 'Ascended' && !name.includes('feast')) {
-                        visible = false;
-                    }
-                } else if(filter !== 'all') {
-                    if(type !== filter) visible = false;
-                }
-            }
-            if(visible && !showEmpty && count === 0) visible = false;
-            slot.style.display = visible ? 'block' : 'none';
-        });
-    }
+    // --- ROSTER ---
 
-    // --- BOILERPLATE RENDER FUNCTIONS ---
-    function createCard(g, titleSuffix) {
-        const div = document.createElement('div');
-        div.className = 'guild-card';
-        div.innerHTML = `<div class="guild-header"><div><span class="guild-name">${g.name}</span> <span class="guild-tag">[${g.tag}]</span></div><div style="font-size:0.8rem; opacity:0.7">${titleSuffix}</div></div><div class="guild-body"></div>`;
-        return { card: div, body: div.querySelector('.guild-body') };
-    }
-
-    function renderStashCard(g) {
-        const ui = createCard(g, 'Vault');
-        if(g.stashError) ui.body.innerHTML = '<div style="text-align:center;margin-top:20px;color:#e74c3c">Access Denied</div>';
-        else if(!g.stash || !g.stash.length) ui.body.innerHTML = '<div style="text-align:center;padding:20px;color:#7f8c8d">Empty</div>';
-        else {
-            g.stash.forEach(tab => {
-                const grid = document.createElement('div');
-                grid.className = 'item-grid';
-                const title = document.createElement('div');
-                title.className = 'stash-section-title';
-                let name = "Stash";
-                if(tab.upgrade_id===58) name="Stash"; if(tab.upgrade_id===377) name="Trove"; if(tab.upgrade_id===59) name="Cave";
-                
-                const inventory = tab.inventory || [];
-                title.innerText = `${name} (${inventory.filter(x=>x).length})`;
-                
-                ui.body.appendChild(title);
-                inventory.forEach(slot => {
-                    const d = document.createElement('div');
-                    if(!slot) {
-                        d.className = 'item-slot empty-slot';
-                    } else {
-                        d.className = 'item-slot';
-                        const info = itemDetails.get(slot.id) || {icon:'', name: 'Loading...'};
-                        d.innerHTML = `<img src="${info.icon || 'https://render.guildwars2.com/file/0000000000000000000000000000000000000000/1.png'}"><div class="item-count">${slot.count}</div>`;
-                        d.title = `${info.name} (x${slot.count})`;
-                        // Add name to dataset for search
-                        if(info.name) d.dataset.name = info.name.toLowerCase();
-                        fetchItemIcon(slot.id, d); 
-                    }
-                    grid.appendChild(d);
-                });
-                ui.body.appendChild(grid);
-            });
-        }
-        document.getElementById('stash-grid').appendChild(ui.card);
-    }
-    
-    async function fetchItemIcon(id, el) {
-        if(itemDetails.has(id)) {
-            const data = itemDetails.get(id);
-            el.innerHTML = `<img src="${data.icon}"><div class="item-count">${el.innerText}</div>`;
-            el.title = data.name;
-            if(data.name) el.dataset.name = data.name.toLowerCase();
-            return;
-        }
-        try {
-            const res = await fetch(`${GW2_API}/items/${id}`);
-            const data = await res.json();
-            itemDetails.set(id, {name: data.name, icon: data.icon, rarity: data.rarity}); 
-            el.innerHTML = `<img src="${data.icon}"><div class="item-count">${el.innerText}</div>`;
-            el.title = data.name;
-            // Add name to dataset for search
-            if(data.name) el.dataset.name = data.name.toLowerCase();
-            // Re-apply search if one is active
-            const searchInput = document.getElementById('stash-search');
-            if(searchInput && searchInput.value) applyStashFilter();
-        } catch(e){}
-    }
-
-    // NEW: Apply Stash Search Filter
-    function applyStashFilter() {
-        const searchInput = document.getElementById('stash-search');
-        if(!searchInput) return;
-        const search = searchInput.value.toLowerCase().trim();
-        const slots = document.querySelectorAll('#stash-grid .item-slot');
-        slots.forEach(slot => {
-            if(search === '') { slot.style.display = ''; return; }
-            if(slot.classList.contains('empty-slot')) { slot.style.display = 'none'; } 
-            else {
-                const name = slot.dataset.name || '';
-                slot.style.display = name.includes(search) ? 'block' : 'none';
-            }
-        });
-    }
-
-    // NEW: Render Roster as Table with Sorting
     function renderRosterCard(g) {
         const ui = createCard(g, 'Roster');
         if(!g.roster || g.roster.length === 0) {
@@ -862,7 +697,6 @@
         } else {
             const container = document.createElement('div');
             container.className = 'roster-container';
-            
             container.innerHTML = `
             <div style="flex:1; overflow:auto;">
                 <table class="roster-table" id="rt-${g.id}">
@@ -880,16 +714,12 @@
             </div>
             <div style="margin-top:10px; font-size:0.85rem; color:#7f8c8d; text-align:right;">
                 Total: <span class="roster-count">${g.roster.length}</span>
-            </div>
-            `;
+            </div>`;
             ui.body.appendChild(container);
             ui.body.style.padding = '0'; 
             ui.body.style.overflow = 'hidden'; 
         }
-        
         document.getElementById('roster-grid').appendChild(ui.card);
-        
-        // Use 'rank' as initial sort
         sortRoster(g.id, rosterSortState.column, false);
     }
 
@@ -899,91 +729,348 @@
                 <td style="font-weight:bold; color:#ecf0f1;">${m.name}</td>
                 <td style="color:#3498db;"><span class="rank-badge">${m.rank}</span></td>
                 <td style="color:#bdc3c7;">${new Date(m.joined).toLocaleDateString()}</td>
-            </tr>
-        `).join('');
+            </tr>`).join('');
+    }
+
+    // --- LOG RENDERING WITH SMART FILTERS ---
+
+    function renderLogCard(g) {
+        const ui = createCard(g, 'Log');
+        
+        const list = document.createElement('div');
+        list.className = 'log-list';
+        
+        if(g.log && g.log.length > 0) {
+            g.log.forEach(entry => {
+                const entryDiv = document.createElement('div');
+                // Determine category for filtering
+                let category = 'misc';
+                let typeClass = 'entry-misc';
+                
+                // Default Icon: "Automatic Upgrades" from GW2 Wiki (Stable)
+                let iconUrl = 'https://wiki.guildwars2.com/images/7/71/Automatic_Upgrades.png'; 
+                
+                let shouldFetchItem = false;
+                let itemId = null;
+
+                // Comment: GW2 Log timestamps are ISO 8601 strings (e.g. 2025-11-22T01:32:44.000Z).
+                // We parse this into a Date object and use toLocaleString to show both date and time in a compact format.
+                const dateStr = new Date(entry.time).toLocaleString([], {
+                    month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                });
+
+                // -- STASH / TREASURY --
+                if(entry.type === 'stash' || entry.type === 'treasury') {
+                    category = 'stash';
+                    typeClass = (entry.operation === 'deposit' || entry.operation === 'move') ? 'entry-deposit' : 'entry-withdraw';
+                    
+                    itemId = entry.item_id;
+                    const itemInfo = itemDetails.get(itemId);
+                    
+                    // Lazy Load logic: If we have the item in cache, use it. 
+                    // If not, set a placeholder and flag for fetch.
+                    if(itemInfo && itemInfo.icon) {
+                        iconUrl = itemInfo.icon;
+                    } else {
+                        // Placeholder (Unknown Item)
+                        iconUrl = 'https://render.guildwars2.com/file/0000000000000000000000000000000000000000/1.png';
+                        shouldFetchItem = true;
+                    }
+                    
+                    const opText = entry.operation === 'withdraw' ? 'withdrew' : 'deposited';
+                    const itemText = itemInfo ? itemInfo.name : `Item #${itemId}`;
+                    
+                    let countText = entry.count > 0 ? `<span class="log-val">${entry.count}x</span>` : '';
+                    if(entry.coins > 0) countText = `<span class="log-val">${formatCoins(entry.coins)}</span>`;
+                    
+                    const imgId = `log-img-${entry.id}`;
+
+                    entryDiv.innerHTML = `
+                        <img id="${imgId}" src="${iconUrl}" class="log-icon">
+                        <div class="log-details">
+                            <div class="log-main-text">
+                                <span class="log-user">${entry.user || 'Unknown'}</span> 
+                                <span>${opText}</span> 
+                                ${countText} 
+                                <span class="log-item-name">${itemText}</span>
+                            </div>
+                        </div>
+                        <span class="log-time">${dateStr}</span>
+                    `;
+
+                    if(shouldFetchItem) {
+                         // Append to DOM first, then fetch
+                         setTimeout(() => {
+                             const imgEl = document.getElementById(imgId);
+                             if(imgEl) fetchItemIcon(itemId, imgEl);
+                         }, 0);
+                    }
+                }
+                // -- UPGRADE / CONSUMABLES --
+                else if(entry.type === 'upgrade') {
+                    const upInfo = upgradeDetails.get(entry.upgrade_id);
+                    let isConsumable = false;
+                    
+                    if(upInfo) {
+                        if(upInfo.type === 'Consumable' || upInfo.type === 'Decoration') isConsumable = true;
+                        if(upInfo.icon) iconUrl = upInfo.icon;
+                    }
+
+                    category = isConsumable ? 'consumables' : 'upgrades';
+                    typeClass = isConsumable ? 'entry-consumable' : 'entry-upgrade';
+
+                    const actionText = entry.action === 'queued' ? 'queued' : 'completed';
+                    const nameText = upInfo ? upInfo.name : `Upgrade #${entry.upgrade_id}`;
+                    let extraClass = '';
+                    if(upInfo && upInfo.rarity === 'Ascended') extraClass = 'rarity-Ascended-text';
+
+                    entryDiv.innerHTML = `
+                        <img src="${iconUrl}" class="log-icon">
+                        <div class="log-details">
+                            <div class="log-main-text">
+                                ${entry.user ? `<span class="log-user">${entry.user}</span>` : ''}
+                                <span>${actionText}</span> 
+                                <span class="log-item-name ${extraClass}">${nameText}</span>
+                            </div>
+                        </div>
+                        <span class="log-time">${dateStr}</span>
+                    `;
+                }
+                // -- ROSTER --
+                else if(['joined', 'invited', 'kick', 'rank_change', 'invite_declined', 'left'].includes(entry.type)) {
+                    category = 'roster';
+                    typeClass = 'entry-roster';
+                    
+                    // STABLE ROSTER ICON from GW2 Wiki (Friends Icon)
+                    iconUrl = "https://wiki.guildwars2.com/images/0/00/Contacts_and_LFG_panel_friends_icon.png";
+
+                    if(entry.type === 'joined') typeClass = 'entry-deposit'; // Green
+
+                    let text = "";
+                    if(entry.type === 'joined') text = `<span class="log-user">${entry.user}</span> joined the guild.`;
+                    else if(entry.type === 'invited') text = `<span class="log-user">${entry.invited_by}</span> invited <span class="log-user">${entry.user}</span>.`;
+                    else if(entry.type === 'kick') {
+                         // User Kick logic: Check if user kicked themselves
+                         if(entry.user === entry.kicked_by) {
+                             text = `<span class="log-user">${entry.user}</span> left the guild.`;
+                             typeClass = 'entry-left'; // Orange/Reddish
+                         } else {
+                             text = `<span class="log-user">${entry.kicked_by}</span> kicked <span class="log-user">${entry.user}</span>.`;
+                             typeClass = 'entry-withdraw'; // Red
+                         }
+                    }
+                    else if(entry.type === 'invite_declined') {
+                        text = `<span class="log-user">${entry.user}</span> declined invite from <span class="log-user">${entry.declined_by}</span>.`;
+                        typeClass = 'entry-withdraw'; 
+                    }
+                    else if(entry.type === 'rank_change') text = `<span class="log-user">${entry.changed_by}</span> changed <span class="log-user">${entry.user}</span> from ${entry.old_rank} to <span class="log-val">${entry.new_rank}</span>.`;
+                    else text = `<span class="log-user">${entry.user}</span> - ${entry.type}`;
+
+                    entryDiv.innerHTML = `
+                        <img src="${iconUrl}" class="log-icon">
+                        <div class="log-details">
+                            <div class="log-main-text">${text}</div>
+                        </div>
+                        <span class="log-time">${dateStr}</span>
+                    `;
+                }
+                // -- MOTD / MISSION --
+                else if(entry.type === 'motd') {
+                    category = 'motd';
+                    typeClass = 'entry-motd';
+                    entryDiv.innerHTML = `<div class="log-details"><div class="log-main-text"><span class="log-user">${entry.user}</span> changed MOTD.</div></div><span class="log-time">${dateStr}</span>`;
+                }
+                else if(entry.type === 'mission') {
+                    category = 'mission';
+                    typeClass = 'entry-motd';
+                     entryDiv.innerHTML = `<div class="log-details"><div class="log-main-text">${entry.user ? `<span class="log-user">${entry.user}</span>` : ''} Mission ${entry.state}</div></div><span class="log-time">${dateStr}</span>`;
+                }
+                else {
+                    // Fallback
+                    entryDiv.innerHTML = `<div class="log-details">${JSON.stringify(entry)}</div>`;
+                }
+
+                entryDiv.className = `log-entry ${typeClass}`;
+                entryDiv.dataset.category = category;
+                list.appendChild(entryDiv);
+            });
+        } else {
+            list.innerHTML = `<div style="padding:20px;text-align:center;color:#7f8c8d">No logs available</div>`;
+        }
+
+        ui.body.appendChild(list);
+        document.getElementById('log-grid').appendChild(ui.card);
+    }
+
+    function applyLogFilter() {
+        const filter = document.getElementById('log-filter').value;
+        document.querySelectorAll('.log-entry').forEach(el => {
+            if(filter === 'all' || el.dataset.category === filter) {
+                el.style.display = 'flex';
+            } else {
+                el.style.display = 'none';
+            }
+        });
+    }
+
+    // --- UTILITIES ---
+    
+    function formatCoins(coins) {
+        const gold = Math.floor(coins / 10000);
+        const silver = Math.floor((coins % 10000) / 100);
+        const copper = coins % 100;
+        let s = "";
+        if(gold > 0) s += `${gold}g `;
+        if(silver > 0) s += `${silver}s `;
+        if(copper > 0) s += `${copper}c`;
+        return s;
+    }
+
+    function createCard(g, titleSuffix) {
+        const div = document.createElement('div');
+        div.className = 'guild-card';
+        div.innerHTML = `<div class="guild-header"><div><span class="guild-name">${g.name}</span> <span class="guild-tag">[${g.tag}]</span></div><div style="font-size:0.8rem; opacity:0.7">${titleSuffix}</div></div><div class="guild-body"></div>`;
+        return { card: div, body: div.querySelector('.guild-body') };
+    }
+
+    function applyStashFilter() {
+        const search = document.getElementById('stash-search').value.toLowerCase().trim();
+        document.querySelectorAll('#stash-grid .item-slot').forEach(slot => {
+            if(search === '') { slot.style.display = ''; return; }
+            if(slot.classList.contains('empty-slot')) { slot.style.display = 'none'; } 
+            else {
+                const name = slot.dataset.name || '';
+                slot.style.display = name.includes(search) ? 'block' : 'none';
+            }
+        });
+    }
+    
+    function applyStorageFilter() {
+        const search = document.getElementById('storage-search').value.toLowerCase();
+        const filter = document.getElementById('storage-filter').value;
+        const showEmpty = document.getElementById('show-empty').checked;
+        
+        document.querySelectorAll('.storage-slot').forEach(slot => {
+            const type = slot.dataset.type; 
+            const name = slot.dataset.name; 
+            const count = parseInt(slot.dataset.count);
+            const rarity = slot.dataset.rarity; 
+            
+            let visible = true;
+            if(search && !name.includes(search)) visible = false;
+            if(visible) {
+                if(filter === 'AscendedFeast') {
+                    if(type !== 'Consumable') visible = false;
+                    else if(rarity !== 'Ascended' && !name.includes('feast')) visible = false;
+                } else if(filter !== 'all') {
+                    if(type !== filter) visible = false;
+                }
+            }
+            if(visible && !showEmpty && count === 0) visible = false;
+            slot.style.display = visible ? 'block' : 'none';
+        });
     }
 
     function sortRoster(gid, column, toggle = true) {
         if(toggle) {
-            if(rosterSortState.column === column) {
-                rosterSortState.asc = !rosterSortState.asc;
-            } else {
-                rosterSortState.column = column;
-                rosterSortState.asc = true;
-            }
+            if(rosterSortState.column === column) rosterSortState.asc = !rosterSortState.asc;
+            else { rosterSortState.column = column; rosterSortState.asc = true; }
         }
-        
         const g = guildData[gid];
         if(!g || !g.roster) return;
 
         g.roster.sort((a, b) => {
             let valA = a[column];
             let valB = b[column];
-            
-            // CUSTOM RANK SORTING LOGIC
             if(column === 'rank' && g.rankMap) {
-                // Lower number = Higher Rank
-                valA = g.rankMap[a.rank] || 999;
-                valB = g.rankMap[b.rank] || 999;
-            } 
-            else if(column === 'joined') {
-                valA = new Date(valA).getTime();
-                valB = new Date(valB).getTime();
+                valA = g.rankMap[a.rank] || 999; valB = g.rankMap[b.rank] || 999;
+            } else if(column === 'joined') {
+                valA = new Date(valA).getTime(); valB = new Date(valB).getTime();
             } else {
-                valA = String(valA).toLowerCase();
-                valB = String(valB).toLowerCase();
+                valA = String(valA).toLowerCase(); valB = String(valB).toLowerCase();
             }
-            
             if(valA < valB) return rosterSortState.asc ? -1 : 1;
             if(valA > valB) return rosterSortState.asc ? 1 : -1;
             return 0;
         });
-
         const table = document.querySelector(`#rt-${gid} .roster-body`);
-        if(table) {
-            table.innerHTML = generateRosterRows(g.roster);
-            applyRosterFilter();
-        }
+        if(table) { table.innerHTML = generateRosterRows(g.roster); applyRosterFilter(); }
     }
 
     function applyRosterFilter() {
         const search = document.getElementById('roster-search').value.toLowerCase().trim();
         let totalVisible = 0;
-
         document.querySelectorAll('.roster-row').forEach(row => {
             const name = row.dataset.name;
             const rank = row.dataset.rank;
-            
             if(search === '' || name.includes(search) || rank.includes(search)) {
-                row.style.display = '';
-                totalVisible++;
-            } else {
-                row.style.display = 'none';
-            }
+                row.style.display = ''; totalVisible++;
+            } else { row.style.display = 'none'; }
         });
-
         document.getElementById('roster-total-count').innerText = totalVisible;
     }
 
-    function renderLogCard(g) {
-        const ui = createCard(g, 'Log');
-        const list = document.createElement('div');
-        list.className = 'log-list';
-        (g.log||[]).forEach(l => {
-            const row = document.createElement('div');
-            row.className = 'log-entry';
-            let txt = `<span class="log-time">${new Date(l.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span> <span class="log-user">${l.user||''}</span> `;
-            if(l.type==='stash'||l.type==='treasury') {
-                txt += `${l.operation||'deposit'} <span class="log-val">${l.count}x (Item ${l.item_id})</span>`;
-            } else { txt += l.type; }
-            row.innerHTML = txt;
-            list.appendChild(row);
-        });
-        ui.body.appendChild(list);
-        document.getElementById('log-grid').appendChild(ui.card);
+    async function fetchItemIcon(id, el) {
+        // Check Cache first
+        if(itemDetails.has(id)) {
+            const data = itemDetails.get(id);
+            // Handle both <img> tag directly or wrapper div
+            if(el) {
+                if(el.tagName === 'IMG') {
+                    el.src = data.icon;
+                    el.title = data.name;
+                } else {
+                    const img = el.querySelector('img');
+                    if(img) { img.src = data.icon; el.title = data.name; }
+                    if(data.name) el.dataset.name = data.name.toLowerCase();
+                }
+            }
+            return;
+        }
+
+        try {
+            const res = await fetch(`${GW2_API}/items/${id}`);
+            const data = await res.json();
+            itemDetails.set(id, {name: data.name, icon: data.icon, rarity: data.rarity}); 
+            
+            if(el) {
+                if(el.tagName === 'IMG') {
+                    el.src = data.icon;
+                    el.title = data.name;
+                } else {
+                    const img = el.querySelector('img');
+                    if(img) { img.src = data.icon; el.title = data.name; }
+                    if(data.name) el.dataset.name = data.name.toLowerCase();
+                }
+            }
+        } catch(e){}
     }
 
-    // REMOVED OLD OPENROSTER MODAL FUNCTION as it is replaced by inline table
+    function renderGuildSelectionList() {
+        const container = document.getElementById('guild-selection-list');
+        if(allDiscoveredGuilds.length === 0) { container.innerHTML = '<div style="text-align:center; color:#7f8c8d; padding:10px;">No guilds found yet.</div>'; return; }
+        container.innerHTML = allDiscoveredGuilds.map(g => {
+            const isChecked = !disabledGuilds.has(g.id);
+            return `<div class="guild-list-item">
+                <input type="checkbox" id="cb-${g.id}" ${isChecked ? 'checked' : ''} onchange="toggleGuild('${g.id}')" style="cursor:pointer; transform:scale(1.2)">
+                <label for="cb-${g.id}" style="flex:1; cursor:pointer; color:#ecf0f1;"><span style="font-weight:bold; color:#3498db;">[${g.tag}]</span> ${g.name}</label>
+            </div>`;
+        }).join('');
+    }
+
+    function toggleGuild(gid) {
+        if(disabledGuilds.has(gid)) disabledGuilds.delete(gid); else disabledGuilds.add(gid);
+        localStorage.setItem('gw2_dash_disabled_guilds', JSON.stringify(Array.from(disabledGuilds)));
+        refreshData();
+    }
+    
+    function selectTab(id) {
+        document.querySelectorAll('.nav-tab').forEach(e=>e.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
+        const idx=['stash','consumables','roster','log','debug'].indexOf(id);
+        if(idx>-1) document.querySelectorAll('.nav-tab')[idx].classList.add('active');
+        document.getElementById(`tab-${id}`).classList.add('active');
+    }
 
     function addKey() { 
         const v = document.getElementById('api-key-input').value.trim();
@@ -995,28 +1082,49 @@
     function renderKeyList() { 
         document.getElementById('api-list').innerHTML = apiKeys.map((k,i)=>`<div class="api-list-item"><span style="font-family:monospace">${k.key.substr(0,10)}...</span><button style="background:#e74c3c;padding:5px" onclick="removeKey(${i})">Del</button></div>`).join(''); 
     }
-    function selectTab(id) {
-        document.querySelectorAll('.nav-tab').forEach(e=>e.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
-        const idx=['stash','consumables','roster','log','debug'].indexOf(id);
-        if(idx>-1) document.querySelectorAll('.nav-tab')[idx].classList.add('active');
-        document.getElementById(`tab-${id}`).classList.add('active');
-    }
     function updateStatus(m) { document.getElementById('status-msg').innerText = m; }
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-    
+
+    function populateDebugGuilds() {
+        const sel = document.getElementById('debug-guild-select');
+        if(!sel) return;
+        const currentVal = sel.value;
+        sel.innerHTML = '<option value="">Select a Guild...</option>';
+        Object.keys(guildData).forEach(gid => {
+            const g = guildData[gid];
+            const opt = document.createElement('option');
+            opt.value = gid; opt.text = `[${g.tag}] ${g.name}`;
+            sel.appendChild(opt);
+        });
+        if(currentVal) sel.value = currentVal;
+    }
+
+    async function fetchRawLog() {
+        const gid = document.getElementById('debug-guild-select').value;
+        const out = document.getElementById('debug-output');
+        if(!gid) { out.value = "Please select a guild from the dropdown first."; return; }
+        const g = guildData[gid];
+        if(!g) { out.value = "Guild data not found in memory."; return; }
+        out.value = `Fetching full log for ${g.name}...\nPlease wait...`;
+        try {
+            const res = await fetch(`${GW2_API}/guild/${gid}/log?access_token=${g.key}`);
+            if(!res.ok) throw new Error(`API returned status ${res.status}`);
+            const json = await res.json();
+            out.value = JSON.stringify(json, null, 4);
+        } catch(e) { out.value = "Error fetching log:\n" + e.message; }
+    }
+
     async function inspectStorage() {
         const out = document.getElementById('debug-output');
         out.value = "Inspecting...\n";
-        out.value += `Name Map Size: ${nameToIdsMap.size}\n`;
         Object.keys(guildData).forEach(gid => {
             const g = guildData[gid];
             out.value += `\n=== ${g.name} ===\n`;
             if(!g.storage) return;
             g.storage.forEach(s => {
                 const u = upgradeDetails.get(s.id);
-                out.value += `[ID:${s.id}] Qty:${s.count} Name:${u?u.name:'Unknown'} Rarity:${u?u.rarity:'Unknown'}\n`;
+                out.value += `[ID:${s.id}] Qty:${s.count} Name:${u?u.name:'Unknown'} Type:${u?u.type:'Unknown'}\n`;
             });
         });
     }
