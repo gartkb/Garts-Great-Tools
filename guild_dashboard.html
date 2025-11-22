@@ -41,8 +41,15 @@
         .guild-tag { color: #f1c40f; font-weight: bold; margin-left: 8px; }
         .guild-body { padding: 15px; flex: 1; max-height: 600px; overflow-y: auto; position: relative; }
 
-        .stash-section-title { color: #bdc3c7; font-size: 0.9rem; text-transform: uppercase; margin: 15px 0 5px 0; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; }
+        .stash-section-title { color: #bdc3c7; font-size: 0.9rem; text-transform: uppercase; margin: 15px 0 5px 0; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: flex-end; }
         
+        /* COIN STYLES */
+        .stash-coins { font-weight: bold; font-size: 0.85rem; display: flex; align-items: center; }
+        .coin-icon { vertical-align: middle; width: 14px; height: 14px; margin: 0 4px 1px 1px; }
+        .val-gold { color: #f1c40f; }
+        .val-silver { color: #bdc3c7; }
+        .val-copper { color: #e67e22; }
+
         .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); gap: 8px; }
         
         .item-slot { background: rgba(0,0,0,0.3); border-radius: 4px; aspect-ratio: 1; position: relative; border: 1px solid rgba(255,255,255,0.05); transition: transform 0.1s; cursor: help; }
@@ -59,6 +66,9 @@
         .item-slot.rarity-Ascended { border-color: #fb3985 !important; box-shadow: inset 0 0 8px #fb3985; }
         .item-slot.rarity-Exotic { border-color: #f39c12 !important; }
         .item-slot.rarity-Rare { border-color: #f1c40f !important; }
+        .item-slot.rarity-Masterwork { border-color: #2ecc71 !important; }
+        .item-slot.rarity-Fine { border-color: #3498db !important; }
+        .item-slot.rarity-Legendary { border-color: #9b59b6 !important; box-shadow: inset 0 0 8px #9b59b6; }
 
         .item-slot.is-zero { opacity: 0.2; filter: grayscale(1); }
         .item-slot.is-zero .item-count { display: none; }
@@ -95,9 +105,16 @@
         .tt-type { color: #bdc3c7; font-size: 0.8rem; }
         .tt-desc { color: #bdc3c7; font-style: italic; margin-bottom: 8px; font-size: 0.85rem; }
         .tt-stats { color: #2ecc71; font-size: 0.85rem; white-space: pre-line; margin-bottom: 5px; }
+        
+        .tt-price { border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8px; padding-top: 5px; font-size: 0.85rem; display: flex; flex-direction: column; gap: 2px; }
+        .tt-price-row { display: flex; justify-content: space-between; align-items: center; }
+        .tt-price-label { color: #bdc3c7; }
+        
         .tt-rarity-Ascended .tt-name { color: #fb3985; }
         .tt-rarity-Exotic .tt-name { color: #f39c12; }
         .tt-rarity-Rare .tt-name { color: #f1c40f; }
+        .tt-rarity-Masterwork .tt-name { color: #2ecc71; }
+        .tt-rarity-Legendary .tt-name { color: #9b59b6; }
         
         .debug-container { background: rgba(0,0,0,0.4); padding: 20px; border-radius: 10px; }
         #debug-output { width: 100%; height: 500px; background: #000; color: #2ecc71; font-family: 'Consolas', monospace; padding: 10px; border: 1px solid #3498db; overflow: auto; white-space: pre-wrap; margin-top: 10px; resize: vertical; }
@@ -125,7 +142,7 @@
         .log-sub-text { color: #95a5a6; font-size: 0.8rem; }
         
         .log-user { font-weight: bold; color: #3498db; cursor: pointer; }
-        .log-val { color: #f1c40f; font-weight: bold; }
+        .log-val { color: #f1c40f; font-weight: bold; display: flex; align-items: center; }
         .log-item-name { color: #bdc3c7; }
         
         .entry-deposit { border-left-color: #2ecc71; }
@@ -298,6 +315,7 @@
     let apiKeys = [];
     let guildData = {}; 
     let itemDetails = new Map(); 
+    let itemPrices = new Map(); // Store TP prices
     let upgradeDetails = new Map(); 
     let nameToIdsMap = new Map(); 
     let disabledGuilds = new Set();
@@ -371,13 +389,29 @@
 
     // --- TOOLTIP ---
     function showTooltip(e, data) {
-        let { name, type, desc, stats, rarity, count, icon } = data;
+        let { id, name, type, desc, stats, rarity, count, icon } = data;
+        
+        // Handle Ascended food special case
         if(rarity === 'Ascended' && type === 'Consumable') {
             const ascendedDetails = getAscendedStats(name);
             if(ascendedDetails) { stats = ascendedDetails; desc = ""; }
         }
         if(stats && stats.includes("Double-click to serve")) { if(!desc) desc = stats; stats = ""; }
         if (stats && desc && stats.trim() === desc.trim()) { desc = ""; }
+
+        // --- PRICE FORMATTING ---
+        let priceHtml = '';
+        if (id && itemPrices.has(id)) {
+            const p = itemPrices.get(id);
+            const buyStr = p.buys > 0 ? formatCoins(p.buys) : '-';
+            const sellStr = p.sells > 0 ? formatCoins(p.sells) : '-';
+            priceHtml = `
+                <div class="tt-price">
+                    <div class="tt-price-row"><span class="tt-price-label">Buy:</span> <span>${buyStr}</span></div>
+                    <div class="tt-price-row"><span class="tt-price-label">Sell:</span> <span>${sellStr}</span></div>
+                </div>
+            `;
+        }
 
         tooltipEl.innerHTML = `
             <div class="tt-head tt-rarity-${rarity}">
@@ -390,20 +424,33 @@
             ${stats ? `<div class="tt-stats">${stats}</div>` : ''}
             ${desc ? `<div class="tt-desc">${desc}</div>` : ''}
             <div style="margin-top:5px;font-weight:bold;color:${count>0?'#2ecc71':'#7f8c8d'}">Count: ${count}</div>
+            ${priceHtml}
         `;
         tooltipEl.style.display = 'block';
         moveTooltip(e);
     }
 
+    // Updated to use clientX/Y to fix offset issues when scrolling
     function moveTooltip(e) {
         if(tooltipEl.style.display === 'none') return;
         const w = tooltipEl.offsetWidth;
         const h = tooltipEl.offsetHeight;
-        const pad = 15;
-        let left = e.pageX + pad;
-        if(left + w > window.innerWidth) left = e.pageX - w - pad;
-        let top = e.pageY + pad;
-        if(top + h > window.innerHeight + window.scrollY) top = e.pageY - h - pad;
+        const pad = 10; // Closer to cursor
+        
+        // ClientX/Y are viewport coordinates. Perfect for position: fixed.
+        let left = e.clientX + pad;
+        let top = e.clientY + pad;
+
+        // Check right edge
+        if (left + w > window.innerWidth) {
+            left = e.clientX - w - pad;
+        }
+        
+        // Check bottom edge
+        if (top + h > window.innerHeight) {
+            top = e.clientY - h - pad;
+        }
+
         tooltipEl.style.left = left + 'px';
         tooltipEl.style.top = top + 'px';
     }
@@ -478,6 +525,9 @@
                     const items = await res.json();
                     items.forEach(item => {
                         itemDetails.set(item.id, {
+                            id: item.id,
+                            name: item.name,
+                            icon: item.icon,
                             rarity: item.rarity,
                             desc: item.description,
                             details: item.details,
@@ -508,18 +558,101 @@
                 }
             }
         });
-        renderAll();
+    }
+
+    async function loadStashItemDetails(activeGuildIds) {
+        updateStatus("Analyzing Stash Contents...");
+        
+        const stashItemIds = new Set();
+        
+        // 1. Collect all IDs from Stash
+        activeGuildIds.forEach(gid => {
+            const g = guildData[gid];
+            if(g && g.stash) {
+                g.stash.forEach(tab => {
+                    if(tab.inventory) {
+                        tab.inventory.forEach(slot => {
+                            if(slot) stashItemIds.add(slot.id);
+                        });
+                    }
+                });
+            }
+        });
+
+        if(stashItemIds.size === 0) return;
+
+        // 2. Identify which ones need detail fetching
+        const idsToFetch = [];
+        stashItemIds.forEach(id => {
+            if(!itemDetails.has(id)) idsToFetch.push(id);
+        });
+
+        // 3. Bulk Fetch Item Details
+        if(idsToFetch.length > 0) {
+            updateStatus(`Fetching details for ${idsToFetch.length} stash items...`);
+            for(let i=0; i<idsToFetch.length; i+=200) {
+                const chunk = idsToFetch.slice(i, i+200);
+                try {
+                    const res = await fetch(`${GW2_API}/items?ids=${chunk.join(',')}`);
+                    const items = await res.json();
+                    items.forEach(item => {
+                        itemDetails.set(item.id, {
+                            id: item.id,
+                            name: item.name,
+                            icon: item.icon,
+                            rarity: item.rarity,
+                            desc: item.description,
+                            details: item.details,
+                            type: item.type
+                        });
+                    });
+                } catch(e) { console.error("Stash fetch error", e); }
+            }
+            saveCache();
+        }
+
+        // 4. Bulk Fetch Prices (Always fetch fresh prices for visible stash items)
+        updateStatus(`Fetching prices for ${stashItemIds.size} items...`);
+        const allIds = Array.from(stashItemIds);
+        for(let i=0; i<allIds.length; i+=200) {
+            const chunk = allIds.slice(i, i+200);
+            try {
+                const res = await fetch(`${GW2_API}/commerce/prices?ids=${chunk.join(',')}`);
+                if(res.ok) {
+                    const prices = await res.json();
+                    prices.forEach(p => {
+                        itemPrices.set(p.id, { buys: p.buys.unit_price, sells: p.sells.unit_price });
+                    });
+                }
+            } catch(e) { /* Ignore commerce errors (some items are account bound) */ }
+        }
     }
 
     async function refreshData() {
         guildData = {};
         allDiscoveredGuilds = []; 
+        itemPrices.clear();
+        
         await loadItemNameMap();
         await loadGlobalLibrary();
-        await fetchGuildData();
+        
+        const activeGuildIds = await fetchGuildData();
+        
+        // Initial Render (Basic)
         renderAll(); 
         populateDebugGuilds();
-        enrichLibraryWithStats().then(() => { updateStatus(''); renderAll(); });
+
+        // Detailed Fetch (Stash Items & Upgrades)
+        if(activeGuildIds && activeGuildIds.length > 0) {
+            await loadStashItemDetails(activeGuildIds);
+            renderAll(); // Re-render with details and prices
+            
+            await enrichLibraryWithStats();
+            updateStatus(''); 
+            renderAll(); // Final re-render
+        } else {
+            updateStatus(''); 
+        }
     }
 
     async function fetchGuildData() {
@@ -542,7 +675,7 @@
         if(potentialGuilds.size === 0) {
             document.getElementById('stash-grid').innerHTML = '<div class="error-box">No accessible guilds found.</div>';
             renderGuildSelectionList();
-            return;
+            return [];
         }
 
         const guildIds = Array.from(potentialGuilds.keys());
@@ -563,7 +696,7 @@
 
         if(activeGuildIds.length === 0) {
              document.getElementById('stash-grid').innerHTML = '<div class="error-box">All guilds are hidden. Enable them in "Manage API".</div>';
-             return;
+             return [];
         }
 
         await Promise.all(activeGuildIds.map(async (gid) => {
@@ -581,10 +714,11 @@
                      ranks.forEach(r => { g.rankMap[r.id] = r.order; });
                 } catch(e) { g.rankMap = {}; }
                 
-                // Fetch logs - Getting default amount (usually 100) is enough for the dashboard UI
                 try { g.log = await fetch(`${GW2_API}/guild/${gid}/log${tokenStr}`).then(r => r.ok ? r.json() : []); } catch(e) {}
             } catch(e) {}
         }));
+
+        return activeGuildIds;
     }
 
     // --- UI RENDERING ---
@@ -625,19 +759,48 @@
                 if(tab.upgrade_id===58) name="Stash"; if(tab.upgrade_id===377) name="Trove"; if(tab.upgrade_id===59) name="Cave";
                 
                 const inventory = tab.inventory || [];
-                title.innerText = `${name} (${inventory.filter(x=>x).length})`;
+                
+                // COIN DISPLAY LOGIC
+                const coinString = tab.coins && tab.coins > 0 ? `<div class="stash-coins">${formatCoins(tab.coins)}</div>` : '';
+                
+                title.innerHTML = `<span>${name} <span style="font-size:0.8rem;opacity:0.7">(${inventory.filter(x=>x).length})</span></span> ${coinString}`;
                 ui.body.appendChild(title);
+                
                 inventory.forEach(slot => {
                     const d = document.createElement('div');
                     if(!slot) {
                         d.className = 'item-slot empty-slot';
                     } else {
-                        d.className = 'item-slot';
-                        const info = itemDetails.get(slot.id) || {icon:'', name: 'Loading...'};
-                        d.innerHTML = `<img src="${info.icon || 'https://render.guildwars2.com/file/0000000000000000000000000000000000000000/1.png'}"><div class="item-count">${slot.count}</div>`;
-                        d.title = `${info.name} (x${slot.count})`;
+                        // Get info from details map or fallback
+                        const info = itemDetails.get(slot.id) || { name: 'Loading...', icon: '', rarity: 'Basic', type: 'Item' };
+                        
+                        // Use Fallback Icon if map is empty but we have lazy load icon logic? 
+                        // No, fetchItemIcon handles the img src, but render loop sets the rarity class.
+                        const iconSrc = info.icon || 'https://render.guildwars2.com/file/0000000000000000000000000000000000000000/1.png';
+                        
+                        d.className = `item-slot rarity-${info.rarity}`;
+                        d.innerHTML = `<img src="${iconSrc}"><div class="item-count">${slot.count}</div>`;
+                        
+                        // Data attributes for filtering
                         if(info.name) d.dataset.name = info.name.toLowerCase();
-                        fetchItemIcon(slot.id, d); 
+                        
+                        // Data object for Tooltip
+                        const tooltipData = {
+                            id: slot.id,
+                            name: info.name,
+                            count: slot.count,
+                            rarity: info.rarity,
+                            type: info.type,
+                            icon: iconSrc,
+                            desc: info.desc || (info.details ? info.details.description : ''),
+                            stats: info.details && info.details.description ? info.details.description : ''
+                        };
+
+                        d.addEventListener('mousemove', (e) => showTooltip(e, tooltipData));
+                        d.addEventListener('mouseleave', hideTooltip);
+                        
+                        // If icon is missing in cache (initial load), try lazy fetch visual only
+                        if(!info.icon) fetchItemIcon(slot.id, d); 
                     }
                     grid.appendChild(d);
                 });
@@ -732,7 +895,7 @@
             </tr>`).join('');
     }
 
-    // --- LOG RENDERING WITH SMART FILTERS ---
+    // --- LOG RENDERING ---
 
     function renderLogCard(g) {
         const ui = createCard(g, 'Log');
@@ -743,18 +906,12 @@
         if(g.log && g.log.length > 0) {
             g.log.forEach(entry => {
                 const entryDiv = document.createElement('div');
-                // Determine category for filtering
                 let category = 'misc';
                 let typeClass = 'entry-misc';
-                
-                // Default Icon: "Automatic Upgrades" from GW2 Wiki (Stable)
                 let iconUrl = 'https://wiki.guildwars2.com/images/7/71/Automatic_Upgrades.png'; 
-                
                 let shouldFetchItem = false;
                 let itemId = null;
 
-                // Comment: GW2 Log timestamps are ISO 8601 strings (e.g. 2025-11-22T01:32:44.000Z).
-                // We parse this into a Date object and use toLocaleString to show both date and time in a compact format.
                 const dateStr = new Date(entry.time).toLocaleString([], {
                     month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'
                 });
@@ -767,12 +924,9 @@
                     itemId = entry.item_id;
                     const itemInfo = itemDetails.get(itemId);
                     
-                    // Lazy Load logic: If we have the item in cache, use it. 
-                    // If not, set a placeholder and flag for fetch.
                     if(itemInfo && itemInfo.icon) {
                         iconUrl = itemInfo.icon;
                     } else {
-                        // Placeholder (Unknown Item)
                         iconUrl = 'https://render.guildwars2.com/file/0000000000000000000000000000000000000000/1.png';
                         shouldFetchItem = true;
                     }
@@ -799,7 +953,6 @@
                     `;
 
                     if(shouldFetchItem) {
-                         // Append to DOM first, then fetch
                          setTimeout(() => {
                              const imgEl = document.getElementById(imgId);
                              if(imgEl) fetchItemIcon(itemId, imgEl);
@@ -840,8 +993,6 @@
                 else if(['joined', 'invited', 'kick', 'rank_change', 'invite_declined', 'left'].includes(entry.type)) {
                     category = 'roster';
                     typeClass = 'entry-roster';
-                    
-                    // STABLE ROSTER ICON from GW2 Wiki (Friends Icon)
                     iconUrl = "https://wiki.guildwars2.com/images/0/00/Contacts_and_LFG_panel_friends_icon.png";
 
                     if(entry.type === 'joined') typeClass = 'entry-deposit'; // Green
@@ -850,13 +1001,12 @@
                     if(entry.type === 'joined') text = `<span class="log-user">${entry.user}</span> joined the guild.`;
                     else if(entry.type === 'invited') text = `<span class="log-user">${entry.invited_by}</span> invited <span class="log-user">${entry.user}</span>.`;
                     else if(entry.type === 'kick') {
-                         // User Kick logic: Check if user kicked themselves
                          if(entry.user === entry.kicked_by) {
                              text = `<span class="log-user">${entry.user}</span> left the guild.`;
-                             typeClass = 'entry-left'; // Orange/Reddish
+                             typeClass = 'entry-left'; 
                          } else {
                              text = `<span class="log-user">${entry.kicked_by}</span> kicked <span class="log-user">${entry.user}</span>.`;
-                             typeClass = 'entry-withdraw'; // Red
+                             typeClass = 'entry-withdraw'; 
                          }
                     }
                     else if(entry.type === 'invite_declined') {
@@ -920,10 +1070,10 @@
         const silver = Math.floor((coins % 10000) / 100);
         const copper = coins % 100;
         let s = "";
-        if(gold > 0) s += `${gold}g `;
-        if(silver > 0) s += `${silver}s `;
-        if(copper > 0) s += `${copper}c`;
-        return s;
+        if (gold > 0) s += `<span class="val-gold">${gold}</span><img src="https://wiki.guildwars2.com/images/d/d1/Gold_coin.png" class="coin-icon"> `;
+        if (silver > 0) s += `<span class="val-silver">${silver}</span><img src="https://wiki.guildwars2.com/images/3/3c/Silver_coin.png" class="coin-icon"> `;
+        if (copper > 0) s += `<span class="val-copper">${copper}</span><img src="https://wiki.guildwars2.com/images/e/eb/Copper_coin.png" class="coin-icon">`;
+        return s.trim();
     }
 
     function createCard(g, titleSuffix) {
@@ -1021,7 +1171,9 @@
                     el.title = data.name;
                 } else {
                     const img = el.querySelector('img');
-                    if(img) { img.src = data.icon; el.title = data.name; }
+                    if(img) { img.src = data.icon; } 
+                    // Note: We don't set Title here anymore because the tooltip handles it,
+                    // unless we want a fallback.
                     if(data.name) el.dataset.name = data.name.toLowerCase();
                 }
             }
@@ -1031,15 +1183,25 @@
         try {
             const res = await fetch(`${GW2_API}/items/${id}`);
             const data = await res.json();
-            itemDetails.set(id, {name: data.name, icon: data.icon, rarity: data.rarity}); 
+            // Save basic info if full info not yet loaded
+            if(!itemDetails.has(id)) {
+                itemDetails.set(id, {
+                    id: data.id, 
+                    name: data.name, 
+                    icon: data.icon, 
+                    rarity: data.rarity,
+                    type: data.type,
+                    desc: data.description,
+                    details: data.details
+                }); 
+            }
             
             if(el) {
                 if(el.tagName === 'IMG') {
                     el.src = data.icon;
-                    el.title = data.name;
                 } else {
                     const img = el.querySelector('img');
-                    if(img) { img.src = data.icon; el.title = data.name; }
+                    if(img) { img.src = data.icon; }
                     if(data.name) el.dataset.name = data.name.toLowerCase();
                 }
             }
