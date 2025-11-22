@@ -58,6 +58,29 @@
         .item-count { position: absolute; bottom: 1px; right: 3px; font-size: 0.8rem; font-weight: bold; color: white; text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; pointer-events: none; }
         .empty-slot { opacity: 0.1; }
         
+        /* --- NEW: Value Overlay Styles --- */
+        .item-value {
+            position: absolute;
+            top: 2px;
+            left: 3px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            line-height: 1;
+            display: none; /* Hidden by default */
+            pointer-events: none;
+            z-index: 15;
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 0 2px #000;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        /* Show values when parent grid has active class */
+        .show-values-active .item-value { display: flex; }
+        
+        /* Overlay coin colors */
+        .ov-g { color: #f1c40f; }
+        .ov-s { color: #bdc3c7; }
+        .ov-c { color: #e67e22; }
+
         .item-slot.type-consumable { border-bottom: 3px solid #f1c40f; } 
         .item-slot.type-decoration { border-bottom: 3px solid #3498db; } 
         .item-slot.type-claimable { border-bottom: 3px solid #e74c3c; } 
@@ -73,7 +96,7 @@
         .item-slot.is-zero { opacity: 0.2; filter: grayscale(1); }
         .item-slot.is-zero .item-count { display: none; }
 
-        /* --- NEW ROSTER TABLE STYLES --- */
+        /* --- ROSTER TABLE STYLES --- */
         .roster-container { background: rgba(0,0,0,0.3); border-radius: 10px; padding: 15px; height: 100%; display: flex; flex-direction: column; }
         .roster-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
         .roster-table th { text-align: left; border-bottom: 2px solid #3498db; padding: 10px; color: #3498db; background: rgba(44, 62, 80, 0.9); position: sticky; top: 0; z-index: 5; cursor: pointer; user-select: none; }
@@ -150,7 +173,7 @@
         .entry-upgrade { border-left-color: #9b59b6; }
         .entry-consumable { border-left-color: #f39c12; }
         .entry-roster { border-left-color: #3498db; }
-        .entry-left { border-left-color: #e67e22; } /* Orange for leaving */
+        .entry-left { border-left-color: #e67e22; } 
         .entry-motd { border-left-color: #ecf0f1; }
 
         .rarity-Ascended-text { color: #fb3985 !important; font-weight: bold; text-shadow: 0 0 5px rgba(251, 57, 133, 0.3); }
@@ -186,6 +209,12 @@
         <div class="filter-bar">
             <div class="filter-group">
                 <input type="text" id="stash-search" class="filter-input" placeholder="Search stash items..." onkeyup="applyStashFilter()">
+            </div>
+            <!-- NEW CHECKBOX FOR SHOWING VALUES -->
+            <div class="filter-group">
+                <label class="filter-label">
+                    <input type="checkbox" id="chk-show-values" onchange="toggleStashValues()"> Show Values
+                </label>
             </div>
             <div class="filter-group">
                 <label class="filter-label" style="font-size:0.8rem; opacity:0.7;">
@@ -370,6 +399,37 @@
         return `Nourishment (1h):\n${parts.join('\n')}\n${baseBuffs}`;
     }
 
+    // --- NEW HELPER: Compact Price Formatter ---
+    function formatOverlayPrice(unitPrice, count) {
+        if (!unitPrice) return null;
+        
+        const total = unitPrice * count;
+        if (total === 0) return null;
+
+        const g = Math.floor(total / 10000);
+        const s = Math.floor((total % 10000) / 100);
+        const c = total % 100;
+
+        // Logic: Show top 2 distinct units (G/S or S/C). Hide Copper if Gold > 0.
+        if (g > 0) {
+            return `<span class="ov-g">${g}g</span>${s > 0 ? `<span class="ov-s">${s}s</span>` : ''}`;
+        }
+        if (s > 0) {
+            return `<span class="ov-s">${s}s</span>${c > 0 ? `<span class="ov-c">${c}c</span>` : ''}`;
+        }
+        return `<span class="ov-c">${c}c</span>`;
+    }
+
+    function toggleStashValues() {
+        const isChecked = document.getElementById('chk-show-values').checked;
+        const grid = document.getElementById('stash-grid');
+        if (isChecked) {
+            grid.classList.add('show-values-active');
+        } else {
+            grid.classList.remove('show-values-active');
+        }
+    }
+
     // --- CACHING ---
     function loadCache() {
         const cached = localStorage.getItem('gw2_item_cache');
@@ -391,7 +451,6 @@
     function showTooltip(e, data) {
         let { id, name, type, desc, stats, rarity, count, icon } = data;
         
-        // Handle Ascended food special case
         if(rarity === 'Ascended' && type === 'Consumable') {
             const ascendedDetails = getAscendedStats(name);
             if(ascendedDetails) { stats = ascendedDetails; desc = ""; }
@@ -399,7 +458,7 @@
         if(stats && stats.includes("Double-click to serve")) { if(!desc) desc = stats; stats = ""; }
         if (stats && desc && stats.trim() === desc.trim()) { desc = ""; }
 
-        // --- PRICE FORMATTING ---
+        // --- PRICE FORMATTING FOR TOOLTIP ---
         let priceHtml = '';
         if (id && itemPrices.has(id)) {
             const p = itemPrices.get(id);
@@ -430,23 +489,18 @@
         moveTooltip(e);
     }
 
-    // Updated to use clientX/Y to fix offset issues when scrolling
     function moveTooltip(e) {
         if(tooltipEl.style.display === 'none') return;
         const w = tooltipEl.offsetWidth;
         const h = tooltipEl.offsetHeight;
-        const pad = 10; // Closer to cursor
+        const pad = 10; 
         
-        // ClientX/Y are viewport coordinates. Perfect for position: fixed.
         let left = e.clientX + pad;
         let top = e.clientY + pad;
 
-        // Check right edge
         if (left + w > window.innerWidth) {
             left = e.clientX - w - pad;
         }
-        
-        // Check bottom edge
         if (top + h > window.innerHeight) {
             top = e.clientY - h - pad;
         }
@@ -638,11 +692,11 @@
         
         const activeGuildIds = await fetchGuildData();
         
-        // Initial Render (Basic)
+        // Initial Render
         renderAll(); 
         populateDebugGuilds();
 
-        // Detailed Fetch (Stash Items & Upgrades)
+        // Detailed Fetch
         if(activeGuildIds && activeGuildIds.length > 0) {
             await loadStashItemDetails(activeGuildIds);
             renderAll(); // Re-render with details and prices
@@ -741,6 +795,8 @@
         applyStashFilter();
         applyRosterFilter();
         applyLogFilter();
+        // Maintain checkbox state logic
+        toggleStashValues();
     }
 
     // --- STASH & CONSUMABLES ---
@@ -760,7 +816,6 @@
                 
                 const inventory = tab.inventory || [];
                 
-                // COIN DISPLAY LOGIC
                 const coinString = tab.coins && tab.coins > 0 ? `<div class="stash-coins">${formatCoins(tab.coins)}</div>` : '';
                 
                 title.innerHTML = `<span>${name} <span style="font-size:0.8rem;opacity:0.7">(${inventory.filter(x=>x).length})</span></span> ${coinString}`;
@@ -771,20 +826,25 @@
                     if(!slot) {
                         d.className = 'item-slot empty-slot';
                     } else {
-                        // Get info from details map or fallback
                         const info = itemDetails.get(slot.id) || { name: 'Loading...', icon: '', rarity: 'Basic', type: 'Item' };
                         
-                        // Use Fallback Icon if map is empty but we have lazy load icon logic? 
-                        // No, fetchItemIcon handles the img src, but render loop sets the rarity class.
                         const iconSrc = info.icon || 'https://render.guildwars2.com/file/0000000000000000000000000000000000000000/1.png';
                         
+                        // --- CALCULATE OVERLAY PRICE ---
+                        let priceHtml = '';
+                        if (itemPrices.has(slot.id)) {
+                            const prices = itemPrices.get(slot.id);
+                            const formatted = formatOverlayPrice(prices.sells, slot.count);
+                            if(formatted) {
+                                priceHtml = `<div class="item-value">${formatted}</div>`;
+                            }
+                        }
+
                         d.className = `item-slot rarity-${info.rarity}`;
-                        d.innerHTML = `<img src="${iconSrc}"><div class="item-count">${slot.count}</div>`;
+                        d.innerHTML = `<img src="${iconSrc}"><div class="item-count">${slot.count}</div>${priceHtml}`;
                         
-                        // Data attributes for filtering
                         if(info.name) d.dataset.name = info.name.toLowerCase();
                         
-                        // Data object for Tooltip
                         const tooltipData = {
                             id: slot.id,
                             name: info.name,
@@ -799,7 +859,6 @@
                         d.addEventListener('mousemove', (e) => showTooltip(e, tooltipData));
                         d.addEventListener('mouseleave', hideTooltip);
                         
-                        // If icon is missing in cache (initial load), try lazy fetch visual only
                         if(!info.icon) fetchItemIcon(slot.id, d); 
                     }
                     grid.appendChild(d);
@@ -1161,10 +1220,8 @@
     }
 
     async function fetchItemIcon(id, el) {
-        // Check Cache first
         if(itemDetails.has(id)) {
             const data = itemDetails.get(id);
-            // Handle both <img> tag directly or wrapper div
             if(el) {
                 if(el.tagName === 'IMG') {
                     el.src = data.icon;
@@ -1172,8 +1229,6 @@
                 } else {
                     const img = el.querySelector('img');
                     if(img) { img.src = data.icon; } 
-                    // Note: We don't set Title here anymore because the tooltip handles it,
-                    // unless we want a fallback.
                     if(data.name) el.dataset.name = data.name.toLowerCase();
                 }
             }
@@ -1183,7 +1238,6 @@
         try {
             const res = await fetch(`${GW2_API}/items/${id}`);
             const data = await res.json();
-            // Save basic info if full info not yet loaded
             if(!itemDetails.has(id)) {
                 itemDetails.set(id, {
                     id: data.id, 
