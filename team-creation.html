@@ -230,6 +230,86 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
   </div>
 
   <script>
+    /* =========================================
+       SMART PASTE LOGIC (Fixes Discord Lines)
+       ========================================= */
+    document.getElementById('inputPlayers').addEventListener('paste', function(e) {
+      // Prevent the default paste behavior so we can modify the text first
+      e.preventDefault();
+
+      // Get the text from the clipboard
+      const clipboardData = (e.clipboardData || window.clipboardData).getData('text');
+      
+      // Run the cleaner function
+      const cleanedText = cleanDiscordPaste(clipboardData);
+
+      // Insert the cleaned text at the cursor position
+      const input = e.target;
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+      const currentText = input.value;
+      
+      const before = currentText.substring(0, start);
+      const after = currentText.substring(end, currentText.length);
+      
+      input.value = before + cleanedText + after;
+      
+      // Restore cursor position after the inserted text
+      input.selectionStart = input.selectionEnd = start + cleanedText.length;
+    });
+
+    function cleanDiscordPaste(text) {
+      // Normalize line endings
+      const normalized = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+      const lines = normalized.split('\n');
+      const output = [];
+
+      for (let i = 0; i < lines.length; i++) {
+        let line = lines[i].trim();
+        if (!line) continue; // Skip empty lines, but don't merge them
+
+        // If this is the first line, just add it
+        if (output.length === 0) {
+          output.push(line);
+          continue;
+        }
+
+        const prevLineIndex = output.length - 1;
+        const prevLine = output[prevLineIndex];
+
+        // --- CHECK 1: Line starts with a comma (e.g. ", 📧") ---
+        if (line.startsWith(',')) {
+          output[prevLineIndex] = prevLine + line;
+          continue;
+        }
+
+        // --- CHECK 2: Line contains NO letters/numbers (Only emojis/symbols) ---
+        // Discord often pushes emojis to a new line.
+        // Matches if the line has no A-Z or 0-9 characters.
+        if (!/[a-zA-Z0-9]/.test(line)) {
+          output[prevLineIndex] = prevLine + ' ' + line;
+          continue;
+        }
+
+        // --- CHECK 3: Previous line looks like a prefix (e.g. "10.💫") ---
+        // If the previous line was just a number+dot+symbols, and current line is text, merge UP.
+        // Regex: Start -> Digits -> Dot -> Optional non-word chars -> End
+        if (/^\d+\.[^\w]*$/.test(prevLine)) {
+           output[prevLineIndex] = prevLine + ' ' + line;
+           continue;
+        }
+
+        // If no merge conditions met, add as new line
+        output.push(line);
+      }
+
+      return output.join('\n');
+    }
+
+    /* =========================================
+       EXISTING LOGIC BELOW
+       ========================================= */
+
     const predefinedRoles = [
       { name: 'QuickDPS', discordtext: ':QuickDPS:', img: 'https://cdn.discordapp.com/emojis/1038159940164014090.png' },
       { name: 'QuickHeal', discordtext: ':QuickHeal:', img: 'https://cdn.discordapp.com/emojis/1038159941472620655.png' },
@@ -635,4 +715,3 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
 </body>
 
 </html>
-
