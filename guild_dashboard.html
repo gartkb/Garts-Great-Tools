@@ -63,16 +63,6 @@
         .item-slot.is-zero { opacity: 0.2; filter: grayscale(1); }
         .item-slot.is-zero .item-count { display: none; }
 
-        /* --- ROSTER TABLE STYLES --- */
-        .roster-container { background: rgba(0,0,0,0.3); border-radius: 10px; padding: 15px; height: 100%; display: flex; flex-direction: column; }
-        .roster-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
-        .roster-table th { text-align: left; border-bottom: 2px solid #3498db; padding: 10px; color: #3498db; background: rgba(44, 62, 80, 0.9); position: sticky; top: 0; z-index: 5; cursor: pointer; user-select: none; }
-        .roster-table th:hover { color: #fff; background: #3498db; }
-        .roster-table td { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 8px 10px; color: #ecf0f1; }
-        .roster-table tr:hover td { background: rgba(52, 152, 219, 0.1); }
-        .sort-icon { font-size: 0.8em; margin-left: 5px; opacity: 0.5; }
-        .rank-badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 0.85em; background: rgba(255,255,255,0.05); }
-
         /* --- GLOBAL TOOLTIP --- */
         #global-tooltip {
             position: fixed;
@@ -104,6 +94,9 @@
 
         .loading { text-align: center; padding: 30px; color: #95a5a6; font-style: italic; }
         .error-box { padding: 15px; background: rgba(231, 76, 60, 0.15); border: 1px solid rgba(231, 76, 60, 0.3); color: #e74c3c; text-align: center; border-radius: 5px; margin-top: 20px; }
+        .roster-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .roster-table th { text-align: left; border-bottom: 1px solid #3498db; padding: 5px; color: #3498db; position: sticky; top: 0; background: #2c3e50; }
+        .roster-table td { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 6px 5px; }
         
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
         .modal-content { background: #2c3e50; border: 1px solid #3498db; border-radius: 8px; width: 95%; max-width: 600px; padding: 20px; box-shadow: 0 0 25px rgba(0,0,0,0.7); display: flex; flex-direction: column; max-height: 90vh; }
@@ -140,16 +133,6 @@
     </div>
 
     <div id="tab-stash" class="tab-content active">
-        <div class="filter-bar">
-            <div class="filter-group">
-                <input type="text" id="stash-search" class="filter-input" placeholder="Search stash items..." onkeyup="applyStashFilter()">
-            </div>
-            <div class="filter-group">
-                <label class="filter-label" style="font-size:0.8rem; opacity:0.7;">
-                    (Hides empty slots when searching)
-                </label>
-            </div>
-        </div>
         <div id="stash-grid" class="guild-grid"></div>
     </div>
 
@@ -176,19 +159,9 @@
         <div id="consumables-grid" class="guild-grid"></div>
     </div>
 
-    <!-- ROSTER TAB -->
     <div id="tab-roster" class="tab-content">
-        <div class="filter-bar">
-             <div class="filter-group">
-                <input type="text" id="roster-search" class="filter-input" placeholder="Search members..." onkeyup="applyRosterFilter()">
-            </div>
-            <div class="filter-group" style="color:#bdc3c7; font-size:0.9rem;">
-                <span id="roster-total-count">0</span> Members found
-            </div>
-        </div>
-        <div id="roster-grid" class="guild-grid" style="grid-template-columns: 1fr;"></div>
+        <div id="roster-grid" class="guild-grid"></div>
     </div>
-
     <div id="tab-log" class="tab-content">
         <div id="log-grid" class="guild-grid"></div>
     </div>
@@ -239,28 +212,41 @@
     </div>
 </div>
 
+<!-- ROSTER MODAL -->
+<div id="roster-modal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 800px; height: 80vh;">
+        <div class="modal-header">
+            <span id="roster-title">Guild Roster</span>
+            <button class="modal-close" onclick="closeModal('roster-modal')">&times;</button>
+        </div>
+        <div style="flex: 1; overflow-y: auto;" id="roster-body"></div>
+    </div>
+</div>
+
 <script>
     let apiKeys = [];
     let guildData = {}; 
     let itemDetails = new Map(); // Cache for fetched Item API data
     let upgradeDetails = new Map(); // Cache for Guild Upgrade API data
+    
+    // Map Name -> Array of IDs (to handle collisions like "Flatbread" being both a Gizmo and Food)
     let nameToIdsMap = new Map(); 
     
+    // New: Tracking disabled guilds
     let disabledGuilds = new Set();
-    let allDiscoveredGuilds = []; 
+    let allDiscoveredGuilds = []; // Stores basic info for all accessible guilds
     
-    // Global sort state for rosters
-    let rosterSortState = { column: 'rank', asc: true };
-
     const GW2_API = 'https://api.guildwars2.com/v2';
     const JSON_URL = 'https://gartkb.github.io/Garts-Great-Tools/gw2-items.json';
 
     const tooltipEl = document.getElementById('global-tooltip');
 
     document.addEventListener('DOMContentLoaded', () => {
+        // Load Keys
         const storedKeys = localStorage.getItem('gw2_dash_keys');
         if(storedKeys) try { apiKeys = JSON.parse(storedKeys); } catch(e) {}
         
+        // Load Disabled Guilds Preference
         const storedDisabled = localStorage.getItem('gw2_dash_disabled_guilds');
         if(storedDisabled) try { disabledGuilds = new Set(JSON.parse(storedDisabled)); } catch(e) {}
 
@@ -269,15 +255,14 @@
         if(apiKeys.length > 0) refreshData();
     });
 
-    // --- HELPERS (Ascended stats, Cache, Tooltip) ---
-    // ... (Keeping these standard helpers from previous version) ...
-
+    // --- HELPER: ASCENDED STAT PARSER ---
     function getAscendedStats(name) {
         const baseBuffs = "+10% Karma\n+5% All Experience Gained\n+20% Magic Find\n+20% Gold Find\n+10% WXP Gained";
         let stats = "";
         let effect = "";
         const n = name.toLowerCase();
 
+        // 1. PASSIVE EFFECT
         if (n.includes("peppercorn") || n.includes("peppered")) effect = "-10% Incoming Damage";
         else if (n.includes("cilantro"))  effect = "66% Chance to Steal Life on Critical Hit";
         else if (n.includes("sesame"))    effect = "Gain Health on Kill";
@@ -285,6 +270,7 @@
         else if (n.includes("clove"))     effect = "-20% Incoming Condition Duration";
         else if (n.includes("salsa"))     effect = "+20% Condition Duration";
 
+        // 2. ATTRIBUTES
         if (n.includes("steak"))            stats = "+100 Power\n+70 Ferocity";
         else if (n.includes("coq au vin"))  stats = "+100 Power\n+70 Precision";
         else if (n.includes("carpaccio"))   stats = "+100 Concentration\n+70 Power";
@@ -298,6 +284,7 @@
         else if (n.includes("veggie flatbread")) stats = "+100 Expertise\n+70 Condition Damage";
         else if (n.includes("flatbread"))        stats = "+100 Condition Damage\n+70 Expertise"; 
 
+        // 3. Assembly
         let parts = [];
         if (effect) parts.push(effect);
         if (stats) parts.push(stats);
@@ -306,6 +293,7 @@
         return `Nourishment (1h):\n${parts.join('\n')}\n${baseBuffs}`;
     }
 
+    // --- CACHING ---
     function loadCache() {
         const cached = localStorage.getItem('gw2_item_cache');
         if(cached) {
@@ -322,17 +310,27 @@
         location.reload();
     }
 
+    // --- TOOLTIP ---
     function showTooltip(e, data) {
         let { name, type, desc, stats, rarity, count, icon } = data;
+
+        // 1. Try to generate "Smart Stats"
         if(rarity === 'Ascended' && type === 'Consumable') {
             const ascendedDetails = getAscendedStats(name);
-            if(ascendedDetails) { stats = ascendedDetails; desc = ""; }
+            if(ascendedDetails) {
+                stats = ascendedDetails; 
+                desc = ""; 
+            }
         }
+
+        // 2. Cleanup Duplicates
         if(stats && stats.includes("Double-click to serve")) {
             if(!desc) desc = stats;
             stats = ""; 
         }
-        if (stats && desc && stats.trim() === desc.trim()) desc = "";
+        if (stats && desc && stats.trim() === desc.trim()) {
+            desc = "";
+        }
 
         tooltipEl.innerHTML = `
             <div class="tt-head tt-rarity-${rarity}">
@@ -375,7 +373,10 @@
             if(!res.ok) throw new Error("Failed to load JSON");
             const json = await res.json();
             json.items.forEach(pair => {
-                nameToIdsMap.set(String(pair[1]).trim().toLowerCase(), [Number(pair[0])]); // Simplified for existing logic
+                const id = Number(pair[0]);
+                const name = String(pair[1]).trim().toLowerCase();
+                if(!nameToIdsMap.has(name)) nameToIdsMap.set(name, []);
+                nameToIdsMap.get(name).push(id);
             });
         } catch(e) { console.error("JSON Error", e); }
     }
@@ -404,9 +405,31 @@
 
     async function enrichLibraryWithStats() {
         updateStatus("Linking Upgrades to Game Items...");
+        /* 
+           ========================================================================
+           HANDLING ASCENDED FOOD (API CONFUSION WARNING)
+           ========================================================================
+           The Guild Wars 2 API treats Guild Storage and Player Inventory differently.
+           
+           1. Guild Storage (/guild/:id/storage) returns UPGRADE IDs, not ITEM IDs.
+           2. An "Upgrade" (e.g., Ascended Feast) has a name and description, but 
+              CRUCIALLY, the API does *not* include Rarity or Stats in the Upgrade object.
+           
+           TO FIX THIS:
+           We bridge the gap by name-matching:
+           1. Get Upgrade Name (e.g., "Peppercorn-Crusted Sous-Vide Steak Feast").
+           2. Look up this name in 'nameToIdsMap' to find the corresponding Item ID.
+           3. Fetch that Item ID from /items to get Rarity ("Ascended").
+           4. Assign that Rarity back to the Upgrade object.
+           
+           The 'Ascended Feasts' filter in the UI relies entirely on this enrichment 
+           process functioning correctly. If this fails, the feast remains "Unknown" rarity.
+        */
+
         const itemIdsToFetch = new Set();
         const upgradeCandidates = new Map();
 
+        // 1. MATCHING
         upgradeDetails.forEach((u, uid) => {
             if(['Consumable', 'Decoration', 'Claimable'].includes(u.type)) {
                 const normName = u.name.trim().toLowerCase();
@@ -421,6 +444,7 @@
             }
         });
 
+        // 2. FETCHING
         if(itemIdsToFetch.size > 0) {
             updateStatus(`Fetching stats for ${itemIdsToFetch.size} possible items...`);
             const arr = Array.from(itemIdsToFetch);
@@ -442,19 +466,24 @@
             saveCache();
         }
 
+        // 3. SELECTION (Collision Logic)
         upgradeCandidates.forEach((candidates, upgradeId) => {
             const u = upgradeDetails.get(upgradeId);
             let bestMatch = null;
+
             candidates.forEach(cid => {
                 const item = itemDetails.get(cid);
                 if(!item) return;
                 if(!bestMatch) {
                     bestMatch = item;
                 } else {
+                    // Prioritize Ascended over non-Ascended
                     if(item.rarity === 'Ascended' && bestMatch.rarity !== 'Ascended') bestMatch = item;
+                    // Prioritize Consumable over Gizmo if rarity matches
                     else if(item.rarity === bestMatch.rarity && item.type === 'Consumable' && bestMatch.type !== 'Consumable') bestMatch = item;
                 }
             });
+
             if(bestMatch) {
                 u.rarity = bestMatch.rarity;
                 if(bestMatch.desc) u.stats = bestMatch.desc; 
@@ -480,7 +509,8 @@
     }
 
     async function fetchGuildData() {
-        const potentialGuilds = new Map(); 
+        // 1. Discover all accessible guild IDs first
+        const potentialGuilds = new Map(); // Map<ID, {key, name, tag}>
 
         for(const cred of apiKeys) {
             try {
@@ -503,6 +533,7 @@
             return;
         }
 
+        // 2. Fetch Basic Guild Info (Name/Tag) for ALL found IDs to populate the selection list
         const guildIds = Array.from(potentialGuilds.keys());
         await Promise.all(guildIds.map(async (gid) => {
             const g = potentialGuilds.get(gid);
@@ -516,9 +547,11 @@
             }
         }));
 
+        // 3. Populate "Manage API" Guild List
         allDiscoveredGuilds = Array.from(potentialGuilds.values());
         renderGuildSelectionList();
 
+        // 4. Filter out Disabled Guilds for fetching Heavy Data (Stash/Log)
         const activeGuildIds = guildIds.filter(gid => !disabledGuilds.has(gid));
 
         if(activeGuildIds.length === 0) {
@@ -526,41 +559,29 @@
              return;
         }
 
+        // 5. Fetch Heavy Data for Active Guilds only
         await Promise.all(activeGuildIds.map(async (gid) => {
+            // Initialize main data object
             guildData[gid] = potentialGuilds.get(gid);
             const g = guildData[gid];
             const tokenStr = `?access_token=${g.key}`;
 
             try {
-                // 1. Fetch Stash
+                // Stash
                 try {
                     const stash = await fetch(`${GW2_API}/guild/${gid}/stash${tokenStr}`).then(r => { if(!r.ok) throw new Error(); return r.json(); });
                     g.stash = stash;
                 } catch(err) { g.stashError = true; }
                 
-                // 2. Fetch Storage
+                // Storage (Consumables)
                 try {
                     g.storage = await fetch(`${GW2_API}/guild/${gid}/storage${tokenStr}`).then(r => r.ok ? r.json() : []);
                 } catch(e) {}
                 
-                // 3. Fetch Roster
-                try { 
-                    g.roster = await fetch(`${GW2_API}/guild/${gid}/members${tokenStr}`).then(r => r.ok ? r.json() : []); 
-                } catch(e) {}
+                // Roster
+                try { g.roster = await fetch(`${GW2_API}/guild/${gid}/members${tokenStr}`).then(r => r.ok ? r.json() : []); } catch(e) {}
                 
-                // 4. Fetch Ranks (NEW - For Sorting)
-                try {
-                     const ranks = await fetch(`${GW2_API}/guild/${gid}/ranks${tokenStr}`).then(r => r.ok ? r.json() : []);
-                     // Create simple map: { "Leader": 1, "Member": 5 } etc.
-                     g.rankMap = {};
-                     ranks.forEach(r => {
-                         g.rankMap[r.id] = r.order;
-                     });
-                } catch(e) {
-                    g.rankMap = {}; // Fallback
-                }
-
-                // 5. Fetch Log
+                // Logs
                 try { 
                     g.log = await fetch(`${GW2_API}/guild/${gid}/log${tokenStr}`).then(r => r.ok ? r.json() : []); 
                     g.log = g.log.slice(0, 50);
@@ -577,11 +598,16 @@
             container.innerHTML = '<div style="text-align:center; color:#7f8c8d; padding:10px;">No guilds found yet.</div>';
             return;
         }
+        
         container.innerHTML = allDiscoveredGuilds.map(g => {
             const isChecked = !disabledGuilds.has(g.id);
             return `
             <div class="guild-list-item">
-                <input type="checkbox" id="cb-${g.id}" ${isChecked ? 'checked' : ''} onchange="toggleGuild('${g.id}')" style="cursor:pointer; transform:scale(1.2)">
+                <input type="checkbox" 
+                       id="cb-${g.id}" 
+                       ${isChecked ? 'checked' : ''} 
+                       onchange="toggleGuild('${g.id}')"
+                       style="cursor:pointer; transform:scale(1.2)">
                 <label for="cb-${g.id}" style="flex:1; cursor:pointer; color:#ecf0f1;">
                     <span style="font-weight:bold; color:#3498db;">[${g.tag}]</span> ${g.name}
                 </label>
@@ -590,17 +616,29 @@
     }
 
     function toggleGuild(gid) {
-        if(disabledGuilds.has(gid)) disabledGuilds.delete(gid);
-        else disabledGuilds.add(gid);
+        if(disabledGuilds.has(gid)) {
+            disabledGuilds.delete(gid);
+        } else {
+            disabledGuilds.add(gid);
+        }
         localStorage.setItem('gw2_dash_disabled_guilds', JSON.stringify(Array.from(disabledGuilds)));
+        
+        // Trigger a refresh so dashboard updates immediately
         refreshData();
     }
 
     function renderAll() {
         const grids = ['stash-grid', 'consumables-grid', 'roster-grid', 'log-grid'];
         grids.forEach(id => document.getElementById(id).innerHTML = '');
+        
+        // guildData only contains active guilds now
         const activeGIDs = Object.keys(guildData);
-        if(activeGIDs.length === 0 && allDiscoveredGuilds.length > 0) return;
+
+        if(activeGIDs.length === 0 && allDiscoveredGuilds.length > 0) {
+             // Handle case where guilds exist but all are unchecked
+             return; // Message already handled in fetchGuildData
+        }
+
         activeGIDs.forEach(gid => {
             const g = guildData[gid];
             renderStashCard(g);
@@ -609,14 +647,18 @@
             renderLogCard(g);
         });
         applyStorageFilter();
-        applyStashFilter();
-        applyRosterFilter();
     }
 
     function renderStorageCard(g) {
+        /* 
+           NOTE: 'Storage' in GW2 API returns Upgrade IDs.
+           'Stash' returns Item IDs. 
+           These items are UPGRADES (Consumables tab), not generic vault items.
+        */
         const ui = createCard(g, 'Storage');
         const grid = document.createElement('div');
         grid.className = 'item-grid'; 
+
         const currentItemsMap = new Map();
         if(g.storage) g.storage.forEach(s => currentItemsMap.set(s.id, s.count));
 
@@ -624,12 +666,19 @@
         upgradeDetails.forEach((u, id) => {
             if(!['Consumable', 'Decoration', 'Claimable'].includes(u.type)) return;
             cardItems.push({
-                id: id, name: u.name, icon: u.icon, type: u.type,
-                desc: u.description, stats: u.stats || '', rarity: u.rarity || '',
+                id: id,
+                name: u.name,
+                icon: u.icon,
+                type: u.type,
+                desc: u.description, 
+                stats: u.stats || '', 
+                rarity: u.rarity || '',
                 count: currentItemsMap.has(id) ? currentItemsMap.get(id) : 0
             });
         });
+
         cardItems.sort((a,b) => a.type.localeCompare(b.type) || a.name.localeCompare(b.name));
+
         cardItems.forEach(item => {
             const d = document.createElement('div');
             let classes = `item-slot storage-slot type-${item.type.toLowerCase()} rarity-${item.rarity}`;
@@ -652,17 +701,30 @@
         const search = document.getElementById('storage-search').value.toLowerCase();
         const filter = document.getElementById('storage-filter').value;
         const showEmpty = document.getElementById('show-empty').checked;
+        
         document.querySelectorAll('.storage-slot').forEach(slot => {
             const type = slot.dataset.type; 
             const name = slot.dataset.name; 
             const count = parseInt(slot.dataset.count);
+            // The 'rarity' data attribute is populated via enrichLibraryWithStats()
+            // by mapping Upgrade Name -> Item ID -> Item Rarity.
             const rarity = slot.dataset.rarity; 
+            
             let visible = true;
             if(search && !name.includes(search)) visible = false;
+            
             if(visible) {
                 if(filter === 'AscendedFeast') {
-                    if(type !== 'Consumable') visible = false;
-                    else if(rarity !== 'Ascended' && !name.includes('feast')) visible = false;
+                    // LOGIC EXPLANATION:
+                    // Because Upgrade objects don't natively have Rarity, we rely on the 
+                    // dataset.rarity derived from name matching.
+                    // Fallback: If name matching failed (rarity is null), we allow items containing 'feast'.
+                    if(type !== 'Consumable') {
+                        visible = false;
+                    }
+                    else if(rarity !== 'Ascended' && !name.includes('feast')) {
+                        visible = false;
+                    }
                 } else if(filter !== 'all') {
                     if(type !== filter) visible = false;
                 }
@@ -672,119 +734,7 @@
         });
     }
 
-    // --- Roster Sorting & Filtering Logic ---
-    
-    function renderRosterCard(g) {
-        const ui = createCard(g, 'Roster');
-        if(!g.roster || g.roster.length === 0) {
-            ui.body.innerHTML = `<div style="padding:20px; text-align:center; color:#7f8c8d;">No roster data available</div>`;
-        } else {
-            const container = document.createElement('div');
-            container.className = 'roster-container';
-            
-            container.innerHTML = `
-            <div style="flex:1; overflow:auto;">
-                <table class="roster-table" id="rt-${g.id}">
-                    <thead>
-                        <tr>
-                            <th onclick="sortRoster('${g.id}', 'name')">Name <span class="sort-icon">⇅</span></th>
-                            <th onclick="sortRoster('${g.id}', 'rank')">Rank <span class="sort-icon">⇅</span></th>
-                            <th onclick="sortRoster('${g.id}', 'joined')">Joined <span class="sort-icon">⇅</span></th>
-                        </tr>
-                    </thead>
-                    <tbody class="roster-body">
-                        ${generateRosterRows(g.roster)}
-                    </tbody>
-                </table>
-            </div>
-            <div style="margin-top:10px; font-size:0.85rem; color:#7f8c8d; text-align:right;">
-                Total: <span class="roster-count">${g.roster.length}</span>
-            </div>
-            `;
-            ui.body.appendChild(container);
-            ui.body.style.padding = '0'; 
-            ui.body.style.overflow = 'hidden'; 
-        }
-        
-        document.getElementById('roster-grid').appendChild(ui.card);
-        
-        // Use 'rank' as initial sort to leverage the new order logic
-        sortRoster(g.id, rosterSortState.column, false);
-    }
-
-    function generateRosterRows(members) {
-        return members.map(m => `
-            <tr class="roster-row" data-name="${m.name.toLowerCase()}" data-rank="${m.rank.toLowerCase()}">
-                <td style="font-weight:bold; color:#ecf0f1;">${m.name}</td>
-                <td style="color:#3498db;"><span class="rank-badge">${m.rank}</span></td>
-                <td style="color:#bdc3c7;">${new Date(m.joined).toLocaleDateString()}</td>
-            </tr>
-        `).join('');
-    }
-
-    function sortRoster(gid, column, toggle = true) {
-        if(toggle) {
-            if(rosterSortState.column === column) {
-                rosterSortState.asc = !rosterSortState.asc;
-            } else {
-                rosterSortState.column = column;
-                rosterSortState.asc = true;
-            }
-        }
-        
-        const g = guildData[gid];
-        if(!g || !g.roster) return;
-
-        g.roster.sort((a, b) => {
-            let valA = a[column];
-            let valB = b[column];
-            
-            // CUSTOM RANK SORTING LOGIC
-            if(column === 'rank' && g.rankMap) {
-                // Lower number = Higher Rank (usually). 
-                // We retrieve the order ID from our map. Default to 999 if not found.
-                valA = g.rankMap[a.rank] || 999;
-                valB = g.rankMap[b.rank] || 999;
-            } 
-            else if(column === 'joined') {
-                valA = new Date(valA).getTime();
-                valB = new Date(valB).getTime();
-            } else {
-                valA = String(valA).toLowerCase();
-                valB = String(valB).toLowerCase();
-            }
-            
-            if(valA < valB) return rosterSortState.asc ? -1 : 1;
-            if(valA > valB) return rosterSortState.asc ? 1 : -1;
-            return 0;
-        });
-
-        const table = document.querySelector(`#rt-${gid} .roster-body`);
-        if(table) {
-            table.innerHTML = generateRosterRows(g.roster);
-            applyRosterFilter();
-        }
-    }
-
-    function applyRosterFilter() {
-        const search = document.getElementById('roster-search').value.toLowerCase().trim();
-        let totalVisible = 0;
-
-        document.querySelectorAll('.roster-row').forEach(row => {
-            const name = row.dataset.name;
-            const rank = row.dataset.rank;
-            
-            if(search === '' || name.includes(search) || rank.includes(search)) {
-                row.style.display = '';
-                totalVisible++;
-            } else {
-                row.style.display = 'none';
-            }
-        });
-
-        document.getElementById('roster-total-count').innerText = totalVisible;
-    }
-
+    // --- BOILERPLATE RENDER FUNCTIONS ---
     function createCard(g, titleSuffix) {
         const div = document.createElement('div');
         div.className = 'guild-card';
@@ -804,21 +754,16 @@
                 title.className = 'stash-section-title';
                 let name = "Stash";
                 if(tab.upgrade_id===58) name="Stash"; if(tab.upgrade_id===377) name="Trove"; if(tab.upgrade_id===59) name="Cave";
-                
-                const inventory = tab.inventory || [];
-                title.innerText = `${name} (${inventory.filter(x=>x).length})`;
-                
+                title.innerText = `${name} (${tab.inventory.filter(x=>x).length})`;
                 ui.body.appendChild(title);
-                inventory.forEach(slot => {
+                (tab.inventory||[]).forEach(slot => {
                     const d = document.createElement('div');
-                    if(!slot) {
-                        d.className = 'item-slot empty-slot';
-                    } else {
+                    if(!slot) d.className = 'item-slot empty-slot';
+                    else {
                         d.className = 'item-slot';
                         const info = itemDetails.get(slot.id) || {icon:'', name: 'Loading...'};
                         d.innerHTML = `<img src="${info.icon || 'https://render.guildwars2.com/file/0000000000000000000000000000000000000000/1.png'}"><div class="item-count">${slot.count}</div>`;
                         d.title = `${info.name} (x${slot.count})`;
-                        if(info.name) d.dataset.name = info.name.toLowerCase();
                         fetchItemIcon(slot.id, d); 
                     }
                     grid.appendChild(d);
@@ -834,7 +779,6 @@
             const data = itemDetails.get(id);
             el.innerHTML = `<img src="${data.icon}"><div class="item-count">${el.innerText}</div>`;
             el.title = data.name;
-            if(data.name) el.dataset.name = data.name.toLowerCase();
             return;
         }
         try {
@@ -843,25 +787,13 @@
             itemDetails.set(id, {name: data.name, icon: data.icon, rarity: data.rarity}); 
             el.innerHTML = `<img src="${data.icon}"><div class="item-count">${el.innerText}</div>`;
             el.title = data.name;
-            if(data.name) el.dataset.name = data.name.toLowerCase();
-            const searchInput = document.getElementById('stash-search');
-            if(searchInput && searchInput.value) applyStashFilter();
         } catch(e){}
     }
 
-    function applyStashFilter() {
-        const searchInput = document.getElementById('stash-search');
-        if(!searchInput) return;
-        const search = searchInput.value.toLowerCase().trim();
-        const slots = document.querySelectorAll('#stash-grid .item-slot');
-        slots.forEach(slot => {
-            if(search === '') { slot.style.display = ''; return; }
-            if(slot.classList.contains('empty-slot')) { slot.style.display = 'none'; } 
-            else {
-                const name = slot.dataset.name || '';
-                slot.style.display = name.includes(search) ? 'block' : 'none';
-            }
-        });
+    function renderRosterCard(g) {
+        const ui = createCard(g, 'Roster');
+        ui.body.innerHTML = `<div style="text-align:center;margin:20px 0;"><div style="font-size:2.5rem;color:#3498db;font-weight:bold;">${g.roster?g.roster.length:0}</div><div style="color:#bdc3c7">Members</div></div><button style="width:100%;margin-top:10px" onclick="openRoster('${g.id}')">View</button>`;
+        document.getElementById('roster-grid').appendChild(ui.card);
     }
 
     function renderLogCard(g) {
@@ -880,6 +812,18 @@
         });
         ui.body.appendChild(list);
         document.getElementById('log-grid').appendChild(ui.card);
+    }
+
+    function openRoster(gid) {
+        const g = guildData[gid];
+        document.getElementById('roster-title').innerText = `${g.name} Members`;
+        let h = `<table class="roster-table"><thead><tr><th>Name</th><th>Rank</th><th>Joined</th></tr></thead><tbody>`;
+        (g.roster||[]).sort((a,b)=>a.rank.localeCompare(b.rank)).forEach(m => {
+            h += `<tr><td>${m.name}</td><td>${m.rank}</td><td>${new Date(m.joined).toLocaleDateString()}</td></tr>`;
+        });
+        h += `</tbody></table>`;
+        document.getElementById('roster-body').innerHTML = h;
+        openModal('roster-modal');
     }
 
     function addKey() { 
