@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurene Weapons - Wintersday Gallery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* --- Wintersday Theme Setup --- */
+        :root {
+            --winter-blue: #a5f2f3;
+            --winter-deep: #0b1016;
+            --candy-red: #d32f2f;
+            --candy-white: #f5f5f5;
+            --gold-accent: #ffd700;
+            --soul-pink: #ff69b4; 
+            --soul-glow: #ff1493; 
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #020111 0%, #193c5c 40%, #0b1016 100%);
+            background-size: 400% 400%;
+            animation: aurora 20s ease infinite;
+            color: #e0f7fa;
+            font-family: 'Open Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        @keyframes aurora {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Falling Snow Animation */
+        .snowflake {
+            color: #fff;
+            font-size: 1.4em;
+            text-shadow: 0 0 5px #000;
+            position: fixed;
+            top: -10%;
+            z-index: 9999;
+            user-select: none;
+            cursor: default;
+            animation-name: snowflakes-fall, snowflakes-shake;
+            animation-duration: 12s, 4s;
+            animation-timing-function: linear, ease-in-out;
+            animation-iteration-count: infinite, infinite;
+            animation-play-state: running, running;
+            opacity: 0.9;
+            pointer-events: none;
+        }
+        
+        @keyframes snowflakes-fall {
+            0% { top: -10%; }
+            100% { top: 100%; }
+        }
+        
+        @keyframes snowflakes-shake {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(80px); }
+        }
+
+        .snowflake:nth-of-type(0) { left: 1%; animation-delay: 0s, 0s; }
+        .snowflake:nth-of-type(1) { left: 10%; animation-delay: 1s, 1s; }
+        .snowflake:nth-of-type(2) { left: 20%; animation-delay: 6s, .5s; }
+        .snowflake:nth-of-type(3) { left: 30%; animation-delay: 4s, 2s; }
+        .snowflake:nth-of-type(4) { left: 40%; animation-delay: 2s, 2s; }
+        .snowflake:nth-of-type(5) { left: 50%; animation-delay: 8s, 3s; }
+        .snowflake:nth-of-type(6) { left: 60%; animation-delay: 6s, 2s; }
+        .snowflake:nth-of-type(7) { left: 70%; animation-delay: 2.5s, 1s; }
+        .snowflake:nth-of-type(8) { left: 80%; animation-delay: 1s, 0s; }
+        .snowflake:nth-of-type(9) { left: 90%; animation-delay: 3s, 1.5s; }
+
+        /* --- Header & Layout --- */
+        header {
+            width: 85%;
+            max-width: 1000px;
+            margin-top: 4vh;
+            position: relative;
+            z-index: 5; 
+            padding: 20px 40px;
+            border-bottom: 8px solid transparent;
+            border-image: repeating-linear-gradient(
+                45deg,
+                var(--candy-red),
+                var(--candy-red) 15px,
+                var(--candy-white) 15px,
+                var(--candy-white) 30px
+            ) 1;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px 15px 0 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .title-container {
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            color: #fff;
+            text-shadow: 
+                0 0 5px #fff,
+                0 0 10px #fff,
+                0 0 20px var(--winter-blue),
+                0 0 40px var(--winter-blue);
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        p.subtitle {
+            font-style: italic;
+            color: #b0bec5;
+            margin-top: 10px;
+            font-size: 1.1rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .mascot-img {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 15px var(--winter-blue));
+            transition: transform 0.3s;
+        }
+        
+        .mascot-img:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        /* --- Main Grid & Container --- */
+        .container {
+            padding-bottom: 2vh;
+            text-align: center;
+            position: relative;
+            z-index: 20;
+            width: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #weapon-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            max-width: 900px;
+            margin: 40px auto 20px auto; 
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 0 30px rgba(165, 242, 243, 0.2),
+                inset 0 0 50px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        /* --- Guild Branding Section (Centered Below Grid) --- */
+        .guild-branding {
+            margin: 10px 0 30px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            animation: fadeIn 2s ease;
+            background: rgba(0, 10, 20, 0.4);
+            padding: 10px 25px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 105, 180, 0.2);
+        }
+
+        .soul-logo {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 5px var(--soul-pink));
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .soul-logo:hover {
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 15px var(--soul-glow));
+        }
+
+        .soul-text {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: #fff0f5;
+            text-shadow: 0 0 8px var(--soul-glow);
+            margin: 0;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Card Styling */
+        .weapon-card {
+            position: relative;
+            width: 90px;
+            height: 90px;
+            background-color: #0f151e;
+            border: 2px solid #37474f;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .weapon-card:hover {
+            transform: translateY(-15px) scale(1.15);
+            border-color: #ffffff;
+            box-shadow: 0 0 20px var(--winter-blue), 0 0 50px rgba(165, 242, 243, 0.5);
+            z-index: 50;
+        }
+
+        .weapon-card:active {
+            transform: translateY(-5px) scale(1.1);
+            border-color: var(--gold-accent);
+            box-shadow: 0 0 15px var(--gold-accent);
+        }
+
+        .weapon-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+            pointer-events: none;
+        }
+
+        /* Tooltip Styling */
+        .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            background: linear-gradient(135deg, #15202b 0%, #0a0e14 100%);
+            color: #fff;
+            text-align: left;
+            border: 1px solid var(--winter-blue);
+            border-radius: 8px;
+            padding: 15px;
+            position: absolute;
+            z-index: 100;
+            bottom: 120%; 
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            width: 280px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -8px;
+            border-width: 8px;
+            border-style: solid;
+            border-color: var(--winter-blue) transparent transparent transparent;
+        }
+
+        .weapon-card:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .tooltip h3 {
+            margin: 0 0 5px 0;
+            font-family: 'Cinzel', serif;
+            font-size: 18px;
+            color: #d9a4ff;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            padding-bottom: 8px;
+        }
+
+        .tooltip .type {
+            font-size: 11px;
+            color: #81d4fa;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        .tooltip .flavor {
+            font-size: 13px;
+            font-style: italic;
+            color: #cfd8dc;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .tooltip .chat-code {
+            font-family: 'Consolas', monospace;
+            color: #888; 
+            font-size: 12px;
+            text-align: center;
+            display: block;
+            margin-top: 5px;
+        }
+        
+        .tooltip .hint {
+            font-size: 11px;
+            color: var(--gold-accent);
+            text-align: center;
+            margin-top: 8px;
+            font-weight: bold;
+        }
+
+        .loading {
+            color: var(--winter-blue);
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            animation: pulse 1.5s infinite;
+            margin-top: 20px;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+
+        /* Toast Notification */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            margin-left: -125px;
+            background-color: rgba(224, 247, 250, 0.95);
+            color: #0b1016;
+            text-align: center;
+            border-radius: 50px;
+            padding: 16px;
+            position: fixed;
+            z-index: 200;
+            left: 50%;
+            bottom: 30px;
+            font-size: 16px;
+            box-shadow: 0 0 20px rgba(165, 242, 243, 0.6);
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s;
+            font-family: 'Open Sans', sans-serif;
+            font-weight: 600;
+        }
+
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+
+        /* --- Footer & Decor --- */
+        .footer-decor {
+            width: 100%;
+            background: rgba(0, 20, 40, 0.8);
+            padding: 15px 0;
+            margin-top: auto;
+            border-top: 3px solid var(--winter-blue);
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .decor-icon {
+            width: 60px;
+            height: 60px;
+            opacity: 0.9;
+            filter: drop-shadow(0 0 8px rgba(255,255,255,0.3));
+            transition: transform 0.3s;
+            border-radius: 10px;
+        }
+        
+        .decor-icon:hover {
+            transform: scale(1.2) rotate(-10deg);
+            opacity: 1;
+        }
+
+        .gift-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--winter-blue);
+            transition: transform 0.2s;
+            position: relative;
+            z-index: 5;
+            margin: 0 10px;
+        }
+
+        .gift-link:hover {
+            transform: scale(1.1);
+            color: #fff;
+        }
+
+        .gift-link img {
+            width: 80px;
+            height: 80px;
+            filter: drop-shadow(0 0 15px rgba(255,215,0,0.3));
+            margin-bottom: 5px;
+        }
+
+        .gift-link span {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            text-shadow: 0 0 10px var(--winter-blue);
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Falling Snow -->
+    <div class="snowflake">❄</div><div class="snowflake">❅</div><div class="snowflake">❆</div>
+    <div class="snowflake">❄</div><div class="snowflake">❅</div><div class="snowflake">❆</div>
+    <div class="snowflake">❄</div><div class="snowflake">❅</div><div class="snowflake">❆</div>
+    <div class="snowflake">❄</div>
+
+    <!-- Toast Notification -->
+    <div id="toast">Copied to clipboard!</div>
+
+    <header>
+        <div class="header-content">
+            <!-- Left: Ho-Ho-Tron (API) -->
+            <img id="mascot-hoho" class="mascot-img" src="" alt="Ho-Ho-Tron" style="display:none;" title="Ho-Ho-Tron Online!">
+            
+            <!-- Center: Title -->
+            <div class="title-container">
+                <h1>Wintersday is coming..</h1>
+                <p class="subtitle">Generation 3 Aurene Legendary Weapons</p>
+            </div>
+
+            <!-- Right: Gift from Scarlet (Direct URL) -->
+            <img class="mascot-img" src="https://wiki.guildwars2.com/images/5/58/Gift_from_Scarlet.png" alt="Gift from Scarlet" title="Gift from Scarlet">
+        </div>
+    </header>
+
+    <div class="container">
+        <div id="loading" class="loading">Communing with the Mists...</div>
+        
+        <!-- Weapon Grid -->
+        <div id="weapon-grid"></div>
+
+        <!-- Guild Branding (Centered in layout) -->
+        <div class="guild-branding">
+            <img class="soul-logo" src="https://gartkb.github.io/Garts-Great-Tools/images/SOUL_lotus.png" alt="[SOUL] Logo">
+            <h2 class="soul-text">[SOUL] Positive Synergies</h2>
+        </div>
+    </div>
+
+    <!-- Festive Footer Links -->
+    <div class="footer-decor">
+        <!-- Far Left: Dropped Present -->
+        <img class="decor-icon" src="https://wiki.guildwars2.com/images/b/be/Dropped_Present.jpg" alt="Dropped Present">
+        
+        <!-- Left: Snowman + Eggnog (API) -->
+        <img id="decor-1" class="decor-icon" src="" alt="Snowman" style="display:none;" title="Snowman Tonic">
+        <img id="decor-2" class="decor-icon" src="" alt="Eggnog" style="display:none;" title="Mug of Eggnog">
+
+        <!-- Center Link -->
+        <a href="https://wiki.guildwars2.com/wiki/Wintersday" target="_blank" class="gift-link">
+            <img id="gift-icon" src="" alt="Wintersday Gift">
+            <span>Wintersday</span>
+        </a>
+
+        <!-- Right: Spirits + Fruitcake (API) -->
+        <img id="decor-3" class="decor-icon" src="" alt="Buttered Spirits" style="display:none;" title="Glass of Buttered Spirits">
+        <img id="decor-4" class="decor-icon" src="" alt="Fruitcake" style="display:none;" title="Tin of Fruitcake">
+        
+        <!-- Far Right: Festive Dolyak -->
+        <img class="decor-icon" src="https://wiki.guildwars2.com/images/9/9c/Festive_Dolyak.jpg" alt="Festive Dolyak">
+    </div>
+
+    <script>
+        // Configuration: Maps Skin ID (for icon) to specific Name and Item Chat Code
+        const aureneWeapons = [
+            { type: "Axe",        name: "Aurene's Rending",    code: "[&AgGpegEA]", skinId: 10745 },
+            { type: "Dagger",     name: "Aurene's Claw",       code: "[&AgHLdwEA]", skinId: 10334 },
+            { type: "Mace",       name: "Aurene's Tail",       code: "[&AgF8dQEA]", skinId: 10322 },
+            { type: "Pistol",     name: "Aurene's Argument",   code: "[&AgFAdgEA]", skinId: 10328 },
+            { type: "Scepter",    name: "Aurene's Wisdom",     code: "[&AgHddwEA]", skinId: 10276 },
+            { type: "Sword",      name: "Aurene's Fang",       code: "[&AgG7dQEA]", skinId: 10702 },
+            { type: "Focus",      name: "Aurene's Gaze",       code: "[&AgGNewEA]", skinId: 10464 },
+            { type: "Shield",     name: "Aurene's Scale",      code: "[&AgEcdwEA]", skinId: 10652 },
+            { type: "Torch",      name: "Aurene's Breath",     code: "[&AgFLewEA]", skinId: 10756 },
+            { type: "Warhorn",    name: "Aurene's Voice",      code: "[&AgH3fQEA]", skinId: 10479 },
+            { type: "Greatsword", name: "Aurene's Bite",       code: "[&AgFkeAEA]", skinId: 10289 },
+            { type: "Hammer",     name: "Aurene's Weight",     code: "[&AgHEdQEA]", skinId: 10572 },
+            { type: "Longbow",    name: "Aurene's Flight",     code: "[&AgE2fQEA]", skinId: 10599 },
+            { type: "Rifle",      name: "Aurene's Persuasion", code: "[&AgFhfAEA]", skinId: 10413 },
+            { type: "Short Bow",  name: "Aurene's Wing",       code: "[&AgE1ewEA]", skinId: 10581 },
+            { type: "Staff",      name: "Aurene's Insight",    code: "[&AgGMeQEA]", skinId: 10536 }
+        ];
+
+        /* Decoration IDs:
+           49524: Ho-Ho-Tron (Item)
+           77604: Wintersday Gift (Item)
+           38114: Snowman Tonic (Item)
+           77576: Mug of Eggnog (Item)
+           77667: Glass of Buttered Spirits (Item)
+           77569: Tin of Fruitcake (Item)
+        */
+        const itemIds = [49524, 77604, 38114, 77576, 77667, 77569];
+
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.innerText = message;
+            toast.className = "show";
+            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
+        async function fetchWeapons() {
+            const grid = document.getElementById('weapon-grid');
+            const loading = document.getElementById('loading');
+
+            const weaponSkinIds = aureneWeapons.map(w => w.skinId).join(',');
+            const decorItemIds = itemIds.join(',');
+
+            const skinsUrl = `https://api.guildwars2.com/v2/skins?ids=${weaponSkinIds}`;
+            const itemsUrl = `https://api.guildwars2.com/v2/items?ids=${decorItemIds}`;
+
+            try {
+                const [skinsRes, itemsRes] = await Promise.all([
+                    fetch(skinsUrl),
+                    fetch(itemsUrl)
+                ]);
+
+                if (!skinsRes.ok || !itemsRes.ok) throw new Error("API Request Failed");
+
+                const skinsData = await skinsRes.json();
+                const itemsData = await itemsRes.json();
+
+                const skinsMap = new Map(skinsData.map(item => [item.id, item]));
+                const itemsMap = new Map(itemsData.map(item => [item.id, item]));
+
+                // --- Apply Decorations ---
+                const setSrc = (elId, id, map) => {
+                    const item = map.get(id);
+                    const el = document.getElementById(elId);
+                    if (item && el) {
+                        el.src = item.icon;
+                        el.style.display = 'block';
+                    }
+                };
+
+                // Items
+                setSrc('mascot-hoho', 49524, itemsMap);
+                setSrc('gift-icon', 77604, itemsMap);
+                setSrc('decor-1', 38114, itemsMap); // Snowman
+                setSrc('decor-2', 77576, itemsMap); // Eggnog
+                setSrc('decor-3', 77667, itemsMap); // Spirits
+                setSrc('decor-4', 77569, itemsMap); // Fruitcake
+
+                loading.style.display = 'none';
+
+                // --- Render Weapon Grid ---
+                aureneWeapons.forEach(weapon => {
+                    const apiSkin = skinsMap.get(weapon.skinId);
+                    
+                    const iconUrl = apiSkin ? apiSkin.icon : "https://render.guildwars2.com/file/2FA9DF9D6BC17839BBEA14723F1C538BF332C5/102852.png"; 
+                    const desc = (apiSkin && apiSkin.description) ? apiSkin.description : "A prismatic weapon forged from the light of Aurene.";
+
+                    const card = document.createElement('div');
+                    card.className = 'weapon-card';
+
+                    card.onclick = function() {
+                        const copyText = `${weapon.name} ${weapon.code}`;
+                        navigator.clipboard.writeText(copyText).then(() => {
+                            showToast(`Copied: ${copyText}`);
+                        }).catch(err => {
+                            console.error('Failed to copy text: ', err);
+                        });
+                    };
+
+                    card.innerHTML = `
+                        <img src="${iconUrl}" alt="${weapon.name}" loading="lazy">
+                        <div class="tooltip">
+                            <h3>${weapon.name}</h3>
+                            <div class="type">${weapon.type}</div>
+                            <div class="flavor">${desc}</div>
+                            <div class="chat-code">${weapon.code}</div>
+                            <div class="hint">Click card to copy item link</div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+            } catch (error) {
+                loading.innerHTML = "<span style='color:#ff6b6b'>Connection to the Mists severed. Please refresh.</span>";
+                console.error(error);
+            }
+        }
+
+        fetchWeapons();
+    </script>
+</body>
+</html>
