@@ -177,6 +177,12 @@
         .entry-motd { border-left-color: #ecf0f1; }
 
         .rarity-Ascended-text { color: #fb3985 !important; font-weight: bold; text-shadow: 0 0 5px rgba(251, 57, 133, 0.3); }
+
+        /* --- NEW: Refresh Button Style --- */
+        .refresh-btn { padding: 2px 8px; margin-left: 8px; background: #3498db; border: none; border-radius: 3px; color: white; cursor: pointer; font-size: 0.8rem; vertical-align: middle; transition: 0.2s; opacity: 1 !important; pointer-events: auto; }
+        .refresh-btn:hover { background: #2980b9; }
+        .rotating { animation: spin 1s linear infinite; pointer-events: none; opacity: 0.7 !important; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -265,6 +271,9 @@
     <!-- Log Tab with new Filter -->
     <div id="tab-log" class="tab-content">
         <div class="filter-bar">
+            <div class="filter-group">
+                <input type="text" id="log-search" class="filter-input" placeholder="Search logs..." onkeyup="applyLogFilter()">
+            </div>
             <div class="filter-group">
                 <select id="log-filter" class="filter-input" onchange="applyLogFilter()">
                     <option value="all">All Events</option>
@@ -638,7 +647,9 @@
         // 2. Identify which ones need detail fetching
         const idsToFetch = [];
         stashItemIds.forEach(id => {
-            if(!itemDetails.has(id)) idsToFetch.push(id);
+            const existing = itemDetails.get(id);
+            // FIX: Check if name exists. If it's "undefined" or empty, force a fetch.
+            if(!existing || !existing.name) idsToFetch.push(id);
         });
 
         // 3. Bulk Fetch Item Details
@@ -826,8 +837,13 @@
                     if(!slot) {
                         d.className = 'item-slot empty-slot';
                     } else {
-                        const info = itemDetails.get(slot.id) || { name: 'Loading...', icon: '', rarity: 'Basic', type: 'Item' };
+                        let info = itemDetails.get(slot.id);
                         
+                        // FIX: Ensure if we have a bad object (missing name), we treat it as loading/missing
+                        if(info && (!info.name || info.name === 'undefined')) info = null;
+                        if(!info) info = { name: 'Loading...', icon: '', rarity: 'Basic', type: 'Item' };
+                        
+                        // FIX: Fallback icon to prevent "undefined" string in src
                         const iconSrc = info.icon || 'https://render.guildwars2.com/file/0000000000000000000000000000000000000000/1.png';
                         
                         // --- CALCULATE OVERLAY PRICE ---
@@ -859,7 +875,8 @@
                         d.addEventListener('mousemove', (e) => showTooltip(e, tooltipData));
                         d.addEventListener('mouseleave', hideTooltip);
                         
-                        if(!info.icon) fetchItemIcon(slot.id, d); 
+                        // If missing icon or data, trigger individual fetch
+                        if(!info.icon || info.name === 'Loading...') fetchItemIcon(slot.id, d); 
                     }
                     grid.appendChild(d);
                 });
@@ -957,7 +974,12 @@
     // --- LOG RENDERING ---
 
     function renderLogCard(g) {
-        const ui = createCard(g, 'Log');
+        // --- NEW: Add refresh button to header ---
+        const refreshBtn = `<button onclick="refreshGuildLog(event, '${g.id}')" class="refresh-btn" title="Refresh this log">↻</button>`;
+        const ui = createCard(g, `Log ${refreshBtn}`);
+        
+        // Add ID to allow targeted selection later
+        ui.card.id = `log-card-${g.id}`;
         
         const list = document.createElement('div');
         list.className = 'log-list';
@@ -1111,10 +1133,42 @@
         document.getElementById('log-grid').appendChild(ui.card);
     }
 
+    // --- NEW FUNCTION: Single Guild Log Refresh ---
+    async function refreshGuildLog(e, gid) {
+        if(e) { 
+            e.stopPropagation(); 
+            e.target.classList.add('rotating'); 
+        }
+        
+        const g = guildData[gid];
+        if(!g) return;
+        
+        try {
+            const res = await fetch(`${GW2_API}/guild/${gid}/log?access_token=${g.key}`);
+            if(res.ok) {
+                g.log = await res.json();
+                
+                // Clear and re-render only the log grid
+                const grid = document.getElementById('log-grid');
+                grid.innerHTML = ''; 
+                
+                // Re-render all log cards to maintain order
+                Object.keys(guildData).forEach(k => renderLogCard(guildData[k]));
+                
+                applyLogFilter();
+            }
+        } catch(err) { console.error(err); }
+    }
+
     function applyLogFilter() {
         const filter = document.getElementById('log-filter').value;
+        const search = document.getElementById('log-search').value.toLowerCase().trim();
+
         document.querySelectorAll('.log-entry').forEach(el => {
-            if(filter === 'all' || el.dataset.category === filter) {
+            const matchesCategory = (filter === 'all' || el.dataset.category === filter);
+            const matchesSearch = (search === '' || el.textContent.toLowerCase().includes(search));
+
+            if(matchesCategory && matchesSearch) {
                 el.style.display = 'flex';
             } else {
                 el.style.display = 'none';
@@ -1220,8 +1274,10 @@
     }
 
     async function fetchItemIcon(id, el) {
-        if(itemDetails.has(id)) {
-            const data = itemDetails.get(id);
+        const existing = itemDetails.get(id);
+        // FIX: Only return early if we have VALID data (a name)
+        if(existing && existing.name) {
+            const data = existing;
             if(el) {
                 if(el.tagName === 'IMG') {
                     el.src = data.icon;
@@ -1238,17 +1294,16 @@
         try {
             const res = await fetch(`${GW2_API}/items/${id}`);
             const data = await res.json();
-            if(!itemDetails.has(id)) {
-                itemDetails.set(id, {
-                    id: data.id, 
-                    name: data.name, 
-                    icon: data.icon, 
-                    rarity: data.rarity,
-                    type: data.type,
-                    desc: data.description,
-                    details: data.details
-                }); 
-            }
+            // Always set, even if it overwrites partial data
+            itemDetails.set(id, {
+                id: data.id, 
+                name: data.name, 
+                icon: data.icon, 
+                rarity: data.rarity,
+                type: data.type,
+                desc: data.description,
+                details: data.details
+            }); 
             
             if(el) {
                 if(el.tagName === 'IMG') {
