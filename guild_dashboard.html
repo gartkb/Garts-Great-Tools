@@ -1093,7 +1093,12 @@
                          }
                     }
                     else if(entry.type === 'invite_declined') {
-                        text = `<span class="log-user">${entry.user}</span> declined invite from <span class="log-user">${entry.declined_by}</span>.`;
+                        // Check if the user declined it themselves or if it was cancelled by an officer
+                        if (entry.user === entry.declined_by) {
+                            text = `<span class="log-user">${entry.user}</span> declined the invite.`;
+                        } else {
+                            text = `<span class="log-user">${entry.declined_by}</span> cancelled invite to <span class="log-user">${entry.user}</span>.`;
+                        }
                         typeClass = 'entry-withdraw'; 
                     }
                     else if(entry.type === 'rank_change') text = `<span class="log-user">${entry.changed_by}</span> changed <span class="log-user">${entry.user}</span> from ${entry.old_rank} to <span class="log-val">${entry.new_rank}</span>.`;
@@ -1103,6 +1108,22 @@
                         <img src="${iconUrl}" class="log-icon">
                         <div class="log-details">
                             <div class="log-main-text">${text}</div>
+                        </div>
+                        <span class="log-time">${dateStr}</span>
+                    `;
+                }
+                // -- INFLUENCE --
+                else if(entry.type === 'influence' && entry.activity === 'gifted') {
+                    category = 'mission';
+                    typeClass = 'entry-deposit';
+                    iconUrl = "https://wiki.guildwars2.com/images/c/c8/Influence.png";
+                    
+                    const participants = entry.participants ? entry.participants.map(p => `<span class="log-user">${p}</span>`).join(', ') : 'Someone';
+
+                    entryDiv.innerHTML = `
+                        <img src="${iconUrl}" class="log-icon">
+                        <div class="log-details">
+                            <div class="log-main-text">${participants} gifted influence.</div>
                         </div>
                         <span class="log-time">${dateStr}</span>
                     `;
