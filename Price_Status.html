@@ -83,6 +83,7 @@
         .icon-buy { filter: drop-shadow(0 0 2px rgba(46, 204, 113, 0.5)); border-bottom: 2px solid #2ecc71; }
         .icon-sell { filter: drop-shadow(0 0 2px rgba(231, 76, 60, 0.5)); border-bottom: 2px solid #e74c3c; }
         .icon-inv { filter: drop-shadow(0 0 2px rgba(241, 196, 15, 0.5)); border-bottom: 2px solid #f1c40f; }
+        .icon-warn { border-bottom-style: dashed !important; opacity: 0.8; }
 
         .item-prices { padding:20px; flex:1; }
         .price-row { display:flex; justify-content:space-between; margin-bottom:15px; padding-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.1); }
@@ -737,6 +738,19 @@
                 deliveryResults.forEach(res => {
                     if (res.data.items && res.data.items.length > 0) {
                         res.data.items.forEach(i => deliveryItemIds.add(i.id));
+
+                        // Add delivery items to the global inventory map
+                        if (enableInventory) {
+                            res.data.items.forEach(item => {
+                                if (!globalInventoryMap.has(item.id)) globalInventoryMap.set(item.id, []);
+                                globalInventoryMap.get(item.id).push({
+                                    owner: res.account,
+                                    source: 'Delivery Box',
+                                    count: item.count,
+                                    isGuild: false
+                                });
+                            });
+                        }
                     }
                 });
 
@@ -953,6 +967,7 @@
             const modalTitle = document.getElementById('order-modal-title');
             const content = document.getElementById('order-content');
             const modal = document.getElementById('order-modal');
+            const itemData = globalItemData.get(itemId);
             
             const orders = accountOrdersMap.get(itemId)?.[type] || [];
 
@@ -974,10 +989,20 @@
             orders.forEach(order => {
                 const totalVal = order.quantity * order.price;
                 const dateStr = new Date(order.created).toLocaleString();
+                
+                let warningHtml = '';
+                if (itemData) {
+                    if (type === 'buys' && itemData.buyPrice && order.price < itemData.buyPrice) {
+                        warningHtml = ' <span title="Outbid by current market">⚠️</span>';
+                    } else if (type === 'sells' && itemData.sellPrice && order.price > itemData.sellPrice) {
+                        warningHtml = ' <span title="Undercut by current market">⚠️</span>';
+                    }
+                }
+
                 html += `<tr>
                     <td class="col-account">${order.accountName}</td>
                     <td class="col-qty">${order.quantity}</td>
-                    <td>${createCurrencyElement(order.price).outerHTML}</td>
+                    <td>${createCurrencyElement(order.price).outerHTML}${warningHtml}</td>
                     <td>${createCurrencyElement(totalVal).outerHTML}</td>
                     <td class="col-date">${dateStr}</td>
                 </tr>`;
@@ -1201,9 +1226,30 @@
             const orders = accountOrdersMap.get(itemData.id) || { buys: [], sells: [] };
             const inventory = globalInventoryMap.get(itemData.id) || [];
             
+            // Logic for warnings
+            let buyClass = '';
+            let buyTitle = 'You have active Buy Orders';
+            if (orders.buys.length > 0 && itemData.buyPrice) {
+                const maxUserPrice = Math.max(...orders.buys.map(o => o.price));
+                if (maxUserPrice < itemData.buyPrice) {
+                    buyClass = ' icon-warn';
+                    buyTitle = 'Your Buy Orders are outbid';
+                }
+            }
+
+            let sellClass = '';
+            let sellTitle = 'You have active Sell Orders';
+            if (orders.sells.length > 0 && itemData.sellPrice) {
+                const minUserPrice = Math.min(...orders.sells.map(o => o.price));
+                if (minUserPrice > itemData.sellPrice) {
+                    sellClass = ' icon-warn';
+                    sellTitle = 'Your Sell Listings are underbid';
+                }
+            }
+
             let emojisHtml = '';
-            if (orders.buys.length > 0) emojisHtml += `<span class="order-icon icon-buy" onclick="openOrderModal('buys', ${itemData.id}, '${safeName}')" title="You have active Buy Orders">🛒</span>`;
-            if (orders.sells.length > 0) emojisHtml += `<span class="order-icon icon-sell" onclick="openOrderModal('sells', ${itemData.id}, '${safeName}')" title="You have active Sell Orders">🏷️</span>`;
+            if (orders.buys.length > 0) emojisHtml += `<span class="order-icon icon-buy${buyClass}" onclick="openOrderModal('buys', ${itemData.id}, '${safeName}')" title="${buyTitle}">🛒</span>`;
+            if (orders.sells.length > 0) emojisHtml += `<span class="order-icon icon-sell${sellClass}" onclick="openOrderModal('sells', ${itemData.id}, '${safeName}')" title="${sellTitle}">🏷️</span>`;
             if (inventory.length > 0) emojisHtml += `<span class="order-icon icon-inv" onclick="openInventoryModal(${itemData.id}, '${safeName}')" title="You possess this item">👜</span>`;
 
             let containerEmoji = '';
