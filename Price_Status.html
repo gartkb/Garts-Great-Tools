@@ -758,8 +758,8 @@
                 if (deliveryItemIds.size > 0) {
                     const idsToFetch = Array.from(deliveryItemIds);
                     if (!staticItemData) await loadStaticItemData();
-                    const fromCache = (staticItemData || []).filter(i => idsToFetch.includes(i.id));
-                    fromCache.forEach(i => deliveryNameMap.set(i.id, { name: i.name, icon: i.icon }));
+                    const fromCache = (staticItemData || []).filter(i => idsToFetch.includes(i[0]));
+                    fromCache.forEach(i => deliveryNameMap.set(i[0], { name: i[1], icon: null }));
 
                     const missingIds = idsToFetch.filter(id => !deliveryNameMap.has(id));
                     if (missingIds.length > 0) {
@@ -1349,25 +1349,26 @@
 
         async function handleManualRefresh() {
             refreshItemsBtn.disabled = true;
-            localStorage.removeItem('datawars_items_timestamp');
+            localStorage.removeItem('gw2_items_v2_timestamp'); // Updated for cache logic if needed
             await loadStaticItemData(true);
             await fetchGlobalData();
             refreshItemsBtn.disabled = false;
             showError('Database refreshed.');
         }
         
-        const CACHE_KEY = 'datawars_items';
+        const CACHE_KEY = 'gw2_items_v2';
         async function loadStaticItemData(force = false) {
             if (staticItemData && !force) return staticItemData;
             const cache = await getCachedData(CACHE_KEY);
             if (cache && !force) { staticItemData = cache; return cache; }
             try {
-                const res = await fetch('datawars_items.json?' + Date.now());
+                const res = await fetch('gw2-items.json?' + Date.now());
                 if(res.ok) {
                     const d = await res.json();
-                    await setCachedData(CACHE_KEY, d);
-                    staticItemData = d;
-                    return d;
+                    const items = d.items || [];
+                    await setCachedData(CACHE_KEY, items);
+                    staticItemData = items;
+                    return items;
                 }
             } catch (e) {}
             return [];
@@ -1377,7 +1378,10 @@
             const lowerQ = q.toLowerCase();
             const customMatches = CUSTOM_SEARCHABLE_ITEMS.filter(i => i.name.toLowerCase().includes(lowerQ));
             await loadStaticItemData();
-            const staticMatches = (staticItemData||[]).filter(i => i.name && i.name.toLowerCase().includes(lowerQ)).slice(0, 15);
+            const staticMatches = (staticItemData||[])
+                .filter(i => i[1] && i[1].toLowerCase().includes(lowerQ))
+                .slice(0, 15)
+                .map(i => ({ id: i[0], name: i[1] }));
             return [...customMatches, ...staticMatches];
         }
 
