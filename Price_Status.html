@@ -169,7 +169,11 @@
             <div class="input-wrapper">
                 <div class="input-col">
                     <input type="text" id="item-input" placeholder="Enter Item ID, Name, or Partial Name">
-                    <a id="api-settings-link" class="api-link">Manage API Keys</a>
+                    <div style="display:flex; gap:15px; width:100%;">
+                        <a id="api-settings-link" class="api-link">Manage API Keys</a>
+                        <a id="export-btn" class="api-link">Export Config</a>
+                        <a id="import-btn" class="api-link">Import Config</a>
+                    </div>
                     <div id="search-results" class="search-results"></div>
                 </div>
                 <button id="add-item-btn">Add Item</button>
@@ -277,6 +281,9 @@
             </div>
         </div>
     </div>
+    
+    <!-- Hidden input for file import -->
+    <input type="file" id="import-file-input" style="display:none" accept=".json">
 
     <script>
         const itemInput = document.getElementById('item-input');
@@ -1455,6 +1462,53 @@
                     const v = e.target.value.trim();
                     if(v.length > 2 && isNaN(parseInt(v))) showSearchResults(await searchItemsByName(v));
                 }, 300);
+            };
+
+            // --- Export Logic ---
+            document.getElementById('export-btn').onclick = () => {
+                const dataStr = JSON.stringify(itemTabs, null, 2);
+                const blob = new Blob([dataStr], {type: "application/json"});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = "gw2-tracker-config.json";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            };
+
+            // --- Import Logic ---
+            const fileInput = document.getElementById('import-file-input');
+            document.getElementById('import-btn').onclick = () => fileInput.click();
+
+            fileInput.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const imported = JSON.parse(event.target.result);
+                        if (Array.isArray(imported) && imported.length > 0 && imported[0].items) {
+                            if(confirm('Importing will overwrite your current tabs and items. Continue?')) {
+                                itemTabs = imported;
+                                activeTabIndex = 0; // Reset to first tab to avoid index errors
+                                saveTabs();
+                                renderTabs();
+                                fetchGlobalData();
+                                alert("Configuration imported successfully.");
+                            }
+                        } else {
+                            alert("Invalid configuration file format.");
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        alert("Error parsing file. Please check the format.");
+                    }
+                    fileInput.value = ''; // Reset input
+                };
+                reader.readAsText(file);
             };
         });
     </script>
