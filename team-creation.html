@@ -3,715 +3,610 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>GW2 Team Builder</title>
+  <title>GW2 Team Builder V7</title>
   
-
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background: #f5f5f5;
+    /* --- CORE STYLES --- */
+    :root {
+      --bg-gradient: linear-gradient(135deg, #1a2a6c, #2c3e50);
+      --glass-dark: rgba(0, 0, 0, 0.4);
+      --glass-lighter: rgba(0, 0, 0, 0.2);
+      --accent-blue: #3498db;
+      --accent-hover: #2980b9;
+      --accent-red: #e74c3c;
+      --border-color: rgba(52, 152, 219, 0.3);
+      --text-main: #ecf0f1;
+      --text-muted: #bdc3c7;
+      --card-bg: #2a3b4c;
     }
-    .container {
-      max-width: 1000px;
-      margin: auto;
+
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    
+    body { 
+      background: var(--bg-gradient); 
+      color: var(--text-main); 
+      padding: 20px; 
+      min-height: 100vh; 
     }
-    textarea {
-      width: 100%;
-      height: 150px;
-      margin-bottom: 10px;
-      font-family: monospace;
-      padding: 8px;
-      box-sizing: border-box;
-    }
-    button {
-      padding: 8px 16px;
+
+    .container { max-width: 1600px; margin: 0 auto; }
+    
+    header { text-align:center; padding:20px 0; margin-bottom:30px; border-bottom:1px solid var(--border-color); }
+    h1 { font-size:2.5rem; color:var(--accent-blue); margin-bottom:10px; text-shadow:0 0 10px rgba(52,152,219,0.5); }
+    
+    /* --- CONTROLS --- */
+    .controls-area {
+      background: var(--glass-dark);
+      padding: 20px;
+      border-radius: 10px;
       margin-bottom: 20px;
-      cursor: pointer;
-      background: #007BFF;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      white-space: nowrap;
-    }
-    button:hover {
-      background: #0056b3;
+      border: 1px solid var(--border-color);
+      display: flex; flex-direction: column; gap: 15px;
     }
     
-    .player-item {
-      background: white;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      display: grid;
-      grid-template-columns: minmax(120px, 150px) 1fr auto;
-      gap: 8px;
-      align-items: center;
+    .roster-actions {
+      display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+      padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1);
     }
 
-    .player-name {
-      font-weight: bold;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      min-width: 0;
-      font-size: .8em;
+    textarea {
+      width: 100%; height: 120px;
+      background: rgba(0,0,0,0.3); border: 1px solid var(--border-color);
+      color: #fff; padding: 10px; border-radius: 5px;
+      resize: vertical; font-family: monospace; font-size: 0.9em;
     }
+    textarea:focus { outline: none; border-color: var(--accent-blue); background: rgba(0,0,0,0.5); }
+
+    input[type="text"], select {
+      background: rgba(0,0,0,0.3); border: 1px solid #555;
+      color: white; padding: 8px 12px; border-radius: 4px;
+    }
+
+    button { 
+      padding:10px 20px; background:var(--accent-blue); color:white; border:none; border-radius:5px; 
+      cursor:pointer; font-weight:bold; transition:all .3s; 
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+    button:hover { background:var(--accent-hover); transform:translateY(-2px); }
+    button.btn-danger { background: var(--accent-red); }
+    button.btn-danger:hover { background: #c0392b; }
+
+    /* --- LAYOUT --- */
+    .builder-layout {
+      display: grid; grid-template-columns: 380px 1fr; gap: 20px; align-items: start;
+    }
+    @media (max-width: 1100px) { .builder-layout { grid-template-columns: 1fr; } }
+
+    /* BENCH & GRID */
+    .bench-panel {
+      background: var(--glass-dark); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 15px; min-height: 300px;
+    }
+    .panel-header {
+      font-size: 1.2rem; color: var(--accent-blue); margin-bottom: 15px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .squad-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;
+    }
+
+    .subgroup {
+      background: rgba(255,255,255,0.03); border: 1px solid #444; border-radius: 8px;
+      display: flex; flex-direction: column;
+    }
+    .subgroup-header {
+      background: rgba(0,0,0,0.3); padding: 8px 12px; font-weight: bold;
+      border-bottom: 1px solid #444; font-size: 0.9rem; border-radius: 8px 8px 0 0;
+    }
+    .drop-zone {
+      min-height: 60px; padding: 8px; flex-grow: 1; transition: background 0.2s;
+    }
+    .drop-zone.drag-over { background: rgba(52, 152, 219, 0.2); border: 1px dashed var(--accent-blue); }
+
+    /* --- PLAYER CARD --- */
+    .player-card {
+      background: var(--card-bg); border: 1px solid #3d566e; border-radius: 6px;
+      padding: 10px; margin-bottom: 10px; cursor: grab; user-select: none;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .player-card:active { cursor: grabbing; }
     
-    .player-emojis {
-      display: flex;
-      gap: 4px;
-      font-size: 20px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-    .player-emojis span {
-      padding: 2px 3px;
-      border-radius: 3px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 24px;
-      min-height: 24px;
-    }
-    .player-emojis span.selected {
-      background: #e6f2ff;
-      border: 1px solid #007BFF;
-    }
+    .card-row { margin-bottom: 6px; }
+    .card-row.name-row { font-weight: 700; font-size: 1rem; color: white; display:flex; justify-content:space-between; align-items: center;}
+    .card-row.label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 4px; }
+    
+    .remove-btn { color: #e74c3c; font-size: 1.2rem; cursor: pointer; padding: 0 5px; opacity: 0.6; }
+    .remove-btn:hover { opacity: 1; }
 
-    .role-selector {
-      display: flex;
-      gap: 5px;
-      align-items: center;
-      justify-self: end;
-    }
-    .role-icon {
-      width: 34px;
-      height: 34px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      border: 1px solid transparent;
-      padding: 1px;
-      font-size: 22px;
-      background: white;
-      border-radius: 4px;
-    }
-    .role-icon.selected {
-      border: 2px solid #007BFF;
-      background: #e6f2ff;
-    }
-    .role-icon img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
+    .emoji-container { display: flex; flex-wrap: wrap; gap: 4px; min-height: 28px; }
 
-    #groupSummary {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
+    .role-btn {
+      padding: 3px 6px; border-radius: 4px; background: rgba(255,255,255,0.05);
+      border: 1px solid transparent; cursor: pointer; opacity: 0.6; transition: all 0.2s;
+      font-size: 1.2rem; display: flex; align-items: center; justify-content: center;
+      min-width: 32px; min-height: 32px;
     }
-    .group-row {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
+    .role-btn:hover { opacity: 0.9; background: rgba(255,255,255,0.15); transform: scale(1.1); }
+    .role-btn.active {
+      opacity: 1; background: rgba(52, 152, 219, 0.25); border-color: var(--accent-blue);
+      box-shadow: 0 0 8px rgba(52, 152, 219, 0.4);
     }
-    .group-container {
-      flex: 1;
-      min-width: 250px;
-      background: #fafafa;
-      padding: 12px;
-      border-radius: 6px;
-      border-left: 3px solid #007BFF;
-    }
-    .group-header {
-      font-weight: bold;
-      margin-bottom: 8px;
-      color: #222;
-      font-size: 1.05em;
-    }
-    .assigned-player {
-      padding: 3px 0;
-      font-family: monospace;
-      font-size: 0.95em;
-      line-height: 1.4;
-    }
-    .assigned-player img {
-      vertical-align: middle;
-      height: 1em;
-      width: auto;
-      margin-right: 4px;
-    }
+    .role-btn img { height: 24px; width:auto; pointer-events: none; }
 
-    .options-row {
-      margin: 20px 0 10px;
-      display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
-      align-items: center;
-      padding: 10px 0;
-      border-top: 1px solid #eee;
+    .output-section {
+      margin-top: 30px; background: var(--glass-dark); padding: 20px;
+      border-radius: 10px; border: 1px solid var(--border-color);
     }
-    .options-row label {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      cursor: pointer;
-    }
-
-    select.unassigned {
-      color: #888 !important;
-      font-style: italic;
-    }
-
-    .roster-controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 10px 0;
-      align-items: center;
-    }
-    .roster-controls input,
-    .roster-controls select {
-      padding: 6px;
-      font-size: 14px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    .roster-controls input {
-      flex: 1;
-      min-width: 120px;
-    }
-    .roster-controls select {
-      min-width: 140px;
-    }
-
-    @media (max-width: 768px) {
-      .group-container {
-        min-width: 100%;
-      }
-      .roster-controls {
-        flex-direction: column;
-        align-items: stretch;
-      }
-    }
+    #finalOutput { height: 150px; font-family: monospace; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>⚔️ Guild Wars 2 Team Builder</h2> 
-    <p>Paste your player list below. Format: <code>[Optional &ltDiscordID with or without @&gt] Name, 🛡️ :healheart:</code></p>
-    <p>Decorative emojis (📧, 💫, 🚹, etc.) in names are auto-removed.</p>
 
+<div class="container">
+  <header>
+    <h1>GW2 Team Builder</h1>
+  </header>
+
+  <div class="controls-area">
+    <div class="roster-actions">
+      <input type="text" id="rosterName" placeholder="Roster Name">
+      <button onclick="saveRoster()">💾 Save</button>
+      <select id="rosterList" onchange="if(this.value) loadRosterByName(this.value)">
+        <option value="">-- Load Roster --</option>
+      </select>
+      <button class="btn-danger" onclick="deleteRoster()">🗑️</button>
+    </div>
+
+    <p style="color:#aaa; font-size:0.9em; margin-bottom:5px;">Paste your player list below. (Drag & Drop sorting below)</p>
     <textarea id="inputPlayers" placeholder="Example:
 <797945111794810930> DiscordUser#1234, 🛡️ :healheart:
 1.Light109, 📧 💫 ⚔️ 🛡️
 #2.Zojja, :QuickDPS: 🔥
 ##3.NewPlayer.1234, :AlacHeal:
 Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
-
-    <div class="roster-controls">
-      <input type="text" id="rosterName" placeholder="Roster name">
-      <button onclick="saveRoster()">Save/Update Roster</button>
-      
-      <select id="rosterList" onchange="if(this.value) loadRosterByName(this.value)">
-        <option value="">-- Saved Rosters --</option>
-      </select>
-      <button onclick="deleteRoster()">Delete</button>
+    <div>
+      <button onclick="parseAndGenerate()">⚡ Parse Players</button>
     </div>
-
-    <button onclick="parsePlayers()">Parse Players</button>
-
-    <div id="outputContainer"></div>
-    <small><a href="https://gartkb.github.io/Garts-Great-Tools/">Gart's Great Tools</a></small>
   </div>
 
-  <script>
-    /* =========================================
-       SMART PASTE LOGIC (Fixes Discord Lines)
-       ========================================= */
-    document.getElementById('inputPlayers').addEventListener('paste', function(e) {
-      // Prevent the default paste behavior so we can modify the text first
-      e.preventDefault();
+  <div class="builder-layout">
+    <div class="bench-panel">
+      <div class="panel-header">
+        <span>The Bench</span>
+        <span id="benchCount">0</span>
+      </div>
+      <div id="bench-zone" class="drop-zone" data-group="Unassigned"></div>
+    </div>
+    <div class="squad-grid" id="squadGrid"></div>
+  </div>
 
-      // Get the text from the clipboard
-      const clipboardData = (e.clipboardData || window.clipboardData).getData('text');
-      
-      // Run the cleaner function
-      const cleanedText = cleanDiscordPaste(clipboardData);
+  <div class="output-section">
+    <div class="panel-header">
+      <span>Output</span>
+      <button onclick="generateOutput()">🔄 Refresh Text</button>
+    </div>
+    <div style="margin-bottom:10px; display:flex; gap:15px;">
+      <label><input type="checkbox" id="includeMentions" checked onchange="generateOutput()"> Include Mentions</label>
+      <label><input type="checkbox" id="hideNames" onchange="generateOutput()"> Icons Only</label>
+    </div>
+    <textarea id="finalOutput" readonly onclick="this.select()"></textarea>
+  </div>
+</div>
 
-      // Insert the cleaned text at the cursor position
-      const input = e.target;
-      const start = input.selectionStart;
-      const end = input.selectionEnd;
-      const currentText = input.value;
-      
-      const before = currentText.substring(0, start);
-      const after = currentText.substring(end, currentText.length);
-      
-      input.value = before + cleanedText + after;
-      
-      // Restore cursor position after the inserted text
-      input.selectionStart = input.selectionEnd = start + cleanedText.length;
+<script>
+  /* =========================================
+     DATA & CONFIG
+     ========================================= */
+  
+  const standardRoles = [
+    { name: 'QuickDPS', discordtext: ':QuickDPS:', img: 'https://cdn.discordapp.com/emojis/1038159940164014090.png' },
+    { name: 'QuickHeal', discordtext: ':QuickHeal:', img: 'https://cdn.discordapp.com/emojis/1038159941472620655.png' },
+    { name: 'AlacHeal', discordtext: ':AlacHeal:', img: 'https://cdn.discordapp.com/emojis/1038159938335277140.png' },
+    { name: 'AlacDPS', discordtext: ':AlacDPS:', img: 'https://cdn.discordapp.com/emojis/1038159937391562843.png' },
+    { name: 'Heal', discordtext: ':healheart:', img: 'https://cdn.discordapp.com/emojis/1436465472509050982.png' },
+    { name: 'Tank', text: '🛡️' },
+    { name: 'DPS', text: '⚔️' },
+    { name: 'BoonDPS', text: '⚡' },
+  ];
+
+  // Strictly decorative (will be removed from NAME, but allowed in ROLES)
+  const ignoredEmojis = ['📧', '🚹', '🚺', '👥', '👤', '💫', '🔍', '🔰', '🆔'];
+
+  let allPlayers = []; 
+
+  /* =========================================
+     INIT
+     ========================================= */
+  window.onload = function() {
+    initSquadGrid();
+    populateRosterList();
+    const bench = document.getElementById('bench-zone');
+    bench.ondragover = handleDragOver;
+    bench.ondrop = handleDrop;
+  };
+
+  function initSquadGrid() {
+    const grid = document.getElementById('squadGrid');
+    grid.innerHTML = '';
+    for (let i = 1; i <= 10; i++) {
+      const col = document.createElement('div');
+      col.className = 'subgroup';
+      col.innerHTML = `
+        <div class="subgroup-header">Group ${i}</div>
+        <div class="drop-zone" data-group="Group ${i}" ondragover="handleDragOver(event)" ondrop="handleDrop(event)"></div>
+      `;
+      grid.appendChild(col);
+    }
+  }
+
+  /* =========================================
+     SMARTER PASTE HANDLER
+     ========================================= */
+  document.getElementById('inputPlayers').addEventListener('paste', function(e) {
+    e.preventDefault();
+    const clipboardData = (e.clipboardData || window.clipboardData).getData('text');
+    
+    // 1. Normalize line endings
+    const normalized = clipboardData.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    const rawLines = normalized.split('\n');
+    const outputLines = [];
+
+    // REGEX HELPERS
+    const startOfPlayerRegex = /^(\d+[\.\)]|#|•|➤)/;
+    const continuationStartRegex = /^(\s*,|\s*<|:|[\u{10000}-\u{10FFFF}]|\p{Extended_Pictographic})/u;
+
+    for (let i = 0; i < rawLines.length; i++) {
+      let line = rawLines[i].trim();
+      if (!line) continue;
+
+      if (outputLines.length === 0) {
+        outputLines.push(line);
+        continue;
+      }
+
+      const prevIndex = outputLines.length - 1;
+      const prevLine = outputLines[prevIndex];
+
+      // --- LOGIC GATES ---
+
+      // 1. If line starts with a COMMA, it is ALWAYS a continuation.
+      if (line.startsWith(',')) {
+        outputLines[prevIndex] = prevLine + line;
+        continue;
+      }
+
+      // 2. Check for other Continuation Signals (Emojis, brackets)
+      if (continuationStartRegex.test(line)) {
+        // EDGE CASE: Name starts with Emoji (e.g. "👑 King, ⚔️")
+        // If it starts with an emoji BUT has a comma later, assume it's a New Player.
+        if (line.includes(',')) {
+          outputLines.push(line); // Treat as New Player
+        } else {
+          outputLines[prevIndex] = prevLine + ' ' + line; // Treat as Merge
+        }
+        continue;
+      }
+
+      // 3. Explicit New Player (Numbers/Bullets)
+      if (startOfPlayerRegex.test(line)) {
+        outputLines.push(line);
+        continue;
+      }
+
+      // 4. "Chie" Fix (Contextual Merge)
+      if (startOfPlayerRegex.test(prevLine) && !prevLine.includes(',')) {
+         outputLines[prevIndex] = prevLine + ' ' + line;
+         continue;
+      }
+
+      // Default: New Line
+      outputLines.push(line);
+    }
+
+    const processedText = outputLines.join('\n');
+    
+    // Insert text
+    const input = e.target;
+    const start = input.selectionStart;
+    const end = input.selectionEnd;
+    const currentVal = input.value;
+    input.value = currentVal.substring(0, start) + processedText + currentVal.substring(end);
+  });
+
+  /* =========================================
+     PARSING LOGIC
+     ========================================= */
+  function parseAndGenerate() {
+    const text = document.getElementById('inputPlayers').value.trim();
+    if(!text) return;
+
+    allPlayers = [];
+    const lines = text.split('\n');
+    const prefixRegex = /^(?:#*\d+\.?\s*)/;
+
+    lines.forEach((line, index) => {
+      let cleanLine = line.trim().replace(prefixRegex, '');
+      if (!cleanLine) return;
+
+      // Split by LAST comma
+      const lastCommaIndex = cleanLine.lastIndexOf(',');
+      let namePart = cleanLine;
+      let rolePart = '';
+
+      if (lastCommaIndex !== -1) {
+        namePart = cleanLine.substring(0, lastCommaIndex).trim();
+        rolePart = cleanLine.substring(lastCommaIndex + 1).trim();
+      }
+
+      // Extract ID & Name
+      let discordMention = null;
+      let displayName = namePart;
+
+      // Robust ID search
+      const idMatch = displayName.match(/(?:<@!?|<|)?(\d{17,20})(?:>|)?/);
+      if (idMatch) {
+        discordMention = `<@${idMatch[1]}>`;
+        displayName = displayName.replace(idMatch[0], '').trim();
+      }
+
+      // Clean decorative emojis from Name
+      ignoredEmojis.forEach(e => { displayName = displayName.replace(new RegExp(e, 'g'), ''); });
+      displayName = displayName.replace(/\s+/g, ' ').trim() || 'Unknown';
+
+      // Parse Offered Roles
+      const offeredRoles = [];
+      const emojiRegex = /<a?:[a-zA-Z0-9_]+:\d+>|:[a-zA-Z0-9_]+:|\p{Extended_Pictographic}/gu;
+      let match;
+      while ((match = emojiRegex.exec(rolePart)) !== null) {
+        let token = match[0];
+        if(!ignoredEmojis.includes(token)) {
+          offeredRoles.push(token);
+        }
+      }
+
+      allPlayers.push({
+        id: 'p-' + index + '-' + Date.now(),
+        name: displayName,
+        discordMention: discordMention,
+        offeredRoles: offeredRoles,
+        activeRoles: new Set(),
+        group: 'Unassigned'
+      });
     });
 
-    function cleanDiscordPaste(text) {
-      // Normalize line endings
-      const normalized = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-      const lines = normalized.split('\n');
-      const output = [];
+    renderAllCards();
+    generateOutput();
+  }
 
-      for (let i = 0; i < lines.length; i++) {
-        let line = lines[i].trim();
-        if (!line) continue; // Skip empty lines, but don't merge them
-
-        // If this is the first line, just add it
-        if (output.length === 0) {
-          output.push(line);
-          continue;
-        }
-
-        const prevLineIndex = output.length - 1;
-        const prevLine = output[prevLineIndex];
-
-        // --- CHECK 1: Line starts with a comma (e.g. ", 📧") ---
-        if (line.startsWith(',')) {
-          output[prevLineIndex] = prevLine + line;
-          continue;
-        }
-
-        // --- CHECK 2: Line contains NO letters/numbers (Only emojis/symbols) ---
-        // Discord often pushes emojis to a new line.
-        // Matches if the line has no A-Z or 0-9 characters.
-        if (!/[a-zA-Z0-9]/.test(line)) {
-          output[prevLineIndex] = prevLine + ' ' + line;
-          continue;
-        }
-
-        // --- CHECK 3: Previous line looks like a prefix (e.g. "10.💫") ---
-        // If the previous line was just a number+dot+symbols, and current line is text, merge UP.
-        // Regex: Start -> Digits -> Dot -> Optional non-word chars -> End
-        if (/^\d+\.[^\w]*$/.test(prevLine)) {
-           output[prevLineIndex] = prevLine + ' ' + line;
-           continue;
-        }
-
-        // If no merge conditions met, add as new line
-        output.push(line);
-      }
-
-      return output.join('\n');
-    }
-
-    /* =========================================
-       EXISTING LOGIC BELOW
-       ========================================= */
-
-    const predefinedRoles = [
-      { name: 'QuickDPS', discordtext: ':QuickDPS:', img: 'https://cdn.discordapp.com/emojis/1038159940164014090.png' },
-      { name: 'QuickHeal', discordtext: ':QuickHeal:', img: 'https://cdn.discordapp.com/emojis/1038159941472620655.png' },
-      { name: 'AlacHeal', discordtext: ':AlacHeal:', img: 'https://cdn.discordapp.com/emojis/1038159938335277140.png' },
-      { name: 'AlacDPS', discordtext: ':AlacDPS:', img: 'https://cdn.discordapp.com/emojis/1038159937391562843.png' },
-      { name: 'DPS', text: '⚔️' },
-      { name: 'Heals', discordtext: ':healheart:', img: 'https://cdn.discordapp.com/emojis/1436465472509050982.png' },
-      { name: 'Tank', text: '🛡️' },
-      { name: 'BoonDPS', text: '⚡' },
-    ];
-
-    function getRoleDisplayHtml(roleName) {
-      const role = predefinedRoles.find(r => r.name === roleName);
-      if (!role) return roleName;
-
-      if (role.text) {
-        return `${role.text} ${role.name}`;
+  /* =========================================
+     RENDERING (UPDATED FOR CUSTOM EMOJIS)
+     ========================================= */
+  function renderAllCards() {
+    document.getElementById('bench-zone').innerHTML = '';
+    document.querySelectorAll('.squad-grid .drop-zone').forEach(el => el.innerHTML = '');
+    
+    let benchCount = 0;
+    allPlayers.forEach(player => {
+      const card = createPlayerCard(player);
+      if(player.group === 'Unassigned') {
+        document.getElementById('bench-zone').appendChild(card);
+        benchCount++;
       } else {
-        return `<img src="${role.img}" alt="${role.discordtext ?? role.name}" title="${role.name}"> ${role.name}`;
+        const zone = document.querySelector(`.drop-zone[data-group="${player.group}"]`);
+        if(zone) zone.appendChild(card);
+        else document.getElementById('bench-zone').appendChild(card);
       }
-    }
+    });
+    document.getElementById('benchCount').innerText = benchCount;
+  }
 
-    let playerAssignments = [];
-    const nonRoleEmojis = ['🚹', '🚺', '👥', '👤', '💫', '📧'];
+  function createPlayerCard(player) {
+    const el = document.createElement('div');
+    el.className = 'player-card';
+    el.draggable = true;
+    el.id = player.id;
+    
+    el.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', player.id);
+      el.style.opacity = '0.5';
+    });
+    el.addEventListener('dragend', () => {
+      el.style.opacity = '1';
+      generateOutput();
+    });
 
-    function parsePlayers() {
-      const text = document.getElementById('inputPlayers').value.trim();
-      const lines = text.split('\n').filter(line => line.trim());
+    let html = `<div class="card-row name-row">
+        <span>${player.name}</span>
+        <span class="remove-btn" onclick="removePlayer('${player.id}')">×</span>
+      </div>`;
 
-      const container = document.getElementById('outputContainer');
-      container.innerHTML = '';
-      playerAssignments = [];
-
-      // Regex to remove optional numbered prefix like "1.", "#2.", "##10.", etc.
-      const prefixRegex = /^(?:#*\d+\.?\s*)/;
-
-      lines.forEach((line, index) => {
-        let cleanLine = line.trim();
-        if (!cleanLine) return;
-
-        // Step 1: Remove optional prefix (e.g., "1.", "#3.", "##10.")
-        cleanLine = cleanLine.replace(prefixRegex, '');
-
-        // Step 2: Require a comma to split name and emojis
-        const lastCommaIndex = cleanLine.lastIndexOf(',');
-        if (lastCommaIndex === -1) {
-          console.warn(`Skipping invalid line (no comma): "${line}"`);
-          return;
-        }
-
-        const namePart = cleanLine.substring(0, lastCommaIndex).trim();
-        const emojiPart = cleanLine.substring(lastCommaIndex + 1).trim();
-
-        // Step 3: Extract Discord ID if present
-        let discordMention = null;
-        let name = namePart;
-        const discordIdMatch = namePart.match(/^<@?(\d{17,20})>\s+(.+)$/);
-        if (discordIdMatch) {
-          const rawId = discordIdMatch[1];
-          name = discordIdMatch[2];
-          discordMention = `<@${rawId}>`;
-        }
-
-        // Step 4: Strip decorative emojis and normalize name
-        nonRoleEmojis.forEach(e => {
-          name = name.replace(new RegExp(e, 'g'), '');
-        });
-        name = name.replace(/\s+/g, ' ').trim() || 'Unknown';
-
-        // Step 5: Tokenize emojiPart
-        const tokens = emojiPart.split(/\s+/).filter(t => t);
-
-        const assignment = {
-          id: index,
-          name: name,
-          discordMention: discordMention,
-          group: 'Unassigned',
-          customRoles: new Set(),
-          predefinedRoles: new Set()
-        };
-        playerAssignments.push(assignment);
-
-        // --- Build UI element ---
-        const playerItem = document.createElement('div');
-        playerItem.className = 'player-item';
-
-        const nameDiv = document.createElement('div');
-        nameDiv.className = 'player-name';
-        nameDiv.textContent = name;
-
-        const emojisDiv = document.createElement('div');
-        emojisDiv.className = 'player-emojis';
-
-        tokens.forEach(token => {
-          if (nonRoleEmojis.includes(token) || token === '📧') return;
-
-          const matchedRole = predefinedRoles.find(r => r.discordtext === token);
-          if (matchedRole) {
-            const span = document.createElement('span');
-            span.title = matchedRole.name;
-            if (matchedRole.text) {
-              span.textContent = matchedRole.text;
-            } else {
-              const img = document.createElement('img');
-              img.src = matchedRole.img;
-              img.alt = matchedRole.name;
-              span.appendChild(img);
-            }
-            span.addEventListener('click', () => {
-              span.classList.toggle('selected');
-              const set = assignment.predefinedRoles;
-              if (span.classList.contains('selected')) {
-                set.add(matchedRole.name);
-              } else {
-                set.delete(matchedRole.name);
-              }
-              renderGroups();
-            });
-            emojisDiv.appendChild(span);
-            return;
-          }
-
-          // Check if it's a Unicode emoji
-          if (/^\p{Extended_Pictographic}+(\uFE0F|\u200D\p{Extended_Pictographic})*$/u.test(token)) {
-            const span = document.createElement('span');
-            span.textContent = token;
-            span.addEventListener('click', () => {
-              span.classList.toggle('selected');
-              const set = assignment.customRoles;
-              if (span.classList.contains('selected')) {
-                set.add(token);
-              } else {
-                set.delete(token);
-              }
-              renderGroups();
-            });
-            emojisDiv.appendChild(span);
-          }
-          // Silently ignore unrecognized tokens (e.g., typos)
-        });
-
-        // Group selector
-        const groupSelect = document.createElement('select');
-        const unassignedOpt = document.createElement('option');
-        unassignedOpt.value = 'Unassigned';
-        unassignedOpt.textContent = 'Unassigned';
-        unassignedOpt.selected = true;
-        groupSelect.appendChild(unassignedOpt);
-
-        for (let i = 1; i <= 10; i++) {
-          const opt = document.createElement('option');
-          opt.value = `Group ${i}`;
-          opt.textContent = `Group ${i}`;
-          groupSelect.appendChild(opt);
-        }
-
-        groupSelect.className = 'unassigned';
-        groupSelect.addEventListener('change', (e) => {
-          assignment.group = e.target.value;
-          e.target.className = e.target.value === 'Unassigned' ? 'unassigned' : '';
-          renderGroups();
-        });
-
-        // Role selector (predefined)
-        const roleSelector = document.createElement('div');
-        roleSelector.className = 'role-selector';
-        predefinedRoles.forEach(role => {
-          const el = document.createElement('span');
-          el.className = 'role-icon';
-          el.title = role.name;
-          if (role.text) {
-            el.textContent = role.text;
-          } else {
-            const img = document.createElement('img');
-            img.src = role.img;
-            img.alt = role.name;
-            el.appendChild(img);
-          }
-          el.addEventListener('click', () => {
-            el.classList.toggle('selected');
-            const set = assignment.predefinedRoles;
-            if (el.classList.contains('selected')) {
-              set.add(role.name);
-            } else {
-              set.delete(role.name);
-            }
-            renderGroups();
-          });
-          roleSelector.appendChild(el);
-        });
-
-        const groupWrapper = document.createElement('div');
-        groupWrapper.style.display = 'flex';
-        groupWrapper.style.alignItems = 'center';
-        groupWrapper.style.gap = '4px';
-        groupWrapper.appendChild(document.createTextNode('Group:'));
-        groupWrapper.appendChild(groupSelect);
+    // Offered Roles
+    if(player.offeredRoles.length > 0) {
+      html += `<div class="card-row label">Offered</div><div class="emoji-container">`;
+      player.offeredRoles.forEach((roleStr) => {
         
-        const rightBlock = document.createElement('div');
-        rightBlock.style.display = 'flex';
-        rightBlock.style.alignItems = 'center';
-        rightBlock.style.gap = '12px';
-        rightBlock.appendChild(groupWrapper);
-        rightBlock.appendChild(roleSelector);
+        // 1. Is it a specific Custom ID? <a:Name:123>
+        const customIdMatch = roleStr.match(/<a?:.+:(\d+)>/);
         
-        playerItem.appendChild(nameDiv);
-        playerItem.appendChild(emojisDiv);
-        playerItem.appendChild(rightBlock);
-        container.appendChild(playerItem); 
-      });
-
-      // Options row
-      const optionsDiv = document.createElement('div');
-      optionsDiv.className = 'options-row';
-      optionsDiv.innerHTML = `
-        <label>
-          <input type="checkbox" id="includeMentions"> Include discord mentions
-        </label>
-        <label>
-          <input type="checkbox" id="hideNames"> Hide text names
-        </label>
-      `;
-      container.appendChild(optionsDiv);
-
-      document.getElementById('includeMentions').addEventListener('change', renderGroups);
-      document.getElementById('hideNames').addEventListener('change', renderGroups);
-
-      renderGroups();
-    }
-
-    function renderGroups() {
-      const existing = document.getElementById('groupSummary');
-      if (existing) existing.remove();
-
-      const groups = {};
-      playerAssignments.forEach(p => {
-        if (p.group === 'Unassigned') return;
-        const g = p.group;
-        if (!groups[g]) groups[g] = [];
-        groups[g].push(p);
-      });
-
-      const summaryDiv = document.createElement('div');
-      summaryDiv.id = 'groupSummary';
-
-      const groupNames = Array.from({length: 10}, (_, i) => `Group ${i + 1}`);
-      const activeGroups = groupNames.filter(name => groups[name] && groups[name].length > 0);
-
-      for (let i = 0; i < activeGroups.length; i += 2) {
-        const row = document.createElement('div');
-        row.className = 'group-row';
-
-        const g1 = activeGroups[i];
-        const col1 = createGroupElement(g1, groups[g1]);
-        row.appendChild(col1);
-
-        if (i + 1 < activeGroups.length) {
-          const g2 = activeGroups[i + 1];
-          const col2 = createGroupElement(g2, groups[g2]);
-          row.appendChild(col2);
+        // 2. Try match standard role by full string OR by shortcode name
+        let std = standardRoles.find(r => r.discordtext === roleStr || r.text === roleStr);
+        if (!std && customIdMatch) {
+           // Fallback: Check if the name inside the ID matches a standard role
+           // e.g. < :QuickDPS: 123 >
+           const shortCodeMatch = roleStr.match(/:[a-zA-Z0-9_]+:/);
+           if (shortCodeMatch) {
+              std = standardRoles.find(r => r.discordtext === shortCodeMatch[0]);
+           }
         }
 
-        summaryDiv.appendChild(row);
-      }
-
-      document.getElementById('outputContainer').appendChild(summaryDiv);
-    }
-
-    function createGroupElement(groupName, players) {
-      const groupDiv = document.createElement('div');
-      groupDiv.className = 'group-container';
-
-      const header = document.createElement('div');
-      header.className = 'group-header';
-      header.textContent = `${groupName} (${players.length} player${players.length !== 1 ? 's' : ''})`;
-      groupDiv.appendChild(header);
-
-      const includeMentions = document.getElementById('includeMentions')?.checked || false;
-      const hideNames = document.getElementById('hideNames')?.checked || false;
-
-      players.forEach(player => {
-        const customRoles = Array.from(player.customRoles);
-        const predefinedHtml = Array.from(player.predefinedRoles).map(name => getRoleDisplayHtml(name));
-        const allParts = [...customRoles, ...predefinedHtml];
-        const rolesHtml = allParts.length > 0 ? allParts.join(', ') : 'None';
-
-        let displayName = '';
-
-        if (includeMentions && player.discordMention) {
-          displayName += player.discordMention;
-          if (!hideNames) displayName += ' ';
+        let displayContent = roleStr;
+        
+        if (customIdMatch) {
+           // Use Discord CDN for custom IDs
+           const emojiId = customIdMatch[1];
+           displayContent = `<img src="https://cdn.discordapp.com/emojis/${emojiId}.png">`;
+        } else if (std && std.img) {
+           // Use Predefined Standard Image
+           displayContent = `<img src="${std.img}">`;
+        } else if (roleStr.startsWith(':')) {
+           // Text Shortcode
+           displayContent = `<span style="font-size:0.7em;">${roleStr.replace(/:/g,'')}</span>`;
         }
 
-        if (!hideNames) {
-          displayName += player.name;
+        const isActive = player.activeRoles.has(roleStr) ? 'active' : '';
+        html += `<div class="role-btn ${isActive}" onclick="toggleRole('${player.id}', '${roleStr}')" title="${roleStr}">${displayContent}</div>`;
+      });
+      html += `</div>`;
+    }
+
+    // Standard Roles
+    html += `<div class="card-row label">Assign</div><div class="emoji-container">`;
+    standardRoles.forEach(role => {
+       const val = role.discordtext || role.text;
+       const isActive = player.activeRoles.has(val) ? 'active' : '';
+       const content = role.text ? role.text : `<img src="${role.img}">`;
+       html += `<div class="role-btn ${isActive}" onclick="toggleRole('${player.id}', '${val}')" title="${role.name}">${content}</div>`;
+    });
+    html += `</div>`;
+
+    el.innerHTML = html;
+    return el;
+  }
+
+  function toggleRole(pid, roleValue) {
+    const p = allPlayers.find(x => x.id === pid);
+    if(!p) return;
+    if(p.activeRoles.has(roleValue)) p.activeRoles.delete(roleValue);
+    else p.activeRoles.add(roleValue);
+    renderAllCards();
+    generateOutput();
+  }
+
+  function removePlayer(pid) {
+    if(!confirm('Remove player?')) return;
+    allPlayers = allPlayers.filter(p => p.id !== pid);
+    renderAllCards();
+    generateOutput();
+  }
+
+  function handleDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+  function handleDrop(e) {
+    e.preventDefault();
+    const zone = e.currentTarget;
+    zone.classList.remove('drag-over');
+    const pid = e.dataTransfer.getData('text/plain');
+    const p = allPlayers.find(x => x.id === pid);
+    if(p) {
+      p.group = zone.dataset.group;
+      renderAllCards();
+      generateOutput();
+    }
+  }
+
+  /* =========================================
+     OUTPUT
+     ========================================= */
+  function generateOutput() {
+    const includeMentions = document.getElementById('includeMentions').checked;
+    const hideNames = document.getElementById('hideNames').checked;
+    
+    const groups = {};
+    const unassigned = [];
+    allPlayers.forEach(p => {
+      if(p.group === 'Unassigned') unassigned.push(p);
+      else {
+        if(!groups[p.group]) groups[p.group] = [];
+        groups[p.group].push(p);
+      }
+    });
+
+    let out = '';
+    const sortedKeys = Object.keys(groups).sort((a,b) => parseInt(a.replace(/\D/g,'')) - parseInt(b.replace(/\D/g,'')));
+
+    sortedKeys.forEach(g => {
+      out += `**${g}**\n`;
+      groups[g].forEach(p => {
+        let line = '';
+        if(includeMentions && p.discordMention) line += p.discordMention + ' ';
+        if(!hideNames) line += p.name;
+        
+        if(p.activeRoles.size > 0) {
+          if(line.trim().length > 0) line += ' - ';
+          line += Array.from(p.activeRoles).join(' ');
         }
-
-        const line = document.createElement('div');
-        line.className = 'assigned-player';
-        line.innerHTML = displayName ? `${displayName} → ${rolesHtml}` : `→ ${rolesHtml}`;
-        groupDiv.appendChild(line);
+        out += line.trim() + '\n';
       });
+      out += '\n';
+    });
 
-      return groupDiv;
+    if(unassigned.length > 0) {
+      out += `**Unassigned** (${unassigned.length})\n`;
+      unassigned.forEach(p => out += `${p.name}\n`);
     }
 
-    // ================ ROSTER MANAGEMENT ================
+    document.getElementById('finalOutput').value = out.trim();
+  }
 
-    window.addEventListener('DOMContentLoaded', populateRosterList);
+  /* =========================================
+     STORAGE
+     ========================================= */
+  function getSaved() { return JSON.parse(localStorage.getItem('gw2_rosters_v7') || '{}'); }
+  function saveStore(d) { localStorage.setItem('gw2_rosters_v7', JSON.stringify(d)); }
+  
+  function populateRosterList() {
+    const s = document.getElementById('rosterList');
+    s.innerHTML = '<option value="">-- Load Roster --</option>';
+    const d = getSaved();
+    Object.keys(d).forEach(k => {
+      const opt = document.createElement('option');
+      opt.value = k; opt.textContent = k;
+      s.appendChild(opt);
+    });
+  }
 
-    function getSavedRosters() {
-      const data = localStorage.getItem('gw2Rosters');
-      return data ? JSON.parse(data) : {};
-    }
+  function saveRoster() {
+    const n = document.getElementById('rosterName').value.trim();
+    if(!n) return alert('Name required');
+    const data = { players: allPlayers, rawText: document.getElementById('inputPlayers').value };
+    const store = getSaved();
+    store[n] = data;
+    saveStore(store);
+    populateRosterList();
+    document.getElementById('rosterList').value = n;
+  }
 
-
-    
-    function saveRosters(rosters) {
-      localStorage.setItem('gw2Rosters', JSON.stringify(rosters));
-    }
-
-    function populateRosterList() {
-      const select = document.getElementById('rosterList');
-      const current = select.value;
-      select.innerHTML = '<option value="">-- Saved Rosters --</option>';
-      const rosters = getSavedRosters();
-      Object.keys(rosters).sort().forEach(name => {
-        const opt = document.createElement('option');
-        opt.value = name;
-        opt.textContent = name;
-        select.appendChild(opt);
-      });
-      if (current && rosters[current]) {
-        select.value = current;
+  function loadRosterByName(n) {
+    const store = getSaved();
+    if(store[n]) {
+      const data = store[n];
+      if(typeof data === 'string') {
+        document.getElementById('inputPlayers').value = data;
+        parseAndGenerate();
+      } else {
+        document.getElementById('inputPlayers').value = data.rawText || '';
+        document.getElementById('rosterName').value = n;
+        allPlayers = data.players.map(p => ({
+            ...p,
+            activeRoles: new Set(p.activeRoles),
+        }));
+        renderAllCards();
+        generateOutput();
       }
     }
+  }
 
-    function saveRoster() {
-      const name = document.getElementById('rosterName').value.trim();
-      if (!name) {
-        alert('Please enter a roster name.');
-        return;
-      }
-      const content = document.getElementById('inputPlayers').value;
-      const rosters = getSavedRosters();
-      rosters[name] = content;
-      saveRosters(rosters);
-      populateRosterList();
-      document.getElementById('rosterList').value = name;
-      alert(`Roster "${name}" saved.`);
-    }
+  function deleteRoster() {
+    const n = document.getElementById('rosterList').value;
+    if(!n) return;
+    if(!confirm('Delete?')) return;
+    const s = getSaved();
+    delete s[n];
+    saveStore(s);
+    populateRosterList();
+    document.getElementById('rosterName').value = '';
+  }
 
-    function loadRosterByName(name) {
-      const rosters = getSavedRosters();
-      if (rosters[name] !== undefined) {
-        document.getElementById('inputPlayers').value = rosters[name];
-        document.getElementById('rosterName').value = name;
-      }
-    }
-
-    
-    
-
-    function renameRoster() {
-      const oldName = document.getElementById('rosterList').value;
-      const newName = document.getElementById('rosterName').value.trim();
-      if (!oldName) {
-        alert('Select a roster to rename.');
-        return;
-      }
-      if (!newName || newName === oldName) {
-        alert('Enter a new, different roster name.');
-        return;
-      }
-      const rosters = getSavedRosters();
-      if (rosters[oldName] === undefined) {
-        alert('Roster not found.');
-        return;
-      }
-      rosters[newName] = rosters[oldName];
-      delete rosters[oldName];
-      saveRosters(rosters);
-      populateRosterList();
-      document.getElementById('rosterList').value = newName;
-      alert(`Roster renamed to "${newName}".`);
-    }
-
-    function deleteRoster() {
-      const name = document.getElementById('rosterList').value;
-      if (!name) {
-        alert('Select a roster to delete.');
-        return;
-      }
-      if (!confirm(`Delete roster "${name}"? This cannot be undone.`)) return;
-      const rosters = getSavedRosters();
-      delete rosters[name];
-      saveRosters(rosters);
-      populateRosterList();
-      document.getElementById('rosterName').value = '';
-      alert(`Roster "${name}" deleted.`);
-    }
-  </script>
+</script>
 </body>
-
 </html>
