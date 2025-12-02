@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GW2 Provisioner Optimizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #e2e8f0; }
+        .gold { color: #fbbf24; font-weight: 600; }
+        .silver { color: #d1d5db; font-weight: 600; }
+        .copper { color: #b45309; font-weight: 600; }
+        
+        .bought-row { background-color: rgba(16, 185, 129, 0.05); }
+        .bought-text { text-decoration: line-through; opacity: 0.6; }
+        .best-badge { transition: all 0.2s ease; }
+        
+        .settings-grid::-webkit-scrollbar { width: 6px; }
+        .settings-grid::-webkit-scrollbar-track { background: #1e293b; }
+        .settings-grid::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+
+        [v-cloak] { display: none; }
+    </style>
+</head>
+<body>
+
+<div id="app" class="min-h-screen p-4 md:p-8 max-w-5xl mx-auto flex flex-col" v-cloak>
+    
+    <!-- Header -->
+    <header class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-700 pb-4">
+        <div>
+            <h1 class="text-3xl font-bold text-white mb-1">GW2 Provisioner Optimizer</h1>
+            <p class="text-slate-400 text-sm">Automated Ingredient & Reclaimed Weapon Pricing.</p>
+        </div>
+        
+        <div class="flex items-center gap-3">
+            <span v-if="loading" class="text-yellow-400 text-sm font-semibold animate-pulse">Fetching Prices...</span>
+            <span v-else class="text-green-400 text-sm font-semibold">Prices Updated</span>
+            <button @click="fetchPrices" :disabled="loading" 
+                class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm disabled:opacity-50">
+                Refresh
+            </button>
+        </div>
+    </header>
+
+    <!-- Controls Toolbar -->
+    <div class="flex justify-end gap-3 mb-6">
+        <!-- Collapse Controls -->
+        <div class="flex bg-slate-900 rounded-lg p-1 border border-slate-700">
+            <button @click="expandAll(false)" class="px-3 py-1 rounded text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-all">Collapse All</button>
+            <button @click="expandAll(true)" class="px-3 py-1 rounded text-xs font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-all">Expand All</button>
+        </div>
+
+        <!-- Price Type Toggle -->
+        <div class="flex bg-slate-900 rounded-lg p-1 border border-slate-700">
+            <button @click="priceType = 'sell'" :class="priceType === 'sell' ? 'bg-blue-600 text-white' : 'text-slate-400'" class="px-3 py-1 rounded text-xs font-medium transition-all">Sell Listing</button>
+            <button @click="priceType = 'buy'" :class="priceType === 'buy' ? 'bg-blue-600 text-white' : 'text-slate-400'" class="px-3 py-1 rounded text-xs font-medium transition-all">Buy Order</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="space-y-6 mb-12">
+        
+        <div v-for="regionName in REGION_ORDER" :key="regionName" class="border border-slate-800 rounded-lg overflow-hidden bg-slate-800/20">
+            
+            <!-- Region Header -->
+            <div @click="toggleRegion(regionName)" 
+                 class="flex items-center justify-between p-3 bg-[#0f172a] border-b border-slate-800 cursor-pointer select-none hover:bg-slate-900 transition-colors">
+                <div class="flex items-center gap-3">
+                    <h2 class="text-xl font-bold text-white">{{ regionName }}</h2>
+                    <span class="text-xs bg-blue-900 text-blue-200 px-2 py-0.5 rounded-full">{{ provisionersByRegion[regionName].length }} Provisioners</span>
+                </div>
+                <svg class="w-6 h-6 text-slate-500 transition-transform duration-200" 
+                     :class="{ 'rotate-180': !regionState[regionName] }" 
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+
+            <!-- Provisioners List -->
+            <div v-show="regionState[regionName]" class="p-4 grid grid-cols-1 gap-6">
+                
+                <div v-for="prov in provisionersByRegion[regionName]" :key="prov.name">
+                    
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-slate-300 font-semibold">{{ prov.name }}</span>
+                        <span class="text-xs font-mono bg-slate-800 px-2 py-0.5 rounded border border-slate-700 text-slate-400 hover:text-white cursor-pointer" 
+                              @click="copyText(prov.waypoint)">{{ prov.waypoint }}</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 gap-3">
+                        
+                        <div v-for="tab in prov.tabs" :key="tab.name" class="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden shadow-sm">
+                            
+                            <!-- Tab Header / Summary Line -->
+                            <div @click="toggleTab(prov.name + tab.name)" 
+                                 class="p-3 cursor-pointer flex flex-wrap md:flex-nowrap items-center justify-between hover:bg-slate-700/50 transition-colors select-none gap-y-2">
+                                
+                                <div class="flex items-center gap-3 flex-1 overflow-hidden min-w-0">
+                                    <span class="font-bold text-slate-200 w-24 shrink-0 truncate">{{ tab.name }}</span>
+                                    
+                                    <!-- BEST ITEM BADGE -->
+                                    <div @click.stop="buyAndCopy(tab.sortedItems[0])" 
+                                         class="best-badge flex items-center gap-2 px-3 py-1.5 rounded border cursor-pointer group shadow-sm min-w-0 shrink-0"
+                                         :class="boughtState[tab.sortedItems[0].uniqueKey] 
+                                            ? 'bg-green-900/30 border-green-500/50 text-green-300' 
+                                            : 'bg-slate-900 border-slate-700 hover:border-blue-500 hover:bg-slate-900/80'">
+                                        
+                                        <div v-if="boughtState[tab.sortedItems[0].uniqueKey]" class="flex items-center gap-2">
+                                            <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                            <span class="text-xs line-through opacity-75 truncate">{{ tab.summaryName }}</span>
+                                        </div>
+                                        
+                                        <div v-else class="flex items-center gap-2 overflow-hidden">
+                                            <span class="text-[10px] uppercase font-bold text-slate-500 group-hover:text-blue-400">Best</span>
+                                            <span class="text-xs text-white font-medium truncate group-hover:text-blue-200">{{ tab.summaryName }}</span>
+                                            
+                                            <!-- Subtext for Reclaimed Weapon source -->
+                                            <span v-if="tab.sortedItems[0].isReclaimedWeapon" class="text-[10px] text-slate-500 truncate hidden md:inline">
+                                                (via {{ tab.sortedItems[0].name }})
+                                            </span>
+
+                                            <svg class="w-3 h-3 text-slate-600 group-hover:text-blue-400 ml-1 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                        </div>
+                                    </div>
+
+                                    <!-- Warning Note (If Mystic Forge Stone) -->
+                                    <div v-if="tab.warningMsg" class="hidden md:flex items-center gap-1.5 px-2 py-1 rounded bg-yellow-500/10 border border-yellow-500/20 text-[10px] text-yellow-500 whitespace-nowrap overflow-hidden text-ellipsis">
+                                        <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        <span>{{ tab.warningMsg }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-4 shrink-0 ml-auto">
+                                    <!-- Mobile Warning Note (Shown above price on mobile) -->
+                                    <div v-if="tab.warningMsg" class="md:hidden text-[10px] text-yellow-500 text-right max-w-[120px] leading-tight">
+                                        {{ tab.warningMsg }}
+                                    </div>
+
+                                    <span class="font-mono text-base" v-html="formatMoney(tab.bestPrice)" :class="{'opacity-40 line-through': boughtState[tab.sortedItems[0].uniqueKey]}"></span>
+                                    <svg class="w-5 h-5 text-slate-500 transition-transform duration-200" 
+                                         :class="{ 'rotate-180': openState[prov.name + tab.name] }" 
+                                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- Collapsible List -->
+                            <div v-show="openState[prov.name + tab.name]" class="bg-slate-900/50 border-t border-slate-700">
+                                <div v-for="(item, index) in tab.sortedItems" :key="item.id" 
+                                     class="flex items-center justify-between px-4 py-3 border-b border-slate-800/50 last:border-0 hover:bg-slate-800/80 transition-colors cursor-pointer select-none group"
+                                     :class="{'bg-green-500/5': index === 0 && !boughtState[item.uniqueKey], 'bought-row': boughtState[item.uniqueKey]}"
+                                     @click="toggleBought(item.uniqueKey)">
+                                    
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-4 h-4 rounded border flex items-center justify-center transition-colors"
+                                             :class="boughtState[item.uniqueKey] ? 'bg-green-600 border-green-500' : 'border-slate-600 bg-slate-800'">
+                                            <svg v-if="boughtState[item.uniqueKey]" class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                        </div>
+
+                                        <div class="flex flex-col">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-sm font-medium transition-colors"
+                                                      :class="[
+                                                        boughtState[item.uniqueKey] ? 'bought-text' : 'text-slate-300',
+                                                        index === 0 && !boughtState[item.uniqueKey] ? 'text-green-400' : ''
+                                                      ]">
+                                                    {{ item.name }}
+                                                </span>
+                                                <span v-if="item.qty > 1" class="text-xs text-yellow-500 font-bold bg-yellow-500/10 px-1 rounded">x{{ item.qty }}</span>
+                                                <span v-if="item.sourceName" class="text-xs text-blue-400">via {{ item.sourceName }}</span>
+                                            </div>
+                                            <span class="text-[10px] text-slate-500 font-mono">ID: {{ item.id }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-right">
+                                        <div class="font-mono text-sm" v-html="formatMoney(item.cost)" :class="{'bought-text': boughtState[item.uniqueKey]}"></div>
+                                        <div v-if="index > 0 && tab.bestPrice > 0 && !boughtState[item.uniqueKey]" class="text-[10px] text-red-400">
+                                            +{{ formatSimpleMoney(item.cost - tab.bestPrice) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Settings (Manual Values) -->
+    <div class="bg-slate-800 rounded-xl p-4 border border-slate-700 shadow-lg mt-auto">
+        <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Manual Values (Copper)</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 settings-grid max-h-[160px] overflow-y-auto pr-2">
+            <div>
+                <span class="text-[10px] text-slate-500 block mb-1">Obsidian Shard</span>
+                <input type="number" v-model.number="customValuations[19925]" class="w-full bg-slate-900 border border-slate-600 rounded px-2 py-1 text-white text-xs focus:border-blue-500 outline-none">
+            </div>
+            <div>
+                <span class="text-[10px] text-slate-500 block mb-1">Mystic Forge Stone</span>
+                <input type="number" v-model.number="customValuations[19983]" class="w-full bg-slate-900 border border-slate-600 rounded px-2 py-1 text-white text-xs focus:border-blue-500 outline-none">
+            </div>
+            <div>
+                <span class="text-[10px] text-slate-500 block mb-1">Auric Ingot</span>
+                <input type="number" v-model.number="customValuations[73537]" class="w-full bg-slate-900 border border-slate-600 rounded px-2 py-1 text-white text-xs focus:border-blue-500 outline-none">
+            </div>
+            <div>
+                <span class="text-[10px] text-slate-500 block mb-1">Chak Egg</span>
+                <input type="number" v-model.number="customValuations[74356]" class="w-full bg-slate-900 border border-slate-600 rounded px-2 py-1 text-white text-xs focus:border-blue-500 outline-none">
+            </div>
+        </div>
+        <p class="text-[10px] text-slate-500 mt-2 italic">* Prices for Mithrillium, Elonian Cord, Spirit Residue, Charged Quartz, Ambrite and Reclaimed Plates are automatically calculated.</p>
+    </div>
+    
+    <!-- Notification -->
+    <div v-if="toastMsg" class="fixed bottom-6 right-6 z-50 bg-slate-800 border-l-4 border-blue-500 text-white px-6 py-4 rounded shadow-2xl font-semibold animate-bounce flex items-center gap-2">
+        <svg v-if="toastMsg.includes('Copied')" class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        {{ toastMsg }}
+    </div>
+
+</div>
+
+<script>
+    const { createApp, ref, computed, onMounted, reactive } = Vue;
+
+    // --- CONFIG ---
+    const REGION_ORDER = ['Verdant Brink', 'Auric Basin', 'Tangled Depths', 'Core Tyria'];
+
+    const RECLAIMED_IDS = [
+        76890, 72952, 73796, 70655, 74484, 71841, 72660, 77239, 
+        77144, 72152, 71382, 71215, 77078, 72389, 72467, 72773
+    ];
+    
+    const RECLAIMED_MAP = {
+        76890: 'Reclaimed Axe', 72952: 'Reclaimed Dagger', 73796: 'Reclaimed Mace',
+        70655: 'Reclaimed Pistol', 74484: 'Reclaimed Scepter', 71841: 'Reclaimed Sword',
+        72660: 'Reclaimed Focus', 77239: 'Reclaimed Shield', 77144: 'Reclaimed Torch',
+        72152: 'Reclaimed Warhorn', 71382: 'Reclaimed Greatsword', 71215: 'Reclaimed Hammer',
+        77078: 'Reclaimed Longbow', 72389: 'Reclaimed Rifle', 72467: 'Reclaimed Short Bow',
+        72773: 'Reclaimed Staff'
+    };
+
+    // Recipe Ingredients
+    const ID_ECTO = 19721;
+    const COST_THERMO = 150; 
+    const ID_THICK_LEATHER = 19735;
+    const ID_MITHRIL = 19684;
+    const ID_QUARTZ = 43773;
+    const ID_ELDER_WOOD = 19709;
+
+    const DATA_STRUCTURE = [
+        {
+            region: "Core Tyria",
+            name: "Ash Legion Provisioner (Black Citadel)",
+            waypoint: "[&BKgDAAA=]",
+            tabs: [{ name: "Options", items: [
+                { name: "Obsidian Shard", id: 19925, qty: 1 },
+                { name: "Large Skull", id: 24366, qty: 20 },
+                { name: "Superior Rune of the Citadel", id: 24741, qty: 12 }
+            ]}]
+        },
+        {
+            region: "Core Tyria",
+            name: "Aym (Hoelbrak)",
+            waypoint: "[&BIYDAAA=]",
+            tabs: [{ name: "Options", items: [
+                { name: "Spool of Thick Elonian Cord", id: 46745, qty: 1 },
+                { name: "Superior Sigil of Icebrood Slaying", id: 24651, qty: 20 },
+                { name: "Superior Rune of Hoelbrak", id: 24729, qty: 14 }
+            ]}]
+        },
+        {
+            region: "Core Tyria",
+            name: "Temple Quartermaster (Divinity's Reach)",
+            waypoint: "[&BP4EAAA=]",
+            tabs: [{ name: "Options", items: [
+                { name: "Lump of Mithrillium", id: 46742, qty: 1 },
+                { name: "Superior Sigil of Justice", id: 24678, qty: 34 },
+                { name: "Superior Rune of Divinity", id: 24732, qty: 4 }
+            ]}]
+        },
+        {
+            region: "Core Tyria",
+            name: "Synergetics Intern (Rata Sum)",
+            waypoint: "[&BLYEAAA=]",
+            tabs: [{ name: "Options", items: [
+                { name: "Charged Quartz Crystal", id: 43772, qty: 1 },
+                { name: "Crystal Lodestone", id: 24330, qty: 24 },
+                { name: "Superior Rune of Rata Sum", id: 24726, qty: 14 }
+            ]}]
+        },
+        {
+            region: "Core Tyria",
+            name: "Warden Eve (The Grove)",
+            waypoint: "[&BLsEAAA=]",
+            tabs: [{ name: "Options", items: [
+                { name: "Glob of Elder Spirit Residue", id: 46744, qty: 1 },
+                { name: "Sheet of Ambrite", id: 66650, qty: 3 },
+                { name: "Superior Rune of the Grove", id: 24735, qty: 14 }
+            ]}]
+        },
+        {
+            region: "Core Tyria",
+            name: "Skritt Trader (Lion's Arch)",
+            waypoint: "[&BAwEAAA=]",
+            tabs: [{ name: "Options", items: [
+                { name: "Mystic Forge Stone", id: 19983, qty: 1 },
+                { name: "Glob of Ectoplasm", id: 19721, qty: 5 },
+                { name: "Superior Rune of the Adventurer", id: 24830, qty: 1 }
+            ]}]
+        },
+        // --- HEART OF THORNS ---
+        {
+            region: "Verdant Brink",
+            name: "Quartermaster Natomi",
+            waypoint: "[&BN4HAAA=]",
+            tabs: [
+                { name: "Collector's", items: [ { name: "Reclaimed Metal Plate", id: 'reclaimed_plate', qty: 1 } ] },
+                { name: "Sylvari", items: [{ name: "Assassin's Krait Machete", id: 46281 }, { name: "Assassin's Krait Star", id: 46040 }, { name: "Assassin's Krait Shooter", id: 46186 }, { name: "Assassin's Masquerade Leggings", id: 45731 }, { name: "Assassin's Noble Pants", id: 45765 }, { name: "Assassin's Gladiator Legplates", id: 45622 }] },
+                { name: "Itzel", items: [{ name: "Carrion Krait Slayer", id: 15465 }, { name: "Carrion Krait Wand", id: 13924 }, { name: "Carrion Krait Short Bow", id: 14469 }, { name: "Carrion Masquerade Boots", id: 11121 }, { name: "Carrion Noble Boots", id: 11876 }, { name: "Carrion Gladiator Boots", id: 10702 }] },
+                { name: "Pact", items: [{ name: "Valkyrie Krait Shell", id: 15394 }, { name: "Valkyrie Krait Crook", id: 13895 }, { name: "Valkyrie Krait Whelk", id: 14517 }, { name: "Valkyrie Masquerade Raiments", id: 11295 }, { name: "Valkyrie Noble Coat", id: 11798 }, { name: "Valkyrie Gladiator Chestplate", id: 10722 }] },
+                { name: "Noble", items: [{ name: "Cleric's Krait Warhammer", id: 15508 }, { name: "Cleric's Krait Star", id: 13974 }, { name: "Cleric's Krait Handgun", id: 14596 }, { name: "Cleric's Masquerade Gloves", id: 11248 }, { name: "Cleric's Noble Gloves", id: 11835 }, { name: "Cleric's Gladiator Gauntlets", id: 10710 }] },
+                { name: "Quaggan", items: [{ name: "Apothecary's Krait Ripper", id: 36779 }, { name: "Apothecary's Krait Crook", id: 36813 }, { name: "Apothecary's Krait Recurve Bow", id: 36750 }, { name: "Apothecary's Masquerade Mantle", id: 36892 }, { name: "Apothecary's Noble Shoulders", id: 36891 }, { name: "Apothecary's Gladiator Pauldrons", id: 36746 }] }
+            ]
+        },
+        {
+            region: "Auric Basin",
+            name: "Scavenger Rakatin",
+            waypoint: "[&BNYHAAA=]",
+            tabs: [
+                { name: "Collector's", items: [ { name: "Auric Ingot", id: 73537, qty: 1 } ] },
+                { name: "Priory", items: [{ name: "Bringer's Krait Morning Star", id: 38336 }, { name: "Bringer's Krait Wand", id: 38415 }, { name: "Bringer's Krait Recurve Bow", id: 38367 }, { name: "Giver's Masquerade Mask", id: 38228 }, { name: "Giver's Noble Mask", id: 38264 }, { name: "Giver's Gladiator Helm", id: 38179 }] },
+                { name: "Exalted", items: [{ name: "Valkyrie Krait Morning Star", id: 15352 }, { name: "Valkyrie Krait Brazier", id: 14566 }, { name: "Valkyrie Krait Crook", id: 13895 }, { name: "Valkyrie Masquerade Raiments", id: 11295 }, { name: "Valkyrie Noble Coat", id: 11798 }, { name: "Valkyrie Gladiator Chestplate", id: 10722 }] },
+                { name: "Skritt", items: [{ name: "Rampager's Krait Battleaxe", id: 15427 }, { name: "Rampager's Krait Wand", id: 13928 }, { name: "Rampager's Krait Shooter", id: 14648 }, { name: "Rampager's Masquerade Leggings", id: 11167 }, { name: "Rampager's Noble Pants", id: 11754 }, { name: "Rampager's Gladiator Legplates", id: 10699 }] }
+            ]
+        },
+        {
+            region: "Tangled Depths",
+            name: "Supply Assistant",
+            waypoint: "[&BMwHAAA=]",
+            tabs: [
+                { name: "Collector's", items: [ { name: "Chak Egg", id: 74356, qty: 1 } ] },
+                { name: "Ogre", items: [{ name: "Berserker's Krait Shell", id: 15391 }, { name: "Berserker's Krait Star", id: 13976 }, { name: "Berserker's Krait Brazier", id: 14563 }, { name: "Berserker's Masquerade Mantle", id: 11341 }, { name: "Berserker's Noble Shoulders", id: 11921 }, { name: "Berserker's Gladiator Pauldrons", id: 10691 }] },
+                { name: "Rata Novus", items: [{ name: "Carrion Krait Battleaxe", id: 15423 }, { name: "Carrion Krait Star", id: 13973 }, { name: "Carrion Krait Recurve Bow", id: 14428 }, { name: "Carrion Masquerade Gloves", id: 11247 }, { name: "Carrion Noble Gloves", id: 11834 }, { name: "Carrion Gladiator Gauntlets", id: 10709 }] },
+                { name: "Nuhoch", items: [{ name: "Knight's Krait Warhammer", id: 15512 }, { name: "Knight's Krait Crook", id: 13894 }, { name: "Knight's Krait Whelk", id: 14516 }, { name: "Knight's Masquerade Boots", id: 11126 }, { name: "Knight's Noble Boots", id: 11881 }, { name: "Knight's Gladiator Boots", id: 10707 }] },
+                { name: "SCAR Camp", items: [{ name: "Apothecary's Krait Ripper", id: 36779 }, { name: "Apothecary's Krait Wand", id: 36780 }, { name: "Apothecary's Krait Shooter", id: 36812 }, { name: "Apothecary's Masquerade Mask", id: 36844 }, { name: "Apothecary's Noble Mask", id: 36842 }, { name: "Apothecary's Gladiator Helm", id: 36806 }] }
+            ]
+        }
+    ];
+
+    createApp({
+        setup() {
+            const loading = ref(false);
+            const prices = ref({});
+            const priceType = ref('sell');
+            const openState = reactive({});
+            const regionState = reactive({});
+            const boughtState = reactive({});
+            const toastMsg = ref('');
+            
+            // Manual Values (Only pure account bound without ingredients)
+            const customValuations = reactive({
+                19925: 0, 
+                19983: 4510, 
+                73537: 0, 
+                74356: 0
+            });
+
+            // IDs processed Manually (no fetch)
+            const MANUAL_IDS = [19925, 19983, 73537, 74356];
+            
+            // IDs calculated via ingredients (fetch ingredients instead)
+            const CALCULATED_IDS = [46745, 46742, 46744, 43772];
+            
+            // Ingredients to fetch
+            const INGREDIENT_IDS = [ID_ECTO, ID_THICK_LEATHER, ID_MITHRIL, ID_QUARTZ, ID_ELDER_WOOD];
+
+            const getAllIds = () => {
+                const ids = new Set();
+                RECLAIMED_IDS.forEach(id => ids.add(id));
+                INGREDIENT_IDS.forEach(id => ids.add(id));
+                
+                DATA_STRUCTURE.forEach(prov => {
+                    prov.tabs.forEach(tab => {
+                        tab.items.forEach(item => {
+                            if (item.id !== 'reclaimed_plate' && !MANUAL_IDS.includes(item.id) && !CALCULATED_IDS.includes(item.id)) {
+                                ids.add(item.id);
+                            }
+                        });
+                    });
+                });
+                return Array.from(ids);
+            };
+
+            const fetchPrices = async () => {
+                loading.value = true;
+                const ids = getAllIds();
+                const chunks = [];
+                while(ids.length > 0) chunks.push(ids.splice(0, 190));
+
+                try {
+                    const fetched = {};
+                    for(const chunk of chunks) {
+                        const res = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${chunk.join(',')}`);
+                        if(!res.ok) throw new Error("API Limit or Error");
+                        const data = await res.json();
+                        data.forEach(p => {
+                            fetched[p.id] = { buy: p.buys.unit_price, sell: p.sells.unit_price };
+                        });
+                    }
+                    prices.value = fetched;
+                } catch(e) { 
+                    console.error(e); 
+                    toastMsg.value = "Pricing Error"; 
+                } finally { 
+                    loading.value = false; 
+                }
+            };
+
+            const getRawPrice = (id) => {
+                const p = prices.value[id];
+                if (!p) return 99999999;
+                return priceType.value === 'sell' ? p.sell : p.buy;
+            };
+
+            const getItemCost = (item) => {
+                const qty = item.qty || 1;
+                
+                if (item.id === 'reclaimed_plate') {
+                    let bestPrice = 99999999;
+                    let bestSource = '';
+                    RECLAIMED_IDS.forEach(id => {
+                        const cost = getRawPrice(id);
+                        if (cost > 0 && cost < bestPrice) {
+                            bestPrice = cost;
+                            bestSource = RECLAIMED_MAP[id];
+                        }
+                    });
+                    item.sourceName = bestSource;
+                    return bestPrice * qty;
+                }
+
+                if (MANUAL_IDS.includes(item.id)) {
+                    return (customValuations[item.id] || 0) * qty;
+                }
+
+                // Ingredient Math
+                if (item.id === 46745) return ((getRawPrice(ID_THICK_LEATHER) * 50) + (getRawPrice(ID_ECTO) * 1) + (COST_THERMO * 10)) * qty;
+                if (item.id === 46742) return ((getRawPrice(ID_MITHRIL) * 50) + (getRawPrice(ID_ECTO) * 1) + (COST_THERMO * 10)) * qty;
+                if (item.id === 46744) return ((getRawPrice(ID_ELDER_WOOD) * 50) + (getRawPrice(ID_ECTO) * 1) + (COST_THERMO * 10)) * qty;
+                if (item.id === 43772) return ((getRawPrice(ID_QUARTZ) * 25) * qty);
+
+                // Standard TP
+                return getRawPrice(item.id) * qty;
+            };
+
+            const provisionersByRegion = computed(() => {
+                const groups = {};
+                DATA_STRUCTURE.forEach(prov => {
+                    if (!groups[prov.region]) groups[prov.region] = [];
+                    
+                    const computedTabs = prov.tabs.map(tab => {
+                        let rawItems = tab.items;
+                        if (rawItems.length === 1 && rawItems[0].id === 'reclaimed_plate') {
+                            rawItems = RECLAIMED_IDS.map(id => ({
+                                name: RECLAIMED_MAP[id],
+                                id: id,
+                                qty: 1,
+                                isReclaimedWeapon: true
+                            }));
+                        }
+
+                        const items = rawItems.map(i => ({
+                            ...i,
+                            cost: getItemCost(i),
+                            uniqueKey: `${prov.name}-${tab.name}-${i.id}`
+                        })).sort((a, b) => a.cost - b.cost);
+
+                        let best = items[0];
+                        let bestPrice = best ? best.cost : 99999999;
+                        if(bestPrice > 90000000) bestPrice = 0;
+
+                        let summaryName = best ? best.name : '---';
+                        let warningMsg = '';
+
+                        // Generic tab overrides
+                        if (tab.name === "Collector's") {
+                            if (prov.region === 'Verdant Brink') summaryName = "Reclaimed Metal Plate";
+                            if (prov.region === 'Auric Basin') summaryName = "Auric Ingot";
+                            if (prov.region === 'Tangled Depths') summaryName = "Chak Egg";
+                        }
+
+                        // Mystic Forge Stone Warning
+                        if (best && best.id === 19983) {
+                            warningMsg = "Note: Stones are valuable for 250-use Salvage Kits.";
+                        }
+
+                        return {
+                            ...tab,
+                            sortedItems: items,
+                            bestPrice,
+                            bestItemName: best ? best.name : '---',
+                            summaryName,
+                            warningMsg
+                        };
+                    });
+
+                    groups[prov.region].push({ ...prov, tabs: computedTabs });
+                });
+                return groups;
+            });
+
+            const toggleTab = (key) => { openState[key] = !openState[key]; };
+            const toggleRegion = (key) => { regionState[key] = !regionState[key]; };
+            const toggleBought = (key) => { boughtState[key] = !boughtState[key]; };
+
+            const expandAll = (open) => {
+                REGION_ORDER.forEach(r => regionState[r] = open);
+            }
+
+            const buyAndCopy = (item) => {
+                if(!boughtState[item.uniqueKey]) {
+                    copyText(item.name);
+                    boughtState[item.uniqueKey] = true;
+                } else {
+                    boughtState[item.uniqueKey] = false;
+                }
+            };
+            
+            const formatMoney = (val) => {
+                if(val >= 99999999) return '<span class="text-slate-500">---</span>';
+                if(val === 0) return '<span class="text-green-400 font-bold">0c</span>';
+                const g = Math.floor(val/10000), s = Math.floor((val%10000)/100), c = Math.floor(val%100);
+                let h = '';
+                if(g>0) h+=`<span class="gold">${g}g</span> `;
+                if(s>0) h+=`<span class="silver">${s}s</span> `;
+                h+=`<span class="copper">${c}c</span>`;
+                return h;
+            };
+
+            const formatSimpleMoney = (val) => {
+                const g = Math.floor(val/10000), s = Math.floor((val%10000)/100), c = Math.floor(val%100);
+                if(g>0) return `${g}g ${s}s`;
+                if(s>0) return `${s}s ${c}c`;
+                return `${c}c`;
+            };
+
+            const copyText = (txt) => {
+                navigator.clipboard.writeText(txt).then(() => {
+                    toastMsg.value = `Copied "${txt}"`;
+                    setTimeout(()=>toastMsg.value='', 2000);
+                });
+            }
+
+            onMounted(() => {
+                expandAll(true);
+                fetchPrices();
+            });
+
+            return { 
+                provisionersByRegion, REGION_ORDER, 
+                fetchPrices, loading, priceType, 
+                openState, boughtState, regionState, 
+                toggleTab, toggleRegion, expandAll, toggleBought, 
+                buyAndCopy, formatMoney, formatSimpleMoney, copyText, toastMsg, customValuations 
+            };
+        }
+    }).mount('#app');
+</script>
+</body>
+</html>
