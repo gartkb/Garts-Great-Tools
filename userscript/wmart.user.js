@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Walmart.ca Value Sorter (v7.0 - Fixed Logic)
+// @name         Walmart.ca Value Sorter (v8.0 - Clothing & Socks)
 // @namespace    http://tampermonkey.net/
-// @version      7.0
-// @description  Fixed unit price logic. Handles Standard items (Wieners), Counts (Eggs), and Deals (3 for $10).
+// @version      8.0
+// @description  Now handles Clothing (Socks/Underwear), Pairs, Counts, Weights, and Volumes.
 // @match        https://www.walmart.ca/*
 // @grant        none
 // ==/UserScript==
@@ -18,11 +18,10 @@
         // --- STEP 1: DETECT DEALS (e.g. 3 for $10) ---
         let dealPrice = null;
         let isDeal = false;
-
+        
         const cardText = card.innerText.toLowerCase().replace(/[\r\n]+/g, " ");
-        // Regex looks for "2 for $9" or "3/$10.00"
         const multiBuyMatch = cardText.match(/\b([0-9]+)\s*(?:for|\/)\s*\$([0-9,.]+)/);
-
+        
         if (multiBuyMatch) {
             const qty = parseFloat(multiBuyMatch[1]);
             const total = parseFloat(multiBuyMatch[2].replace(/,/g, ''));
@@ -33,30 +32,25 @@
         }
 
         // --- STEP 2: TRY OFFICIAL UNIT PRICE (Best for Standard Items) ---
-        // We prefer this unless we have a deal that makes it cheaper.
+        // We prefer this unless we have a deal override.
         const unitPriceDiv = card.querySelector('[data-testid="product-price-per-unit"]');
-
+        
         if (unitPriceDiv && !isDeal) {
-            // If there's no deal, trust Walmart's math. It's accurate for "55c/100g".
             const text = unitPriceDiv.innerText.toLowerCase().trim();
             const match = text.match(/([$¢c]?)\s*([0-9,.]+)\s*(?:[$¢c]?)\s*\/\s*([0-9]*)\s*(g|ml|lb|ea|kg|l)/);
-
+            
             if (match) {
                 let val = 0;
                 let type = 'weight';
-
+                
                 const currency = match[1] || "";
                 let numeric = parseFloat(match[2].replace(/,/g, ''));
-                let measureQty = parseFloat(match[3]) || 1; // e.g. /100g -> 100
+                let measureQty = parseFloat(match[3]) || 1; 
                 const unit = match[4];
 
-                // Convert cents to dollars
                 if (currency === 'c' || currency === '¢' || text.includes('¢') || (text.includes('c/') && !text.includes('$'))) {
                     numeric = numeric / 100;
                 }
-
-                // Normalize to 1 unit (1g, 1ml) then scale up to 100g/100ml for display
-                // Note: We don't use shelf price here, we use the parsed unit price value directly.
 
                 if (unit === 'g') val = (numeric / measureQty) * 100;
                 else if (unit === 'kg') val = (numeric / measureQty) / 10;
@@ -66,24 +60,13 @@
                 else if (unit === 'ea') { val = (numeric / measureQty); type = 'each'; }
 
                 if (val > 0) {
-                    return {
-                        val: val,
-                        label: formatLabel(val, type),
-                        type: type,
-                        isDeal: false
-                    };
+                    return { val, label: formatLabel(val, type), type, isDeal: false };
                 }
             }
         }
 
-        // --- STEP 3: MANUAL CALCULATION (For Eggs, Counts, or Deals) ---
-        // If we are here, either:
-        // A) It's a deal (so official unit price is wrong/standard), OR
-        // B) There is no official unit price (Eggs/Paper Towels).
-
+        // --- STEP 3: MANUAL CALCULATION (Pairs, Eggs, Counts) ---
         let price = dealPrice;
-
-        // If not a deal, grab the standard shelf price
         if (!price) {
             const priceElement = card.querySelector('[data-automation-id="product-price"] div[aria-hidden="true"]');
             if (priceElement) {
@@ -97,24 +80,26 @@
         // Parse Title for Quantities
         let measure = null;
         const titleElement = card.querySelector('[data-automation-id="product-title"]');
-
+        
         if (titleElement) {
             const title = titleElement.innerText.toLowerCase();
-
+            
             // 1. Weight/Volume (900 g)
             const weightMatch = title.match(/(?:\b([0-9]+)\s*[x×]\s*)?([0-9,.]+)\s*(g|kg|ml|l|lb|oz)\b/);
-            // 2. Counts (12 Eggs, 30 Pack)
-            const countMatch = title.match(/(?:\b([0-9]+)\s*[x×]\s*)?([0-9,.]+)\s*(count|pack|eggs|sheets|rolls|pods|pads|diapers|wieners)\b/);
+            
+            // 2. Counts (12 Eggs, 6 Pairs, 30 Pack)
+            // Added "pairs?" to support "Pair" or "Pairs"
+            const countMatch = title.match(/(?:\b([0-9]+)\s*[x×]\s*)?([0-9,.]+)\s*(pairs?|count|pack|eggs|sheets|rolls|pods|pads|diapers|wieners)\b/);
 
             if (weightMatch) {
                 let qty = parseFloat(weightMatch[2].replace(/,/g, ''));
                 let unit = weightMatch[3];
                 if (weightMatch[1]) qty = qty * parseFloat(weightMatch[1]);
                 measure = { qty, unit };
-            }
+            } 
             else if (countMatch) {
                 let qty = parseFloat(countMatch[2].replace(/,/g, ''));
-                let unit = 'ea';
+                let unit = countMatch[3]; // Keep the specific unit (e.g. 'pairs')
                 if (countMatch[1]) qty = qty * parseFloat(countMatch[1]);
                 measure = { qty, unit };
             }
@@ -126,20 +111,26 @@
             let q = measure.qty;
             let u = measure.unit;
 
+            // Math
             if (u === 'g') val = (price/q)*100;
             else if (u === 'kg') val = (price/(q*1000))*100;
             else if (u === 'ml') { val = (price/q)*100; type = 'vol'; }
             else if (u === 'l') { val = (price/(q*1000))*100; type = 'vol'; }
             else if (u === 'lb') val = (price/(q*453.6))*100;
             else if (u === 'oz') val = (price/(q*28.35))*100;
-            else if (u === 'ea') { val = (price/q); type = 'each'; }
+            else { 
+                // Handles: ea, eggs, pairs, packs, etc
+                val = (price/q); 
+                type = 'each'; 
+            }
 
             if (val < 9999) {
-                return {
-                    val: val,
-                    label: formatLabel(val, type),
-                    type: type,
-                    isDeal: isDeal
+                // Pass the specific unit 'u' to formatting so we can show "/pair"
+                return { 
+                    val: val, 
+                    label: formatLabel(val, type, u), 
+                    type: type, 
+                    isDeal: isDeal 
                 };
             }
         }
@@ -147,8 +138,12 @@
         return null;
     }
 
-    function formatLabel(val, type) {
-        if (type === 'each') return `$${val.toFixed(2)}/ea`;
+    function formatLabel(val, type, specificUnit) {
+        if (type === 'each') {
+            // If it's specifically pairs, show "/pair"
+            if (specificUnit && specificUnit.startsWith('pair')) return `$${val.toFixed(2)}/pair`;
+            return `$${val.toFixed(2)}/ea`;
+        }
         return `$${val.toFixed(2)}/${type === 'vol' ? '100ml' : '100g'}`;
     }
 
@@ -164,13 +159,13 @@
 
         const badge = document.createElement("div");
         badge.innerText = data.label;
-
+        
         Object.assign(badge.style, {
-            position: "absolute",
-            top: "38px",
-            right: "0",
+            position: "absolute", 
+            top: "38px", 
+            right: "0", 
             padding: "4px 6px", fontSize: "12px", fontWeight: "800",
-            zIndex: "80",
+            zIndex: "80", 
             borderTopLeftRadius: "6px", borderBottomLeftRadius: "6px",
             boxShadow: "-1px 2px 4px rgba(0,0,0,0.2)",
             fontFamily: "sans-serif"
@@ -178,18 +173,18 @@
 
         // Color Logic
         if (data.isDeal) {
-            badge.style.background = "#FFFAF0";
-            badge.style.color = "#975A16";
+            badge.style.background = "#FFFAF0"; 
+            badge.style.color = "#975A16"; 
             badge.style.border = "1px solid #D69E2E";
             badge.innerText += " (Deal)";
         } else if (data.type === 'vol') {
-            badge.style.background = "#EBF8FF"; badge.style.color = "#2B6CB0";
+            badge.style.background = "#EBF8FF"; badge.style.color = "#2B6CB0"; 
         } else if (data.type === 'each') {
-            badge.style.background = "#FAF5FF"; badge.style.color = "#553C9A";
+            badge.style.background = "#FAF5FF"; badge.style.color = "#553C9A"; 
         } else {
-            badge.style.background = "#F0FFF4"; badge.style.color = "#22543D";
+            badge.style.background = "#F0FFF4"; badge.style.color = "#22543D"; 
         }
-
+        
         let target = card.querySelector('[data-testid="item-stack-product-image-flag-container"]');
         if (target) {
             target.appendChild(badge);
@@ -251,7 +246,7 @@
             border: "2px solid #ffc220", borderRadius: "20px", fontWeight: "bold",
             cursor: "pointer", boxShadow: "0 4px 6px rgba(0,0,0,0.3)"
         });
-
+        
         btn.onclick = () => {
             const originalText = btn.innerHTML;
             btn.innerHTML = "Sorting...";
