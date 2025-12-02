@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Superstore Value Sorter (v13.0)
+// @name         Superstore Value Sorter (v13.1)
 // @namespace    http://tampermonkey.net/
-// @version      13.0
-// @description  The ultimate tool. Handles Weight, Volume, Counts (Eggs/Paper), Multipacks, Points, Limits, and sorting.
+// @version      13.1
+// @description  The ultimate tool. Handles Weight, Volume, Counts (Eggs/Paper), Multipacks, Packs/Pairs (Socks), Points, Limits, and sorting.
 // @match        https://www.realcanadiansuperstore.ca/*
 // @grant        none
 // ==/UserScript==
@@ -32,19 +32,37 @@
 
         // --- STEP 2: CLEANUP ---
         // Remove existing unit prices (e.g. $0.58/1ea, $0.99/100g) so they don't mess up our math
+        // Also remove "Save $2" text so numbers don't get confused
         const cleanText = rawText.replace(/\$[0-9,.]+\s*\/\s*[0-9.]*\s*(g|kg|lb|ml|l|ea)/g, "     ")
                                  .replace(/save\s*\$[0-9,.]+/g, "     ");
 
-        // --- STEP 3: FIND QUANTITY (Weight, Vol, or Count) ---
+        // --- STEP 3: FIND QUANTITY (Weight, Vol, Count, or Pack) ---
         let measure = null;
 
-        // A. Multipacks (e.g. 4x100g, 12x1ea)
+        // A. Explicit Multipacks (e.g. 4x100g, 12x355ml) - Priority for Food/Liquids
         const mpMatch = cleanText.match(/\b([0-9]+)\s*[x×]\s*([0-9,.]+)\s*(g|kg|ml|l|lb|ea)\b/);
         if (mpMatch) {
             measure = { qty: parseFloat(mpMatch[1]) * parseFloat(mpMatch[2].replace(/,/g, '')), unit: mpMatch[3] };
         }
-        // B. Singles (e.g. 650g, 12 ea)
         else {
+            // B. Pack/Pair Logic (e.g. "5-Pack Socks", "Pack of 3", "6 Pairs") - Priority for Clothing/General
+            // Looks for: Number followed by 'pack' OR 'pack of' followed by Number OR Number followed by 'pair'
+            const packMatch = cleanText.match(/\b([0-9]+)\s*-?pack\b/) ||
+                              cleanText.match(/\bpack\s*of\s*([0-9]+)\b/) ||
+                              cleanText.match(/\b([0-9]+)\s*pairs?\b/);
+
+            if (packMatch) {
+                // The number is usually in the first capturing group of the successful match
+                // (Note: cleanText.match returns [fullMatch, captureGroup])
+                const count = parseFloat(packMatch[1]);
+                if (count > 0) {
+                    measure = { qty: count, unit: 'ea' };
+                }
+            }
+        }
+
+        // C. Singles (e.g. 650g, 12 ea) - Fallback
+        if (!measure) {
             const swMatch = cleanText.match(/(?<!\/)\s*\b([0-9,.]+)\s*(g|kg|ml|l|lb|ea)\b/);
             if (swMatch) {
                 measure = { qty: parseFloat(swMatch[1].replace(/,/g, '')), unit: swMatch[2] };
@@ -101,6 +119,7 @@
         }
 
         // --- SCRAPE FALLBACK ---
+        // Useful if the site already calculates per 100g but we missed the weight parsing
         let scrapedVal = null;
         const sMatches = [...rawText.toLowerCase().matchAll(/\$([0-9,.]+)\s*\/\s*([0-9.]*)?\s*([a-z]+)/g)];
         let match = sMatches.find(m => ['g','kg','ml','l','ea'].includes(m[3])) || sMatches.find(m => m[3] === 'lb');
@@ -123,11 +142,13 @@
 
         if (calculatedVal !== null && isFinite(calculatedVal)) {
             // Sanity check (relaxed if points are involved or if it's 'each' which can vary wildly)
-            if (pointsValue === 0 && scrapedVal !== null && calculatedVal < (scrapedVal * 0.10)) {
+            if (pointsValue === 0 && scrapedVal !== null && type !== 'each' && calculatedVal < (scrapedVal * 0.10)) {
+                // If our math is WAY lower than the store's shelf tag (e.g. error parsing), trust the shelf tag.
+                // We ignore this for 'each' because socks/packs often don't have a comparable shelf unit price.
                 finalVal = scrapedVal;
             } else {
                 finalVal = calculatedVal;
-                // Deal detection
+                // Deal detection (if our calculated price is cheaper than the shelf unit price)
                 if (scrapedVal !== null && calculatedVal < (scrapedVal * 0.95)) {
                     isDeal = true;
                 }
