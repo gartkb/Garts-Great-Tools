@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Walmart.ca Value Sorter (v9.0 - Razors & Refills)
+// @name         Walmart.ca Value Sorter (v9.1 - Socks & General Each)
 // @namespace    http://tampermonkey.net/
-// @version      9.0
-// @description  Sorts by value. Now handles Razors (Refills/Cartridges/CT), Clothing, Pairs, Counts, Weights, and Volumes.
+// @version      9.1
+// @description  Sorts by value. Enhanced for Socks (Pairs), Clothing, Razors, Counts, Weights, and Volumes.
 // @match        https://www.walmart.ca/*
 // @grant        none
 // ==/UserScript==
@@ -20,6 +20,7 @@
         let isDeal = false;
 
         const cardText = card.innerText.toLowerCase().replace(/[\r\n]+/g, " ");
+        // Regex for "2 for $10" or "2/$10"
         const multiBuyMatch = cardText.match(/\b([0-9]+)\s*(?:for|\/)\s*\$([0-9,.]+)/);
 
         if (multiBuyMatch) {
@@ -31,12 +32,12 @@
             }
         }
 
-        // --- STEP 2: TRY OFFICIAL UNIT PRICE (Best for Standard Items) ---
-        // We prefer this unless we have a deal override.
+        // --- STEP 2: TRY OFFICIAL UNIT PRICE (Best for Grocery/Chemicals) ---
         const unitPriceDiv = card.querySelector('[data-testid="product-price-per-unit"]');
 
         if (unitPriceDiv && !isDeal) {
             const text = unitPriceDiv.innerText.toLowerCase().trim();
+            // Looks for: $0.50 / 100ml
             const match = text.match(/([$¢c]?)\s*([0-9,.]+)\s*(?:[$¢c]?)\s*\/\s*([0-9]*)\s*(g|ml|lb|ea|kg|l)/);
 
             if (match) {
@@ -48,7 +49,7 @@
                 let measureQty = parseFloat(match[3]) || 1;
                 const unit = match[4];
 
-                if (currency === 'c' || currency === '¢' || text.includes('¢') || (text.includes('c/') && !text.includes('$'))) {
+                if (currency === 'c' || currency === '¢' || text.includes('¢')) {
                     numeric = numeric / 100;
                 }
 
@@ -65,7 +66,8 @@
             }
         }
 
-        // --- STEP 3: MANUAL CALCULATION (Pairs, Eggs, Counts, Refills) ---
+        // --- STEP 3: MANUAL CALCULATION (Socks, Razors, Counts) ---
+        // 3a. Get Price
         let price = dealPrice;
         if (!price) {
             const priceElement = card.querySelector('[data-automation-id="product-price"] div[aria-hidden="true"]');
@@ -77,50 +79,69 @@
 
         if (!price) return null;
 
-        // Parse Title for Quantities
-        let measure = null;
+        // 3b. Parse Title for Quantities
         const titleElement = card.querySelector('[data-automation-id="product-title"]');
+        if (!titleElement) return null;
 
-        if (titleElement) {
-            const title = titleElement.innerText.toLowerCase();
+        const title = titleElement.innerText.toLowerCase();
+        let measure = null;
 
-            // 1. Weight/Volume (900 g)
-            const weightMatch = title.match(/(?:\b([0-9]+)\s*[x×]\s*)?([0-9,.]+)\s*(g|kg|ml|l|lb|oz)\b/);
+        // --- Regex Strategy ---
 
-            // 2. Counts (12 Eggs, 6 Pairs, 30 Pack, 8CT, 5 Refills)
-            // Updated to include 'refills', 'cartridges', 'pcs', and 'ct' (often attached like 8ct)
-            const countKeywords = "pairs?|count|ct|pack|eggs?|sheets|rolls|pods|pads|diapers|wieners|refills?|cartridges?|pcs";
-            const countMatch = title.match(new RegExp(`(?:\\b([0-9]+)\\s*[x×]\\s*)?([0-9,.]+)\\s*(${countKeywords})\\b`, 'i'));
+        // 1. Weight/Volume (e.g., 900g, 2x500ml)
+        const weightMatch = title.match(/(?:\b([0-9]+)\s*[x×]\s*)?([0-9,.]+)\s*(g|kg|ml|l|lb|oz)\b/);
 
-            if (weightMatch) {
-                let qty = parseFloat(weightMatch[2].replace(/,/g, ''));
-                let unit = weightMatch[3];
-                if (weightMatch[1]) qty = qty * parseFloat(weightMatch[1]);
-                measure = { qty, unit };
-            }
-            else if (countMatch) {
-                let qty = parseFloat(countMatch[2].replace(/,/g, ''));
-                let unit = countMatch[3]; // Keep the specific unit (e.g. 'refills')
-                if (countMatch[1]) qty = qty * parseFloat(countMatch[1]);
-                measure = { qty, unit };
-            }
+        // 2. "Pack of X" (e.g., Pack of 6)
+        const packOfMatch = title.match(/pack\s+of\s+([0-9]+)/);
+
+        // 3. General Counts (20-Pack, 6 Pairs, 100ct, 5 Refills)
+        // Handles hyphens like "20-pack" and spaces like "20 pack"
+        const countKeywords = "pairs?|pr|pack|pk|count|ct|eggs?|sheets|rolls|pods|pads|diapers|wieners|refills?|cartridges?|pcs|sets|briefs|boxers|tees";
+        const countMatch = title.match(new RegExp(`\\b([0-9]+)\\s*[-]?\\s*(${countKeywords})\\b`, 'i'));
+
+        if (weightMatch) {
+            let qty = parseFloat(weightMatch[2].replace(/,/g, ''));
+            let unit = weightMatch[3];
+            if (weightMatch[1]) qty = qty * parseFloat(weightMatch[1]);
+            measure = { qty, unit, type: unit === 'ml' || unit === 'l' ? 'vol' : 'weight' };
+        }
+        else if (packOfMatch) {
+             measure = { qty: parseFloat(packOfMatch[1]), unit: 'ea', type: 'each' };
+        }
+        else if (countMatch) {
+            let qty = parseFloat(countMatch[1].replace(/,/g, ''));
+            let unitStr = countMatch[2];
+            let unitLabel = 'ea';
+
+            // Normalize Labels
+            if(unitStr.includes('pair') || unitStr === 'pr') unitLabel = 'pair';
+            else if(unitStr.includes('refill')) unitLabel = 'refill';
+            else if(unitStr.includes('cart')) unitLabel = 'cart';
+            else if(unitStr.includes('roll')) unitLabel = 'roll';
+
+            measure = { qty, unit: unitLabel, type: 'each' };
+        }
+
+        // --- Context Overrides (Socks/Clothing) ---
+        // If we found a quantity (even just "20 pack"), but the title says "Socks", assume pairs.
+        if (measure && measure.type === 'each' && (title.includes('socks') || title.includes('gloves'))) {
+            measure.unit = 'pair';
         }
 
         if (measure) {
             let val = 0;
-            let type = 'weight';
+            let type = measure.type || 'weight';
             let q = measure.qty;
-            let u = measure.unit;
 
             // Math
-            if (u === 'g') val = (price/q)*100;
-            else if (u === 'kg') val = (price/(q*1000))*100;
-            else if (u === 'ml') { val = (price/q)*100; type = 'vol'; }
-            else if (u === 'l') { val = (price/(q*1000))*100; type = 'vol'; }
-            else if (u === 'lb') val = (price/(q*453.6))*100;
-            else if (u === 'oz') val = (price/(q*28.35))*100;
+            if (measure.unit === 'g') val = (price/q)*100;
+            else if (measure.unit === 'kg') val = (price/(q*1000))*100;
+            else if (measure.unit === 'ml') { val = (price/q)*100; type = 'vol'; }
+            else if (measure.unit === 'l') { val = (price/(q*1000))*100; type = 'vol'; }
+            else if (measure.unit === 'lb') val = (price/(q*453.6))*100;
+            else if (measure.unit === 'oz') val = (price/(q*28.35))*100;
             else {
-                // Handles: ea, eggs, pairs, packs, refills, ct, etc
+                // Each logic
                 val = (price/q);
                 type = 'each';
             }
@@ -128,7 +149,7 @@
             if (val < 9999) {
                 return {
                     val: val,
-                    label: formatLabel(val, type, u),
+                    label: formatLabel(val, type, measure.unit),
                     type: type,
                     isDeal: isDeal
                 };
@@ -140,14 +161,11 @@
 
     function formatLabel(val, type, specificUnit) {
         if (type === 'each') {
-            if (!specificUnit) return `$${val.toFixed(2)}/ea`;
-
-            // Customize labels for razors/clothing
-            if (specificUnit.startsWith('pair')) return `$${val.toFixed(2)}/pair`;
-            if (specificUnit.includes('refill')) return `$${val.toFixed(2)}/refill`;
-            if (specificUnit.includes('cartridge')) return `$${val.toFixed(2)}/cart`;
-
-            return `$${val.toFixed(2)}/ea`;
+            let unitLabel = 'ea';
+            if (specificUnit && specificUnit !== 'ea') unitLabel = specificUnit;
+            // Clean up plurals for label
+            unitLabel = unitLabel.replace(/s$/, ''); 
+            return `$${val.toFixed(2)}/${unitLabel}`;
         }
         return `$${val.toFixed(2)}/${type === 'vol' ? '100ml' : '100g'}`;
     }
@@ -169,7 +187,7 @@
             position: "absolute",
             top: "38px",
             right: "0",
-            padding: "4px 6px", fontSize: "12px", fontWeight: "800",
+            padding: "4px 6px", fontSize: "13px", fontWeight: "800",
             zIndex: "80",
             borderTopLeftRadius: "6px", borderBottomLeftRadius: "6px",
             boxShadow: "-1px 2px 4px rgba(0,0,0,0.2)",
@@ -185,11 +203,12 @@
         } else if (data.type === 'vol') {
             badge.style.background = "#EBF8FF"; badge.style.color = "#2B6CB0";
         } else if (data.type === 'each') {
-            badge.style.background = "#FAF5FF"; badge.style.color = "#553C9A";
+            badge.style.background = "#FAF5FF"; badge.style.color = "#553C9A"; // Purple for Count items
         } else {
             badge.style.background = "#F0FFF4"; badge.style.color = "#22543D";
         }
 
+        // Attach to image container if possible for cleaner look
         let target = card.querySelector('[data-testid="item-stack-product-image-flag-container"]');
         if (target) {
             target.appendChild(badge);
@@ -225,6 +244,7 @@
         items.sort((a, b) => {
             const cardA = a.querySelector('[data-tm-val]');
             const cardB = b.querySelector('[data-tm-val]');
+            // Push items without value to the bottom
             const valA = cardA ? parseFloat(cardA.dataset.tmVal) : 999999;
             const valB = cardB ? parseFloat(cardB.dataset.tmVal) : 999999;
             return valA - valB;
@@ -247,19 +267,26 @@
         btn.innerHTML = "Sort by Value";
         Object.assign(btn.style, {
             position: "fixed", bottom: "20px", left: "20px", zIndex: "99999",
-            padding: "10px 16px", background: "#0071dc", color: "fff",
+            padding: "10px 16px", background: "#0071dc", color: "#fff",
             border: "2px solid #ffc220", borderRadius: "20px", fontWeight: "bold",
-            cursor: "pointer", boxShadow: "0 4px 6px rgba(0,0,0,0.3)"
+            cursor: "pointer", boxShadow: "0 4px 6px rgba(0,0,0,0.3)",
+            fontSize: "14px"
         });
 
         btn.onclick = () => {
             const originalText = btn.innerHTML;
             btn.innerHTML = "Sorting...";
-            setTimeout(() => { sortItems(); btn.innerHTML = originalText; }, 50);
+            btn.style.background = "#005bb5";
+            setTimeout(() => { 
+                sortItems(); 
+                btn.innerHTML = originalText; 
+                btn.style.background = "#0071dc";
+            }, 50);
         };
         document.body.appendChild(btn);
     }
 
+    // Wait for dynamic content
     setTimeout(() => {
         initUI();
         processBatch();
