@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Superstore Value Sorter (v14.0 - Modular Core)
+// @name         Superstore Value Sorter (v14.4 - Smart Tooltip)
 // @namespace    http://tampermonkey.net/
-// @version      14.0
-// @description  Sorts by value using the Garts-Great-Tools Core Module. Handles Points and Multi-buys.
+// @version      14.4
+// @description  Sorts by value. Includes Click-to-Edit badges with "Detected Quantity" tooltips.
 // @match        https://www.realcanadiansuperstore.ca/*
 // @require      https://gartkb.github.io/Garts-Great-Tools/userscript/tm-value-sorter-core.js
 // @grant        none
@@ -21,20 +21,44 @@
     // =========================================================
 
     function parseCardData(card) {
-        // Normalize text
         const rawText = (card.innerText || "").toLowerCase().replace(/[\r\n]+/g, " ").replace(/\s+/g, " ");
 
-        // --- STEP 1: FIND POINTS ---
+        // --- STEP 1: POINTS ---
         let pointsValue = 0;
         const pointsMatch = rawText.match(/([0-9,]+)\s*pc optimum points/);
         if (pointsMatch) {
-            pointsValue = parseFloat(pointsMatch[1].replace(/,/g, '')) / 1000; // 1000 pts = $1
+            pointsValue = parseFloat(pointsMatch[1].replace(/,/g, '')) / 1000;
         }
 
-        // --- STEP 2: FIND SHELF PRICE (The lowest actual price on card) ---
-        let validPrices = [];
+        // --- STEP 2: SHELF UNIT PRICE (Fallback) ---
+        let shelfUnitVal = null;
+        let shelfUnitType = 'weight';
+        
+        const unitMatch = rawText.match(/\$([0-9,.]+)\s*\/\s*([0-9.]*)?\s*([a-z]+)/);
+        if (unitMatch) {
+            const uPrice = parseFloat(unitMatch[1].replace(/,/g, ''));
+            const uQty = parseFloat(unitMatch[2]) || 1;
+            const uUnit = unitMatch[3];
 
-        // A. Check Multi-Buy "2 FOR $9.00"
+            if (uUnit === 'g' || uUnit === 'ml') {
+                shelfUnitVal = (uPrice / uQty) * 100;
+                if (uUnit === 'ml') shelfUnitType = 'vol';
+            }
+            else if (uUnit === 'kg' || uUnit === 'l') {
+                shelfUnitVal = (uPrice / uQty) / 10;
+                if (uUnit === 'l') shelfUnitType = 'vol';
+            }
+            else if (uUnit === 'lb') {
+                shelfUnitVal = (uPrice / uQty) / 4.536;
+            }
+            else if (uUnit === 'ea') {
+                shelfUnitVal = uPrice / uQty;
+                shelfUnitType = 'each';
+            }
+        }
+
+        // --- STEP 3: SHELF PRICE ---
+        let validPrices = [];
         const multiBuyMatch = rawText.match(/\b([0-9]+)\s*(?:for|\/)\s*\$([0-9,.]+)/);
         if (multiBuyMatch) {
             const qty = parseFloat(multiBuyMatch[1]);
@@ -42,10 +66,9 @@
             if (qty > 0) validPrices.push(total / qty);
         }
 
-        // B. Check Standalone Prices (Limits, Sale, Member)
-        // We exclude specific patterns like "save $2" or unit prices
         const cleanForPrice = rawText.replace(/save\s*\$[0-9,.]+/g, "")
-                                     .replace(/\$[0-9,.]+\s*\/\s*[0-9a-z]+/g, ""); 
+                                     .replace(/\$[0-9,.]+\s*\/\s*[0-9a-z]+/g, "")
+                                     .replace(/about\s*\$[0-9,.]+/g, "");
         
         const pMatches = [...cleanForPrice.matchAll(/\$([0-9,.]+)/g)];
         pMatches.forEach(m => {
@@ -55,64 +78,67 @@
 
         let bestShelfPrice = validPrices.length > 0 ? Math.min(...validPrices) : null;
 
-        if (!bestShelfPrice) return null;
-
-        // --- STEP 3: APPLY POINTS LOGIC ---
+        // --- STEP 4: APPLY POINTS ---
         let effectivePrice = bestShelfPrice;
-        if (STATE.usePoints && pointsValue > 0) {
+        if (bestShelfPrice && STATE.usePoints && pointsValue > 0) {
             effectivePrice = Math.max(0.01, bestShelfPrice - pointsValue);
         }
 
-        // --- STEP 4: GET TITLE ---
-        // RCS titles are usually in an h3 or specific class, but finding the first significant text block works well
-        let title = "";
-        const titleEl = card.querySelector('[class*="product-tile__details__info__name"]');
-        if (titleEl) {
-            title = titleEl.innerText;
-        } else {
-            // Fallback: use raw text but strip prices
-            title = rawText.substring(0, 100); 
-        }
+        // --- STEP 5: DECISION ---
+        if (effectivePrice && window.ValueSorter) {
+            let title = "";
+            const titleEl = card.querySelector('[class*="product-tile__details__info__name"]');
+            title = titleEl ? titleEl.innerText : rawText.substring(0, 100);
 
-        // --- STEP 5: GET STORE UNIT PRICE (For Deal Comparison) ---
-        // We scrape this to pass to the Core so it knows if our calculated price is a "Deal"
-        let shelfUnitVal = null;
-        // Matches: $1.25/100g or $0.50/100ml or $0.10/1ea
-        const unitMatch = rawText.match(/\$([0-9,.]+)\s*\/\s*([0-9.]*)?\s*([a-z]+)/);
-        if (unitMatch) {
-            const uPrice = parseFloat(unitMatch[1].replace(/,/g, ''));
-            const uQty = parseFloat(unitMatch[2]) || 1; // e.g. /100g vs /g
-            // We standardize crudely to passing "price per 1 unit" to the core for comparison
-            shelfUnitVal = uPrice / uQty; 
-            
-            // Adjust for 100g/100ml common notation
-            if(unitMatch[3] === 'g' || unitMatch[3] === 'ml') {
-                if(unitMatch[2] == 100) shelfUnitVal = uPrice; // Keep it as "per 100"
-                else shelfUnitVal = uPrice * 100; // Normalize to "per 100"
+            // Inject Metadata for Core
+            const sizeInText = rawText.match(/(?:\b|^)(\d+[\s\-]*(?:ea|g|kg|ml|l|lb|oz|pk|pack|count|ct|bags?|sachets?|pods?))\b/i);
+            if (sizeInText) {
+                title += " " + sizeInText[1];
             }
-        }
 
-        // --- STEP 6: CALL CORE ---
-        if (window.ValueSorter) {
             const result = window.ValueSorter.analyze(title, effectivePrice, shelfUnitVal);
+            
             if (result) {
-                // Attach point info to result for badging
                 result.hasPoints = (STATE.usePoints && pointsValue > 0);
+                result.priceUsed = effectivePrice; 
+                return result;
             }
-            return result;
+        }
+
+        // Fallback
+        if (shelfUnitVal !== null) {
+            return {
+                val: shelfUnitVal,
+                label: `$${shelfUnitVal.toFixed(2)}/${shelfUnitType === 'vol' ? '100ml' : (shelfUnitType === 'each' ? 'ea' : '100g')}`,
+                type: shelfUnitType,
+                isDeal: false,
+                hasPoints: false,
+                priceUsed: effectivePrice || bestShelfPrice
+            };
+        }
+
+        if (effectivePrice) {
+             return {
+                val: 9999,
+                label: "Set Qty",
+                type: 'unknown',
+                isDeal: false,
+                hasPoints: false,
+                priceUsed: effectivePrice
+            };
         }
 
         return null;
     }
 
     // =========================================================
-    // 2. VISUALS
+    // 2. VISUALS & INTERACTION
     // =========================================================
 
     function badgeItem(card) {
+        if(card.dataset.tmManual) return; 
+
         const data = parseCardData(card);
-        
-        // Cleanup old badges
         const oldBadge = card.querySelector('.tm-badge');
         if (oldBadge) oldBadge.remove();
 
@@ -122,38 +148,75 @@
         badge.className = 'tm-badge';
         badge.innerText = data.label;
 
+        // --- CALCULATE DETECTED QUANTITY FOR TOOLTIP ---
+        let tooltip = "Click to set manual quantity";
+        if (data.priceUsed && data.val > 0) {
+            let qty = 0;
+            if (data.type === 'each') {
+                qty = data.priceUsed / data.val;
+            } else {
+                // Weight/Vol is normalized to 100g/100ml
+                qty = (data.priceUsed / data.val) * 100;
+            }
+            // Round to handle floating point errors (e.g. 3.9999 -> 4)
+            qty = Math.round(qty * 100) / 100;
+            
+            let unitLabel = data.type === 'each' ? 'items' : (data.type === 'vol' ? 'ml' : 'g');
+            tooltip = `Detected: ${qty} ${unitLabel}\nPrice: $${data.priceUsed.toFixed(2)}\nClick to edit`;
+        }
+        badge.title = tooltip;
+
         Object.assign(badge.style, {
             position: "absolute", top: "6px", right: "6px",
             padding: "3px 6px", borderRadius: "4px", fontSize: "12px",
             fontWeight: "800", zIndex: "20", boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
-            fontFamily: "sans-serif"
+            fontFamily: "sans-serif", cursor: "pointer"
         });
 
-        // Colors (Mapped from Core Types)
-        if (data.isDeal) {
-            badge.style.background = "#fffaeb";
-            badge.style.color = "#b7791f";
-            badge.style.border = "2px solid #b7791f";
+        // Colors
+        if (data.type === 'unknown') {
+             badge.style.background = "#eee"; badge.style.color = "#555";
+        } else if (data.isDeal) {
+            badge.style.background = "#fffaeb"; badge.style.color = "#b7791f"; badge.style.border = "2px solid #b7791f";
             badge.innerText += " ⭐";
         } else if (data.type === 'vol') {
-            badge.style.background = "#ebf8ff"; 
-            badge.style.color = "#2b6cb0"; 
-            badge.style.border = "1px solid #90cdf4";
+            badge.style.background = "#ebf8ff"; badge.style.color = "#2b6cb0"; badge.style.border = "1px solid #90cdf4";
         } else if (data.type === 'each') {
-            badge.style.background = "#faf5ff"; 
-            badge.style.color = "#553c9a"; 
-            badge.style.border = "1px solid #d6bcfa"; 
+            badge.style.background = "#faf5ff"; badge.style.color = "#553c9a"; badge.style.border = "1px solid #d6bcfa"; 
         } else {
-            // Weight
-            badge.style.background = "#f0fff4"; 
-            badge.style.color = "#22543d"; 
-            badge.style.border = "1px solid #9ae6b4";
+            badge.style.background = "#f0fff4"; badge.style.color = "#22543d"; badge.style.border = "1px solid #9ae6b4";
         }
 
-        // Add Points indicator if applicable
-        if (data.hasPoints) {
-            badge.innerText += " (pts)";
-        }
+        if (data.hasPoints) badge.innerText += " (pts)";
+
+        // --- MANUAL OVERRIDE HANDLER ---
+        badge.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation(); 
+
+            const currentQty = (data.priceUsed && data.val > 0 && data.type === 'each') ? Math.round(data.priceUsed / data.val) : "";
+            
+            const userQty = prompt(
+                `Manual Override for ${data.priceUsed ? '$'+data.priceUsed.toFixed(2) : 'Item'}\n` +
+                (badge.title ? `(${badge.title.split('\n')[0]})\n` : "") + 
+                `\nEnter Item Count (e.g. 4 for 4 cartridges):`, 
+                currentQty
+            );
+            
+            const qty = parseFloat(userQty);
+
+            if (qty > 0 && data.priceUsed) {
+                const newVal = data.priceUsed / qty;
+                badge.innerText = `$${newVal.toFixed(2)}/ea (Manual)`;
+                badge.title = `Manual Override: ${qty} items`;
+                badge.style.background = "#ffffcc"; 
+                badge.style.color = "#000";
+                badge.style.border = "1px dashed #999";
+                
+                card.dataset.tmVal = newVal;
+                card.dataset.tmManual = "true"; 
+            }
+        };
 
         if (getComputedStyle(card).position === 'static') card.style.position = 'relative';
         card.appendChild(badge);
@@ -192,6 +255,7 @@
         checkbox.style.cursor = "pointer";
         checkbox.onchange = (e) => {
             STATE.usePoints = e.target.checked;
+            document.querySelectorAll('[data-tm-manual]').forEach(c => delete c.dataset.tmManual);
             updateAllBadges();
         };
         const label = document.createElement("span");
@@ -256,7 +320,6 @@
         const frag = document.createDocumentFragment();
         allCards.forEach(c => frag.appendChild(c));
         masterGrid.appendChild(frag);
-        // Hide subsequent grids to merge pagination/infinite scroll blocks
         for (let i = 1; i < grids.length; i++) grids[i].style.display = 'none';
     }
 
