@@ -1,9 +1,10 @@
 // ==UserScript==
-// @name         Walmart.ca Value Sorter (v9.1 - Socks & General Each)
+// @name         Walmart.ca Value Sorter (v11.0 - Click-to-Edit)
 // @namespace    http://tampermonkey.net/
-// @version      9.1
-// @description  Sorts by value. Enhanced for Socks (Pairs), Clothing, Razors, Counts, Weights, and Volumes.
+// @version      11.0
+// @description  Sorts by value. Includes Click-to-Edit for manual quantity overrides and Smart Tooltips.
 // @match        https://www.walmart.ca/*
+// @require      https://gartkb.github.io/Garts-Great-Tools/userscript/tm-value-sorter-core.js
 // @grant        none
 // ==/UserScript==
 
@@ -15,60 +16,24 @@
     // =========================================================
 
     function parseCardData(card) {
-        // --- STEP 1: DETECT DEALS (e.g. 3 for $10) ---
-        let dealPrice = null;
-        let isDeal = false;
+        // --- STEP 1: GET PRICE (Handle Multi-buys) ---
+        let price = null;
+        let isDealPrice = false;
 
         const cardText = card.innerText.toLowerCase().replace(/[\r\n]+/g, " ");
-        // Regex for "2 for $10" or "2/$10"
-        const multiBuyMatch = cardText.match(/\b([0-9]+)\s*(?:for|\/)\s*\$([0-9,.]+)/);
 
+        // Check for "2 for $10" type deals
+        const multiBuyMatch = cardText.match(/\b([0-9]+)\s*(?:for|\/)\s*\$([0-9,.]+)/);
         if (multiBuyMatch) {
             const qty = parseFloat(multiBuyMatch[1]);
             const total = parseFloat(multiBuyMatch[2].replace(/,/g, ''));
             if (qty > 0) {
-                dealPrice = total / qty;
-                isDeal = true;
+                price = total / qty;
+                isDealPrice = true;
             }
         }
 
-        // --- STEP 2: TRY OFFICIAL UNIT PRICE (Best for Grocery/Chemicals) ---
-        const unitPriceDiv = card.querySelector('[data-testid="product-price-per-unit"]');
-
-        if (unitPriceDiv && !isDeal) {
-            const text = unitPriceDiv.innerText.toLowerCase().trim();
-            // Looks for: $0.50 / 100ml
-            const match = text.match(/([$¢c]?)\s*([0-9,.]+)\s*(?:[$¢c]?)\s*\/\s*([0-9]*)\s*(g|ml|lb|ea|kg|l)/);
-
-            if (match) {
-                let val = 0;
-                let type = 'weight';
-
-                const currency = match[1] || "";
-                let numeric = parseFloat(match[2].replace(/,/g, ''));
-                let measureQty = parseFloat(match[3]) || 1;
-                const unit = match[4];
-
-                if (currency === 'c' || currency === '¢' || text.includes('¢')) {
-                    numeric = numeric / 100;
-                }
-
-                if (unit === 'g') val = (numeric / measureQty) * 100;
-                else if (unit === 'kg') val = (numeric / measureQty) / 10;
-                else if (unit === 'ml') { val = (numeric / measureQty) * 100; type = 'vol'; }
-                else if (unit === 'l') { val = (numeric / measureQty) / 10; type = 'vol'; }
-                else if (unit === 'lb') val = (numeric / measureQty) * 22.0462;
-                else if (unit === 'ea') { val = (numeric / measureQty); type = 'each'; }
-
-                if (val > 0) {
-                    return { val, label: formatLabel(val, type), type, isDeal: false };
-                }
-            }
-        }
-
-        // --- STEP 3: MANUAL CALCULATION (Socks, Razors, Counts) ---
-        // 3a. Get Price
-        let price = dealPrice;
+        // Fallback to standard price
         if (!price) {
             const priceElement = card.querySelector('[data-automation-id="product-price"] div[aria-hidden="true"]');
             if (priceElement) {
@@ -79,102 +44,52 @@
 
         if (!price) return null;
 
-        // 3b. Parse Title for Quantities
+        // --- STEP 2: GET TITLE ---
         const titleElement = card.querySelector('[data-automation-id="product-title"]');
         if (!titleElement) return null;
+        const title = titleElement.innerText;
 
-        const title = titleElement.innerText.toLowerCase();
-        let measure = null;
-
-        // --- Regex Strategy ---
-
-        // 1. Weight/Volume (e.g., 900g, 2x500ml)
-        const weightMatch = title.match(/(?:\b([0-9]+)\s*[x×]\s*)?([0-9,.]+)\s*(g|kg|ml|l|lb|oz)\b/);
-
-        // 2. "Pack of X" (e.g., Pack of 6)
-        const packOfMatch = title.match(/pack\s+of\s+([0-9]+)/);
-
-        // 3. General Counts (20-Pack, 6 Pairs, 100ct, 5 Refills)
-        // Handles hyphens like "20-pack" and spaces like "20 pack"
-        const countKeywords = "pairs?|pr|pack|pk|count|ct|eggs?|sheets|rolls|pods|pads|diapers|wieners|refills?|cartridges?|pcs|sets|briefs|boxers|tees";
-        const countMatch = title.match(new RegExp(`\\b([0-9]+)\\s*[-]?\\s*(${countKeywords})\\b`, 'i'));
-
-        if (weightMatch) {
-            let qty = parseFloat(weightMatch[2].replace(/,/g, ''));
-            let unit = weightMatch[3];
-            if (weightMatch[1]) qty = qty * parseFloat(weightMatch[1]);
-            measure = { qty, unit, type: unit === 'ml' || unit === 'l' ? 'vol' : 'weight' };
-        }
-        else if (packOfMatch) {
-             measure = { qty: parseFloat(packOfMatch[1]), unit: 'ea', type: 'each' };
-        }
-        else if (countMatch) {
-            let qty = parseFloat(countMatch[1].replace(/,/g, ''));
-            let unitStr = countMatch[2];
-            let unitLabel = 'ea';
-
-            // Normalize Labels
-            if(unitStr.includes('pair') || unitStr === 'pr') unitLabel = 'pair';
-            else if(unitStr.includes('refill')) unitLabel = 'refill';
-            else if(unitStr.includes('cart')) unitLabel = 'cart';
-            else if(unitStr.includes('roll')) unitLabel = 'roll';
-
-            measure = { qty, unit: unitLabel, type: 'each' };
-        }
-
-        // --- Context Overrides (Socks/Clothing) ---
-        // If we found a quantity (even just "20 pack"), but the title says "Socks", assume pairs.
-        if (measure && measure.type === 'each' && (title.includes('socks') || title.includes('gloves'))) {
-            measure.unit = 'pair';
-        }
-
-        if (measure) {
-            let val = 0;
-            let type = measure.type || 'weight';
-            let q = measure.qty;
-
-            // Math
-            if (measure.unit === 'g') val = (price/q)*100;
-            else if (measure.unit === 'kg') val = (price/(q*1000))*100;
-            else if (measure.unit === 'ml') { val = (price/q)*100; type = 'vol'; }
-            else if (measure.unit === 'l') { val = (price/(q*1000))*100; type = 'vol'; }
-            else if (measure.unit === 'lb') val = (price/(q*453.6))*100;
-            else if (measure.unit === 'oz') val = (price/(q*28.35))*100;
-            else {
-                // Each logic
-                val = (price/q);
-                type = 'each';
-            }
-
-            if (val < 9999) {
-                return {
-                    val: val,
-                    label: formatLabel(val, type, measure.unit),
-                    type: type,
-                    isDeal: isDeal
-                };
+        // --- STEP 3: OPTIONAL - GET SHELF UNIT PRICE (For Deal Detection) ---
+        let shelfUnitVal = null;
+        const unitPriceDiv = card.querySelector('[data-testid="product-price-per-unit"]');
+        if (unitPriceDiv && !isDealPrice) {
+            const text = unitPriceDiv.innerText.toLowerCase().trim();
+            // Looks for: $0.50 / 100ml
+            const match = text.match(/([0-9,.]+)\s*(?:[$¢c]?)\s*\/\s*([0-9]*)\s*(g|ml|lb|ea|kg|l)/);
+            if (match) {
+                let rawVal = parseFloat(match[1].replace(/,/g, ''));
+                if (text.includes('¢') || text.includes(' c')) rawVal = rawVal / 100;
+                shelfUnitVal = rawVal; 
             }
         }
 
-        return null;
-    }
-
-    function formatLabel(val, type, specificUnit) {
-        if (type === 'each') {
-            let unitLabel = 'ea';
-            if (specificUnit && specificUnit !== 'ea') unitLabel = specificUnit;
-            // Clean up plurals for label
-            unitLabel = unitLabel.replace(/s$/, ''); 
-            return `$${val.toFixed(2)}/${unitLabel}`;
+        // --- STEP 4: CALL THE CORE MODULE ---
+        if (window.ValueSorter) {
+            const result = window.ValueSorter.analyze(title, price, shelfUnitVal);
+            if (result) {
+                result.isDeal = result.isDeal || isDealPrice; // Combine multi-buy deal flag
+                result.priceUsed = price; // Store for manual override logic
+                return result;
+            }
         }
-        return `$${val.toFixed(2)}/${type === 'vol' ? '100ml' : '100g'}`;
+
+        // Fallback for Manual Entry availability even if parsing fails
+        return {
+            val: 99999,
+            label: "Set Qty",
+            type: 'unknown',
+            isDeal: isDealPrice,
+            priceUsed: price
+        };
     }
 
     // =========================================================
-    // 2. VISUALS
+    // 2. VISUALS & INTERACTION
     // =========================================================
 
     function badgeItem(card) {
+        // Prevent overwriting manual edits or re-badging
+        if(card.dataset.tmManual) return;
         if(card.dataset.tmBadged) return;
 
         const data = parseCardData(card);
@@ -182,6 +97,22 @@
 
         const badge = document.createElement("div");
         badge.innerText = data.label;
+
+        // --- TOOLTIP LOGIC ---
+        let tooltip = "Click to set manual quantity";
+        if (data.priceUsed && data.val > 0 && data.val < 99999) {
+            let qty = 0;
+            if (data.type === 'each') {
+                qty = data.priceUsed / data.val;
+            } else {
+                // Weight/Vol is normalized to 100g/100ml in the core
+                qty = (data.priceUsed / data.val) * 100;
+            }
+            qty = Math.round(qty * 100) / 100;
+            let unitLabel = data.type === 'each' ? 'items' : (data.type === 'vol' ? 'ml' : 'g');
+            tooltip = `Detected: ${qty} ${unitLabel}\nPrice: $${data.priceUsed.toFixed(2)}\nClick to edit`;
+        }
+        badge.title = tooltip;
 
         Object.assign(badge.style, {
             position: "absolute",
@@ -191,11 +122,14 @@
             zIndex: "80",
             borderTopLeftRadius: "6px", borderBottomLeftRadius: "6px",
             boxShadow: "-1px 2px 4px rgba(0,0,0,0.2)",
-            fontFamily: "sans-serif"
+            fontFamily: "sans-serif",
+            cursor: "pointer" // Make it clickable
         });
 
         // Color Logic
-        if (data.isDeal) {
+        if (data.type === 'unknown') {
+             badge.style.background = "#eee"; badge.style.color = "#555";
+        } else if (data.isDeal) {
             badge.style.background = "#FFFAF0";
             badge.style.color = "#975A16";
             badge.style.border = "1px solid #D69E2E";
@@ -203,12 +137,41 @@
         } else if (data.type === 'vol') {
             badge.style.background = "#EBF8FF"; badge.style.color = "#2B6CB0";
         } else if (data.type === 'each') {
-            badge.style.background = "#FAF5FF"; badge.style.color = "#553C9A"; // Purple for Count items
+            badge.style.background = "#FAF5FF"; badge.style.color = "#553C9A";
         } else {
             badge.style.background = "#F0FFF4"; badge.style.color = "#22543D";
         }
 
-        // Attach to image container if possible for cleaner look
+        // --- MANUAL OVERRIDE HANDLER ---
+        badge.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const currentQty = (data.priceUsed && data.val > 0 && data.type === 'each') ? Math.round(data.priceUsed / data.val) : "";
+            const userQty = prompt(
+                `Manual Override for ${data.priceUsed ? '$'+data.priceUsed.toFixed(2) : 'Item'}\n` +
+                (badge.title ? `(${badge.title.split('\n')[0]})\n` : "") + 
+                `\nEnter Item Count (e.g. 4 for 4 cartridges):`, 
+                currentQty
+            );
+            
+            const qty = parseFloat(userQty);
+
+            if (qty > 0 && data.priceUsed) {
+                const newVal = data.priceUsed / qty;
+                badge.innerText = `$${newVal.toFixed(2)}/ea (Manual)`;
+                badge.title = `Manual Override: ${qty} items`;
+                badge.style.background = "#ffffcc"; 
+                badge.style.color = "#000";
+                badge.style.border = "1px dashed #999";
+                
+                // Update sorting values
+                card.dataset.tmVal = newVal;
+                card.dataset.tmManual = "true";
+            }
+        };
+
+        // Attach to image container
         let target = card.querySelector('[data-testid="item-stack-product-image-flag-container"]');
         if (target) {
             target.appendChild(badge);
