@@ -1,9 +1,10 @@
 // ==UserScript==
-// @name         Costco.ca Universal Value Sorter (v4.1 - Fix Legacy Sort)
+// @name         Costco.ca Universal Value Sorter (v5.0 - Modular Core)
 // @namespace    http://tampermonkey.net/
-// @version      4.1
-// @description  Universal support for Costco.ca. Fixes sorting on Vitamin/Legacy pages.
+// @version      5.0
+// @description  Sorts by value using the Garts-Great-Tools Core Module. Includes Click-to-Edit for manual quantity overrides.
 // @match        https://www.costco.ca/*
+// @require      https://gartkb.github.io/Garts-Great-Tools/userscript/tm-value-sorter-core.js
 // @grant        none
 // ==/UserScript==
 
@@ -11,7 +12,7 @@
     'use strict';
 
     // =========================================================
-    // 1. DATA PARSING (UNIVERSAL)
+    // 1. DATA PARSING
     // =========================================================
 
     function getTextFromSelectors(card, selectors) {
@@ -46,145 +47,78 @@
 
         if (!titleText) return null;
 
-        const title = titleText.toLowerCase();
-
-        // --- STEP 3: EXTRACT QUANTITY ---
-        let measure = null;
-
-        const weightUnits = "g|kg|ml|l|lb|oz";
-        const countUnits = [
-            "pairs?", "packs?", "counts?", "cnt", "bars?", "cans?", "bottles?",
-            "eggs?", "sheets?", "rolls?", "pods?", "pads?", "sachets?",
-            "cartridges?", "refills?",
-            "gumm(y|ies)", "tablets?", "capsules?", "softgels?", "caplets?", "lozenges?", "chewables?"
-        ].join("|");
-
-        const mathRegex = new RegExp(`(\\d+)\\s*[x×]\\s*([0-9,.]+)\\s*(${weightUnits}|${countUnits})\\b`);
-        const mathMatch = title.match(mathRegex);
-
-        const weightRegex = new RegExp(`(?:\\b|^)([0-9,.]+)\\s*(${weightUnits})\\b`);
-        const weightMatch = title.match(weightRegex);
-
-        const countRegex = new RegExp(`(\\d+)\\s*[-]?\\s*(${countUnits})\\b`);
-        const countMatch = title.match(countRegex);
-
-        if (mathMatch) {
-            let count = parseFloat(mathMatch[1]);
-            let unitSize = parseFloat(mathMatch[2]);
-            let unit = mathMatch[3];
-            let isWeight = new RegExp(`^(${weightUnits})$`).test(unit);
-
-            if(isWeight) {
-                measure = { qty: count * unitSize, unit: unit, type: 'math' };
-            } else {
-                let normalizedUnit = normalizeUnit(unit);
-                measure = { qty: count * unitSize, unit: normalizedUnit, type: 'count' };
-            }
-        }
-        else if (weightMatch) {
-            let qty = parseFloat(weightMatch[1].replace(/,/g, ''));
-            let unit = weightMatch[2];
-
-            if (countMatch) {
-                let count = parseFloat(countMatch[1]);
-                if (count > 1) {
-                    if ((unit === 'g' && qty < 500) || (unit === 'ml' && qty < 600)) {
-                         qty = qty * count;
-                    }
-                }
-            }
-            measure = { qty, unit, type: 'weight' };
-        }
-        else if (countMatch) {
-            let qty = parseFloat(countMatch[1]);
-            let unitString = countMatch[2];
-            let normalizedUnit = normalizeUnit(unitString);
-            measure = { qty, unit: normalizedUnit, type: 'count' };
-        }
-
-        // --- STEP 4: CALCULATE VALUE ---
-        if (measure) {
-            let val = 0;
-            let type = 'weight';
-            let q = measure.qty;
-            let u = measure.unit;
-
-            if (measure.type === 'count') {
-                val = (price / q);
-                type = 'each';
-            } else {
-                if (u === 'g') val = (price / q) * 100;
-                else if (u === 'kg') val = (price / (q * 1000)) * 100;
-                else if (u === 'ml') { val = (price / q) * 100; type = 'vol'; }
-                else if (u === 'l') { val = (price / (q * 1000)) * 100; type = 'vol'; }
-                else if (u === 'lb') val = (price / (q * 453.592)) * 100;
-                else if (u === 'oz') val = (price / (q * 28.3495)) * 100;
-                else { val = (price / q); type = 'each'; }
-            }
-
-            if (val > 0 && val < 99999) {
-                return {
-                    val: val,
-                    label: formatLabel(val, type, u),
-                    type: type
-                };
+        // --- STEP 3: CALL CORE MODULE ---
+        if (window.ValueSorter) {
+            // Costco rarely lists a "shelf unit price" on the listing card itself,
+            // so we pass null for the 3rd argument.
+            const result = window.ValueSorter.analyze(titleText, price, null);
+            
+            if (result) {
+                result.priceUsed = price; // Store for manual calculation
+                return result;
             }
         }
 
-        return null;
-    }
-
-    function normalizeUnit(unitString) {
-        const s = unitString.toLowerCase();
-        if (s.startsWith('pair')) return 'pair';
-        if (s.startsWith('cartridge')) return 'cartridge';
-        if (s.startsWith('refill')) return 'refill';
-        if (s.startsWith('gumm')) return 'gummy';
-        if (s.startsWith('tablet')) return 'tablet';
-        if (s.startsWith('capsule')) return 'capsule';
-        if (s.startsWith('softgel')) return 'softgel';
-        if (s.startsWith('caplet')) return 'caplet';
-        if (s.startsWith('lozenge')) return 'lozenge';
-        if (s.startsWith('chewable')) return 'chewable';
-        if (s.startsWith('sachet')) return 'sachet';
-        if (s.startsWith('bar')) return 'bar';
-        if (s.startsWith('bottle')) return 'bottle';
-        if (s.startsWith('can')) return 'can';
-        if (s.startsWith('roll')) return 'roll';
-        return 'ea';
-    }
-
-    function formatLabel(val, type, specificUnit) {
-        if (type === 'each') {
-            if (specificUnit !== 'ea') return `$${val.toFixed(2)}/${specificUnit}`;
-            return `$${val.toFixed(2)}/ea`;
-        }
-        if (type === 'vol') return `$${val.toFixed(2)}/100ml`;
-        return `$${val.toFixed(2)}/100g`;
+        // Fallback for manual entry if parsing fails
+        return {
+            val: 99999,
+            label: "Set Qty",
+            type: 'unknown',
+            isDeal: false,
+            priceUsed: price
+        };
     }
 
     // =========================================================
-    // 2. VISUALS
+    // 2. VISUALS & INTERACTION
     // =========================================================
 
     function badgeItem(card) {
-        if(card.dataset.tmBadged) return;
+        if(card.dataset.tmManual) return; // Don't overwrite manual edits
 
         const data = parseCardData(card);
+        
+        // Remove old badge if exists
+        const existingBadge = card.querySelector('.tm-badge');
+        if (existingBadge) existingBadge.remove();
+
         if (!data) return;
 
         const badge = document.createElement("div");
+        badge.className = "tm-badge";
         badge.innerText = data.label;
+
+        // --- CALCULATE DETECTED QUANTITY FOR TOOLTIP ---
+        let tooltip = "Click to set manual quantity";
+        if (data.priceUsed && data.val > 0 && data.val < 99999) {
+            let qty = 0;
+            if (data.type === 'each') {
+                qty = data.priceUsed / data.val;
+            } else {
+                // Weight/Vol is normalized to 100g/100ml
+                qty = (data.priceUsed / data.val) * 100;
+            }
+            // Round to handle floating point errors
+            qty = Math.round(qty * 100) / 100;
+            
+            let unitLabel = data.type === 'each' ? 'items' : (data.type === 'vol' ? 'ml' : 'g');
+            tooltip = `Detected: ${qty} ${unitLabel}\nPrice: $${data.priceUsed.toFixed(2)}\nClick to edit`;
+        }
+        badge.title = tooltip;
 
         Object.assign(badge.style, {
             position: "absolute", top: "0", right: "0",
             padding: "4px 8px", fontSize: "14px", fontWeight: "bold",
             zIndex: "10", borderBottomLeftRadius: "4px",
             boxShadow: "-1px 1px 3px rgba(0,0,0,0.2)",
-            fontFamily: "Helvetica, Arial, sans-serif"
+            fontFamily: "Helvetica, Arial, sans-serif",
+            cursor: "pointer"
         });
 
-        if (data.type === 'vol') {
+        // Colors
+        if (data.type === 'unknown') {
+             badge.style.background = "#eee"; badge.style.color = "#555";
+        } else if (data.type === 'vol') {
             badge.style.background = "#e3f2fd"; badge.style.color = "#0d47a1"; badge.style.border = "1px solid #90caf9";
         } else if (data.type === 'each') {
             badge.style.background = "#fff3e0"; badge.style.color = "#e65100"; badge.style.border = "1px solid #ffcc80";
@@ -192,7 +126,36 @@
             badge.style.background = "#e8f5e9"; badge.style.color = "#1b5e20"; badge.style.border = "1px solid #a5d6a7";
         }
 
-        // Try Image Container A (MUI) or B (Legacy)
+        // --- MANUAL OVERRIDE HANDLER ---
+        badge.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const currentQty = (data.priceUsed && data.val > 0 && data.type === 'each') ? Math.round(data.priceUsed / data.val) : "";
+            
+            const userQty = prompt(
+                `Manual Override for ${data.priceUsed ? '$'+data.priceUsed.toFixed(2) : 'Item'}\n` +
+                (badge.title ? `(${badge.title.split('\n')[0]})\n` : "") + 
+                `\nEnter Item Count (e.g. 4 for 4 cartridges):`, 
+                currentQty
+            );
+            
+            const qty = parseFloat(userQty);
+
+            if (qty > 0 && data.priceUsed) {
+                const newVal = data.priceUsed / qty;
+                badge.innerText = `$${newVal.toFixed(2)}/ea (Manual)`;
+                badge.title = `Manual Override: ${qty} items`;
+                badge.style.background = "#ffffcc"; 
+                badge.style.color = "#000";
+                badge.style.border = "1px dashed #999";
+                
+                card.dataset.tmVal = newVal;
+                card.dataset.tmManual = "true";
+            }
+        };
+
+        // DOM Placement: Try Image Container A (MUI) or B (Legacy)
         let target = card.querySelector('[data-testid^="ProductImage_"]') || card.querySelector('.product-img-holder');
 
         if (!target) {
@@ -225,7 +188,6 @@
         processBatch();
 
         // --- SCENARIO 1: MODERN REACT GRID ---
-        // Used for Raisins, Socks, etc.
         const modernGrid = document.querySelector('[data-testid="Grid"]');
         const modernWrapper = document.getElementById('productList');
 
@@ -236,7 +198,6 @@
             let otherItems = items.filter(item => !item.querySelector('[data-tm-val]'));
 
             productWrappers.sort((a, b) => {
-                // In Modern layout, value is deep inside the wrapper
                 const cardA = a.querySelector('[data-tm-val]');
                 const cardB = b.querySelector('[data-tm-val]');
                 const valA = cardA ? parseFloat(cardA.dataset.tmVal) : 999999;
@@ -252,15 +213,12 @@
         }
 
         // --- SCENARIO 2: LEGACY LAYOUT (BOOTSTRAP FLOATS) ---
-        // Used for Vitamins, Razors, etc.
         const legacyGrid = document.querySelector('[automation-id="productList"]');
         if (legacyGrid) {
             console.log("TM: Detected Legacy Layout");
-            // Grab only the product columns
             let items = Array.from(legacyGrid.querySelectorAll('.product'));
 
             items.sort((a, b) => {
-                // In Legacy layout, value is ON the item itself because we passed '.product' to badgeItem
                 const valA = a.dataset.tmVal ? parseFloat(a.dataset.tmVal) : 999999;
                 const valB = b.dataset.tmVal ? parseFloat(b.dataset.tmVal) : 999999;
                 return valA - valB;
@@ -272,7 +230,6 @@
             legacyGrid.style.alignItems = 'stretch';
             legacyGrid.className += " tm-flex-override";
 
-            // Clear grid
             legacyGrid.innerHTML = "";
 
             const frag = document.createDocumentFragment();
@@ -284,8 +241,6 @@
             legacyGrid.appendChild(frag);
             return;
         }
-
-        console.log("TM: No Sortable Grid Found");
     }
 
     // =========================================================
