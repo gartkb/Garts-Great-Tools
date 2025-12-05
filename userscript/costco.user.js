@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Costco.ca Universal Value Sorter (v5.0 - Modular Core)
+// @name         Costco.ca Universal Value Sorter (v5.1 - Loop Fix)
 // @namespace    http://tampermonkey.net/
-// @version      5.0
-// @description  Sorts by value using the Garts-Great-Tools Core Module. Includes Click-to-Edit for manual quantity overrides.
+// @version      5.1
+// @description  Sorts by value using the Garts-Great-Tools Core Module. Fixed infinite loop issue.
 // @match        https://www.costco.ca/*
 // @require      https://gartkb.github.io/Garts-Great-Tools/userscript/tm-value-sorter-core.js
 // @grant        none
@@ -49,17 +49,14 @@
 
         // --- STEP 3: CALL CORE MODULE ---
         if (window.ValueSorter) {
-            // Costco rarely lists a "shelf unit price" on the listing card itself,
-            // so we pass null for the 3rd argument.
             const result = window.ValueSorter.analyze(titleText, price, null);
-            
             if (result) {
-                result.priceUsed = price; // Store for manual calculation
+                result.priceUsed = price; 
                 return result;
             }
         }
 
-        // Fallback for manual entry if parsing fails
+        // Fallback
         return {
             val: 99999,
             label: "Set Qty",
@@ -74,11 +71,14 @@
     // =========================================================
 
     function badgeItem(card) {
-        if(card.dataset.tmManual) return; // Don't overwrite manual edits
+        // --- CRITICAL LOOP FIX ---
+        // If we have already badged this, DO NOT touch it again.
+        if(card.dataset.tmBadged) return; 
+        if(card.dataset.tmManual) return; 
 
         const data = parseCardData(card);
         
-        // Remove old badge if exists
+        // Remove old badge if exists (Cleanup for re-sorts)
         const existingBadge = card.querySelector('.tm-badge');
         if (existingBadge) existingBadge.remove();
 
@@ -88,19 +88,16 @@
         badge.className = "tm-badge";
         badge.innerText = data.label;
 
-        // --- CALCULATE DETECTED QUANTITY FOR TOOLTIP ---
+        // --- TOOLTIP ---
         let tooltip = "Click to set manual quantity";
         if (data.priceUsed && data.val > 0 && data.val < 99999) {
             let qty = 0;
             if (data.type === 'each') {
                 qty = data.priceUsed / data.val;
             } else {
-                // Weight/Vol is normalized to 100g/100ml
                 qty = (data.priceUsed / data.val) * 100;
             }
-            // Round to handle floating point errors
             qty = Math.round(qty * 100) / 100;
-            
             let unitLabel = data.type === 'each' ? 'items' : (data.type === 'vol' ? 'ml' : 'g');
             tooltip = `Detected: ${qty} ${unitLabel}\nPrice: $${data.priceUsed.toFixed(2)}\nClick to edit`;
         }
@@ -126,13 +123,12 @@
             badge.style.background = "#e8f5e9"; badge.style.color = "#1b5e20"; badge.style.border = "1px solid #a5d6a7";
         }
 
-        // --- MANUAL OVERRIDE HANDLER ---
+        // --- CLICK TO EDIT ---
         badge.onclick = (e) => {
             e.preventDefault();
             e.stopPropagation();
 
             const currentQty = (data.priceUsed && data.val > 0 && data.type === 'each') ? Math.round(data.priceUsed / data.val) : "";
-            
             const userQty = prompt(
                 `Manual Override for ${data.priceUsed ? '$'+data.priceUsed.toFixed(2) : 'Item'}\n` +
                 (badge.title ? `(${badge.title.split('\n')[0]})\n` : "") + 
@@ -155,7 +151,7 @@
             }
         };
 
-        // DOM Placement: Try Image Container A (MUI) or B (Legacy)
+        // DOM Placement
         let target = card.querySelector('[data-testid^="ProductImage_"]') || card.querySelector('.product-img-holder');
 
         if (!target) {
@@ -171,15 +167,12 @@
     }
 
     // =========================================================
-    // 3. SORTING ENGINE (UNIVERSAL)
+    // 3. SORTING ENGINE
     // =========================================================
 
     function processBatch() {
-        // Selector A: Modern Grid Items
         const modernCards = document.querySelectorAll('div[data-testid^="ProductTile_"]');
-        // Selector B: Legacy Grid Items (exclude spacers/ads)
         const legacyCards = document.querySelectorAll('[automation-id="productList"] .product');
-
         modernCards.forEach(badgeItem);
         legacyCards.forEach(badgeItem);
     }
@@ -187,12 +180,11 @@
     function sortItems() {
         processBatch();
 
-        // --- SCENARIO 1: MODERN REACT GRID ---
+        // Modern Grid
         const modernGrid = document.querySelector('[data-testid="Grid"]');
         const modernWrapper = document.getElementById('productList');
 
         if (modernWrapper && modernGrid && modernWrapper.contains(modernGrid)) {
-            console.log("TM: Detected Modern Layout");
             let items = Array.from(modernGrid.children);
             let productWrappers = items.filter(item => item.querySelector('[data-tm-val]'));
             let otherItems = items.filter(item => !item.querySelector('[data-tm-val]'));
@@ -212,24 +204,20 @@
             return;
         }
 
-        // --- SCENARIO 2: LEGACY LAYOUT (BOOTSTRAP FLOATS) ---
+        // Legacy Grid
         const legacyGrid = document.querySelector('[automation-id="productList"]');
         if (legacyGrid) {
-            console.log("TM: Detected Legacy Layout");
             let items = Array.from(legacyGrid.querySelectorAll('.product'));
-
             items.sort((a, b) => {
                 const valA = a.dataset.tmVal ? parseFloat(a.dataset.tmVal) : 999999;
                 const valB = b.dataset.tmVal ? parseFloat(b.dataset.tmVal) : 999999;
                 return valA - valB;
             });
 
-            // TRANSFORM CSS: Convert old float layout to Flexbox
             legacyGrid.style.display = 'flex';
             legacyGrid.style.flexWrap = 'wrap';
             legacyGrid.style.alignItems = 'stretch';
             legacyGrid.className += " tm-flex-override";
-
             legacyGrid.innerHTML = "";
 
             const frag = document.createDocumentFragment();
@@ -239,12 +227,11 @@
                 frag.appendChild(item);
             });
             legacyGrid.appendChild(frag);
-            return;
         }
     }
 
     // =========================================================
-    // 4. UI
+    // 4. UI & INIT
     // =========================================================
 
     function initUI() {
@@ -271,10 +258,19 @@
         document.body.appendChild(btn);
     }
 
+    // DEBOUNCED OBSERVER
+    let timeoutId;
+    const debouncedProcess = () => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            processBatch();
+        }, 150); // Wait 150ms after last mutation before processing
+    };
+
     setTimeout(() => {
         initUI();
         processBatch();
-        const observer = new MutationObserver(() => processBatch());
+        const observer = new MutationObserver(() => debouncedProcess());
         const targetNode = document.body;
         observer.observe(targetNode, { childList: true, subtree: true });
     }, 2000);
