@@ -77,16 +77,43 @@
     }
     @media (max-width: 1100px) { .builder-layout { grid-template-columns: 1fr; } }
 
-    /* BENCH & GRID */
+    /* --- BENCH (SCROLLABLE & STICKY UPDATES) --- */
     .bench-panel {
-      background: var(--glass-dark); border: 1px solid var(--border-color);
-      border-radius: 10px; padding: 15px; min-height: 300px;
+      background: var(--glass-dark); 
+      border: 1px solid var(--border-color);
+      border-radius: 10px; 
+      padding: 15px;
+      
+      /* STICKY & SCROLL LOGIC */
+      position: sticky;
+      top: 20px; /* Sticks 20px from top of window */
+      height: calc(100vh - 40px); /* Max height fits viewport */
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
     }
+
     .panel-header {
       font-size: 1.2rem; color: var(--accent-blue); margin-bottom: 15px;
       display: flex; justify-content: space-between; align-items: center;
+      flex-shrink: 0; /* Prevents header from shrinking */
     }
 
+    /* Target the bench drop zone specifically for scrolling */
+    #bench-zone {
+      overflow-y: auto;
+      flex-grow: 1; /* Takes remaining space */
+      padding-right: 5px;
+      min-height: 200px;
+    }
+
+    /* Custom Scrollbar for Bench */
+    #bench-zone::-webkit-scrollbar { width: 8px; }
+    #bench-zone::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
+    #bench-zone::-webkit-scrollbar-thumb { background: var(--accent-blue); border-radius: 4px; }
+    #bench-zone::-webkit-scrollbar-thumb:hover { background: var(--accent-hover); }
+
+    /* GRID */
     .squad-grid {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;
     }
@@ -100,8 +127,11 @@
       border-bottom: 1px solid #444; font-size: 0.9rem; border-radius: 8px 8px 0 0;
     }
     .drop-zone {
-      min-height: 60px; padding: 8px; flex-grow: 1; transition: background 0.2s;
+      min-height: 60px; padding: 8px; transition: background 0.2s;
     }
+    /* Bench zone handled by ID above, generic drop zones grow */
+    .subgroup .drop-zone { flex-grow: 1; }
+
     .drop-zone.drag-over { background: rgba(52, 152, 219, 0.2); border: 1px dashed var(--accent-blue); }
 
     /* --- PLAYER CARD --- */
