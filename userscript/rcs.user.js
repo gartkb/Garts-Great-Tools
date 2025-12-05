@@ -1,9 +1,10 @@
 // ==UserScript==
-// @name         Superstore Value Sorter (v13.1)
+// @name         Superstore Value Sorter (v14.0 - Modular Core)
 // @namespace    http://tampermonkey.net/
-// @version      13.1
-// @description  The ultimate tool. Handles Weight, Volume, Counts (Eggs/Paper), Multipacks, Packs/Pairs (Socks), Points, Limits, and sorting.
+// @version      14.0
+// @description  Sorts by value using the Garts-Great-Tools Core Module. Handles Points and Multi-buys.
 // @match        https://www.realcanadiansuperstore.ca/*
+// @require      https://gartkb.github.io/Garts-Great-Tools/userscript/tm-value-sorter-core.js
 // @grant        none
 // ==/UserScript==
 
@@ -21,159 +22,87 @@
 
     function parseCardData(card) {
         // Normalize text
-        let rawText = (card.innerText || "").toLowerCase().replace(/[\r\n]+/g, " ").replace(/\s+/g, " ");
+        const rawText = (card.innerText || "").toLowerCase().replace(/[\r\n]+/g, " ").replace(/\s+/g, " ");
 
         // --- STEP 1: FIND POINTS ---
         let pointsValue = 0;
         const pointsMatch = rawText.match(/([0-9,]+)\s*pc optimum points/);
         if (pointsMatch) {
-            pointsValue = parseFloat(pointsMatch[1].replace(/,/g, '')) / 1000;
+            pointsValue = parseFloat(pointsMatch[1].replace(/,/g, '')) / 1000; // 1000 pts = $1
         }
 
-        // --- STEP 2: CLEANUP ---
-        // Remove existing unit prices (e.g. $0.58/1ea, $0.99/100g) so they don't mess up our math
-        // Also remove "Save $2" text so numbers don't get confused
-        const cleanText = rawText.replace(/\$[0-9,.]+\s*\/\s*[0-9.]*\s*(g|kg|lb|ml|l|ea)/g, "     ")
-                                 .replace(/save\s*\$[0-9,.]+/g, "     ");
-
-        // --- STEP 3: FIND QUANTITY (Weight, Vol, Count, or Pack) ---
-        let measure = null;
-
-        // A. Explicit Multipacks (e.g. 4x100g, 12x355ml) - Priority for Food/Liquids
-        const mpMatch = cleanText.match(/\b([0-9]+)\s*[x×]\s*([0-9,.]+)\s*(g|kg|ml|l|lb|ea)\b/);
-        if (mpMatch) {
-            measure = { qty: parseFloat(mpMatch[1]) * parseFloat(mpMatch[2].replace(/,/g, '')), unit: mpMatch[3] };
-        }
-        else {
-            // B. Pack/Pair Logic (e.g. "5-Pack Socks", "Pack of 3", "6 Pairs") - Priority for Clothing/General
-            // Looks for: Number followed by 'pack' OR 'pack of' followed by Number OR Number followed by 'pair'
-            const packMatch = cleanText.match(/\b([0-9]+)\s*-?pack\b/) ||
-                              cleanText.match(/\bpack\s*of\s*([0-9]+)\b/) ||
-                              cleanText.match(/\b([0-9]+)\s*pairs?\b/);
-
-            if (packMatch) {
-                // The number is usually in the first capturing group of the successful match
-                // (Note: cleanText.match returns [fullMatch, captureGroup])
-                const count = parseFloat(packMatch[1]);
-                if (count > 0) {
-                    measure = { qty: count, unit: 'ea' };
-                }
-            }
-        }
-
-        // C. Singles (e.g. 650g, 12 ea) - Fallback
-        if (!measure) {
-            const swMatch = cleanText.match(/(?<!\/)\s*\b([0-9,.]+)\s*(g|kg|ml|l|lb|ea)\b/);
-            if (swMatch) {
-                measure = { qty: parseFloat(swMatch[1].replace(/,/g, '')), unit: swMatch[2] };
-            }
-        }
-
-        // --- STEP 4: FIND SHELF PRICE ---
+        // --- STEP 2: FIND SHELF PRICE (The lowest actual price on card) ---
         let validPrices = [];
 
-        // Check Multi-Buy "2 FOR $9.00"
-        const multiBuyMatch = cleanText.match(/\b([0-9]+)\s*(?:for|\/)\s*\$([0-9,.]+)/);
+        // A. Check Multi-Buy "2 FOR $9.00"
+        const multiBuyMatch = rawText.match(/\b([0-9]+)\s*(?:for|\/)\s*\$([0-9,.]+)/);
         if (multiBuyMatch) {
             const qty = parseFloat(multiBuyMatch[1]);
             const total = parseFloat(multiBuyMatch[2].replace(/,/g, ''));
             if (qty > 0) validPrices.push(total / qty);
         }
 
-        // Check Standalone Prices (Limits, Sale, Member)
-        const pMatches = [...cleanText.matchAll(/\$([0-9,.]+)/g)];
+        // B. Check Standalone Prices (Limits, Sale, Member)
+        // We exclude specific patterns like "save $2" or unit prices
+        const cleanForPrice = rawText.replace(/save\s*\$[0-9,.]+/g, "")
+                                     .replace(/\$[0-9,.]+\s*\/\s*[0-9a-z]+/g, ""); 
+        
+        const pMatches = [...cleanForPrice.matchAll(/\$([0-9,.]+)/g)];
         pMatches.forEach(m => {
             const val = parseFloat(m[1].replace(/,/g, ''));
             if (val > 0.1) validPrices.push(val);
         });
 
-        const bestShelfPrice = validPrices.length > 0 ? Math.min(...validPrices) : null;
+        let bestShelfPrice = validPrices.length > 0 ? Math.min(...validPrices) : null;
 
-        return { shelfPrice: bestShelfPrice, measure, rawText, pointsValue };
-    }
+        if (!bestShelfPrice) return null;
 
-    function calculateResult(card) {
-        const { shelfPrice, measure, rawText, pointsValue } = parseCardData(card);
-
-        // --- APPLY POINTS LOGIC ---
-        let finalPrice = shelfPrice;
-        if (shelfPrice && STATE.usePoints && pointsValue > 0) {
-            finalPrice = Math.max(0.01, shelfPrice - pointsValue);
+        // --- STEP 3: APPLY POINTS LOGIC ---
+        let effectivePrice = bestShelfPrice;
+        if (STATE.usePoints && pointsValue > 0) {
+            effectivePrice = Math.max(0.01, bestShelfPrice - pointsValue);
         }
 
-        // --- CALCULATION ---
-        let calculatedVal = null;
-        let type = 'weight'; // weight, vol, or each
-
-        if (finalPrice && measure && measure.qty > 0) {
-            let p = finalPrice;
-            let q = measure.qty;
-            let u = measure.unit;
-
-            if (u === 'g') calculatedVal = (p/q)*100;
-            else if (u === 'kg') calculatedVal = (p/(q*1000))*100;
-            else if (u === 'lb') calculatedVal = (p/(q*453.6))*100;
-            else if (u === 'ml') { calculatedVal = (p/q)*100; type = 'vol'; }
-            else if (u === 'l') { calculatedVal = (p/(q*1000))*100; type = 'vol'; }
-            else if (u === 'ea') { calculatedVal = (p/q); type = 'each'; }
+        // --- STEP 4: GET TITLE ---
+        // RCS titles are usually in an h3 or specific class, but finding the first significant text block works well
+        let title = "";
+        const titleEl = card.querySelector('[class*="product-tile__details__info__name"]');
+        if (titleEl) {
+            title = titleEl.innerText;
+        } else {
+            // Fallback: use raw text but strip prices
+            title = rawText.substring(0, 100); 
         }
 
-        // --- SCRAPE FALLBACK ---
-        // Useful if the site already calculates per 100g but we missed the weight parsing
-        let scrapedVal = null;
-        const sMatches = [...rawText.toLowerCase().matchAll(/\$([0-9,.]+)\s*\/\s*([0-9.]*)?\s*([a-z]+)/g)];
-        let match = sMatches.find(m => ['g','kg','ml','l','ea'].includes(m[3])) || sMatches.find(m => m[3] === 'lb');
-
-        if (match) {
-            const p = parseFloat(match[1].replace(/,/g,''));
-            const q = parseFloat(match[2])||1;
-            const u = match[3];
-            if (u === 'g') scrapedVal = (p/q)*100;
-            else if (u === 'kg') scrapedVal = (p/(q*1000))*100;
-            else if (u === 'lb') scrapedVal = (p/(q*453.6))*100;
-            else if (u === 'ml') { scrapedVal = (p/q)*100; type = 'vol'; }
-            else if (u === 'l') { scrapedVal = (p/(q*1000))*100; type = 'vol'; }
-            else if (u === 'ea') { scrapedVal = (p/q); type = 'each'; }
-        }
-
-        // --- FINAL DECISION ---
-        let finalVal = 9999;
-        let isDeal = false;
-
-        if (calculatedVal !== null && isFinite(calculatedVal)) {
-            // Sanity check (relaxed if points are involved or if it's 'each' which can vary wildly)
-            if (pointsValue === 0 && scrapedVal !== null && type !== 'each' && calculatedVal < (scrapedVal * 0.10)) {
-                // If our math is WAY lower than the store's shelf tag (e.g. error parsing), trust the shelf tag.
-                // We ignore this for 'each' because socks/packs often don't have a comparable shelf unit price.
-                finalVal = scrapedVal;
-            } else {
-                finalVal = calculatedVal;
-                // Deal detection (if our calculated price is cheaper than the shelf unit price)
-                if (scrapedVal !== null && calculatedVal < (scrapedVal * 0.95)) {
-                    isDeal = true;
-                }
+        // --- STEP 5: GET STORE UNIT PRICE (For Deal Comparison) ---
+        // We scrape this to pass to the Core so it knows if our calculated price is a "Deal"
+        let shelfUnitVal = null;
+        // Matches: $1.25/100g or $0.50/100ml or $0.10/1ea
+        const unitMatch = rawText.match(/\$([0-9,.]+)\s*\/\s*([0-9.]*)?\s*([a-z]+)/);
+        if (unitMatch) {
+            const uPrice = parseFloat(unitMatch[1].replace(/,/g, ''));
+            const uQty = parseFloat(unitMatch[2]) || 1; // e.g. /100g vs /g
+            // We standardize crudely to passing "price per 1 unit" to the core for comparison
+            shelfUnitVal = uPrice / uQty; 
+            
+            // Adjust for 100g/100ml common notation
+            if(unitMatch[3] === 'g' || unitMatch[3] === 'ml') {
+                if(unitMatch[2] == 100) shelfUnitVal = uPrice; // Keep it as "per 100"
+                else shelfUnitVal = uPrice * 100; // Normalize to "per 100"
             }
         }
-        else if (scrapedVal !== null && isFinite(scrapedVal)) {
-            finalVal = scrapedVal;
+
+        // --- STEP 6: CALL CORE ---
+        if (window.ValueSorter) {
+            const result = window.ValueSorter.analyze(title, effectivePrice, shelfUnitVal);
+            if (result) {
+                // Attach point info to result for badging
+                result.hasPoints = (STATE.usePoints && pointsValue > 0);
+            }
+            return result;
         }
 
-        // Format Label
-        let label = "";
-        if (finalVal < 9999) {
-            if (type === 'each') label = `$${finalVal.toFixed(2)}/ea`;
-            else label = `$${finalVal.toFixed(2)}/${type==='vol'?'100ml':'100g'}`;
-        } else {
-             return null;
-        }
-
-        return {
-            val: finalVal,
-            label: label,
-            type: type,
-            isDeal: isDeal,
-            hasPoints: (STATE.usePoints && pointsValue > 0)
-        };
+        return null;
     }
 
     // =========================================================
@@ -181,7 +110,9 @@
     // =========================================================
 
     function badgeItem(card) {
-        const data = calculateResult(card);
+        const data = parseCardData(card);
+        
+        // Cleanup old badges
         const oldBadge = card.querySelector('.tm-badge');
         if (oldBadge) oldBadge.remove();
 
@@ -194,24 +125,34 @@
         Object.assign(badge.style, {
             position: "absolute", top: "6px", right: "6px",
             padding: "3px 6px", borderRadius: "4px", fontSize: "12px",
-            fontWeight: "800", zIndex: "20", boxShadow: "0 1px 3px rgba(0,0,0,0.2)"
+            fontWeight: "800", zIndex: "20", boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+            fontFamily: "sans-serif"
         });
 
-        // Colors
+        // Colors (Mapped from Core Types)
         if (data.isDeal) {
             badge.style.background = "#fffaeb";
             badge.style.color = "#b7791f";
             badge.style.border = "2px solid #b7791f";
             badge.innerText += " ⭐";
-            if (data.hasPoints) badge.innerText += " (pts)";
         } else if (data.type === 'vol') {
-            badge.style.background = "#ebf8ff"; badge.style.color = "#2b6cb0"; badge.style.border = "1px solid #90cdf4";
+            badge.style.background = "#ebf8ff"; 
+            badge.style.color = "#2b6cb0"; 
+            badge.style.border = "1px solid #90cdf4";
         } else if (data.type === 'each') {
-            badge.style.background = "#faf5ff"; badge.style.color = "#553c9a"; badge.style.border = "1px solid #d6bcfa"; // Purple for Counts
-            if (data.hasPoints) badge.innerText += " (pts)";
+            badge.style.background = "#faf5ff"; 
+            badge.style.color = "#553c9a"; 
+            badge.style.border = "1px solid #d6bcfa"; 
         } else {
-            badge.style.background = "#f0fff4"; badge.style.color = "#22543d"; badge.style.border = "1px solid #9ae6b4";
-            if (data.hasPoints) badge.innerText += " (pts)";
+            // Weight
+            badge.style.background = "#f0fff4"; 
+            badge.style.color = "#22543d"; 
+            badge.style.border = "1px solid #9ae6b4";
+        }
+
+        // Add Points indicator if applicable
+        if (data.hasPoints) {
+            badge.innerText += " (pts)";
         }
 
         if (getComputedStyle(card).position === 'static') card.style.position = 'relative';
@@ -241,7 +182,8 @@
         const toggleWrapper = document.createElement("div");
         Object.assign(toggleWrapper.style, {
             background: "rgba(0,0,0,0.7)", padding: "6px 10px", borderRadius: "6px",
-            color: "white", fontSize: "12px", display: "flex", alignItems: "center", gap: "6px"
+            color: "white", fontSize: "12px", display: "flex", alignItems: "center", gap: "6px",
+            fontFamily: "sans-serif"
         });
 
         const checkbox = document.createElement("input");
@@ -262,7 +204,7 @@
         Object.assign(btn.style, {
             padding: "8px 12px", background: "#2f855a", color: "fff",
             border: "2px solid #fff", borderRadius: "8px", fontWeight: "bold", cursor: "pointer",
-            boxShadow: "0 4px 6px rgba(0,0,0,0.3)"
+            boxShadow: "0 4px 6px rgba(0,0,0,0.3)", fontFamily: "sans-serif"
         });
         btn.onclick = () => {
             btn.innerHTML = "Sorting...";
@@ -310,10 +252,11 @@
         grids.forEach(grid => {
             allCards.push(...Array.from(grid.children));
         });
-        allCards.sort((a, b) => (parseFloat(a.dataset.tmVal)||9999) - (parseFloat(b.dataset.tmVal)||9999));
+        allCards.sort((a, b) => (parseFloat(a.dataset.tmVal)||99999) - (parseFloat(b.dataset.tmVal)||99999));
         const frag = document.createDocumentFragment();
         allCards.forEach(c => frag.appendChild(c));
         masterGrid.appendChild(frag);
+        // Hide subsequent grids to merge pagination/infinite scroll blocks
         for (let i = 1; i < grids.length; i++) grids[i].style.display = 'none';
     }
 
