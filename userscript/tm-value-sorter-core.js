@@ -256,4 +256,10 @@
 
         formatLabel: function(val, type) {
             if (val >= 9999) return "";
-            if (type === 'eac
+            if (type === 'each') return `$${val.toFixed(2)}/ea`;
+            if (type === 'vol') return `$${val.toFixed(2)}/100ml`;
+            return `$${val.toFixed(2)}/100g`;
+        }
+    };
+
+})();
