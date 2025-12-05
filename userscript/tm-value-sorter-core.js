@@ -51,7 +51,7 @@
 // ==UserScript==
 // @name         TM Value Sorter Core
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @description  Shared logic for Walmart, Costco, and Superstore Value Sorters. Handles parsing, math, and unit normalization.
 // @grant        none
 // ==/UserScript==
@@ -67,14 +67,14 @@
         WEIGHT: "g|kg|lb|oz",
         VOL: "ml|l|liq",
         // The Mega-List of Countable Keywords
-        // Note: We don't care about "pairs" vs "packs" for the label anymore. Everything is "/ea".
+        // V1.1 Update: Added support for "tea bags", "coffee pods", "k-cups"
         COUNT: [
             "pairs?", "pr", "packs?", "pk", "counts?", "cnt", "ct",
             "pieces?", "pcs", "sets?",
             "rolls?", "sheets?",
             "capsules?", "tablets?", "pills?", "softgels?", "caplets?", "lozenges?", "gumm(y|ies)", "chewables?", "vitamins?",
-            "bags?", "teabags?", "sachets?",
-            "pods?", "k-cups?", "discs?",
+            "bags?", "tea\\s?bags?", "sachets?", // Handles "teabags" and "tea bags"
+            "pods?", "k-?cups?", "discs?", "coffee\\s?pods?",
             "pads?", "liners?", "wipes?", "diapers?", "briefs?", "underwear",
             "cartridges?", "refills?", "blades?",
             "bars?", "bottles?", "cans?", "box(es)?", "eggs?",
@@ -119,7 +119,8 @@
             if (!price || price <= 0) return null;
             if (!title) return null;
 
-            const cleanTitle = title.toLowerCase().replace(/[\r\n]+/g, " ").replace(/\s+/g, " ");
+            // V1.1: Be less aggressive with removing characters so we don't accidentally merge "20g" and "bags"
+            const cleanTitle = title.toLowerCase().replace(/[\r\n]+/g, " ");
 
             // 1. Extract Metrics
             const math = this.extractMath(cleanTitle);   // e.g., 3x100ml
