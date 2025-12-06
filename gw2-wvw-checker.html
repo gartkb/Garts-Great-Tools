@@ -33,7 +33,7 @@
         .gid-small { font-size: 0.75em; color: #666; margin-top: 4px; font-family: monospace; }
         
         .row-selected { background: rgba(76, 175, 80, 0.15); border-left: 3px solid #4caf50; }
-        .status-confirmed { color: #4caf50; font-weight: bold; }
+        .status-confirmed { color: #4caf50; font-weight: bold; font-size: 0.9em; margin-left: 5px; }
         .status-inactive { color: #888; font-style: italic; }
         .status-error { color: #ff5252; }
         .badge { background: #4caf50; color: white; font-size: 0.65em; padding: 3px 6px; border-radius: 3px; text-transform: uppercase; margin-left: 8px; vertical-align: middle; }
@@ -84,16 +84,28 @@
     const API = 'https://api.guildwars2.com/v2';
     const STORAGE_KEY = 'gw2_audit_key';
 
-    // --- ON LOAD: Check for saved Key ---
+    // --- STATIC TEAM DATA FROM WIKI ---
+    // The API doesn't provide an endpoint to resolve names for these IDs yet, 
+    // so we must use this hardcoded list from the wiki page.
+    const TEAM_NAMES = {
+        "11001": "Moogooloo", "11002": "Rall's Rest", "11003": "Domain of Torment", 
+        "11004": "Yohlon Haven", "11005": "Tombs of Drascir", "11006": "Hall of Judgment", 
+        "11007": "Throne of Balthazar", "11008": "Dwayna's Temple", "11009": "Abaddon's Prison", 
+        "11010": "Cathedral of Blood", "11011": "Lutgardis Conservatory", "11012": "Mosswood",
+        "12001": "Skrittsburgh", "12002": "Fortune's Vale", "12003": "Silent Woods", 
+        "12004": "Ettin's Back", "12005": "Domain of Anguish", "12006": "Palawadan", 
+        "12007": "Bloodstone Gulch", "12008": "Frost Citadel", "12009": "Dragrimmar", 
+        "12010": "Grenth's Door", "12011": "Mirror of Lyssa", "12012": "Melandru's Dome", 
+        "12013": "Kormir's Library", "12014": "Great House Aviary", "12015": "Bava Nisos"
+    };
+
+    // --- ON LOAD ---
     window.addEventListener('DOMContentLoaded', () => {
         const savedKey = localStorage.getItem(STORAGE_KEY);
         if(savedKey) {
             document.getElementById('apiKey').value = savedKey;
-            // Optional: Auto-run or just let user click. 
-            // We'll let user click to avoid API spam on refresh.
         }
-        // Load the server list immediately
-        fetchGlobalTeams();
+        fetchGlobalTeams(); // Load the reference list at bottom
     });
 
     // --- HELPER: Save/Forget ---
@@ -121,62 +133,71 @@
             return;
         }
 
-        // SAVE KEY TO LOCAL STORAGE
         saveKey(key);
-
         btn.disabled = true;
         btn.innerText = "Auditing...";
         out.innerHTML = "";
 
         try {
-            // Get Account
+            // 1. Get Account Info
             const accRes = await fetch(`${API}/account?access_token=${key}`);
             if(!accRes.ok) throw new Error(`API Key Error: ${accRes.status}`);
             const acc = await accRes.json();
             
             const worldId = acc.world;
             const selectedGuildId = acc.wvw_guild;
+
+            // 2. Determine Region (NA=1xxx, EU=2xxx) to pick the correct endpoint
+            const region = (worldId < 2000) ? 'na' : 'eu';
             
-            let teamName = `ID: ${worldId}`;
-            let isLegacy = false;
-
-            // Check Teams vs Worlds
-            const [teamRes, worldRes] = await Promise.allSettled([
-                fetch(`${API}/wvw/teams?ids=${worldId}`),
-                fetch(`${API}/worlds?ids=${worldId}`)
-            ]);
-
-            if(teamRes.status === 'fulfilled' && teamRes.value.ok) {
-                const tData = await teamRes.value.json();
-                if(tData.length > 0) teamName = tData[0].name;
-            } else if (worldRes.status === 'fulfilled' && worldRes.value.ok) {
-                const wData = await worldRes.value.json();
-                if(wData.length > 0) {
-                    teamName = wData[0].name;
-                    isLegacy = true; 
-                }
+            // 3. Fetch the massive WvW Guild Map for that region
+            // This returns { "GUILD-GUID": "TEAM-ID", ... }
+            const wvwMapRes = await fetch(`${API}/wvw/guilds/${region}`);
+            let wvwMap = {};
+            if(wvwMapRes.ok) {
+                wvwMap = await wvwMapRes.json();
+            } else {
+                console.error("Could not fetch WvW Guild Map");
             }
 
-            // Get Guilds (Parallel)
+            // 4. Get User's Guild Details
             const guildIds = acc.guilds || [];
             const guildPromises = guildIds.map(id => 
                 fetch(`${API}/guild/${id}`).then(res => res.ok ? res.json() : null)
             );
             const guildsData = await Promise.all(guildPromises);
 
+            // 5. Process Guilds: Check which team they are mapped to
             const processedGuilds = guildsData.map((g, index) => {
-                if(g) return { ...g, valid: true };
-                return { id: guildIds[index], name: "Unknown / Ghost Guild", tag: "???", valid: false };
+                if(!g) return { id: guildIds[index], name: "Unknown Guild", tag: "???", valid: false };
+                
+                // Lookup this guild's ID in the regional map
+                const assignedTeamId = wvwMap[g.id]; 
+                const assignedTeamName = TEAM_NAMES[assignedTeamId] || (assignedTeamId ? `Team ${assignedTeamId}` : null);
+
+                return { 
+                    ...g, 
+                    valid: true,
+                    assignedTeamId: assignedTeamId,
+                    assignedTeamName: assignedTeamName
+                };
             });
 
+            // Sort: Selected guild first, then by name
             processedGuilds.sort((a,b) => (b.id === selectedGuildId) - (a.id === selectedGuildId));
 
-            // Render Rows
+            // 6. Render Rows
             let rows = processedGuilds.map(g => {
                 const isSelected = (g.id === selectedGuildId);
-                let statusCol = isSelected ? 
-                    `<span class="status-confirmed">✔ Determines Team</span>` : 
-                    (g.valid ? `<span class="status-inactive">Not Selected</span>` : `<span class="status-error">API Error</span>`);
+                
+                // Status Column Logic
+                let statusHtml = '';
+                if(g.assignedTeamId) {
+                    statusHtml = `<span style="color:#ddd; font-weight:bold;">${g.assignedTeamName}</span>`;
+                    if(isSelected) statusHtml += ` <span class="status-confirmed">(Active)</span>`;
+                } else {
+                    statusHtml = `<span class="status-inactive">Not assigned to a team</span>`;
+                }
 
                 return `
                     <tr class="${isSelected ? 'row-selected' : ''}">
@@ -185,90 +206,67 @@
                             ${isSelected ? '<span class="badge">Active</span>' : ''}</div>
                             <div class="gid-small">${g.id}</div>
                         </td>
-                        <td>${statusCol}</td>
+                        <td>${statusHtml}</td>
                     </tr>
                 `;
             }).join('');
 
-            // Context Message
-            let explanation = isLegacy 
-                ? `<div style="color:#f5bd00;">⚠️ <strong>Legacy / Unsorted State</strong></div>
-                   You are on a Legacy World (${teamName}). This means you haven't locked in a Team in the WvW menu yet.`
-                : `You are sorted into a World Restructuring Team.`;
-
-            let selectionDebug = selectedGuildId ? `<span style="color:#4caf50">${selectedGuildId}</span>` : `<span style="color:#ff5252">NULL</span>`;
+            // Determine Account's Effective Team
+            let accountTeamName = "Unknown";
+            if(selectedGuildId && wvwMap[selectedGuildId]) {
+                accountTeamName = TEAM_NAMES[wvwMap[selectedGuildId]] || wvwMap[selectedGuildId];
+            } else {
+                accountTeamName = "Not Sorted (Check Selected Guild)";
+            }
 
             out.innerHTML = `
                 <div class="info-header">
-                    <div class="team-display" style="color:${isLegacy ? '#aaa' : '#fff'}">${teamName}</div>
-                    <div style="font-size:0.9em; margin-bottom:10px;">${explanation}</div>
-                    <div class="meta-row">
-                        <div>Account: ${acc.name}</div>
-                        <div>API WvW Guild ID: ${selectionDebug}</div>
+                    <div style="font-size:0.9em; color:#aaa; margin-bottom:5px;">Region: ${region.toUpperCase()}</div>
+                    <div class="team-display">${accountTeamName}</div>
+                    <div style="font-size:0.9em; margin-bottom:10px;">
+                        This is determined by your selected guild: <strong>${selectedGuildId || 'None'}</strong>
                     </div>
                 </div>
-                <table><thead><tr><th>Guild</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Guild</th>
+                            <th>Assigned Team (World Restructuring)</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
             `;
 
         } catch(err) {
             out.innerHTML = `<div class="error-box">Error: ${err.message}</div>`;
+            console.error(err);
         } finally {
             btn.disabled = false;
             btn.innerText = "Audit Account";
         }
     }
 
-    // --- GLOBAL TEAMS LIST ---
-    async function fetchGlobalTeams() {
+    // --- GLOBAL TEAMS LIST (Bottom Reference) ---
+    function fetchGlobalTeams() {
         const div = document.getElementById('teamsList');
         const badge = document.getElementById('listType');
-        div.innerHTML = "<div style='padding:20px; color:#aaa;'>Scanning API for active lists...</div>";
-        badge.innerText = "Scanning...";
+        
+        badge.innerText = "Static Wiki List";
+        badge.style.background = "#2e7d32"; 
 
-        try {
-            let isLegacy = false;
-            let finalData = [];
+        // Just render our static list since API doesn't list them nicely yet
+        // Convert object to array and sort
+        const entries = Object.entries(TEAM_NAMES).map(([id, name]) => ({id, name}));
+        entries.sort((a,b) => a.name.localeCompare(b.name));
 
-            try {
-                const idsRes = await fetch(`${API}/wvw/teams`);
-                if(idsRes.ok) {
-                    const ids = await idsRes.json();
-                    if(ids.length > 0) {
-                        const detailsRes = await fetch(`${API}/wvw/teams?ids=${ids.join(',')}`);
-                        finalData = await detailsRes.json();
-                        badge.innerText = "World Restructuring Teams";
-                        badge.style.background = "#2e7d32"; 
-                    }
-                }
-            } catch (e) { console.log("New teams fetch failed, trying legacy..."); }
-
-            if(finalData.length === 0) {
-                const wIdsRes = await fetch(`${API}/worlds?ids=all`);
-                if(wIdsRes.ok) {
-                    finalData = await wIdsRes.json();
-                    badge.innerText = "Legacy Worlds (Restructuring Inactive)";
-                    badge.style.background = "#c62828";
-                    isLegacy = true;
-                }
-            }
-
-            if(finalData.length === 0) throw new Error("No Teams or Worlds found in API.");
-
-            finalData.sort((a,b) => a.name.localeCompare(b.name));
-
-            div.innerHTML = finalData.map(t => `
-                <div class="team-card">
-                    <strong>${t.name}</strong>
-                    <small>ID: ${t.id}</small>
-                    ${isLegacy && t.id < 2000 ? '<small style="color:#555">NA Server</small>' : ''}
-                    ${isLegacy && t.id > 2000 ? '<small style="color:#555">EU Server</small>' : ''}
-                </div>
-            `).join('');
-
-        } catch(e) {
-            badge.innerText = "Error";
-            div.innerHTML = `<div style="color:#ff5252; padding:20px;">Failed to load teams list.</div>`;
-        }
+        div.innerHTML = entries.map(t => `
+            <div class="team-card">
+                <strong>${t.name}</strong>
+                <small>ID: ${t.id}</small>
+                <small style="color:#555">${t.id.startsWith('11') ? 'NA' : 'EU'}</small>
+            </div>
+        `).join('');
     }
 </script>
 
