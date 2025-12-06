@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GW2 WvW Audit (Auto-Save)</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #1a1a1a; color: #ddd; padding: 40px; display: flex; flex-direction: column; align-items: center; }
+        .container { background: #2a2a2a; padding: 25px; border-radius: 8px; width: 800px; max-width: 95%; box-shadow: 0 10px 25px rgba(0,0,0,0.5); margin-bottom: 30px; }
+        h2 { text-align: center; color: #f5bd00; margin-top: 0; }
+        
+        .input-wrapper { margin-bottom: 20px; }
+        .input-row { display: flex; gap: 10px; }
+        input { flex: 1; padding: 12px; background: #333; border: 1px solid #444; color: white; border-radius: 4px; font-family: monospace; }
+        button { padding: 12px 25px; background: #b71c1c; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; }
+        button:hover { background: #d32f2f; }
+        button:disabled { background: #555; cursor: wait; }
+        
+        .saved-msg { font-size: 0.8em; color: #4caf50; margin-top: 5px; display: none; }
+        .forget-link { font-size: 0.8em; color: #888; text-decoration: underline; cursor: pointer; margin-left: 5px; }
+        .forget-link:hover { color: #ccc; }
+
+        .info-header { background: #333; padding: 20px; border-left: 5px solid #f5bd00; margin-bottom: 25px; }
+        .team-display { font-size: 1.4em; font-weight: bold; color: white; margin-bottom: 5px;}
+        .meta-row { display: flex; justify-content: space-between; font-size: 0.9em; color: #aaa; border-top: 1px solid #444; padding-top: 10px; margin-top: 10px; }
+
+        table { width: 100%; border-collapse: collapse; background: #252525; }
+        th { text-align: left; color: #888; border-bottom: 2px solid #444; padding: 12px; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px; }
+        td { border-bottom: 1px solid #333; padding: 15px 12px; vertical-align: middle; }
+        
+        .guild-name { font-weight: bold; font-size: 1.1em; color: #eee; }
+        .tag { color: #f5bd00; font-family: monospace; font-weight: normal; margin-left: 5px; }
+        .gid-small { font-size: 0.75em; color: #666; margin-top: 4px; font-family: monospace; }
+        
+        .row-selected { background: rgba(76, 175, 80, 0.15); border-left: 3px solid #4caf50; }
+        .status-confirmed { color: #4caf50; font-weight: bold; }
+        .status-inactive { color: #888; font-style: italic; }
+        .status-error { color: #ff5252; }
+        .badge { background: #4caf50; color: white; font-size: 0.65em; padding: 3px 6px; border-radius: 3px; text-transform: uppercase; margin-left: 8px; vertical-align: middle; }
+        .error-box { background: rgba(255, 82, 82, 0.1); border: 1px solid #ff5252; color: #ff8a80; padding: 15px; margin-top: 15px; }
+
+        .teams-section { width: 800px; max-width: 95%; }
+        .teams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-top: 15px; }
+        .team-card { background: #333; padding: 10px; border-radius: 4px; border: 1px solid #444; text-align: center; }
+        .team-card strong { display: block; color: #f5bd00; margin-bottom: 3px; }
+        .team-card small { color: #888; display: block;}
+        .refresh-link { color: #aaa; text-decoration: underline; cursor: pointer; font-size: 0.9em; }
+        .list-type-badge { background: #444; padding: 4px 8px; border-radius: 4px; font-size: 0.8em; color: white; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>GW2 WvW Audit</h2>
+    
+    <div class="input-wrapper">
+        <div class="input-row">
+            <input type="text" id="apiKey" placeholder="Paste your API Key here">
+            <button onclick="auditGuilds()" id="btn">Audit Account</button>
+        </div>
+        <div style="margin-top:5px; display:flex; justify-content:space-between;">
+            <span id="savedMsg" class="saved-msg">Key saved to browser storage.</span>
+            <span class="forget-link" onclick="forgetKey()">Forget Key</span>
+        </div>
+    </div>
+
+    <div id="output"></div>
+</div>
+
+<div class="teams-section">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="margin:0;">Global Server List</h3>
+        <span class="refresh-link" onclick="fetchGlobalTeams()">Force Refresh</span>
+    </div>
+    <div style="margin-top:10px; padding: 10px; background: #252525; border-radius: 4px;">
+        Viewing: <span id="listType" class="list-type-badge">Loading...</span>
+    </div>
+    <div id="teamsList" class="teams-grid">
+        <div style="color:#666; font-style:italic; padding:20px;">Waiting for scan...</div>
+    </div>
+</div>
+
+<script>
+    const API = 'https://api.guildwars2.com/v2';
+    const STORAGE_KEY = 'gw2_audit_key';
+
+    // --- ON LOAD: Check for saved Key ---
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedKey = localStorage.getItem(STORAGE_KEY);
+        if(savedKey) {
+            document.getElementById('apiKey').value = savedKey;
+            // Optional: Auto-run or just let user click. 
+            // We'll let user click to avoid API spam on refresh.
+        }
+        // Load the server list immediately
+        fetchGlobalTeams();
+    });
+
+    // --- HELPER: Save/Forget ---
+    function saveKey(key) {
+        localStorage.setItem(STORAGE_KEY, key);
+        const msg = document.getElementById('savedMsg');
+        msg.style.display = 'inline';
+        setTimeout(() => { msg.style.display = 'none'; }, 3000);
+    }
+
+    function forgetKey() {
+        localStorage.removeItem(STORAGE_KEY);
+        document.getElementById('apiKey').value = '';
+        alert("API Key removed from browser storage.");
+    }
+
+    // --- MAIN AUDIT FUNCTION ---
+    async function auditGuilds() {
+        const out = document.getElementById('output');
+        const btn = document.getElementById('btn');
+        let key = document.getElementById('apiKey').value.trim().replace(/[\s\n\r]+/g, '');
+
+        if(key.length < 50) {
+            out.innerHTML = `<div class="error-box">That doesn't look like a valid API key.</div>`;
+            return;
+        }
+
+        // SAVE KEY TO LOCAL STORAGE
+        saveKey(key);
+
+        btn.disabled = true;
+        btn.innerText = "Auditing...";
+        out.innerHTML = "";
+
+        try {
+            // Get Account
+            const accRes = await fetch(`${API}/account?access_token=${key}`);
+            if(!accRes.ok) throw new Error(`API Key Error: ${accRes.status}`);
+            const acc = await accRes.json();
+            
+            const worldId = acc.world;
+            const selectedGuildId = acc.wvw_guild;
+            
+            let teamName = `ID: ${worldId}`;
+            let isLegacy = false;
+
+            // Check Teams vs Worlds
+            const [teamRes, worldRes] = await Promise.allSettled([
+                fetch(`${API}/wvw/teams?ids=${worldId}`),
+                fetch(`${API}/worlds?ids=${worldId}`)
+            ]);
+
+            if(teamRes.status === 'fulfilled' && teamRes.value.ok) {
+                const tData = await teamRes.value.json();
+                if(tData.length > 0) teamName = tData[0].name;
+            } else if (worldRes.status === 'fulfilled' && worldRes.value.ok) {
+                const wData = await worldRes.value.json();
+                if(wData.length > 0) {
+                    teamName = wData[0].name;
+                    isLegacy = true; 
+                }
+            }
+
+            // Get Guilds (Parallel)
+            const guildIds = acc.guilds || [];
+            const guildPromises = guildIds.map(id => 
+                fetch(`${API}/guild/${id}`).then(res => res.ok ? res.json() : null)
+            );
+            const guildsData = await Promise.all(guildPromises);
+
+            const processedGuilds = guildsData.map((g, index) => {
+                if(g) return { ...g, valid: true };
+                return { id: guildIds[index], name: "Unknown / Ghost Guild", tag: "???", valid: false };
+            });
+
+            processedGuilds.sort((a,b) => (b.id === selectedGuildId) - (a.id === selectedGuildId));
+
+            // Render Rows
+            let rows = processedGuilds.map(g => {
+                const isSelected = (g.id === selectedGuildId);
+                let statusCol = isSelected ? 
+                    `<span class="status-confirmed">✔ Determines Team</span>` : 
+                    (g.valid ? `<span class="status-inactive">Not Selected</span>` : `<span class="status-error">API Error</span>`);
+
+                return `
+                    <tr class="${isSelected ? 'row-selected' : ''}">
+                        <td>
+                            <div class="guild-name">${g.name} <span class="tag">[${g.tag}]</span>
+                            ${isSelected ? '<span class="badge">Active</span>' : ''}</div>
+                            <div class="gid-small">${g.id}</div>
+                        </td>
+                        <td>${statusCol}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Context Message
+            let explanation = isLegacy 
+                ? `<div style="color:#f5bd00;">⚠️ <strong>Legacy / Unsorted State</strong></div>
+                   You are on a Legacy World (${teamName}). This means you haven't locked in a Team in the WvW menu yet.`
+                : `You are sorted into a World Restructuring Team.`;
+
+            let selectionDebug = selectedGuildId ? `<span style="color:#4caf50">${selectedGuildId}</span>` : `<span style="color:#ff5252">NULL</span>`;
+
+            out.innerHTML = `
+                <div class="info-header">
+                    <div class="team-display" style="color:${isLegacy ? '#aaa' : '#fff'}">${teamName}</div>
+                    <div style="font-size:0.9em; margin-bottom:10px;">${explanation}</div>
+                    <div class="meta-row">
+                        <div>Account: ${acc.name}</div>
+                        <div>API WvW Guild ID: ${selectionDebug}</div>
+                    </div>
+                </div>
+                <table><thead><tr><th>Guild</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>
+            `;
+
+        } catch(err) {
+            out.innerHTML = `<div class="error-box">Error: ${err.message}</div>`;
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Audit Account";
+        }
+    }
+
+    // --- GLOBAL TEAMS LIST ---
+    async function fetchGlobalTeams() {
+        const div = document.getElementById('teamsList');
+        const badge = document.getElementById('listType');
+        div.innerHTML = "<div style='padding:20px; color:#aaa;'>Scanning API for active lists...</div>";
+        badge.innerText = "Scanning...";
+
+        try {
+            let isLegacy = false;
+            let finalData = [];
+
+            try {
+                const idsRes = await fetch(`${API}/wvw/teams`);
+                if(idsRes.ok) {
+                    const ids = await idsRes.json();
+                    if(ids.length > 0) {
+                        const detailsRes = await fetch(`${API}/wvw/teams?ids=${ids.join(',')}`);
+                        finalData = await detailsRes.json();
+                        badge.innerText = "World Restructuring Teams";
+                        badge.style.background = "#2e7d32"; 
+                    }
+                }
+            } catch (e) { console.log("New teams fetch failed, trying legacy..."); }
+
+            if(finalData.length === 0) {
+                const wIdsRes = await fetch(`${API}/worlds?ids=all`);
+                if(wIdsRes.ok) {
+                    finalData = await wIdsRes.json();
+                    badge.innerText = "Legacy Worlds (Restructuring Inactive)";
+                    badge.style.background = "#c62828";
+                    isLegacy = true;
+                }
+            }
+
+            if(finalData.length === 0) throw new Error("No Teams or Worlds found in API.");
+
+            finalData.sort((a,b) => a.name.localeCompare(b.name));
+
+            div.innerHTML = finalData.map(t => `
+                <div class="team-card">
+                    <strong>${t.name}</strong>
+                    <small>ID: ${t.id}</small>
+                    ${isLegacy && t.id < 2000 ? '<small style="color:#555">NA Server</small>' : ''}
+                    ${isLegacy && t.id > 2000 ? '<small style="color:#555">EU Server</small>' : ''}
+                </div>
+            `).join('');
+
+        } catch(e) {
+            badge.innerText = "Error";
+            div.innerHTML = `<div style="color:#ff5252; padding:20px;">Failed to load teams list.</div>`;
+        }
+    }
+</script>
+
+</body>
+</html>
