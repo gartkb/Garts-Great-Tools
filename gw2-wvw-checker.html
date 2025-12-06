@@ -3,90 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GW2 WvW Audit (Auto-Save)</title>
+    <title>GW2 WvW Team Manager</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #1a1a1a; color: #ddd; padding: 40px; display: flex; flex-direction: column; align-items: center; }
-        .container { background: #2a2a2a; padding: 25px; border-radius: 8px; width: 800px; max-width: 95%; box-shadow: 0 10px 25px rgba(0,0,0,0.5); margin-bottom: 30px; }
-        h2 { text-align: center; color: #f5bd00; margin-top: 0; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #1a1a1a; color: #ddd; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .main-wrapper { width: 800px; max-width: 95%; }
         
-        .input-wrapper { margin-bottom: 20px; }
-        .input-row { display: flex; gap: 10px; }
-        input { flex: 1; padding: 12px; background: #333; border: 1px solid #444; color: white; border-radius: 4px; font-family: monospace; }
-        button { padding: 12px 25px; background: #b71c1c; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; }
-        button:hover { background: #d32f2f; }
-        button:disabled { background: #555; cursor: wait; }
-        
-        .saved-msg { font-size: 0.8em; color: #4caf50; margin-top: 5px; display: none; }
-        .forget-link { font-size: 0.8em; color: #888; text-decoration: underline; cursor: pointer; margin-left: 5px; }
-        .forget-link:hover { color: #ccc; }
+        /* Containers */
+        .card { background: #2a2a2a; padding: 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); margin-bottom: 20px; border: 1px solid #333; }
+        h2 { color: #f5bd00; margin-top: 0; font-size: 1.5em; border-bottom: 1px solid #444; padding-bottom: 10px; margin-bottom: 20px; }
+        h3 { color: #eee; font-size: 1.1em; margin: 0 0 10px 0; }
 
-        .info-header { background: #333; padding: 20px; border-left: 5px solid #f5bd00; margin-bottom: 25px; }
-        .team-display { font-size: 1.4em; font-weight: bold; color: white; margin-bottom: 5px;}
-        .meta-row { display: flex; justify-content: space-between; font-size: 0.9em; color: #aaa; border-top: 1px solid #444; padding-top: 10px; margin-top: 10px; }
-
-        table { width: 100%; border-collapse: collapse; background: #252525; }
-        th { text-align: left; color: #888; border-bottom: 2px solid #444; padding: 12px; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px; }
-        td { border-bottom: 1px solid #333; padding: 15px 12px; vertical-align: middle; }
+        /* Inputs */
+        .input-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        input[type="text"] { flex: 1; padding: 12px; background: #333; border: 1px solid #444; color: white; border-radius: 4px; font-family: monospace; }
+        select { padding: 12px; background: #333; border: 1px solid #444; color: white; border-radius: 4px; width: 80px; text-align: center; }
         
-        .guild-name { font-weight: bold; font-size: 1.1em; color: #eee; }
-        .tag { color: #f5bd00; font-family: monospace; font-weight: normal; margin-left: 5px; }
-        .gid-small { font-size: 0.75em; color: #666; margin-top: 4px; font-family: monospace; }
-        
-        .row-selected { background: rgba(76, 175, 80, 0.15); border-left: 3px solid #4caf50; }
-        .status-confirmed { color: #4caf50; font-weight: bold; font-size: 0.9em; margin-left: 5px; }
-        .status-inactive { color: #888; font-style: italic; }
-        .status-error { color: #ff5252; }
-        .badge { background: #4caf50; color: white; font-size: 0.65em; padding: 3px 6px; border-radius: 3px; text-transform: uppercase; margin-left: 8px; vertical-align: middle; }
-        .error-box { background: rgba(255, 82, 82, 0.1); border: 1px solid #ff5252; color: #ff8a80; padding: 15px; margin-top: 15px; }
+        /* Buttons */
+        button { padding: 12px 20px; border: none; font-weight: bold; cursor: pointer; border-radius: 4px; transition: background 0.2s; color: white; }
+        .btn-primary { background: #b71c1c; }
+        .btn-primary:hover { background: #d32f2f; }
+        .btn-secondary { background: #006064; }
+        .btn-secondary:hover { background: #00838f; }
+        button:disabled { background: #555 !important; cursor: wait; }
 
-        .teams-section { width: 800px; max-width: 95%; }
-        .teams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-top: 15px; }
-        .team-card { background: #333; padding: 10px; border-radius: 4px; border: 1px solid #444; text-align: center; }
-        .team-card strong { display: block; color: #f5bd00; margin-bottom: 3px; }
-        .team-card small { color: #888; display: block;}
-        .refresh-link { color: #aaa; text-decoration: underline; cursor: pointer; font-size: 0.9em; }
-        .list-type-badge { background: #444; padding: 4px 8px; border-radius: 4px; font-size: 0.8em; color: white; font-weight: bold; }
+        /* Output Areas */
+        .output-box { margin-top: 15px; padding-top: 15px; border-top: 1px solid #333; min-height: 20px; }
+        
+        /* Tables & Lists */
+        table { width: 100%; border-collapse: collapse; background: #222; margin-top: 10px; }
+        th { text-align: left; color: #888; border-bottom: 2px solid #444; padding: 10px; font-size: 0.85em; text-transform: uppercase; }
+        td { border-bottom: 1px solid #333; padding: 12px 10px; vertical-align: middle; }
+        
+        /* Stylized Text */
+        .guild-name { font-weight: bold; color: #eee; }
+        .tag { color: #f5bd00; font-family: monospace; margin-left: 5px; }
+        .team-active { color: #4caf50; font-weight: bold; }
+        .team-inactive { color: #888; font-style: italic; }
+        .badge { background: #4caf50; color: white; font-size: 0.65em; padding: 3px 6px; border-radius: 3px; text-transform: uppercase; margin-left: 8px; }
+        
+        /* Storage Msg */
+        .saved-msg { font-size: 0.8em; color: #4caf50; margin-left: 10px; opacity: 0; transition: opacity 0.5s; }
+        .forget-link { font-size: 0.8em; color: #888; text-decoration: underline; cursor: pointer; float: right; margin-top: 5px; }
+
+        /* Reference Section */
+        .ref-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; margin-top: 10px; }
+        .ref-card { background: #222; padding: 8px; border-radius: 4px; border: 1px solid #333; text-align: center; font-size: 0.9em; }
+        .ref-card strong { display: block; color: #ccc; }
+        .ref-card small { color: #666; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>GW2 WvW Audit</h2>
+<div class="main-wrapper">
     
-    <div class="input-wrapper">
+    <!-- SECTION 1: MY ACCOUNT -->
+    <div class="card">
+        <h2>My Account</h2>
         <div class="input-row">
-            <input type="text" id="apiKey" placeholder="Paste your API Key here">
-            <button onclick="auditGuilds()" id="btn">Audit Account</button>
+            <input type="text" id="apiKey" placeholder="Paste your API Key here (requires account & guilds scope)">
+            <button class="btn-primary" onclick="showMyGuildTeams()" id="btnMy">Show my guild teams</button>
         </div>
-        <div style="margin-top:5px; display:flex; justify-content:space-between;">
-            <span id="savedMsg" class="saved-msg">Key saved to browser storage.</span>
+        <div style="height: 20px;">
+            <span id="savedMsg" class="saved-msg">Key saved.</span>
             <span class="forget-link" onclick="forgetKey()">Forget Key</span>
         </div>
+        <div id="outputAccount" class="output-box"></div>
     </div>
 
-    <div id="output"></div>
-</div>
+    <!-- SECTION 2: GUILD LOOKUP -->
+    <div class="card">
+        <h2>Guild Lookup</h2>
+        <p style="font-size:0.9em; color:#aaa; margin-bottom: 15px;">Search for any guild by name to see their World Restructuring assignment.</p>
+        <div class="input-row">
+            <select id="searchRegion">
+                <option value="na">NA</option>
+                <option value="eu">EU</option>
+            </select>
+            <input type="text" id="searchName" placeholder="Exact Guild Name (e.g. Rate of Fire)">
+            <button class="btn-secondary" onclick="lookupGuild()" id="btnSearch">Search</button>
+        </div>
+        <div id="outputSearch" class="output-box"></div>
+    </div>
 
-<div class="teams-section">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h3 style="margin:0;">Global Server List</h3>
-        <span class="refresh-link" onclick="fetchGlobalTeams()">Force Refresh</span>
+    <!-- SECTION 3: REFERENCE -->
+    <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h3>Team Reference List</h3>
+            <span style="font-size:0.8em; color:#888; cursor:pointer; text-decoration:underline;" onclick="renderRefList()">Refresh</span>
+        </div>
+        <div id="refList" class="ref-grid"></div>
     </div>
-    <div style="margin-top:10px; padding: 10px; background: #252525; border-radius: 4px;">
-        Viewing: <span id="listType" class="list-type-badge">Loading...</span>
-    </div>
-    <div id="teamsList" class="teams-grid">
-        <div style="color:#666; font-style:italic; padding:20px;">Waiting for scan...</div>
-    </div>
+
 </div>
 
 <script>
     const API = 'https://api.guildwars2.com/v2';
     const STORAGE_KEY = 'gw2_audit_key';
 
-    // --- STATIC TEAM DATA FROM WIKI ---
-    // The API doesn't provide an endpoint to resolve names for these IDs yet, 
-    // so we must use this hardcoded list from the wiki page.
+    // --- STATIC DATA ---
     const TEAM_NAMES = {
         "11001": "Moogooloo", "11002": "Rall's Rest", "11003": "Domain of Torment", 
         "11004": "Yohlon Haven", "11005": "Tombs of Drascir", "11006": "Hall of Judgment", 
@@ -99,172 +113,184 @@
         "12013": "Kormir's Library", "12014": "Great House Aviary", "12015": "Bava Nisos"
     };
 
-    // --- ON LOAD ---
+    // --- CACHE ---
+    // We store the massive guild maps here so we don't re-download them 
+    // if the user switches between My Account and Guild Lookup
+    let wvwMapCache = { na: null, eu: null };
+
+    // --- INIT ---
     window.addEventListener('DOMContentLoaded', () => {
         const savedKey = localStorage.getItem(STORAGE_KEY);
-        if(savedKey) {
-            document.getElementById('apiKey').value = savedKey;
-        }
-        fetchGlobalTeams(); // Load the reference list at bottom
+        if(savedKey) document.getElementById('apiKey').value = savedKey;
+        renderRefList();
     });
 
-    // --- HELPER: Save/Forget ---
-    function saveKey(key) {
-        localStorage.setItem(STORAGE_KEY, key);
-        const msg = document.getElementById('savedMsg');
-        msg.style.display = 'inline';
-        setTimeout(() => { msg.style.display = 'none'; }, 3000);
+    // --- SHARED HELPER: Get Map ---
+    async function getWvwMap(region) {
+        if(wvwMapCache[region]) return wvwMapCache[region];
+        
+        const res = await fetch(`${API}/wvw/guilds/${region}`);
+        if(!res.ok) throw new Error(`Could not fetch ${region.toUpperCase()} team data.`);
+        
+        const data = await res.json();
+        wvwMapCache[region] = data;
+        return data;
     }
 
-    function forgetKey() {
-        localStorage.removeItem(STORAGE_KEY);
-        document.getElementById('apiKey').value = '';
-        alert("API Key removed from browser storage.");
-    }
+    // --- FUNCTION 1: SHOW MY GUILD TEAMS ---
+    async function showMyGuildTeams() {
+        const out = document.getElementById('outputAccount');
+        const btn = document.getElementById('btnMy');
+        let key = document.getElementById('apiKey').value.trim();
 
-    // --- MAIN AUDIT FUNCTION ---
-    async function auditGuilds() {
-        const out = document.getElementById('output');
-        const btn = document.getElementById('btn');
-        let key = document.getElementById('apiKey').value.trim().replace(/[\s\n\r]+/g, '');
-
-        if(key.length < 50) {
-            out.innerHTML = `<div class="error-box">That doesn't look like a valid API key.</div>`;
+        if(key.length < 10) {
+            out.innerHTML = `<div style="color:#ff5252">Please enter a valid API key.</div>`;
             return;
         }
 
-        saveKey(key);
+        // Save Key
+        localStorage.setItem(STORAGE_KEY, key);
+        document.getElementById('savedMsg').style.opacity = '1';
+        setTimeout(() => document.getElementById('savedMsg').style.opacity = '0', 3000);
+
         btn.disabled = true;
-        btn.innerText = "Auditing...";
-        out.innerHTML = "";
+        btn.innerText = "Loading...";
+        out.innerHTML = `<div style="color:#888;">Fetching account and team data...</div>`;
 
         try {
-            // 1. Get Account Info
+            // 1. Get Account
             const accRes = await fetch(`${API}/account?access_token=${key}`);
-            if(!accRes.ok) throw new Error(`API Key Error: ${accRes.status}`);
+            if(!accRes.ok) throw new Error("Invalid API Key or API error.");
             const acc = await accRes.json();
-            
-            const worldId = acc.world;
+
+            // 2. Determine Region
+            const region = (acc.world < 2000) ? 'na' : 'eu';
             const selectedGuildId = acc.wvw_guild;
 
-            // 2. Determine Region (NA=1xxx, EU=2xxx) to pick the correct endpoint
-            const region = (worldId < 2000) ? 'na' : 'eu';
-            
-            // 3. Fetch the massive WvW Guild Map for that region
-            // This returns { "GUILD-GUID": "TEAM-ID", ... }
-            const wvwMapRes = await fetch(`${API}/wvw/guilds/${region}`);
-            let wvwMap = {};
-            if(wvwMapRes.ok) {
-                wvwMap = await wvwMapRes.json();
-            } else {
-                console.error("Could not fetch WvW Guild Map");
-            }
+            // 3. Get Map (Uses Cache)
+            out.innerHTML = `<div style="color:#888;">Downloading ${region.toUpperCase()} team map...</div>`;
+            const map = await getWvwMap(region);
 
-            // 4. Get User's Guild Details
+            // 4. Get Guild Details
             const guildIds = acc.guilds || [];
-            const guildPromises = guildIds.map(id => 
-                fetch(`${API}/guild/${id}`).then(res => res.ok ? res.json() : null)
-            );
+            const guildPromises = guildIds.map(id => fetch(`${API}/guild/${id}`).then(r => r.ok ? r.json() : null));
             const guildsData = await Promise.all(guildPromises);
 
-            // 5. Process Guilds: Check which team they are mapped to
-            const processedGuilds = guildsData.map((g, index) => {
-                if(!g) return { id: guildIds[index], name: "Unknown Guild", tag: "???", valid: false };
+            // 5. Build Table
+            let rows = guildsData.map((g, idx) => {
+                if(!g) return ""; // Skip errored guilds
                 
-                // Lookup this guild's ID in the regional map
-                const assignedTeamId = wvwMap[g.id]; 
-                const assignedTeamName = TEAM_NAMES[assignedTeamId] || (assignedTeamId ? `Team ${assignedTeamId}` : null);
-
-                return { 
-                    ...g, 
-                    valid: true,
-                    assignedTeamId: assignedTeamId,
-                    assignedTeamName: assignedTeamName
-                };
-            });
-
-            // Sort: Selected guild first, then by name
-            processedGuilds.sort((a,b) => (b.id === selectedGuildId) - (a.id === selectedGuildId));
-
-            // 6. Render Rows
-            let rows = processedGuilds.map(g => {
                 const isSelected = (g.id === selectedGuildId);
+                const tid = map[g.id];
+                const tName = TEAM_NAMES[tid] || (tid ? `Team ${tid}` : "No Team");
                 
-                // Status Column Logic
-                let statusHtml = '';
-                if(g.assignedTeamId) {
-                    statusHtml = `<span style="color:#ddd; font-weight:bold;">${g.assignedTeamName}</span>`;
-                    if(isSelected) statusHtml += ` <span class="status-confirmed">(Active)</span>`;
-                } else {
-                    statusHtml = `<span class="status-inactive">Not assigned to a team</span>`;
-                }
+                let statusHtml = tid 
+                    ? `<span class="team-active">${tName}</span>` 
+                    : `<span class="team-inactive">Not Assigned</span>`;
+                
+                if(isSelected && tid) statusHtml += ` <span class="badge">Selected</span>`;
+                else if (isSelected) statusHtml += ` <span style="color:#f5bd00; font-size:0.8em;">(Selected but no team)</span>`;
 
                 return `
-                    <tr class="${isSelected ? 'row-selected' : ''}">
+                    <tr style="${isSelected ? 'background:rgba(76, 175, 80, 0.1)' : ''}">
                         <td>
-                            <div class="guild-name">${g.name} <span class="tag">[${g.tag}]</span>
-                            ${isSelected ? '<span class="badge">Active</span>' : ''}</div>
-                            <div class="gid-small">${g.id}</div>
+                            <span class="guild-name">${g.name}</span> <span class="tag">[${g.tag}]</span>
                         </td>
                         <td>${statusHtml}</td>
                     </tr>
                 `;
             }).join('');
 
-            // Determine Account's Effective Team
-            let accountTeamName = "Unknown";
-            if(selectedGuildId && wvwMap[selectedGuildId]) {
-                accountTeamName = TEAM_NAMES[wvwMap[selectedGuildId]] || wvwMap[selectedGuildId];
-            } else {
-                accountTeamName = "Not Sorted (Check Selected Guild)";
-            }
-
             out.innerHTML = `
-                <div class="info-header">
-                    <div style="font-size:0.9em; color:#aaa; margin-bottom:5px;">Region: ${region.toUpperCase()}</div>
-                    <div class="team-display">${accountTeamName}</div>
-                    <div style="font-size:0.9em; margin-bottom:10px;">
-                        This is determined by your selected guild: <strong>${selectedGuildId || 'None'}</strong>
-                    </div>
+                <div style="margin-bottom:10px; border-left:3px solid #f5bd00; padding-left:10px;">
+                    <div>Region: <strong>${region.toUpperCase()}</strong></div>
+                    <div>Account: ${acc.name}</div>
                 </div>
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Guild</th>
-                            <th>Assigned Team (World Restructuring)</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Guild</th><th>Assigned Team</th></tr></thead>
                     <tbody>${rows}</tbody>
                 </table>
             `;
 
-        } catch(err) {
-            out.innerHTML = `<div class="error-box">Error: ${err.message}</div>`;
-            console.error(err);
+        } catch(e) {
+            out.innerHTML = `<div style="color:#ff5252">Error: ${e.message}</div>`;
         } finally {
             btn.disabled = false;
-            btn.innerText = "Audit Account";
+            btn.innerText = "Show my guild teams";
         }
     }
 
-    // --- GLOBAL TEAMS LIST (Bottom Reference) ---
-    function fetchGlobalTeams() {
-        const div = document.getElementById('teamsList');
-        const badge = document.getElementById('listType');
-        
-        badge.innerText = "Static Wiki List";
-        badge.style.background = "#2e7d32"; 
+    // --- FUNCTION 2: GUILD LOOKUP ---
+    async function lookupGuild() {
+        const out = document.getElementById('outputSearch');
+        const btn = document.getElementById('btnSearch');
+        const name = document.getElementById('searchName').value.trim();
+        const region = document.getElementById('searchRegion').value;
 
-        // Just render our static list since API doesn't list them nicely yet
-        // Convert object to array and sort
+        if(!name) return;
+
+        btn.disabled = true;
+        btn.innerText = "...";
+        out.innerHTML = `<div style="color:#888">Searching...</div>`;
+
+        try {
+            // 1. Find Guild ID
+            const searchRes = await fetch(`${API}/guild/search?name=${encodeURIComponent(name)}`);
+            if(!searchRes.ok) throw new Error("Guild not found.");
+            const searchData = await searchRes.json();
+            
+            if(searchData.length === 0) throw new Error("Guild not found.");
+            const gid = searchData[0];
+            const guildRes = await fetch(`${API}/guild/${gid}`);
+            const guildData = await guildRes.json();
+            // 2. Get Map (Uses Cache)
+            // Note: Even if we searched by name, we need to know which region's map to check
+            const map = await getWvwMap(region);
+
+            // 3. Result
+            const tid = map[gid];
+            
+            if(tid) {
+                const tName = TEAM_NAMES[tid] || `Team ${tid}`;
+                out.innerHTML = `
+                    <div style="background:#222; padding:15px; text-align:center; border:1px solid #444; margin-top:10px;">
+                        <div style="font-size:1.2em; color:#fff;">    ${name} <span class="tag">[${guildData.tag}]</span></div>
+                        <div style="color:#aaa; font-size:0.9em; margin-bottom:10px;">${gid}</div>
+                        <div style="font-size:1.5em; font-weight:bold; color:#f5bd00;">${tName}</div>
+                        <div style="color:#666; font-size:0.8em;">Region: ${region.toUpperCase()}</div>
+                    </div>
+                `;
+            } else {
+                 out.innerHTML = `
+                    <div style="background:#2e1a1a; padding:15px; border:1px solid #552222; margin-top:10px; color:#ff8a80;">
+                        <strong>${name}</strong> exists, but is not assigned to a World Restructuring team in <strong>${region.toUpperCase()}</strong>.
+                        <br><small>They might be in the other region or inactive.</small>
+                    </div>
+                `;
+            }
+
+        } catch(e) {
+            out.innerHTML = `<div style="color:#ff5252">${e.message}</div>`;
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Search";
+        }
+    }
+
+    function forgetKey() {
+        localStorage.removeItem(STORAGE_KEY);
+        document.getElementById('apiKey').value = '';
+        alert("Key forgotten.");
+    }
+
+    function renderRefList() {
+        const div = document.getElementById('refList');
         const entries = Object.entries(TEAM_NAMES).map(([id, name]) => ({id, name}));
         entries.sort((a,b) => a.name.localeCompare(b.name));
-
         div.innerHTML = entries.map(t => `
-            <div class="team-card">
+            <div class="ref-card">
                 <strong>${t.name}</strong>
-                <small>ID: ${t.id}</small>
-                <small style="color:#555">${t.id.startsWith('11') ? 'NA' : 'EU'}</small>
+                <small>${t.id} (${t.id.startsWith('11')?'NA':'EU'})</small>
             </div>
         `).join('');
     }
