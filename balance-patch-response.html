@@ -11,18 +11,18 @@
             background-color: #222;
             color: white;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden; /* Prevent scrollbars */
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
-            user-select: none; /* Prevent text selection */
+            user-select: none;
         }
 
         #ui-layer {
             position: absolute;
             top: 20px;
             text-align: center;
-            pointer-events: none; /* Let clicks pass through to canvas */
+            pointer-events: none;
             text-shadow: 2px 2px 4px #000;
             z-index: 10;
         }
@@ -67,7 +67,7 @@
     
     <div id="instructions">
         Click anywhere to throw<br>
-        (Sound enabled on first click)
+        (Audio generated on impact)
     </div>
 
     <script>
@@ -76,41 +76,76 @@
         const ctx = canvas.getContext('2d');
         const scoreEl = document.getElementById('score-board');
 
-        // Resize canvas to fill window
+        // Resize canvas
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            logo.y = 100; // Reset height on resize
+            logo.y = 100;
         });
 
         // --- Assets ---
         const logoImg = new Image();
         logoImg.src = "https://upload.wikimedia.org/wikipedia/fr/7/7f/ArenaNet_Logo.jpg";
 
-        // --- Audio Setup ---
-        // We use a reliable remote URL for the splat sound
-        const splatUrl = "https://www.soundjay.com/misc/sounds/squish-10.mp3";
-        const splatAudio = new Audio(splatUrl);
+        // --- AUDIO SYSTEM (Web Audio API) ---
+        // This generates sound via code so no external file is needed.
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioContext();
+
+        // Resume audio context on user interaction (Browser Policy)
+        let audioEnabled = false;
         
-        // Preload the audio
-        splatAudio.load();
+        function enableAudio() {
+            if (!audioEnabled) {
+                audioCtx.resume().then(() => {
+                    audioEnabled = true;
+                });
+            }
+        }
 
         function playSplat() {
-            // Clone the node so we can play overlapping sounds quickly
-            // (e.g., if you hit twice in 0.1 seconds)
-            const soundClone = splatAudio.cloneNode();
-            soundClone.volume = 0.6; // Lower volume slightly
-            soundClone.play().catch(e => console.log("Audio play failed (interaction needed):", e));
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const t = audioCtx.currentTime;
+
+            // 1. Create a Noise Buffer (for the "splash" sound)
+            const bufferSize = audioCtx.sampleRate * 0.2; // 0.2 seconds duration
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = Math.random() * 2 - 1; // White noise
+            }
+
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = buffer;
+
+            // 2. Create Filter (LowPass to make it sound muffled/wet)
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(800, t);
+            filter.frequency.exponentialRampToValueAtTime(100, t + 0.2); // Frequency drops quickly
+
+            // 3. Create Gain (Volume envelope)
+            const gain = audioCtx.createGain();
+            gain.gain.setValueAtTime(0.5, t);
+            gain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
+
+            // 4. Connect and Play
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioCtx.destination);
+            noise.start();
         }
 
         // --- Game Variables ---
         let score = 0;
         const projectiles = [];
         
-        // The Target Object (Logo)
         const logo = {
             x: canvas.width / 2 - 100,
             y: 80,
@@ -123,6 +158,8 @@
 
         // --- Input Handling ---
         canvas.addEventListener('mousedown', (e) => {
+            // First click unlocks audio
+            enableAudio(); 
             spawnProjectile(e.clientX, e.clientY);
         });
 
@@ -130,12 +167,10 @@
             const startX = canvas.width / 2;
             const startY = canvas.height;
 
-            // Calculate vector to target
             const dx = targetX - startX;
             const dy = targetY - startY;
             const distance = Math.sqrt(dx * dx + dy * dy);
 
-            // Normalize and set speed
             const speed = 12;
             const velocityX = (dx / distance) * speed;
             const velocityY = (dy / distance) * speed;
@@ -152,7 +187,7 @@
 
         // --- Game Loop ---
         function update() {
-            // 1. Move Logo
+            // Move Logo
             logo.x += logo.speed * logo.direction;
 
             if (logo.x + logo.width > canvas.width) {
@@ -161,7 +196,7 @@
                 logo.direction = 1;
             }
 
-            // 2. Move Projectiles
+            // Move Projectiles
             for (let i = projectiles.length - 1; i >= 0; i--) {
                 let p = projectiles[i];
                 p.x += p.vx;
@@ -179,22 +214,19 @@
                     score++;
                     scoreEl.innerText = "Disapproval Score: " + score;
                     
-                    // Play Sound
+                    // Trigger generated sound
                     playSplat();
 
-                    // Add splat
                     logo.splats.push({
                         relX: p.x - logo.x,
                         relY: p.y - logo.y,
                         rotation: p.rotation
                     });
 
-                    // Remove projectile
                     projectiles.splice(i, 1);
                     continue;
                 }
 
-                // Remove if off screen
                 if (p.y < -50 || p.x < -50 || p.x > canvas.width + 50) {
                     projectiles.splice(i, 1);
                 }
@@ -244,7 +276,6 @@
             requestAnimationFrame(loop);
         }
 
-        // Initialize logo size
         logoImg.onload = () => {
             const aspect = logoImg.width / logoImg.height;
             logo.width = 200;
