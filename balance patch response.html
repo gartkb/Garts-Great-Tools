@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balance Patch Response</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #222;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden; /* Prevent scrollbars */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #ui-layer {
+            position: absolute;
+            top: 20px;
+            text-align: center;
+            pointer-events: none; /* Let clicks pass through to canvas */
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #ff4444;
+        }
+
+        #score-board {
+            font-size: 32px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        canvas {
+            background-color: #333;
+            border-bottom: 5px solid #1a1a1a;
+            cursor: crosshair;
+            display: block;
+        }
+
+        #instructions {
+            position: absolute;
+            bottom: 20px;
+            color: #888;
+            font-size: 14px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="ui-layer">
+        <h1>BALANCE PATCH RESPONSE</h1>
+        <div id="score-board">Disapproval Score: 0</div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+    
+    <div id="instructions">Click anywhere to throw</div>
+
+    <script>
+        // --- Game Setup ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.getElementById('score-board');
+
+        // Resize canvas to fill window
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            // Reset logo to center if it gets lost
+            logo.y = 100;
+        });
+
+        // --- Assets ---
+        const logoImg = new Image();
+        // Using the requested ArenaNet logo
+        logoImg.src = "https://upload.wikimedia.org/wikipedia/fr/7/7f/ArenaNet_Logo.jpg";
+
+        // --- Game Variables ---
+        let score = 0;
+        const projectiles = [];
+        
+        // The Target Object (Logo)
+        const logo = {
+            x: canvas.width / 2 - 100,
+            y: 80,
+            width: 200, // Scaled width
+            height: 100, // Scaled height
+            speed: 2,    // "Slowly moving"
+            direction: 1, // 1 = right, -1 = left
+            splats: []   // Array to hold poos stuck to the logo
+        };
+
+        // --- Input Handling ---
+        canvas.addEventListener('mousedown', (e) => {
+            spawnProjectile(e.clientX, e.clientY);
+        });
+
+        function spawnProjectile(targetX, targetY) {
+            const startX = canvas.width / 2;
+            const startY = canvas.height;
+
+            // Calculate vector to target
+            const dx = targetX - startX;
+            const dy = targetY - startY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            // Normalize and set speed
+            const speed = 12;
+            const velocityX = (dx / distance) * speed;
+            const velocityY = (dy / distance) * speed;
+
+            projectiles.push({
+                x: startX,
+                y: startY,
+                vx: velocityX,
+                vy: velocityY,
+                rotation: 0,
+                rotSpeed: (Math.random() - 0.5) * 0.5
+            });
+        }
+
+        // --- Game Loop ---
+        function update() {
+            // 1. Move Logo
+            logo.x += logo.speed * logo.direction;
+
+            // Bounce Logic
+            if (logo.x + logo.width > canvas.width) {
+                logo.direction = -1;
+            } else if (logo.x < 0) {
+                logo.direction = 1;
+            }
+
+            // 2. Move Projectiles
+            for (let i = projectiles.length - 1; i >= 0; i--) {
+                let p = projectiles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.rotation += p.rotSpeed;
+
+                // Check Collision with Logo
+                if (
+                    p.x > logo.x &&
+                    p.x < logo.x + logo.width &&
+                    p.y > logo.y &&
+                    p.y < logo.y + logo.height
+                ) {
+                    // HIT!
+                    score++;
+                    scoreEl.innerText = "Disapproval Score: " + score;
+                    
+                    // Add a splat relative to the logo's current position
+                    // so it moves with the logo
+                    logo.splats.push({
+                        relX: p.x - logo.x,
+                        relY: p.y - logo.y,
+                        rotation: p.rotation
+                    });
+
+                    // Remove projectile
+                    projectiles.splice(i, 1);
+                    continue;
+                }
+
+                // Remove if off screen
+                if (p.y < -50 || p.x < -50 || p.x > canvas.width + 50) {
+                    projectiles.splice(i, 1);
+                }
+            }
+        }
+
+        function draw() {
+            // Clear Screen
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Target (Logo)
+            // We draw a white background rect behind it because the logo is a JPG (no transparency)
+            // making it look cleaner on dark background
+            ctx.fillStyle = "white";
+            ctx.fillRect(logo.x, logo.y, logo.width, logo.height);
+            
+            if (logoImg.complete) {
+                ctx.drawImage(logoImg, logo.x, logo.y, logo.width, logo.height);
+            } else {
+                // Fallback while loading
+                ctx.fillStyle = "#red";
+                ctx.fillText("Loading...", logo.x, logo.y + 50);
+            }
+
+            // Draw Splats (Poos attached to logo)
+            ctx.font = "30px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
+            for (let splat of logo.splats) {
+                // Calculate actual position based on moving logo
+                let drawX = logo.x + splat.relX;
+                let drawY = logo.y + splat.relY;
+
+                ctx.save();
+                ctx.translate(drawX, drawY);
+                ctx.rotate(splat.rotation);
+                ctx.fillText("💩", 0, 0);
+                ctx.restore();
+            }
+
+            // Draw Active Projectiles
+            for (let p of projectiles) {
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rotation);
+                ctx.fillText("💩", 0, 0);
+                ctx.restore();
+            }
+        }
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        // Start the game
+        logoImg.onload = () => {
+            // Optional: adjust aspect ratio based on image size
+            const aspect = logoImg.width / logoImg.height;
+            logo.width = 200;
+            logo.height = 200 / aspect;
+        };
+        
+        loop();
+
+    </script>
+</body>
+</html>
