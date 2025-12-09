@@ -15,6 +15,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            user-select: none; /* Prevent text selection */
         }
 
         #ui-layer {
@@ -23,6 +24,7 @@
             text-align: center;
             pointer-events: none; /* Let clicks pass through to canvas */
             text-shadow: 2px 2px 4px #000;
+            z-index: 10;
         }
 
         h1 {
@@ -50,6 +52,7 @@
             color: #888;
             font-size: 14px;
             pointer-events: none;
+            text-align: center;
         }
     </style>
 </head>
@@ -62,7 +65,10 @@
 
     <canvas id="gameCanvas"></canvas>
     
-    <div id="instructions">Click anywhere to throw</div>
+    <div id="instructions">
+        Click anywhere to throw<br>
+        (Sound enabled on first click)
+    </div>
 
     <script>
         // --- Game Setup ---
@@ -77,14 +83,28 @@
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            // Reset logo to center if it gets lost
-            logo.y = 100;
+            logo.y = 100; // Reset height on resize
         });
 
         // --- Assets ---
         const logoImg = new Image();
-        // Using the requested ArenaNet logo
         logoImg.src = "https://upload.wikimedia.org/wikipedia/fr/7/7f/ArenaNet_Logo.jpg";
+
+        // --- Audio Setup ---
+        // We use a reliable remote URL for the splat sound
+        const splatUrl = "https://www.soundjay.com/misc/sounds/squish-10.mp3";
+        const splatAudio = new Audio(splatUrl);
+        
+        // Preload the audio
+        splatAudio.load();
+
+        function playSplat() {
+            // Clone the node so we can play overlapping sounds quickly
+            // (e.g., if you hit twice in 0.1 seconds)
+            const soundClone = splatAudio.cloneNode();
+            soundClone.volume = 0.6; // Lower volume slightly
+            soundClone.play().catch(e => console.log("Audio play failed (interaction needed):", e));
+        }
 
         // --- Game Variables ---
         let score = 0;
@@ -94,11 +114,11 @@
         const logo = {
             x: canvas.width / 2 - 100,
             y: 80,
-            width: 200, // Scaled width
-            height: 100, // Scaled height
-            speed: 2,    // "Slowly moving"
-            direction: 1, // 1 = right, -1 = left
-            splats: []   // Array to hold poos stuck to the logo
+            width: 200,
+            height: 100,
+            speed: 2,    
+            direction: 1, 
+            splats: []   
         };
 
         // --- Input Handling ---
@@ -135,7 +155,6 @@
             // 1. Move Logo
             logo.x += logo.speed * logo.direction;
 
-            // Bounce Logic
             if (logo.x + logo.width > canvas.width) {
                 logo.direction = -1;
             } else if (logo.x < 0) {
@@ -149,7 +168,7 @@
                 p.y += p.vy;
                 p.rotation += p.rotSpeed;
 
-                // Check Collision with Logo
+                // Check Collision
                 if (
                     p.x > logo.x &&
                     p.x < logo.x + logo.width &&
@@ -160,8 +179,10 @@
                     score++;
                     scoreEl.innerText = "Disapproval Score: " + score;
                     
-                    // Add a splat relative to the logo's current position
-                    // so it moves with the logo
+                    // Play Sound
+                    playSplat();
+
+                    // Add splat
                     logo.splats.push({
                         relX: p.x - logo.x,
                         relY: p.y - logo.y,
@@ -181,30 +202,22 @@
         }
 
         function draw() {
-            // Clear Screen
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw Target (Logo)
-            // We draw a white background rect behind it because the logo is a JPG (no transparency)
-            // making it look cleaner on dark background
+            // Draw Logo
             ctx.fillStyle = "white";
             ctx.fillRect(logo.x, logo.y, logo.width, logo.height);
             
             if (logoImg.complete) {
                 ctx.drawImage(logoImg, logo.x, logo.y, logo.width, logo.height);
-            } else {
-                // Fallback while loading
-                ctx.fillStyle = "#red";
-                ctx.fillText("Loading...", logo.x, logo.y + 50);
             }
 
-            // Draw Splats (Poos attached to logo)
+            // Draw Splats
             ctx.font = "30px Arial";
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
 
             for (let splat of logo.splats) {
-                // Calculate actual position based on moving logo
                 let drawX = logo.x + splat.relX;
                 let drawY = logo.y + splat.relY;
 
@@ -215,7 +228,7 @@
                 ctx.restore();
             }
 
-            // Draw Active Projectiles
+            // Draw Projectiles
             for (let p of projectiles) {
                 ctx.save();
                 ctx.translate(p.x, p.y);
@@ -231,9 +244,8 @@
             requestAnimationFrame(loop);
         }
 
-        // Start the game
+        // Initialize logo size
         logoImg.onload = () => {
-            // Optional: adjust aspect ratio based on image size
             const aspect = logoImg.width / logoImg.height;
             logo.width = 200;
             logo.height = 200 / aspect;
