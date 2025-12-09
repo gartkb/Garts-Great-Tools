@@ -67,7 +67,7 @@
     
     <div id="instructions">
         Click anywhere to throw<br>
-        (Audio generated on impact)
+        (Performance optimized)
     </div>
 
     <script>
@@ -86,56 +86,48 @@
             logo.y = 100;
         });
 
-        // --- Assets ---
+        // --- Assets & Offscreen Buffer ---
         const logoImg = new Image();
+        logoImg.crossOrigin = "Anonymous"; // Helps with canvas manipulation
         logoImg.src = "https://upload.wikimedia.org/wikipedia/fr/7/7f/ArenaNet_Logo.jpg";
 
+        // Create an offscreen canvas to hold the logo + splats
+        // This acts as a single image we update, rather than redrawing thousands of items
+        const bufferCanvas = document.createElement('canvas');
+        const bufferCtx = bufferCanvas.getContext('2d');
+
         // --- AUDIO SYSTEM (Web Audio API) ---
-        // This generates sound via code so no external file is needed.
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         const audioCtx = new AudioContext();
-
-        // Resume audio context on user interaction (Browser Policy)
         let audioEnabled = false;
         
         function enableAudio() {
             if (!audioEnabled) {
-                audioCtx.resume().then(() => {
-                    audioEnabled = true;
-                });
+                audioCtx.resume().then(() => audioEnabled = true);
             }
         }
 
         function playSplat() {
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
+            if (audioCtx.state === 'suspended') audioCtx.resume();
 
             const t = audioCtx.currentTime;
-
-            // 1. Create a Noise Buffer (for the "splash" sound)
-            const bufferSize = audioCtx.sampleRate * 0.2; // 0.2 seconds duration
+            const bufferSize = audioCtx.sampleRate * 0.2; 
             const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
             const data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                data[i] = Math.random() * 2 - 1; // White noise
-            }
+            for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1; 
 
             const noise = audioCtx.createBufferSource();
             noise.buffer = buffer;
 
-            // 2. Create Filter (LowPass to make it sound muffled/wet)
             const filter = audioCtx.createBiquadFilter();
             filter.type = 'lowpass';
             filter.frequency.setValueAtTime(800, t);
-            filter.frequency.exponentialRampToValueAtTime(100, t + 0.2); // Frequency drops quickly
+            filter.frequency.exponentialRampToValueAtTime(100, t + 0.2); 
 
-            // 3. Create Gain (Volume envelope)
             const gain = audioCtx.createGain();
             gain.gain.setValueAtTime(0.5, t);
             gain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
 
-            // 4. Connect and Play
             noise.connect(filter);
             filter.connect(gain);
             gain.connect(audioCtx.destination);
@@ -152,13 +144,25 @@
             width: 200,
             height: 100,
             speed: 2,    
-            direction: 1, 
-            splats: []   
+            direction: 1
+        };
+
+        // --- Initialize Buffer ---
+        logoImg.onload = () => {
+            const aspect = logoImg.width / logoImg.height;
+            logo.width = 200;
+            logo.height = 200 / aspect;
+
+            // Size the buffer to match the logo exactly
+            bufferCanvas.width = logo.width;
+            bufferCanvas.height = logo.height;
+
+            // Draw the clean logo onto the buffer
+            bufferCtx.drawImage(logoImg, 0, 0, logo.width, logo.height);
         };
 
         // --- Input Handling ---
         canvas.addEventListener('mousedown', (e) => {
-            // First click unlocks audio
             enableAudio(); 
             spawnProjectile(e.clientX, e.clientY);
         });
@@ -166,20 +170,16 @@
         function spawnProjectile(targetX, targetY) {
             const startX = canvas.width / 2;
             const startY = canvas.height;
-
             const dx = targetX - startX;
             const dy = targetY - startY;
             const distance = Math.sqrt(dx * dx + dy * dy);
-
             const speed = 12;
-            const velocityX = (dx / distance) * speed;
-            const velocityY = (dy / distance) * speed;
 
             projectiles.push({
                 x: startX,
                 y: startY,
-                vx: velocityX,
-                vy: velocityY,
+                vx: (dx / distance) * speed,
+                vy: (dy / distance) * speed,
                 rotation: 0,
                 rotSpeed: (Math.random() - 0.5) * 0.5
             });
@@ -213,20 +213,29 @@
                     // HIT!
                     score++;
                     scoreEl.innerText = "Disapproval Score: " + score;
-                    
-                    // Trigger generated sound
                     playSplat();
 
-                    logo.splats.push({
-                        relX: p.x - logo.x,
-                        relY: p.y - logo.y,
-                        rotation: p.rotation
-                    });
+                    // BAKE THE SPLAT:
+                    // Instead of saving coordinates, we draw directly onto the offscreen buffer
+                    // Calculate relative position
+                    const relX = p.x - logo.x;
+                    const relY = p.y - logo.y;
 
+                    bufferCtx.save();
+                    bufferCtx.translate(relX, relY);
+                    bufferCtx.rotate(p.rotation);
+                    bufferCtx.font = "30px Arial";
+                    bufferCtx.textAlign = "center";
+                    bufferCtx.textBaseline = "middle";
+                    bufferCtx.fillText("💩", 0, 0);
+                    bufferCtx.restore();
+
+                    // Remove projectile
                     projectiles.splice(i, 1);
                     continue;
                 }
 
+                // Cleanup off-screen
                 if (p.y < -50 || p.x < -50 || p.x > canvas.width + 50) {
                     projectiles.splice(i, 1);
                 }
@@ -236,31 +245,17 @@
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw Logo
-            ctx.fillStyle = "white";
-            ctx.fillRect(logo.x, logo.y, logo.width, logo.height);
-            
+            // Draw Logo (We draw the BUFFER, which contains the logo + all previous splats)
+            // This is the performance fix: we only draw 1 image, not 1000 items.
             if (logoImg.complete) {
-                ctx.drawImage(logoImg, logo.x, logo.y, logo.width, logo.height);
+                ctx.drawImage(bufferCanvas, logo.x, logo.y);
             }
 
-            // Draw Splats
+            // Draw Active Projectiles (Flying poos still need to be individual)
             ctx.font = "30px Arial";
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
 
-            for (let splat of logo.splats) {
-                let drawX = logo.x + splat.relX;
-                let drawY = logo.y + splat.relY;
-
-                ctx.save();
-                ctx.translate(drawX, drawY);
-                ctx.rotate(splat.rotation);
-                ctx.fillText("💩", 0, 0);
-                ctx.restore();
-            }
-
-            // Draw Projectiles
             for (let p of projectiles) {
                 ctx.save();
                 ctx.translate(p.x, p.y);
@@ -275,12 +270,6 @@
             draw();
             requestAnimationFrame(loop);
         }
-
-        logoImg.onload = () => {
-            const aspect = logoImg.width / logoImg.height;
-            logo.width = 200;
-            logo.height = 200 / aspect;
-        };
         
         loop();
 
