@@ -15,7 +15,7 @@
         
         .controls { background:rgba(0,0,0,0.3); padding:20px; border-radius:10px; margin-bottom:20px; display:flex; flex-direction:column; align-items:center; gap:10px; position:relative; }
         
-        .input-wrapper { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; width:100%; max-width:700px; align-items: flex-start; }
+        .input-wrapper { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; width:100%; max-width:800px; align-items: flex-start; }
         .input-col { display: flex; flex-direction: column; flex: 1; min-width: 200px; position: relative; }
 
         input[type="text"] { padding:12px 15px; border:none; border-radius:5px; background:rgba(255,255,255,0.1); color:white; width:100%; font-size:1rem; border:1px solid #3498db; }
@@ -53,9 +53,14 @@
         .add-tab-btn { padding: 0 15px; font-size: 1.5rem; background: rgba(0,0,0,0.2); color: #2ecc71; justify-content: center; }
         .add-tab-btn:hover { background: rgba(46, 204, 113, 0.2); }
 
-        #delivery-btn { background: #7f8c8d; opacity: 0.4; transition: all 0.5s ease; display: flex; align-items: center; gap: 8px; }
-        #delivery-btn.has-delivery { background: linear-gradient(135deg, #f1c40f, #e67e22); color: #2c3e50; opacity: 1; box-shadow: 0 0 15px rgba(241, 196, 15, 0.6); animation: pulse-glow 2s infinite; }
-        @keyframes pulse-glow { 0% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(241, 196, 15, 0); } 100% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0); } }
+        /* --- NOTIFICATION & DELIVERY BUTTON STYLES --- */
+        #delivery-btn, #notification-btn { background: #7f8c8d; opacity: 0.4; transition: all 0.5s ease; display: flex; align-items: center; gap: 8px; }
+        
+        #delivery-btn.has-content, #notification-btn.has-content { opacity: 1; box-shadow: 0 0 15px rgba(241, 196, 15, 0.6); animation: pulse-glow 2s infinite; }
+        #delivery-btn.has-content { background: linear-gradient(135deg, #f1c40f, #e67e22); color: #2c3e50; }
+        #notification-btn.has-content { background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; box-shadow: 0 0 15px rgba(231, 76, 60, 0.6); }
+
+        @keyframes pulse-glow { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
         .search-results { position:absolute; top:100%; left:0; width: 100%; background:rgba(0,0,0,0.95); border:1px solid #3498db; border-radius:5px; max-height:300px; overflow-y:auto; z-index:100; margin-top:5px; display:none; }
         .search-result-item { padding:10px 15px; display:flex; align-items:center; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.1); }
@@ -170,6 +175,22 @@
         .delivery-icon { width: 24px; height: 24px; vertical-align: middle; margin-right: 8px; border-radius: 3px; }
         .delivery-item-name { vertical-align: middle; }
 
+        /* --- NOTIFICATION MODAL & WATCH STYLES --- */
+        .notification-list { display: flex; flex-direction: column; gap: 10px; }
+        .notif-item { background: rgba(0,0,0,0.2); border-left: 4px solid #95a5a6; padding: 15px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+        .notif-item.type-buys { border-color: #2ecc71; background: rgba(46, 204, 113, 0.1); }
+        .notif-item.type-sells { border-color: #e67e22; background: rgba(230, 126, 34, 0.1); }
+        .notif-text-col { flex: 1; margin-right: 15px; }
+        .notif-title { font-weight: bold; font-size: 1.05rem; display: block; margin-bottom: 4px; }
+        .notif-msg { color: #bdc3c7; font-size: 0.95rem; }
+        .notif-time { font-size: 0.75rem; color: #7f8c8d; margin-top: 5px; }
+        .notif-close { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); width: 30px; height: 30px; border-radius: 50%; color: #ecf0f1; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .notif-close:hover { background: #c0392b; border-color: #e74c3c; transform: scale(1.1); }
+        
+        .watch-btn { background: none; border: none; cursor: pointer; font-size: 1.2rem; opacity: 0.2; transition: all 0.2s; padding: 0 5px; filter: grayscale(100%); }
+        .watch-btn:hover { opacity: 0.6; transform: scale(1.2); }
+        .watch-btn.watching { opacity: 1; filter: none; text-shadow: 0 0 10px rgba(255, 215, 0, 0.6); }
+
         @media (max-width:768px) { 
             .items-container{grid-template-columns:1fr;} 
             h1{font-size:2rem;} 
@@ -199,9 +220,14 @@
                     <div id="search-results" class="search-results"></div>
                 </div>
                 <button id="add-item-btn">Add Item</button>
-                <button id="delivery-btn" title="Check Delivery Box">
-                    <span>📦</span> Delivery Box
-                </button>
+                <div style="display:flex; gap:10px;">
+                    <button id="delivery-btn" title="Check Delivery Box">
+                        <span>📦</span> Delivery
+                    </button>
+                    <button id="notification-btn" title="View Notifications">
+                        <span>🔔</span> Alerts <span id="notif-badge"></span>
+                    </button>
+                </div>
             </div>
             <p class="search-hint">Examples: "Ectoplasm", "19721", "Gossamer", "Heavy Crafting Bag", "Gold to Gems"</p>
         </div>
@@ -265,6 +291,22 @@
         </div>
     </div>
 
+    <!-- Notification List Modal -->
+    <div id="notification-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>Notifications</span>
+                <button class="modal-close" onclick="closeModal('notification-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 15px; display: flex; justify-content: flex-end;">
+                    <button onclick="clearAllNotifications()" style="font-size: 0.8rem; padding: 5px 10px; height: auto; background: #c0392b;">Clear All</button>
+                </div>
+                <div id="notification-content" class="notification-list"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Inventory Viewer Modal -->
     <div id="inventory-modal" class="modal-overlay">
         <div class="modal-content">
@@ -316,6 +358,7 @@
         const refreshItemsBtn = document.getElementById('refresh-items-btn');
         const apiSettingsLink = document.getElementById('api-settings-link');
         const deliveryBtn = document.getElementById('delivery-btn');
+        const notificationBtn = document.getElementById('notification-btn');
         const tabsContainer = document.getElementById('tabs-container');
         
         const GOLD_TO_GEMS_ID = 9990001;
@@ -346,14 +389,16 @@
         // --- GLOBAL STATE ---
         let itemTabs = [{ id: 'default', name: 'Main', items: [19721] }];
         let activeTabIndex = 0;
-        let fetchIdCounter = 0; // To prevent race conditions
+        let fetchIdCounter = 0; 
 
-        let staticItemData = null; // Used for Search only
+        let staticItemData = null; 
         let apiKeys = []; 
         let accountOrdersMap = new Map(); 
         let globalInventoryMap = new Map(); 
         let deliveryData = []; 
-        let globalItemData = new Map(); // Dynamic data (prices) + Static
+        let globalItemData = new Map(); 
+        let watchedOrders = new Map(); 
+        let activeNotifications = [];
         
         // Settings
         let enableInventory = true;
@@ -375,6 +420,71 @@
             });
             await Promise.all(workers);
             return results;
+        }
+
+        // --- NOTIFICATIONS & WATCH LOGIC ---
+        function loadWatchedOrders() {
+            try {
+                const raw = localStorage.getItem('gw2_watched_orders');
+                if (raw) watchedOrders = new Map(JSON.parse(raw));
+            } catch (e) { watchedOrders = new Map(); }
+        }
+
+        function saveWatchedOrders() {
+            localStorage.setItem('gw2_watched_orders', JSON.stringify([...watchedOrders]));
+        }
+
+        function loadActiveNotifications() {
+            try {
+                const stored = localStorage.getItem('gw2_active_notifications');
+                if (stored) activeNotifications = JSON.parse(stored);
+            } catch(e) { activeNotifications = []; }
+            updateNotificationBtnState();
+        }
+
+        function saveActiveNotifications() {
+            localStorage.setItem('gw2_active_notifications', JSON.stringify(activeNotifications));
+        }
+
+        function addNotification(type, title, message) {
+            const notif = {
+                id: Date.now() + '-' + Math.random(),
+                type,
+                title,
+                message,
+                timestamp: Date.now()
+            };
+            activeNotifications.unshift(notif); // Add to top
+            saveActiveNotifications();
+            updateNotificationBtnState();
+        }
+
+        function removeNotification(id) {
+            activeNotifications = activeNotifications.filter(n => n.id !== id);
+            saveActiveNotifications();
+            renderNotificationModalList(); // Re-render list if modal is open
+            updateNotificationBtnState();
+        }
+
+        function clearAllNotifications() {
+            if(confirm('Clear all notifications?')) {
+                activeNotifications = [];
+                saveActiveNotifications();
+                renderNotificationModalList();
+                updateNotificationBtnState();
+            }
+        }
+
+        function updateNotificationBtnState() {
+            const count = activeNotifications.length;
+            const badge = document.getElementById('notif-badge');
+            badge.textContent = count > 0 ? `(${count})` : '';
+            
+            if (count > 0) {
+                notificationBtn.classList.add('has-content');
+            } else {
+                notificationBtn.classList.remove('has-content');
+            }
         }
 
         // --- TABS LOGIC ---
@@ -465,7 +575,6 @@
                     if(e.target !== nameInput && index !== activeTabIndex) {
                         activeTabIndex = index;
                         renderTabs();
-                        // FORCE LOADING STATE ON TAB SWITCH
                         itemsContainer.innerHTML = '<div class="loading">Loading tab items...</div>';
                         fetchActiveTabData(); 
                     }
@@ -641,7 +750,7 @@
         }
 
         async function fetchActiveTabData() {
-            const currentId = ++fetchIdCounter; // Track this request ID
+            const currentId = ++fetchIdCounter; 
             const activeIds = itemTabs[activeTabIndex].items;
 
             if (activeIds.length === 0) {
@@ -649,9 +758,6 @@
                 return;
             }
 
-            // If we are already showing "Loading" (from the click handler), don't overwrite it.
-            // But if we are refreshing an existing view, let's keep the items visible until they update (no flicker)
-            // UNLESS the container is empty, then show loading.
             if(itemsContainer.innerHTML.trim() === '') {
                  itemsContainer.innerHTML = '<div class="loading">Loading tab items...</div>';
             }
@@ -659,7 +765,6 @@
             try {
                 const itemResults = await fetchItemData(activeIds); 
                 
-                // If the user switched tabs while we were fetching, don't update!
                 if(currentId !== fetchIdCounter) return;
 
                 itemResults.forEach(item => globalItemData.set(item.id, item));
@@ -674,7 +779,6 @@
 
         // --- DOM RECONCILIATION ---
         function updateDomForActiveTab(activeIds) {
-            // Cleanup: remove loading spinners, error messages, or anything that isn't a card
             Array.from(itemsContainer.children).forEach(child => {
                 if (!child.classList.contains('item-card')) child.remove();
             });
@@ -682,21 +786,17 @@
             const existingCards = new Map();
             itemsContainer.querySelectorAll('.item-card').forEach(el => existingCards.set(Number(el.dataset.itemId), el));
 
-            // Set of IDs that should exist
             const activeIdSet = new Set(activeIds);
 
-            // 1. Remove cards not in active tab
             existingCards.forEach((el, id) => {
                 if(!activeIdSet.has(id)) el.remove();
             });
 
-            // 2. Create or Update cards
             activeIds.forEach(id => {
                 const data = globalItemData.get(id);
                 if(!data) return;
 
                 if(existingCards.has(id)) {
-                    // Update existing
                     const card = existingCards.get(id);
                     const temp = document.createElement('div');
                     temp.appendChild(createItemCard(data)); 
@@ -705,9 +805,8 @@
                         const rmBtn = card.querySelector('.remove-btn');
                         if(rmBtn) rmBtn.addEventListener('click', e => { e.stopPropagation(); removeFromActiveTab(id); });
                     }
-                    itemsContainer.appendChild(card); // Reorder
+                    itemsContainer.appendChild(card);
                 } else {
-                    // Create new
                     itemsContainer.appendChild(createItemCard(data));
                 }
             });
@@ -730,11 +829,13 @@
             }, 5);
 
             const validResults = results.filter(r => r !== null);
+            const currentActiveIds = new Set();
             const deliveryItemIds = new Set();
 
             validResults.forEach(res => {
                 const processOrders = (list, type) => {
                     list.forEach(o => {
+                        currentActiveIds.add(o.id);
                         if(!accountOrdersMap.has(o.item_id)) accountOrdersMap.set(o.item_id, { buys: [], sells: [] });
                         accountOrdersMap.get(o.item_id)[type].push({ ...o, accountName: res.account });
                     });
@@ -753,6 +854,19 @@
                      deliveryData.push({ accountName: res.account, coins: res.delivery.coins, items: res.delivery.items });
                 }
             });
+
+            // --- WATCHED ORDER DETECTION ---
+            if (validResults.length > 0) {
+                watchedOrders.forEach((details, orderId) => {
+                    if (!currentActiveIds.has(orderId)) {
+                        const typeLabel = details.type === 'buys' ? 'Buy Order Exhausted' : 'Sell Order Fulfilled';
+                        const msg = `${details.quantity}x ${details.itemName} at ${formatCurrency(details.price).gold}g ${formatCurrency(details.price).silver}s`;
+                        addNotification(details.type, typeLabel, msg);
+                        watchedOrders.delete(orderId);
+                        saveWatchedOrders();
+                    }
+                });
+            }
 
             if (deliveryItemIds.size > 0) {
                 const deliveryNameMap = new Map();
@@ -774,11 +888,9 @@
             }
 
             if (deliveryData.length > 0) {
-                deliveryBtn.classList.add('has-delivery');
-                deliveryBtn.style.opacity = '1';
+                deliveryBtn.classList.add('has-content');
             } else {
-                deliveryBtn.classList.remove('has-delivery');
-                deliveryBtn.style.opacity = '0.4';
+                deliveryBtn.classList.remove('has-content');
             }
         }
 
@@ -915,7 +1027,7 @@
 
             const promises = [];
             
-            // A: Missing Static Info (Fixed: strict status check)
+            // A: Missing Static Info
             if (missingStaticIds.length > 0) {
                 promises.push(fetch(`https://api.guildwars2.com/v2/items?ids=${missingStaticIds.join(',')}`)
                     .then(r => r.ok ? r.json() : [])
@@ -1156,18 +1268,98 @@
             document.getElementById('order-modal-title').textContent = `${type === 'buys' ? 'Buy' : 'Sell'} Orders for ${itemName}`;
             document.getElementById('order-modal').style.display = 'flex';
             const content = document.getElementById('order-content');
+            
             if (orders.length === 0) { content.innerHTML = '<div style="text-align:center; padding:20px;">No active orders found.</div>'; return; }
+            
             orders.sort((a, b) => type === 'buys' ? b.price - a.price : a.price - b.price);
-            let html = `<table class="data-table"><thead><tr><th>Account</th><th>Qty</th><th>Unit Price</th><th>Total Value</th><th>Date Placed</th></tr></thead><tbody>`;
+            
+            const table = document.createElement('table');
+            table.className = 'data-table';
+            table.innerHTML = `<thead><tr><th>Watch</th><th>Account</th><th>Qty</th><th>Unit Price</th><th>Total Value</th><th>Date Placed</th></tr></thead>`;
+            const tbody = document.createElement('tbody');
+
             orders.forEach(order => {
                 let warningHtml = '';
                 if (itemData) {
                     if (type === 'buys' && itemData.buyPrice && order.price < itemData.buyPrice) warningHtml = ' <span title="Outbid by current market">⚠️</span>';
                     else if (type === 'sells' && itemData.sellPrice && order.price > itemData.sellPrice) warningHtml = ' <span title="Undercut by current market">⚠️</span>';
                 }
-                html += `<tr><td class="col-account">${order.accountName}</td><td class="col-qty">${order.quantity}</td><td>${createCurrencyElement(order.price).outerHTML}${warningHtml}</td><td>${createCurrencyElement(order.quantity * order.price).outerHTML}</td><td class="col-date">${new Date(order.created).toLocaleString()}</td></tr>`;
+
+                const tr = document.createElement('tr');
+                
+                const isWatched = watchedOrders.has(order.id);
+                const watchBtn = document.createElement('button');
+                watchBtn.className = `watch-btn ${isWatched ? 'watching' : ''}`;
+                watchBtn.innerHTML = '🔔';
+                watchBtn.title = isWatched ? "Click to stop watching" : "Alarm when this order finishes";
+                watchBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if (watchedOrders.has(order.id)) {
+                        watchedOrders.delete(order.id);
+                        watchBtn.classList.remove('watching');
+                        watchBtn.title = "Alarm when this order finishes";
+                    } else {
+                        watchedOrders.set(order.id, {
+                            id: order.id,
+                            itemId: itemId,
+                            itemName: itemName,
+                            type: type,
+                            price: order.price,
+                            quantity: order.quantity
+                        });
+                        watchBtn.classList.add('watching');
+                        watchBtn.title = "Click to stop watching";
+                    }
+                    saveWatchedOrders();
+                };
+
+                const tdWatch = document.createElement('td');
+                tdWatch.appendChild(watchBtn);
+
+                tr.innerHTML = `
+                    <td class="col-account">${order.accountName}</td>
+                    <td class="col-qty">${order.quantity}</td>
+                    <td>${createCurrencyElement(order.price).outerHTML}${warningHtml}</td>
+                    <td>${createCurrencyElement(order.quantity * order.price).outerHTML}</td>
+                    <td class="col-date">${new Date(order.created).toLocaleString()}</td>
+                `;
+                tr.prepend(tdWatch);
+                tbody.appendChild(tr);
             });
-            content.innerHTML = html + `</tbody></table>`;
+
+            table.appendChild(tbody);
+            content.innerHTML = '';
+            content.appendChild(table);
+        }
+
+        function openNotificationModal() {
+            document.getElementById('notification-modal').style.display = 'flex';
+            renderNotificationModalList();
+        }
+
+        function renderNotificationModalList() {
+            const content = document.getElementById('notification-content');
+            content.innerHTML = '';
+            
+            if (activeNotifications.length === 0) {
+                content.innerHTML = '<div style="text-align:center; padding:30px; color:#bdc3c7;">No new alerts.</div>';
+                return;
+            }
+
+            activeNotifications.forEach(notif => {
+                const item = document.createElement('div');
+                item.className = `notif-item type-${notif.type}`;
+                item.innerHTML = `
+                    <div class="notif-text-col">
+                        <span class="notif-title">${notif.title}</span>
+                        <div class="notif-msg">${notif.message}</div>
+                        <div class="notif-time">${new Date(notif.timestamp).toLocaleString()}</div>
+                    </div>
+                    <button class="notif-close" title="Dismiss">×</button>
+                `;
+                item.querySelector('.notif-close').onclick = () => removeNotification(notif.id);
+                content.appendChild(item);
+            });
         }
 
         function openContainerModal(itemId) {
@@ -1230,11 +1422,14 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadApiKeys();
             loadSettings();
+            loadWatchedOrders(); // Load alarms
+            loadActiveNotifications();
             loadTabs();
             refreshAllData(); 
 
             apiSettingsLink.onclick = () => document.getElementById('api-modal').style.display = 'flex';
             deliveryBtn.onclick = () => openDeliveryModal();
+            notificationBtn.onclick = () => openNotificationModal();
             document.getElementById('enable-inventory-chk').onchange = (e) => { enableInventory = e.target.checked; saveSettings(); refreshAllData(); };
 
             async function triggerAddItem() {
