@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Guild Wars 2 Trading Post Tracker</title>
     <style>
+        /* --- KEEPING ALL CSS AS IS --- */
         * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: linear-gradient(135deg,#1a2a6c,#2c3e50); color:#ecf0f1; padding:20px; min-height:100vh; }
         .container { max-width:1200px; margin:0 auto; }
@@ -25,20 +26,9 @@
         button:hover:not(:disabled) { background:#2980b9; transform:translateY(-2px); }
         button:disabled { background:#7f8c8d; cursor:not-allowed; transform:none; }
         
-        .api-link {
-            font-size: 0.7rem;
-            color: #7f8c8d;
-            text-decoration: none;
-            cursor: pointer;
-            margin-top: 4px;
-            margin-left: 2px;
-            text-align: left;
-            align-self: flex-start;
-            transition: color 0.3s;
-        }
+        .api-link { font-size: 0.7rem; color: #7f8c8d; text-decoration: none; cursor: pointer; margin-top: 4px; margin-left: 2px; text-align: left; align-self: flex-start; transition: color 0.3s; }
         .api-link:hover { color: #bdc3c7; text-decoration: underline; }
 
-        /* --- TABS STYLING --- */
         .tabs-container { display: flex; gap: 5px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; border-bottom: 1px solid rgba(52, 152, 219, 0.3); align-items: flex-end; }
         .tab-btn { background: rgba(0,0,0,0.2); border: 1px solid transparent; border-bottom: none; padding: 8px 15px; border-radius: 8px 8px 0 0; color: #95a5a6; cursor: pointer; font-size: 1rem; transition: all 0.2s; white-space: nowrap; position: relative; height: 42px; display: flex; align-items: center; gap: 8px; min-width: 80px; justify-content: center; }
         .tab-btn:hover { background: rgba(52, 152, 219, 0.1); color: white; }
@@ -53,9 +43,8 @@
         .add-tab-btn { padding: 0 15px; font-size: 1.5rem; background: rgba(0,0,0,0.2); color: #2ecc71; justify-content: center; }
         .add-tab-btn:hover { background: rgba(46, 204, 113, 0.2); }
 
-        /* --- NOTIFICATION & DELIVERY BUTTON STYLES --- */
-        #delivery-btn, #notification-btn { background: #7f8c8d; opacity: 0.4; transition: all 0.5s ease; display: flex; align-items: center; gap: 8px; }
-        
+        #delivery-btn, #notification-btn, #orders-btn { background: #7f8c8d; opacity: 0.8; transition: all 0.5s ease; display: flex; align-items: center; gap: 8px; }
+        #orders-btn { background: #2980b9; opacity: 1; }
         #delivery-btn.has-content, #notification-btn.has-content { opacity: 1; box-shadow: 0 0 15px rgba(241, 196, 15, 0.6); animation: pulse-glow 2s infinite; }
         #delivery-btn.has-content { background: linear-gradient(135deg, #f1c40f, #e67e22); color: #2c3e50; }
         #notification-btn.has-content { background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; box-shadow: 0 0 15px rgba(231, 76, 60, 0.6); }
@@ -68,28 +57,22 @@
         .search-result-item:hover { background: rgba(52,152,219,0.25); }
         
         .items-container { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:20px; margin-top:20px; }
-        
         .item-card { background:rgba(0,0,0,0.4); border-radius:10px; overflow: visible; transition:transform .3s, opacity 0.3s; display:flex; flex-direction:column; height:100%; position:relative; cursor:grab; }
         .item-card:hover { transform:translateY(-5px); box-shadow:0 5px 15px rgba(0,0,0,0.3); }
         .item-card:active { cursor:grabbing; transform:translateY(-2px); }
-        
         .item-header { position:relative; padding:15px; background:rgba(52,152,219,0.2); display:flex; align-items:center; border-radius: 10px 10px 0 0; }
         .item-image { width:60px; height:60px; background:#1c1c1c; border-radius:5px; margin-right:15px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
         .item-image img { max-width:100%; max-height:100%; object-fit:contain; }
-        
         .item-info { flex: 1; overflow: hidden; min-width: 0; margin-right: 45px; } 
         .item-name { font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; white-space: nowrap; display: block; overflow: hidden; text-overflow: ellipsis; }
         .item-name a, .item-name span { vertical-align: middle; display: inline-block; }
-
         .item-id { color:#95a5a6; font-size:.9rem; display:flex; align-items:center; gap: 10px; min-height: 24px; }
-        
         .order-icon { cursor: pointer; font-size: 1.2rem; transition: transform 0.2s; display: inline-flex; align-items: center; justify-content: center; border-radius: 4px; padding: 0 2px; }
         .order-icon:hover { transform: scale(1.2); background: rgba(255,255,255,0.1); }
         .icon-buy { filter: drop-shadow(0 0 2px rgba(46, 204, 113, 0.5)); border-bottom: 2px solid #2ecc71; }
         .icon-sell { filter: drop-shadow(0 0 2px rgba(231, 76, 60, 0.5)); border-bottom: 2px solid #e74c3c; }
         .icon-inv { filter: drop-shadow(0 0 2px rgba(241, 196, 15, 0.5)); border-bottom: 2px solid #f1c40f; }
         .icon-warn { border-bottom-style: dashed !important; opacity: 0.8; }
-
         .item-prices { padding:20px; flex:1; }
         .price-row { display:flex; justify-content:space-between; margin-bottom:15px; padding-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.1); }
         .price-row:last-child { margin-bottom:0; padding-bottom:0; border-bottom:none; }
@@ -99,34 +82,14 @@
         .gold { background:linear-gradient(to bottom,#ffd700,#daa520); color:#000; }
         .silver { background:linear-gradient(to bottom,#c0c0c0,#a9a9c0); color:#000; }
         .copper { background:linear-gradient(to bottom,#b87333,#8b4513); color:#fff; }
-        
         .card-actions { position:absolute; top:8px; right:8px; display:flex; gap: 5px; z-index: 2;}
         .card-btn { width:24px; height:24px; border-radius:50%; color:white; border:none; font-weight:bold; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; opacity:.7; transition:all .2s; }
         .card-btn:hover { opacity:1; transform: scale(1.1); }
         .remove-btn { background:rgba(231,76,60,0.7); }
         .remove-btn:hover { background:rgba(231,76,60,1); }
 
-        .loading { 
-            text-align:center; 
-            padding:40px; 
-            font-size:1.2rem; 
-            color:#bdc3c7;
-            grid-column: 1 / -1; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-        /* CSS Spinner */
-        .loading::after {
-            content: "";
-            width: 24px;
-            height: 24px;
-            border: 3px solid #3498db;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
+        .loading { text-align:center; padding:40px; font-size:1.2rem; color:#bdc3c7; grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: 15px; }
+        .loading::after { content: ""; width: 24px; height: 24px; border: 3px solid #3498db; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         .error { background:rgba(231,76,60,0.2); padding:15px; border-radius:5px; margin:20px 0; text-align:center; grid-column: 1 / -1; }
@@ -137,7 +100,6 @@
         .graph-link { color: #3498db; text-decoration: none; margin-left: 6px; font-size: 1.1rem; vertical-align: middle; opacity: 0.9; transition: opacity 0.2s, color 0.2s; }
         .graph-link:hover { opacity: 1; color: #2980b9; }
 
-        /* --- MODAL STYLES --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
         .modal-content { background: #2c3e50; border: 1px solid #3498db; border-radius: 8px; width: 95%; max-width: 900px; padding: 20px; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.5); max-height: 90vh; display: flex; flex-direction: column; }
         .modal-header { font-size: 1.5rem; color: #3498db; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
@@ -151,17 +113,14 @@
         .api-name { font-weight: bold; color: #3498db; }
         .api-key-mask { color: #95a5a6; font-family: monospace; font-size: 0.8rem; margin-left: 10px; }
         .delete-key-btn { background: #e74c3c; padding: 5px 10px; font-size: 0.8rem; }
-
         .global-toggle { margin-bottom: 20px; padding: 15px; background: rgba(46, 204, 113, 0.1); border-radius: 5px; display:flex; align-items: center; border: 1px solid rgba(46, 204, 113, 0.3); }
         .global-toggle label { cursor: pointer; font-weight: bold; color: #2ecc71; margin-left: 10px; font-size: 1.05rem; }
-
         .guild-list { margin-top: 10px; display: flex; flex-direction: column; gap: 5px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
         .guild-item { display: flex; align-items: center; background: rgba(0,0,0,0.2); padding: 8px 12px; border-radius: 4px; }
         .guild-item label { flex: 1; margin-left: 10px; cursor: pointer; color: #ecf0f1; display: flex; justify-content: space-between; }
         .guild-tag { color: #f39c12; font-weight: bold; margin-left: 5px; }
         .section-title { color: #3498db; font-weight: bold; margin-bottom: 10px; font-size: 1.1rem; margin-top: 20px; }
 
-        /* Table Styles */
         .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
         .data-table th { text-align: left; color: #95a5a6; padding: 8px; border-bottom: 1px solid #3498db; }
         .data-table td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); vertical-align: middle; }
@@ -169,13 +128,31 @@
         .col-guild { font-weight: bold; color: #e67e22; } 
         .col-qty { color: #f1c40f; font-weight: bold; }
         .col-date { font-size: 0.8rem; color: #bdc3c7; }
-        
         .inv-owner-header { background: rgba(52, 152, 219, 0.1); color: #3498db; font-weight: bold; padding: 8px; }
-        .inv-total-row { background: rgba(241, 196, 15, 0.1); font-weight: bold; }
         .delivery-icon { width: 24px; height: 24px; vertical-align: middle; margin-right: 8px; border-radius: 3px; }
         .delivery-item-name { vertical-align: middle; }
 
-        /* --- NOTIFICATION MODAL & WATCH STYLES --- */
+        .order-toggles { display: flex; gap: 10px; margin-bottom: 15px; }
+        .order-toggle-btn { flex: 1; opacity: 0.5; border: 1px solid transparent; }
+        .order-toggle-btn.active-buys { opacity: 1; background: rgba(46, 204, 113, 0.2); border-color: #2ecc71; color: #2ecc71; }
+        .order-toggle-btn.active-sells { opacity: 1; background: rgba(231, 76, 60, 0.2); border-color: #e74c3c; color: #e74c3c; }
+
+        /* --- STYLES FOR ORDER FILTERS & SORTING --- */
+        .order-controls-bar { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 10px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 5px; align-items: center; }
+        .order-search-input { padding: 8px 12px; border: 1px solid #3498db; border-radius: 4px; background: rgba(255,255,255,0.1); color: white; min-width: 200px; flex: 1; }
+        .order-account-filters { display: flex; gap: 10px; flex-wrap: wrap; }
+        .order-acc-chk { display: flex; align-items: center; gap: 5px; background: rgba(52, 152, 219, 0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid transparent; cursor: pointer; user-select: none; font-size: 0.85rem; }
+        .order-acc-chk:hover { background: rgba(52, 152, 219, 0.2); }
+        .order-acc-chk.unchecked { opacity: 0.5; border-color: #7f8c8d; background: transparent; }
+        .order-acc-chk input { display: none; }
+        
+        /* Sortable Headers */
+        .sortable-th { cursor: pointer; user-select: none; transition: color 0.2s; position: relative; padding-right: 15px !important; }
+        .sortable-th:hover { color: #ecf0f1; }
+        .sortable-th::after { content: '↕'; position: absolute; right: 2px; font-size: 0.7em; opacity: 0.3; }
+        .sortable-th.sorted-asc::after { content: '▲'; opacity: 1; color: #3498db; }
+        .sortable-th.sorted-desc::after { content: '▼'; opacity: 1; color: #3498db; }
+
         .notification-list { display: flex; flex-direction: column; gap: 10px; }
         .notif-item { background: rgba(0,0,0,0.2); border-left: 4px solid #95a5a6; padding: 15px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
         .notif-item.type-buys { border-color: #2ecc71; background: rgba(46, 204, 113, 0.1); }
@@ -186,7 +163,6 @@
         .notif-time { font-size: 0.75rem; color: #7f8c8d; margin-top: 5px; }
         .notif-close { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); width: 30px; height: 30px; border-radius: 50%; color: #ecf0f1; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
         .notif-close:hover { background: #c0392b; border-color: #e74c3c; transform: scale(1.1); }
-        
         .watch-btn { background: none; border: none; cursor: pointer; font-size: 1.2rem; opacity: 0.2; transition: all 0.2s; padding: 0 5px; filter: grayscale(100%); }
         .watch-btn:hover { opacity: 0.6; transform: scale(1.2); }
         .watch-btn.watching { opacity: 1; filter: none; text-shadow: 0 0 10px rgba(255, 215, 0, 0.6); }
@@ -221,6 +197,9 @@
                 </div>
                 <button id="add-item-btn">Add Item</button>
                 <div style="display:flex; gap:10px;">
+                    <button id="orders-btn" title="View Pending Orders">
+                        <span>📜</span> Orders
+                    </button>
                     <button id="delivery-btn" title="Check Delivery Box">
                         <span>📦</span> Delivery
                     </button>
@@ -278,7 +257,31 @@
         </div>
     </div>
 
-    <!-- Order Viewer Modal -->
+    <!-- Global Orders Modal (UPDATED) -->
+    <div id="global-orders-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>My Pending Orders</span>
+                <button class="modal-close" onclick="closeModal('global-orders-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="order-toggles">
+                    <button id="toggle-buys" class="order-toggle-btn active-buys" onclick="switchOrderType('buys')">Buy Orders</button>
+                    <button id="toggle-sells" class="order-toggle-btn" onclick="switchOrderType('sells')">Sell Listings</button>
+                </div>
+                <!-- Filter Controls -->
+                <div class="order-controls-bar">
+                    <input type="text" id="order-search-input" class="order-search-input" placeholder="Filter items by name..." oninput="handleOrderSearch(this.value)">
+                    <div id="order-account-filters" class="order-account-filters">
+                        <!-- Checkboxes generated via JS -->
+                    </div>
+                </div>
+                <div id="global-orders-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Viewer Modal (Specific Item) -->
     <div id="order-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -359,6 +362,7 @@
         const apiSettingsLink = document.getElementById('api-settings-link');
         const deliveryBtn = document.getElementById('delivery-btn');
         const notificationBtn = document.getElementById('notification-btn');
+        const ordersBtn = document.getElementById('orders-btn');
         const tabsContainer = document.getElementById('tabs-container');
         
         const GOLD_TO_GEMS_ID = 9990001;
@@ -393,13 +397,20 @@
 
         let staticItemData = null; 
         let apiKeys = []; 
-        let accountOrdersMap = new Map(); 
+        let accountOrdersMap = new Map();
+        let allAccountOrders = { buys: [], sells: [] }; 
         let globalInventoryMap = new Map(); 
         let deliveryData = []; 
         let globalItemData = new Map(); 
         let watchedOrders = new Map(); 
         let activeNotifications = [];
         
+        // Order Viewer State
+        let currentOrderType = 'buys';
+        let currentOrderSort = { col: 'date', dir: 'desc' };
+        let selectedOrderAccounts = new Set();
+        let orderSearchQuery = '';
+
         // Settings
         let enableInventory = true;
         let disabledGuilds = new Set();
@@ -454,7 +465,7 @@
                 message,
                 timestamp: Date.now()
             };
-            activeNotifications.unshift(notif); // Add to top
+            activeNotifications.unshift(notif); 
             saveActiveNotifications();
             updateNotificationBtnState();
         }
@@ -462,7 +473,7 @@
         function removeNotification(id) {
             activeNotifications = activeNotifications.filter(n => n.id !== id);
             saveActiveNotifications();
-            renderNotificationModalList(); // Re-render list if modal is open
+            renderNotificationModalList(); 
             updateNotificationBtnState();
         }
 
@@ -479,12 +490,8 @@
             const count = activeNotifications.length;
             const badge = document.getElementById('notif-badge');
             badge.textContent = count > 0 ? `(${count})` : '';
-            
-            if (count > 0) {
-                notificationBtn.classList.add('has-content');
-            } else {
-                notificationBtn.classList.remove('has-content');
-            }
+            if (count > 0) notificationBtn.classList.add('has-content');
+            else notificationBtn.classList.remove('has-content');
         }
 
         // --- TABS LOGIC ---
@@ -814,6 +821,7 @@
 
         async function fetchAccountData() {
             accountOrdersMap.clear();
+            allAccountOrders = { buys: [], sells: [] }; // Reset global order list
             deliveryData = [];
             if(apiKeys.length === 0) return;
 
@@ -830,14 +838,20 @@
 
             const validResults = results.filter(r => r !== null);
             const currentActiveIds = new Set();
-            const deliveryItemIds = new Set();
+            const extraItemIds = new Set(); // Collect IDs for both delivery AND global orders to fetch names
 
             validResults.forEach(res => {
                 const processOrders = (list, type) => {
                     list.forEach(o => {
                         currentActiveIds.add(o.id);
+                        extraItemIds.add(o.item_id);
+                        
+                        // Populate Map for specific item cards
                         if(!accountOrdersMap.has(o.item_id)) accountOrdersMap.set(o.item_id, { buys: [], sells: [] });
                         accountOrdersMap.get(o.item_id)[type].push({ ...o, accountName: res.account });
+
+                        // Populate Global List
+                        allAccountOrders[type].push({ ...o, accountName: res.account });
                     });
                 };
                 processOrders(res.buys, 'buys');
@@ -845,7 +859,7 @@
 
                 if (res.delivery && (res.delivery.coins > 0 || res.delivery.items.length > 0)) {
                      res.delivery.items.forEach(i => {
-                         deliveryItemIds.add(i.id);
+                         extraItemIds.add(i.id);
                          if (enableInventory) {
                              if (!globalInventoryMap.has(i.id)) globalInventoryMap.set(i.id, []);
                              globalInventoryMap.get(i.id).push({ owner: res.account, source: 'Delivery Box', count: i.count, isGuild: false });
@@ -868,22 +882,24 @@
                 });
             }
 
-            if (deliveryItemIds.size > 0) {
-                const deliveryNameMap = new Map();
-                const cached = await getStaticItemDetails([...deliveryItemIds]);
-                cached.forEach(c => deliveryNameMap.set(c.id, { name: c.name, icon: c.icon }));
+            // Ensure we have item details (names/icons) for everything in delivery boxes AND pending orders
+            if (extraItemIds.size > 0) {
+                const nameMap = new Map();
+                const cached = await getStaticItemDetails([...extraItemIds]);
+                cached.forEach(c => nameMap.set(c.id, { name: c.name, icon: c.icon }));
                 
-                const missing = [...deliveryItemIds].filter(id => !deliveryNameMap.has(id));
+                const missing = [...extraItemIds].filter(id => !nameMap.has(id));
                 if(missing.length > 0) {
                     try {
                         const apiItems = await fetch(`https://api.guildwars2.com/v2/items?ids=${missing.join(',')}`).then(r=>r.ok?r.json():[]);
                         await saveStaticItemDetails(apiItems); 
-                        apiItems.forEach(i => deliveryNameMap.set(i.id, { name: i.name, icon: i.icon }));
+                        apiItems.forEach(i => nameMap.set(i.id, { name: i.name, icon: i.icon }));
                     } catch(e){}
                 }
 
+                // Hydrate delivery data
                 deliveryData.forEach(d => {
-                    d.items = d.items.map(i => ({ ...i, ...(deliveryNameMap.get(i.id) || { name: `Item ${i.id}`, icon: '' }) }));
+                    d.items = d.items.map(i => ({ ...i, ...(nameMap.get(i.id) || { name: `Item ${i.id}`, icon: '' }) }));
                 });
             }
 
@@ -1027,7 +1043,6 @@
 
             const promises = [];
             
-            // A: Missing Static Info
             if (missingStaticIds.length > 0) {
                 promises.push(fetch(`https://api.guildwars2.com/v2/items?ids=${missingStaticIds.join(',')}`)
                     .then(r => r.ok ? r.json() : [])
@@ -1040,7 +1055,6 @@
                 );
             }
 
-            // B: Prices
             if (regularIds.length > 0) {
                 promises.push(fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${regularIds.join(',')}`)
                     .then(r => r.ok ? r.json() : [])
@@ -1058,7 +1072,6 @@
                 );
             }
 
-            // C: Special Items
             specialIds.forEach(sid => {
                 const def = SPECIAL_ITEMS[sid];
                 promises.push(
@@ -1077,7 +1090,6 @@
                 );
             });
 
-            // D: Containers
             if(containerIds.length > 0) {
                 const childSet = new Set();
                 containerIds.forEach(cid => CONTAINER_ITEMS[cid].items.forEach(i => childSet.add(i.id)));
@@ -1332,6 +1344,162 @@
             content.appendChild(table);
         }
 
+        // Global Order Modal (UPDATED)
+        async function openGlobalOrdersModal() {
+            // Initialize selected accounts to all if empty
+            if (selectedOrderAccounts.size === 0 && apiKeys.length > 0) {
+                apiKeys.forEach(k => selectedOrderAccounts.add(k.name));
+            }
+
+            // Render Account Checkboxes
+            const accContainer = document.getElementById('order-account-filters');
+            accContainer.innerHTML = '';
+            apiKeys.forEach(k => {
+                const isChecked = selectedOrderAccounts.has(k.name);
+                const label = document.createElement('label');
+                label.className = `order-acc-chk ${isChecked ? '' : 'unchecked'}`;
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = isChecked;
+                
+                checkbox.onchange = () => {
+                     if (checkbox.checked) {
+                        selectedOrderAccounts.add(k.name);
+                        label.classList.remove('unchecked');
+                    } else {
+                        selectedOrderAccounts.delete(k.name);
+                        label.classList.add('unchecked');
+                    }
+                    renderGlobalOrders();
+                };
+
+                label.appendChild(checkbox);
+                label.appendChild(document.createTextNode(' ' + k.name));
+                accContainer.appendChild(label);
+            });
+
+            // Reset search
+            orderSearchQuery = '';
+            document.getElementById('order-search-input').value = '';
+
+            document.getElementById('global-orders-modal').style.display = 'flex';
+            await renderGlobalOrders();
+        }
+
+        function switchOrderType(type) {
+            currentOrderType = type;
+            renderGlobalOrders();
+        }
+
+        function handleOrderSearch(val) {
+            orderSearchQuery = val.toLowerCase();
+            renderGlobalOrders();
+        }
+
+        function handleOrderSort(col) {
+            if (currentOrderSort.col === col) {
+                currentOrderSort.dir = currentOrderSort.dir === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentOrderSort.col = col;
+                currentOrderSort.dir = 'desc'; // Default to desc usually better for price/date
+            }
+            renderGlobalOrders();
+        }
+
+        async function renderGlobalOrders() {
+            // UI Toggle States
+            document.getElementById('toggle-buys').className = `order-toggle-btn ${currentOrderType === 'buys' ? 'active-buys' : ''}`;
+            document.getElementById('toggle-sells').className = `order-toggle-btn ${currentOrderType === 'sells' ? 'active-sells' : ''}`;
+
+            const content = document.getElementById('global-orders-content');
+            let orders = allAccountOrders[currentOrderType];
+            
+            if (!orders || orders.length === 0) {
+                content.innerHTML = `<div style="text-align:center; padding:30px; color:#bdc3c7;">No ${currentOrderType === 'buys' ? 'Buy Orders' : 'Sell Listings'} found.</div>`;
+                return;
+            }
+
+            // 1. Enrich data with Names/Icons (from Cache)
+            const uniqueIds = [...new Set(orders.map(o => o.item_id))];
+            const itemDetails = new Map();
+            const cachedDetails = await getStaticItemDetails(uniqueIds);
+            cachedDetails.forEach(d => itemDetails.set(d.id, d));
+
+            let enrichedOrders = orders.map(o => {
+                const details = itemDetails.get(o.item_id) || { name: `Item ${o.item_id}`, icon: '' };
+                return {
+                    ...o,
+                    itemName: details.name,
+                    itemIcon: details.icon,
+                    totalValue: o.quantity * o.price,
+                    createdDate: new Date(o.created)
+                };
+            });
+
+            // 2. Filter (Account & Search)
+            enrichedOrders = enrichedOrders.filter(o => {
+                const accountMatch = selectedOrderAccounts.has(o.accountName);
+                const searchMatch = !orderSearchQuery || o.itemName.toLowerCase().includes(orderSearchQuery);
+                return accountMatch && searchMatch;
+            });
+
+            // 3. Sort
+            enrichedOrders.sort((a, b) => {
+                let valA, valB;
+                switch (currentOrderSort.col) {
+                    case 'account': valA = a.accountName; valB = b.accountName; break;
+                    case 'item': valA = a.itemName; valB = b.itemName; break;
+                    case 'qty': valA = a.quantity; valB = b.quantity; break;
+                    case 'price': valA = a.price; valB = b.price; break;
+                    case 'total': valA = a.totalValue; valB = b.totalValue; break;
+                    case 'date': valA = a.createdDate; valB = b.createdDate; break;
+                    default: valA = a.createdDate; valB = b.createdDate;
+                }
+
+                if (valA < valB) return currentOrderSort.dir === 'asc' ? -1 : 1;
+                if (valA > valB) return currentOrderSort.dir === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            // 4. Render Table
+            const getSortClass = (col) => currentOrderSort.col === col ? `sorted-${currentOrderSort.dir}` : '';
+            
+            let html = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th class="sortable-th ${getSortClass('account')}" onclick="handleOrderSort('account')">Account</th>
+                            <th class="sortable-th ${getSortClass('item')}" onclick="handleOrderSort('item')">Item</th>
+                            <th class="sortable-th ${getSortClass('qty')}" onclick="handleOrderSort('qty')">Qty</th>
+                            <th class="sortable-th ${getSortClass('price')}" onclick="handleOrderSort('price')">Unit Price</th>
+                            <th class="sortable-th ${getSortClass('total')}" onclick="handleOrderSort('total')">Total Value</th>
+                            <th class="sortable-th ${getSortClass('date')}" onclick="handleOrderSort('date')">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            if (enrichedOrders.length === 0) {
+                 html += `<tr><td colspan="6" style="text-align:center; padding:20px; color:#95a5a6;">No orders match your filters.</td></tr>`;
+            } else {
+                enrichedOrders.forEach(o => {
+                    const iconHtml = o.itemIcon ? `<img src="${o.itemIcon}" class="delivery-icon">` : '';
+                    html += `<tr>
+                        <td class="col-account">${o.accountName}</td>
+                        <td><div style="display:flex; align-items:center;">${iconHtml} ${o.itemName}</div></td>
+                        <td class="col-qty">${o.quantity}</td>
+                        <td>${createCurrencyElement(o.price).outerHTML}</td>
+                        <td>${createCurrencyElement(o.totalValue).outerHTML}</td>
+                        <td class="col-date">${o.createdDate.toLocaleDateString()} ${o.createdDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
+                    </tr>`;
+                });
+            }
+
+            html += `</tbody></table>`;
+            content.innerHTML = html;
+        }
+
         function openNotificationModal() {
             document.getElementById('notification-modal').style.display = 'flex';
             renderNotificationModalList();
@@ -1430,6 +1598,7 @@
             apiSettingsLink.onclick = () => document.getElementById('api-modal').style.display = 'flex';
             deliveryBtn.onclick = () => openDeliveryModal();
             notificationBtn.onclick = () => openNotificationModal();
+            ordersBtn.onclick = () => openGlobalOrdersModal();
             document.getElementById('enable-inventory-chk').onchange = (e) => { enableInventory = e.target.checked; saveSettings(); refreshAllData(); };
 
             async function triggerAddItem() {
