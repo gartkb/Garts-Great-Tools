@@ -161,6 +161,9 @@
         .notif-title { font-weight: bold; font-size: 1.05rem; display: block; margin-bottom: 4px; }
         .notif-msg { color: #bdc3c7; font-size: 0.95rem; }
         .notif-time { font-size: 0.75rem; color: #7f8c8d; margin-top: 5px; }
+        /* NEW: Account Badge Style */
+        .notif-account { display: inline-block; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 3px; font-size: 0.75rem; color: #f1c40f; margin-bottom: 4px; border: 1px solid rgba(241, 196, 15, 0.3); }
+
         .notif-close { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); width: 30px; height: 30px; border-radius: 50%; color: #ecf0f1; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
         .notif-close:hover { background: #c0392b; border-color: #e74c3c; transform: scale(1.1); }
         .watch-btn { background: none; border: none; cursor: pointer; font-size: 1.2rem; opacity: 0.2; transition: all 0.2s; padding: 0 5px; filter: grayscale(100%); }
@@ -433,6 +436,40 @@
             return results;
         }
 
+        // --- NEW: Helper to handle GW2 API Pagination automatically ---
+        async function fetchPagedEndpoint(url, token) {
+            const pageSize = 200;
+            const separator = url.includes('?') ? '&' : '?';
+            const initialUrl = `${url}${separator}access_token=${token}&page_size=${pageSize}&page=0`;
+
+            try {
+                const res = await fetch(initialUrl);
+                if (!res.ok) return null;
+
+                const totalPages = parseInt(res.headers.get('x-page-total') || 1);
+                let results = await res.json();
+
+                // If active orders exceed 200, fetch the rest in parallel
+                if (totalPages > 1) {
+                    const promises = [];
+                    for (let i = 1; i < totalPages; i++) {
+                        promises.push(
+                            fetch(`${url}${separator}access_token=${token}&page_size=${pageSize}&page=${i}`)
+                            .then(r => r.ok ? r.json() : [])
+                        );
+                    }
+                    const otherPages = await Promise.all(promises);
+                    otherPages.forEach(pageItems => {
+                        results = results.concat(pageItems);
+                    });
+                }
+                return results;
+            } catch (e) {
+                console.error("Pagination fetch failed", e);
+                return null;
+            }
+        }
+
         // --- NOTIFICATIONS & WATCH LOGIC ---
         function loadWatchedOrders() {
             try {
@@ -457,12 +494,14 @@
             localStorage.setItem('gw2_active_notifications', JSON.stringify(activeNotifications));
         }
 
-        function addNotification(type, title, message) {
+        // Updated: Now accepts accountName
+        function addNotification(type, title, message, accountName) {
             const notif = {
                 id: Date.now() + '-' + Math.random(),
                 type,
                 title,
                 message,
+                accountName,
                 timestamp: Date.now()
             };
             activeNotifications.unshift(notif); 
@@ -827,16 +866,27 @@
 
             const results = await pMap(apiKeys, async (account) => {
                 try {
+                    // --- UPDATED: Uses fetchPagedEndpoint to handle >50 orders ---
                     const [buys, sells, delivery] = await Promise.all([
-                        fetch(`https://api.guildwars2.com/v2/commerce/transactions/current/buys?access_token=${account.key}`).then(r => r.ok ? r.json() : []),
-                        fetch(`https://api.guildwars2.com/v2/commerce/transactions/current/sells?access_token=${account.key}`).then(r => r.ok ? r.json() : []),
+                        fetchPagedEndpoint('https://api.guildwars2.com/v2/commerce/transactions/current/buys', account.key),
+                        fetchPagedEndpoint('https://api.guildwars2.com/v2/commerce/transactions/current/sells', account.key),
                         fetch(`https://api.guildwars2.com/v2/commerce/delivery?access_token=${account.key}`).then(r => r.ok ? r.json() : null)
                     ]);
+
+                    // Fail-Safe: If buys or sells is null, the API failed. Return null for the whole object to filter it out.
+                    if (buys === null || sells === null) return null;
+
                     return { account: account.name, buys, sells, delivery };
                 } catch(e) { return null; }
             }, 5);
 
             const validResults = results.filter(r => r !== null);
+            
+            // --- UPDATED ALERT LOGIC ---
+            // 1. Identify which accounts we actually got data for
+            const successfulAccounts = new Set();
+            validResults.forEach(r => successfulAccounts.add(r.account));
+
             const currentActiveIds = new Set();
             const extraItemIds = new Set(); // Collect IDs for both delivery AND global orders to fetch names
 
@@ -869,17 +919,35 @@
                 }
             });
 
-            // --- WATCHED ORDER DETECTION ---
+            // --- ROBUST WATCHED ORDER DETECTION ---
             if (validResults.length > 0) {
+                const ordersToRemove = [];
                 watchedOrders.forEach((details, orderId) => {
-                    if (!currentActiveIds.has(orderId)) {
-                        const typeLabel = details.type === 'buys' ? 'Buy Order Exhausted' : 'Sell Order Fulfilled';
-                        const msg = `${details.quantity}x ${details.itemName} at ${formatCurrency(details.price).gold}g ${formatCurrency(details.price).silver}s`;
-                        addNotification(details.type, typeLabel, msg);
-                        watchedOrders.delete(orderId);
-                        saveWatchedOrders();
+                    // Fail-Safe: If we didn't successfully fetch this specific account, skip logic.
+                    // This prevents alerts when one specific API key times out.
+                    if (!successfulAccounts.has(details.accountName)) return;
+
+                    if (currentActiveIds.has(orderId)) {
+                        // Order exists: Reset the missing counter
+                        details.missingCount = 0;
+                    } else {
+                        // Order is missing from a successful API response
+                        details.missingCount = (details.missingCount || 0) + 1;
+
+                        // Double Confirmation: Must be missing for 2 consecutive successful checks
+                        if (details.missingCount >= 2) {
+                            const typeLabel = details.type === 'buys' ? 'Buy Order Exhausted' : 'Sell Order Fulfilled';
+                            const msg = `${details.quantity}x ${details.itemName} at ${formatCurrency(details.price).gold}g ${formatCurrency(details.price).silver}s`;
+                            // PASSING ACCOUNT NAME HERE
+                            addNotification(details.type, typeLabel, msg, details.accountName);
+                            ordersToRemove.push(orderId);
+                        }
                     }
                 });
+                
+                // Cleanup
+                ordersToRemove.forEach(id => watchedOrders.delete(id));
+                saveWatchedOrders(); // Persist the missingCounts
             }
 
             // Ensure we have item details (names/icons) for everything in delivery boxes AND pending orders
@@ -1311,13 +1379,16 @@
                         watchBtn.classList.remove('watching');
                         watchBtn.title = "Alarm when this order finishes";
                     } else {
+                        // UPDATED: Save accountName and missingCount
                         watchedOrders.set(order.id, {
                             id: order.id,
                             itemId: itemId,
                             itemName: itemName,
+                            accountName: order.accountName, // Crucial for multi-account logic
                             type: type,
                             price: order.price,
-                            quantity: order.quantity
+                            quantity: order.quantity,
+                            missingCount: 0 // Reset counter
                         });
                         watchBtn.classList.add('watching');
                         watchBtn.title = "Click to stop watching";
@@ -1517,8 +1588,15 @@
             activeNotifications.forEach(notif => {
                 const item = document.createElement('div');
                 item.className = `notif-item type-${notif.type}`;
+                
+                // RENDER ACCOUNT NAME BADGE IF AVAILABLE
+                const accountBadge = notif.accountName 
+                    ? `<span class="notif-account">${notif.accountName}</span>` 
+                    : '';
+
                 item.innerHTML = `
                     <div class="notif-text-col">
+                        ${accountBadge}
                         <span class="notif-title">${notif.title}</span>
                         <div class="notif-msg">${notif.message}</div>
                         <div class="notif-time">${new Date(notif.timestamp).toLocaleString()}</div>
