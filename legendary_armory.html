@@ -127,6 +127,18 @@
             transition: transform 0.2s;
         }
         .mini-icon:hover { transform: scale(1.2); border-color: var(--accent); }
+        
+        /* Planned Icons */
+        .mini-icon.planned-kit {
+            border-color: var(--kit);
+            box-shadow: 0 0 5px var(--kit-dim);
+            opacity: 0.9;
+        }
+        .mini-icon.planned-manual {
+            border-color: var(--planned);
+            box-shadow: 0 0 5px rgba(255, 152, 0, 0.5);
+            opacity: 0.9;
+        }
 
         .header-status {
             text-align: right; font-size: 0.9em; color: var(--text-muted); min-width: 120px; margin-left: 10px;
@@ -152,6 +164,9 @@
             padding: 8px; border-bottom: 1px solid #333;
         }
         .item-row:last-child { border-bottom: none; }
+        .item-row.planned-item { background: rgba(255, 152, 0, 0.08); border-left: 3px solid var(--planned); }
+        .item-row.kit-item { background: rgba(0, 188, 212, 0.08); border-left: 3px solid var(--kit); }
+
         .item-icon-lg { width: 48px; height: 48px; border: 1px solid #000; }
         .item-info { flex-grow: 1; }
         .item-name { font-weight: bold; color: #ddd; }
@@ -160,6 +175,16 @@
         .status-text { font-weight: bold; }
         .status-owned { color: var(--success); }
         .status-locked { color: var(--text-muted); }
+
+        .btn-plan {
+            padding: 5px 12px; font-size: 0.85em; border: 1px solid var(--border);
+            background: #2a2a2a; color: #ccc; border-radius: 4px; cursor: pointer;
+        }
+        .btn-plan:hover { border-color: var(--planned); color: var(--planned); }
+        .btn-plan.active {
+            background: var(--planned); color: #121212; border-color: var(--planned); font-weight: bold;
+        }
+        .btn-plan:disabled { opacity: 0.3; cursor: default; pointer-events: none; }
         
         .badge { padding: 2px 6px; border-radius: 3px; font-size: 0.75em; border: 1px solid currentColor; }
         .badge-kit { color: var(--kit); background: rgba(0, 188, 212, 0.1); }
@@ -957,20 +982,36 @@ const app = {
         ['Heavy', 'Medium', 'Light'].forEach(w => {
             const wGroup = weights[w];
             const unlockedIcons = [];
-            let filledSlots = 0;
+            
+            // Collect icons for main header
             slotOrder.forEach(slot => {
                 const items = wGroup[slot] || [];
                 const unlockedInSlot = items.filter(i => (app.userData.unlocks[i.id] || 0) > 0);
-                if(unlockedInSlot.length > 0) filledSlots++;
-                unlockedInSlot.forEach(i => unlockedIcons.push(i));
+                unlockedInSlot.forEach(i => unlockedIcons.push(app.getIconHtml(i)));
+
+                // Check for planned items in this slot
+                const slotKey = `${w}_${slot}`;
+                const plan = app.userData.planner[slotKey];
+                if(plan && (plan.type === 'kit' || plan.type === 'manual') && plan.itemId) {
+                    const pItem = items.find(i => i.name === plan.itemId);
+                    if(pItem && !(app.userData.unlocks[pItem.id] > 0)) {
+                        unlockedIcons.push(app.getIconHtml(pItem, plan.type));
+                    }
+                }
             });
+
+            const filledSlots = slotOrder.filter(slot => {
+                const items = wGroup[slot] || [];
+                return items.some(i => (app.userData.unlocks[i.id] || 0) > 0);
+            }).length;
+
             const wrapper = document.createElement('div');
             wrapper.className = 'accordion-item';
             wrapper.innerHTML = `
                 <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
                     <div class="header-content">
                         <div class="header-title">${w} Armor</div>
-                        <div class="header-icons">${unlockedIcons.map(i => app.getIconHtml(i)).join('')}</div>
+                        <div class="header-icons">${unlockedIcons.join('')}</div>
                     </div>
                     <div class="header-status">${filledSlots}/6 Slots Unlocked</div>
                 </div>
@@ -989,26 +1030,40 @@ const app = {
         wrapper.className = isSub ? 'accordion-item sub-accordion' : 'accordion-item';
 
         let unlockedCount = 0;
-        const unlockedItems = [];
+        const iconHtmls = [];
+        const unlockedIds = new Set();
+
+        // Owned Icons
         items.forEach(i => {
             const c = app.userData.unlocks[i.id] || 0;
-            if(c > 0) { unlockedCount += c; unlockedItems.push(i); }
+            if(c > 0) { 
+                unlockedCount += c; 
+                iconHtmls.push(app.getIconHtml(i));
+                unlockedIds.add(i.id);
+            }
         });
+
+        // Planned Icons
+        const plan = app.userData.planner[slotKey];
+        if (plan && (plan.type === 'kit' || plan.type === 'manual') && plan.itemId) {
+            const plannedItem = items.find(i => i.name === plan.itemId);
+            if(plannedItem && !unlockedIds.has(plannedItem.id)) {
+                iconHtmls.push(app.getIconHtml(plannedItem, plan.type));
+            }
+        }
+
         const hasLegendary = unlockedCount > 0;
         
-        let plan = app.userData.planner[slotKey];
-        if(typeof plan === 'boolean') plan = { type: 'manual' }; 
-        const isPlanned = !!plan;
-        const isKitPlan = plan && plan.type === 'kit';
+        let planMode = plan ? plan.type : 'none'; 
         let planBadge = '';
-        if(isKitPlan && !hasLegendary) planBadge = '<span style="color:var(--kit); font-weight:bold;">PLANNED (KIT)</span> ';
-        else if(isPlanned && !hasLegendary) planBadge = '<span style="color:var(--planned); font-weight:bold;">PLANNED</span> ';
+        if(planMode === 'kit' && !hasLegendary) planBadge = '<span style="color:var(--kit); font-weight:bold;">PLANNED (KIT)</span> ';
+        else if(planMode === 'manual' && !hasLegendary) planBadge = '<span style="color:var(--planned); font-weight:bold;">PLANNED</span> ';
 
         wrapper.innerHTML = `
             <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
                 <div class="header-content">
                     <div class="header-title">${title}</div>
-                    <div class="header-icons">${unlockedItems.map(i => app.getIconHtml(i)).join('')}</div>
+                    <div class="header-icons">${iconHtmls.join('')}</div>
                 </div>
                 <div class="header-status"><div>${planBadge}</div><div style="font-size:0.85em; color:#888;">${unlockedCount} Unlocked</div></div>
             </div>
@@ -1023,12 +1078,33 @@ const app = {
         items.forEach(i => {
             const count = app.userData.unlocks[i.id] || 0;
             const max = app.gameData.maxCounts[i.id] || 1; 
+            const isOwned = count >= max;
+            const isPlannedThis = (plan && plan.itemId === i.name);
+            const isKitPlanned = isPlannedThis && plan.type === 'kit';
+            
             Object.keys(app.userData.inventoryKits).forEach(kid => {
                 const k = app.userData.inventoryKits[kid];
                 if(k.choices.includes(i.name)) relevantKits.push({ kitId: kid, itemName: i.name, kitData: k });
             });
+
             const row = document.createElement('div');
-            row.className = 'item-row';
+            let rowClass = 'item-row';
+            if(isPlannedThis && plan.type === 'manual') rowClass += ' planned-item';
+            if(isKitPlanned) rowClass += ' kit-item';
+
+            row.className = rowClass;
+            
+            let btnHtml = '';
+            if(!isOwned) {
+                if(isPlannedThis) {
+                    btnHtml = `<button class="btn-plan active" onclick="app.setPlan('${slotKey}', 'none')">Planned ✔</button>`;
+                } else {
+                    btnHtml = `<button class="btn-plan" onclick="app.setPlan('${slotKey}', 'manual', null, '${i.name.replace(/'/g, "\\'")}')">Plan</button>`;
+                }
+            } else {
+                 btnHtml = `<button class="btn-plan" disabled>Owned</button>`;
+            }
+
             row.innerHTML = `
                 <img src="${i.icon}" class="item-icon-lg" onmouseenter="app.showTooltip(event, '${i.id}')" onmouseleave="app.hideTooltip()">
                 <div class="item-info">
@@ -1037,6 +1113,7 @@ const app = {
                         ${count > 0 ? `<span class="status-owned">Unlocked: ${count}/${max}</span>` : `<span class="status-locked">Locked (0/${max})</span>` }
                     </div>
                 </div>
+                <div>${btnHtml}</div>
             `;
             list.appendChild(row);
         });
@@ -1044,13 +1121,13 @@ const app = {
         const safeId = `plan-${slotKey.replace(/\s+/g, '-')}`;
         const planArea = wrapper.querySelector(`[id="${safeId}"]`);
         
+        const isPlanned = !!plan;
+        
         const optNone = app.createPlanOption("radio", !isPlanned, "No Plan", "Clear planning for this slot.", () => app.setPlan(slotKey, 'none'));
-        const optManual = app.createPlanOption("radio", isPlanned && !isKitPlan, "Generic Goal", "I plan to craft or buy a legendary for this slot.", () => app.setPlan(slotKey, 'manual'), "selected");
-
+        
         planArea.innerHTML = '<span class="planner-header">Planning Goal</span><div class="plan-options"></div>';
         const optsDiv = planArea.querySelector('.plan-options');
         optsDiv.appendChild(optNone);
-        optsDiv.appendChild(optManual);
 
         relevantKits.forEach(rk => {
             const total = rk.kitData.count;
@@ -1078,7 +1155,14 @@ const app = {
         return div;
     },
 
-    getIconHtml: (item) => `<img src="${item.icon}" class="mini-icon" onmouseenter="app.showTooltip(event, '${item.id}')" onmouseleave="app.hideTooltip()">`,
+    getIconHtml: (item, planType = null) => {
+        let classes = "mini-icon";
+        if(planType === 'kit') classes += " planned-kit";
+        else if(planType === 'manual') classes += " planned-manual";
+        
+        return `<img src="${item.icon}" class="${classes}" onmouseenter="app.showTooltip(event, '${item.id}')" onmouseleave="app.hideTooltip()">`;
+    },
+    
     showTooltip: (e, itemId) => {
         const item = app.gameData.items[itemId];
         if(!item) return;
