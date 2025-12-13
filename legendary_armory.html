@@ -354,7 +354,6 @@ const CONSTANTS = {
         'Trident': 'Trident', 'LongBow': 'Longbow', 'ShortBow': 'Short Bow',
         'Helm': 'Headgear', 'Coat': 'Chest', 'Gloves': 'Hand', 'Leggings': 'Leg', 'Boots': 'Foot', 'Shoulders': 'Shoulder'
     },
-    // ID 105647 REMOVED. 103778 KEPT.
     KNOWN_KIT_IDS: {
         100465: "Set 1", 
         100938: "Set 2", 
@@ -419,7 +418,15 @@ const app = {
         });
 
         await app.loadGameData();
-        if(app.accounts.length > 0) app.switchAccount(app.accounts[0].key);
+
+        // Modified logic: Render even if no accounts exist
+        if(app.accounts.length > 0) {
+            app.switchAccount(app.accounts[0].key);
+        } else {
+            // No account? Hide loader and render empty state for browsing
+            document.getElementById('loading').style.display = 'none';
+            app.render();
+        }
     },
 
     toggleKitPanel: () => document.getElementById('kit-panel').classList.toggle('open'),
@@ -430,6 +437,7 @@ const app = {
     },
 
     toggleVaultState: (id) => {
+        if(!app.currentKey) return;
         app.userData.vaultState[id] = !app.userData.vaultState[id];
         localStorage.setItem(`gw2_vault_${app.currentKey}`, JSON.stringify(app.userData.vaultState));
         app.renderKitPanel();
@@ -489,11 +497,28 @@ const app = {
         delete app.accountCache[app.currentKey];
 
         app.currentKey = null;
-        document.getElementById('content-area').innerHTML = '';
+        
+        // Reset user data to empty so browsing still works
+        app.userData = {
+            unlocks: {},
+            inventoryKits: {}, 
+            vaultKits: {},     
+            planner: {},
+            kitUsage: {},
+            vaultState: {}     
+        };
+
+        // UI Reset
         document.getElementById('kit-panel').style.display = 'none';
         
         app.updateAccountUI();
-        if(app.accounts.length > 0) app.switchAccount(app.accounts[0].key);
+        
+        if(app.accounts.length > 0) {
+            app.switchAccount(app.accounts[0].key);
+        } else {
+            // Render Browse Mode
+            app.render();
+        }
     },
 
     updateAccountUI: () => {
@@ -541,7 +566,7 @@ const app = {
     loadGameData: async () => {
         if(app.gameData.loaded) return;
         document.getElementById('loading').style.display = 'block';
-        document.getElementById('loading').innerText = "Fetching Game Database... (fill in API key if you haven't)";
+        document.getElementById('loading').innerText = "Fetching Game Database...";
 
         try {
             const armoryData = await fetch('https://api.guildwars2.com/v2/legendaryarmory?ids=all').then(r=>r.json());
@@ -735,7 +760,11 @@ const app = {
     },
 
     setPlan: (slotKey, type, kitId = null, itemId = null) => {
-        if(!app.currentKey) return;
+        if(!app.currentKey) {
+            alert("Please enter a key to enable planning features.");
+            return;
+        }
+
         if(type === 'none') {
             delete app.userData.planner[slotKey];
         } else {
