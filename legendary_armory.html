@@ -419,11 +419,13 @@ const app = {
 
         await app.loadGameData();
 
-        // Modified logic: Render even if no accounts exist
         if(app.accounts.length > 0) {
             app.switchAccount(app.accounts[0].key);
         } else {
-            // No account? Hide loader and render empty state for browsing
+            // No account? Load "Guest" planner
+            const guestPlan = localStorage.getItem('gw2_planner_guest');
+            app.userData.planner = guestPlan ? JSON.parse(guestPlan) : {};
+            
             document.getElementById('loading').style.display = 'none';
             app.render();
         }
@@ -498,12 +500,13 @@ const app = {
 
         app.currentKey = null;
         
-        // Reset user data to empty so browsing still works
+        // Reset user data and load Guest Planner
+        const guestPlan = localStorage.getItem('gw2_planner_guest');
         app.userData = {
             unlocks: {},
             inventoryKits: {}, 
             vaultKits: {},     
-            planner: {},
+            planner: guestPlan ? JSON.parse(guestPlan) : {},
             kitUsage: {},
             vaultState: {}     
         };
@@ -760,17 +763,15 @@ const app = {
     },
 
     setPlan: (slotKey, type, kitId = null, itemId = null) => {
-        if(!app.currentKey) {
-            alert("Please enter a key to enable planning features.");
-            return;
-        }
+        // Allow guest planning
+        const storageKey = app.currentKey ? `gw2_planner_${app.currentKey}` : 'gw2_planner_guest';
 
         if(type === 'none') {
             delete app.userData.planner[slotKey];
         } else {
             app.userData.planner[slotKey] = { type, kitId, itemId };
         }
-        localStorage.setItem(`gw2_planner_${app.currentKey}`, JSON.stringify(app.userData.planner));
+        localStorage.setItem(storageKey, JSON.stringify(app.userData.planner));
         app.render(); 
     },
 
