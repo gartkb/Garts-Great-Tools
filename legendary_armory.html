@@ -480,7 +480,7 @@ const app = {
             
             input.value = "";
             app.updateAccountUI();
-            app.switchAccount(key); 
+            await app.switchAccount(key); 
         } catch(e) {
             alert("Error adding account: " + e.message);
         } finally {
@@ -563,7 +563,7 @@ const app = {
         const vaultJson = localStorage.getItem(`gw2_vault_${key}`);
         app.userData.vaultState = vaultJson ? JSON.parse(vaultJson) : {};
 
-        app.loadAccountData();
+        return app.loadAccountData();
     },
 
     loadGameData: async () => {
