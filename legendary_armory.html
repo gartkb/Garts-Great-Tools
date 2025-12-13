@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GW2 Legendary Armory Planner</title>
+    <style>
+        :root {
+            --bg-dark: #121212;
+            --bg-panel: #1e1e1e;
+            --bg-header: #2c2c2c;
+            --bg-hover: #383838;
+            --accent: #b700ff;
+            --accent-dim: #7a1fa2;
+            --text-main: #e0e0e0;
+            --text-muted: #aaa;
+            --border: #444;
+            --success: #4caf50;
+            --planned: #ff9800;
+            --kit: #00bcd4;
+            --kit-dim: #008ba3;
+            --vault: #ffca28;
+            --danger: #f44336;
+            --warning: #ff9800;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* --- Header & Account Mgr --- */
+        header {
+            background-color: var(--bg-header);
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        h1 { margin: 0; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; font-size: 1.5rem; }
+
+        .account-manager {
+            background: var(--bg-panel);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .acct-row { display: flex; gap: 10px; align-items: center; }
+        
+        select {
+            flex-grow: 1; padding: 10px; background: #333; color: white; border: 1px solid var(--border); border-radius: 4px; font-size: 1rem;
+        }
+
+        input[type="text"] {
+            flex-grow: 1; padding: 10px; border-radius: 4px; border: 1px solid var(--border); background: #333; color: white;
+        }
+
+        button {
+            padding: 10px 20px; background-color: var(--accent-dim); color: white;
+            border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s;
+        }
+        button:hover { background-color: var(--accent); }
+        
+        .btn-danger { background-color: #d32f2f; }
+        .btn-danger:hover { background-color: #f44336; }
+        .btn-secondary { background-color: #555; }
+        .btn-secondary:hover { background-color: #777; }
+        .btn-refresh { background-color: var(--kit-dim); width: 40px; text-align: center; padding: 10px 0; }
+
+        .scope-warning {
+            color: var(--warning); font-size: 0.85em; display: none; margin-top: 5px;
+            background: rgba(255, 152, 0, 0.1); padding: 5px; border-radius: 4px;
+        }
+
+        /* --- Navigation --- */
+        .nav-tabs {
+            display: flex; justify-content: center; background: #252525; padding: 0;
+            position: sticky; top: 0; z-index: 50; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .tab {
+            padding: 15px 30px; cursor: pointer; color: var(--text-muted); border-bottom: 3px solid transparent; font-weight: 600;
+        }
+        .tab.active { color: white; border-bottom: 3px solid var(--accent); background: rgba(183, 0, 255, 0.1); }
+
+        /* --- Main Layout --- */
+        main { padding: 20px; max-width: 1000px; margin: 0 auto; }
+        
+        /* --- Accordion Styles --- */
+        .accordion-item {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border);
+            margin-bottom: 10px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-panel);
+            transition: background 0.2s;
+            user-select: none;
+        }
+        .accordion-header:hover { background: var(--bg-hover); }
+
+        .header-content { display: flex; align-items: center; gap: 15px; flex-grow: 1; overflow: hidden; }
+        .header-title { font-weight: bold; font-size: 1.1em; min-width: 150px; }
+        .header-icons { display: flex; gap: 5px; flex-wrap: wrap; }
+        
+        .mini-icon {
+            width: 28px; height: 28px; border: 1px solid #000; border-radius: 2px;
+            transition: transform 0.2s;
+        }
+        .mini-icon:hover { transform: scale(1.2); border-color: var(--accent); }
+
+        .header-status {
+            text-align: right; font-size: 0.9em; color: var(--text-muted); min-width: 120px; margin-left: 10px;
+            display: flex; flex-direction: column; align-items: flex-end;
+        }
+
+        .accordion-body {
+            display: none;
+            padding: 15px;
+            background: #181818;
+            border-top: 1px solid var(--border);
+        }
+        .accordion-item.open > .accordion-body { display: block; }
+        
+        /* Nested Accordion for Armor Slots */
+        .sub-accordion { margin-top: 5px; border-left: 3px solid var(--border); }
+        .sub-accordion .accordion-header { background: #222; padding: 10px 15px; }
+        .sub-accordion .accordion-body { background: #121212; }
+
+        /* --- Item Details --- */
+        .item-row {
+            display: flex; align-items: center; gap: 15px;
+            padding: 8px; border-bottom: 1px solid #333;
+        }
+        .item-row:last-child { border-bottom: none; }
+        .item-icon-lg { width: 48px; height: 48px; border: 1px solid #000; }
+        .item-info { flex-grow: 1; }
+        .item-name { font-weight: bold; color: #ddd; }
+        .item-meta { font-size: 0.85em; color: #888; display: flex; gap: 10px; align-items: center; margin-top: 2px; }
+
+        .status-text { font-weight: bold; }
+        .status-owned { color: var(--success); }
+        .status-locked { color: var(--text-muted); }
+        
+        .badge { padding: 2px 6px; border-radius: 3px; font-size: 0.75em; border: 1px solid currentColor; }
+        .badge-kit { color: var(--kit); background: rgba(0, 188, 212, 0.1); }
+
+        /* --- Planner Controls --- */
+        .planner-area {
+            margin-top: 15px; padding-top: 15px; border-top: 1px dashed #444;
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 4px;
+        }
+        
+        .planner-header { font-weight: bold; color: #fff; margin-bottom: 10px; display: block; }
+
+        .plan-options { display: flex; flex-direction: column; gap: 10px; }
+
+        .plan-option {
+            display: flex; align-items: center; gap: 10px;
+            padding: 8px; border-radius: 4px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .plan-option:hover { background: rgba(255,255,255,0.05); }
+        .plan-option.selected { background: rgba(255, 152, 0, 0.1); border-color: var(--planned); }
+        .plan-option.selected.kit-type { background: rgba(0, 188, 212, 0.1); border-color: var(--kit); }
+        .plan-option.disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
+
+        input[type="radio"] { accent-color: var(--accent); transform: scale(1.2); }
+
+        /* --- Tooltip --- */
+        #tooltip {
+            position: fixed; background: rgba(0, 0, 0, 0.95); border: 1px solid var(--accent);
+            padding: 10px; border-radius: 4px; pointer-events: none; z-index: 1000; display: none;
+            max-width: 300px; box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+        }
+        #tooltip h4 { margin: 0 0 5px 0; color: var(--accent); font-size: 1em; }
+        #tooltip p { margin: 0; font-size: 0.85em; color: #ccc; }
+
+        /* Loaders & Messages */
+        #loading { text-align: center; padding: 50px; color: var(--text-muted); display: none; }
+        
+        /* --- Kit Panel --- */
+        #kit-panel {
+            background: #192224;
+            border-left: 4px solid var(--kit);
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+            overflow: hidden;
+        }
+
+        .kit-header {
+            padding: 15px;
+            background: rgba(0, 188, 212, 0.05);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+        .kit-header:hover { background: rgba(0, 188, 212, 0.1); }
+        .kit-header h3 { margin: 0; color: var(--kit); font-size: 1.1em; }
+        .kit-toggle-icon { color: var(--kit); transition: transform 0.3s ease; }
+        #kit-panel.open .kit-toggle-icon { transform: rotate(180deg); }
+        
+        #kit-body { display: none; padding: 0 15px 15px 15px; }
+        #kit-panel.open #kit-body { display: block; }
+
+        .kit-section { margin-bottom: 15px; }
+        .kit-section-title { font-size: 0.9em; text-transform: uppercase; color: #888; margin: 10px 0 5px 0; border-bottom: 1px solid #333; padding-bottom: 2px;}
+
+        .kit-row { padding: 5px 0; border-bottom: 1px solid #333; font-size: 0.9em; }
+        .kit-row-main {
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; padding: 5px;
+        }
+        .kit-row-main:hover { background: rgba(255,255,255,0.05); }
+
+        .kit-choices {
+            display: none; padding: 10px; background: rgba(0,0,0,0.3); border-top: 1px dashed #333;
+        }
+        .kit-row.expanded .kit-choices { display: block; }
+
+        .kit-allocation { color: var(--kit); font-size: 0.85em; margin-left: 10px; }
+        .kit-source { font-size: 0.85em; margin-left: 5px; color: #888; font-style: italic; }
+        .val-vault { color: var(--vault); }
+        .val-soldout { color: var(--text-muted); text-decoration: line-through; margin-left: 5px; }
+
+        .choice-btn {
+            display: flex; justify-content: space-between; align-items: center;
+            width: 100%; text-align: left; background: none; border: 1px solid #444;
+            padding: 8px; margin-bottom: 5px; color: #ccc;
+        }
+        .choice-btn:hover { background: #333; border-color: var(--accent); }
+        .choice-btn.active { border-color: var(--kit); background: rgba(0, 188, 212, 0.1); }
+        .choice-btn.full { opacity: 0.6; }
+        .choice-meta { font-size: 0.8em; color: #888; }
+        
+        /* Vault Specific */
+        .vault-row {
+            display: flex; justify-content: space-between; align-items: center; padding: 8px 5px; border-bottom: 1px solid #333;
+        }
+        .vault-name { color: var(--vault); font-weight: bold; }
+        .vault-meta { font-size: 0.85em; color: #888; }
+        .vault-check { display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; color: #aaa;}
+        .vault-check input { transform: scale(1.2); accent-color: var(--vault); }
+        .vault-check.checked { opacity: 0.5; text-decoration: line-through; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Legendary Armory Planner</h1>
+    
+    <div class="account-manager">
+        <div id="account-selector-view" class="acct-row" style="display:none;">
+            <select id="account-select" onchange="app.switchAccount(this.value)"></select>
+            <button class="btn-refresh" onclick="app.loadAccountData(true)" title="Force Refresh API Data">↻</button>
+            <button class="btn-secondary" onclick="app.showAddView()" title="Add another account">+</button>
+            <button class="btn-danger" onclick="app.removeAccount()" title="Remove current account">Del</button>
+        </div>
+        <div id="add-account-view" class="acct-row">
+            <input type="text" id="new-api-key" placeholder="Paste API Key (Account, Inventories, Unlocks, Progression)">
+            <button onclick="app.addAccount()">Add Account</button>
+            <button class="btn-secondary" id="cancel-add-btn" style="display:none;" onclick="app.showSelectorView()">Cancel</button>
+        </div>
+        <div id="scope-warning" class="scope-warning">⚠️ Key missing 'progression' scope. Wizard's Vault kits cannot be scanned.</div>
+    </div>
+</header>
+
+<div class="nav-tabs">
+    <div class="tab active" onclick="app.switchTab('weapons')">Weapons</div>
+    <div class="tab" onclick="app.switchTab('armor')">Armor</div>
+    <div class="tab" onclick="app.switchTab('trinkets')">Trinkets</div>
+    <div class="tab" onclick="app.switchTab('special')">Upgrade/Relic</div>
+</div>
+
+<main>
+    <div id="loading">Scanning the Mists...</div>
+    
+    <div id="kit-panel" class="open">
+        <div class="kit-header" onclick="app.toggleKitPanel()">
+            <h3>🎒 Inventory & Vault Resources</h3>
+            <span class="kit-toggle-icon">▼</span>
+        </div>
+        <div id="kit-body">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
+    <div id="content-area"></div>
+</main>
+
+<div id="tooltip"></div>
+
+<script>
+const CONSTANTS = {
+    WEAPON_ORDER: [
+        'Axe', 'Dagger', 'Mace', 'Pistol', 'Sword', 'Scepter',
+        'Focus', 'Shield', 'Torch', 'Warhorn',
+        'Greatsword', 'Hammer', 'Longbow', 'Rifle', 'Short Bow', 'Staff',
+        'Spear', 'Harpoon Gun', 'Trident'
+    ],
+    TYPE_MAPPING: {
+        'Harpoon': 'Spear', 'Speargun': 'Harpoon Gun', 'Spear': 'Spear',
+        'Trident': 'Trident', 'LongBow': 'Longbow', 'ShortBow': 'Short Bow',
+        'Helm': 'Headgear', 'Coat': 'Chest', 'Gloves': 'Hand', 'Leggings': 'Leg', 'Boots': 'Foot', 'Shoulders': 'Shoulder'
+    },
+    // ID 105647 REMOVED. 103778 KEPT.
+    KNOWN_KIT_IDS: {
+        100465: "Set 1", 
+        100938: "Set 2", 
+        101623: "Set 3", 
+        101938: "Set 4", 
+        102946: "Set 5", 
+        103660: "Set 6", 
+        104004: "Set 7", 
+        103818: "Set 8", 
+        103778: "Set 9", 
+        105331: "Universal",
+        103778: "Set 9 (Normal)"
+    },
+    KIT_CONTENTS: {
+        "Set 1": ["Meteorlogicus", "The Bifrost", "Bolt", "Quip"], 
+        "Set 2": ["Bolt", "Quip", "The Moot", "The Predator"],
+        "Set 3": ["The Moot", "The Predator", "The Dreamer", "Frostfang"],
+        "Set 4": ["The Dreamer", "Frostfang", "The Juggernaut", "Incinerator"],
+        "Set 5": ["The Juggernaut", "Incinerator", "Kamohoali'i Kotaki", "Twilight"], 
+        "Set 6": ["Kamohoali'i Kotaki", "Twilight", "Howler", "Kudzu"], 
+        "Set 7": ["Howler", "Kudzu", "Frenzy", "The Minstrel"],
+        "Set 8": ["Frenzy", "The Minstrel", "Rodgort", "Sunrise"],
+        "Set 9": ["Rodgort", "Sunrise", "Kraitkin", "The Flameseeker Prophecies"],
+        "Set 10": ["Kraitkin", "The Flameseeker Prophecies", "Meteorlogicus", "The Bifrost"],
+        "Set 3 (Legacy)": ["The Moot", "The Predator", "The Dreamer", "Frostfang"],
+        "Set 9 (Normal)": ["Rodgort", "Sunrise", "Kraitkin", "The Flameseeker Prophecies"],
+        "Universal": ["Bolt", "The Moot", "Quip", "The Predator", "The Dreamer", "Frostfang", "The Juggernaut", "Incinerator", "Kamohoali'i Kotaki", "Twilight", "Howler", "Kudzu", "Frenzy", "The Minstrel", "Rodgort", "Sunrise", "Kraitkin", "The Flameseeker Prophecies", "Meteorlogicus", "The Bifrost"]
+    }
+};
+
+const app = {
+    accounts: [], 
+    currentKey: null,
+    accountCache: {},
+    
+    gameData: { loaded: false, items: {}, maxCounts: {} },
+    userData: {
+        unlocks: {},
+        inventoryKits: {}, 
+        vaultKits: {},     // { name, choices, stats: { purchased, limit, type } }
+        planner: {},
+        kitUsage: {},
+        vaultState: {}     
+    },
+    currentTab: 'weapons',
+
+    init: async () => {
+        const savedAccts = localStorage.getItem('gw2_accounts');
+        if(savedAccts) app.accounts = JSON.parse(savedAccts);
+        else {
+            const oldKey = localStorage.getItem('gw2_apikey');
+            if(oldKey) await app.migrateOldAccount(oldKey);
+        }
+
+        app.updateAccountUI();
+        document.addEventListener('mousemove', (e) => {
+            const tt = document.getElementById('tooltip');
+            if(tt.style.display === 'block') {
+                tt.style.left = (e.clientX + 15) + 'px';
+                tt.style.top = (e.clientY + 15) + 'px';
+            }
+        });
+
+        await app.loadGameData();
+        if(app.accounts.length > 0) app.switchAccount(app.accounts[0].key);
+    },
+
+    toggleKitPanel: () => document.getElementById('kit-panel').classList.toggle('open'),
+    
+    toggleKitRow: (id) => {
+        const el = document.getElementById(`kit-row-${id}`);
+        if(el) el.classList.toggle('expanded');
+    },
+
+    toggleVaultState: (id) => {
+        app.userData.vaultState[id] = !app.userData.vaultState[id];
+        localStorage.setItem(`gw2_vault_${app.currentKey}`, JSON.stringify(app.userData.vaultState));
+        app.renderKitPanel();
+    },
+
+    migrateOldAccount: async (key) => {
+        try {
+            const res = await fetch(`https://api.guildwars2.com/v2/account?access_token=${key}`);
+            if(res.ok) {
+                const info = await res.json();
+                app.accounts.push({ name: info.name, key: key });
+                localStorage.setItem('gw2_accounts', JSON.stringify(app.accounts));
+                const oldPlan = localStorage.getItem('gw2_planner');
+                if(oldPlan) localStorage.setItem(`gw2_planner_${key}`, oldPlan);
+            }
+        } catch(e) { console.warn("Migration failed", e); }
+    },
+
+    addAccount: async () => {
+        const input = document.getElementById('new-api-key');
+        const key = input.value.trim();
+        if(!key) return alert("Please enter a key");
+
+        document.getElementById('loading').style.display = 'block';
+        try {
+            const res = await fetch(`https://api.guildwars2.com/v2/account?access_token=${key}`);
+            if(!res.ok) throw new Error("Invalid Key or API error");
+            const info = await res.json();
+
+            if(app.accounts.some(a => a.key === key)) {
+                alert("Account already added!");
+                document.getElementById('loading').style.display = 'none';
+                return;
+            }
+
+            app.accounts.push({ name: info.name, key: key });
+            localStorage.setItem('gw2_accounts', JSON.stringify(app.accounts));
+            
+            input.value = "";
+            app.updateAccountUI();
+            app.switchAccount(key); 
+        } catch(e) {
+            alert("Error adding account: " + e.message);
+        } finally {
+            document.getElementById('loading').style.display = 'none';
+        }
+    },
+
+    removeAccount: () => {
+        if(!app.currentKey) return;
+        if(!confirm("Remove this account from the planner?")) return;
+
+        app.accounts = app.accounts.filter(a => a.key !== app.currentKey);
+        localStorage.setItem('gw2_accounts', JSON.stringify(app.accounts));
+        
+        // Clear cache
+        delete app.accountCache[app.currentKey];
+
+        app.currentKey = null;
+        document.getElementById('content-area').innerHTML = '';
+        document.getElementById('kit-panel').style.display = 'none';
+        
+        app.updateAccountUI();
+        if(app.accounts.length > 0) app.switchAccount(app.accounts[0].key);
+    },
+
+    updateAccountUI: () => {
+        const hasAccounts = app.accounts.length > 0;
+        const selectorView = document.getElementById('account-selector-view');
+        const cancelBtn = document.getElementById('cancel-add-btn');
+
+        if(hasAccounts) {
+            const sel = document.getElementById('account-select');
+            sel.innerHTML = app.accounts.map(a => `<option value="${a.key}">${a.name}</option>`).join('');
+            if(app.currentKey) sel.value = app.currentKey;
+            
+            app.showSelectorView();
+            cancelBtn.style.display = 'inline-block';
+        } else {
+            app.showAddView();
+            cancelBtn.style.display = 'none';
+        }
+    },
+
+    showAddView: () => {
+        document.getElementById('account-selector-view').style.display = 'none';
+        document.getElementById('add-account-view').style.display = 'flex';
+        document.getElementById('scope-warning').style.display = 'none';
+    },
+
+    showSelectorView: () => {
+        document.getElementById('account-selector-view').style.display = 'flex';
+        document.getElementById('add-account-view').style.display = 'none';
+    },
+
+    switchAccount: (key) => {
+        app.currentKey = key;
+        document.getElementById('account-select').value = key;
+        
+        const planJson = localStorage.getItem(`gw2_planner_${key}`);
+        app.userData.planner = planJson ? JSON.parse(planJson) : {};
+
+        const vaultJson = localStorage.getItem(`gw2_vault_${key}`);
+        app.userData.vaultState = vaultJson ? JSON.parse(vaultJson) : {};
+
+        app.loadAccountData();
+    },
+
+    loadGameData: async () => {
+        if(app.gameData.loaded) return;
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('loading').innerText = "Fetching Game Database...";
+
+        try {
+            const armoryData = await fetch('https://api.guildwars2.com/v2/legendaryarmory?ids=all').then(r=>r.json());
+            const ids = [];
+            armoryData.forEach(entry => {
+                if(entry && entry.id) {
+                    ids.push(entry.id);
+                    app.gameData.maxCounts[entry.id] = entry.max_count || 1;
+                }
+            });
+
+            const chunks = [];
+            for(let i=0; i<ids.length; i+=200) chunks.push(ids.slice(i, i+200));
+            const details = await Promise.all(chunks.map(c => 
+                fetch(`https://api.guildwars2.com/v2/items?ids=${c.join(',')}&lang=en`).then(r=>r.json())
+            ));
+            
+            details.flat().forEach(i => app.gameData.items[i.id] = i);
+            app.gameData.loaded = true;
+
+        } catch(e) {
+            console.error(e);
+            alert("Failed to load Game Data. Try refreshing.");
+        }
+    },
+
+    loadAccountData: async (forceRefresh = false) => {
+        if(!app.currentKey) return;
+        
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('content-area').innerHTML = '';
+        document.getElementById('kit-panel').style.display = 'none';
+        document.getElementById('scope-warning').style.display = 'none';
+
+        if (!forceRefresh && app.accountCache[app.currentKey]) {
+            const cached = app.accountCache[app.currentKey];
+            app.userData.unlocks = cached.unlocks;
+            app.userData.inventoryKits = cached.inventoryKits;
+            app.userData.vaultKits = cached.vaultKits;
+            document.getElementById('loading').style.display = 'none';
+            app.render();
+            return;
+        }
+
+        document.getElementById('loading').innerText = "Scanning Account & Vault...";
+
+        try {
+            const unlocks = await fetch(`https://api.guildwars2.com/v2/account/legendaryarmory?access_token=${app.currentKey}`).then(r=>r.json());
+            app.userData.unlocks = {};
+            unlocks.forEach(u => app.userData.unlocks[u.id] = u.count);
+
+            await app.scanResources();
+
+            // Populate Cache
+            app.accountCache[app.currentKey] = {
+                unlocks: app.userData.unlocks,
+                inventoryKits: app.userData.inventoryKits,
+                vaultKits: app.userData.vaultKits
+            };
+
+            document.getElementById('loading').style.display = 'none';
+            app.render();
+
+        } catch(e) {
+            alert("Error loading account: " + e.message);
+            document.getElementById('loading').style.display = 'none';
+        }
+    },
+
+    scanResources: async () => {
+        app.userData.inventoryKits = {};
+        app.userData.vaultKits = {}; 
+        const inventoryIds = new Map(); 
+
+        const addInventoryCount = (id, count) => {
+            inventoryIds.set(id, (inventoryIds.get(id) || 0) + count);
+        };
+
+        try {
+            // 1. Scan Inventory
+            try {
+                const [bank, shared, chars] = await Promise.all([
+                    fetch(`https://api.guildwars2.com/v2/account/bank?access_token=${app.currentKey}`).then(r=>r.ok?r.json():[]),
+                    fetch(`https://api.guildwars2.com/v2/account/inventory?access_token=${app.currentKey}`).then(r=>r.ok?r.json():[]),
+                    fetch(`https://api.guildwars2.com/v2/characters?ids=all&access_token=${app.currentKey}`).then(r=>r.ok?r.json():[])
+                ]);
+
+                const collectInv = (items) => {
+                    if(!items) return;
+                    items.forEach(i => { if(i) addInventoryCount(i.id, i.count); });
+                };
+
+                collectInv(bank);
+                collectInv(shared);
+                chars.forEach(c => c.bags.forEach(b => b && collectInv(b.inventory)));
+            } catch(e) { console.warn("Inv scan partial error", e); }
+
+            // 2. Scan Vault (Collect IDs)
+            const vaultIds = new Set();
+            const vaultStats = new Map(); 
+
+            try {
+                const vaultRes = await fetch(`https://api.guildwars2.com/v2/account/wizardsvault/listings?access_token=${app.currentKey}`);
+                if(vaultRes.status === 403 || vaultRes.status === 400) {
+                    document.getElementById('scope-warning').style.display = 'block';
+                } else if(vaultRes.ok) {
+                    const listings = await vaultRes.json();
+                    listings.forEach(l => {
+                        // Scan ALL items
+                        if(l.type !== 'Skin' && l.item_id) { // Avoid explicit skins
+                            vaultIds.add(l.item_id);
+                            vaultStats.set(l.item_id, { 
+                                purchased: l.purchased || 0, 
+                                limit: l.purchase_limit || 0,
+                                type: l.type
+                            });
+                        }
+                    });
+                }
+            } catch(ev) { console.warn("Vault scan failed", ev); }
+
+            // 3. Process IDs
+            const allIds = new Set([...inventoryIds.keys(), ...vaultIds]);
+            const unknownIdsToFetch = [];
+
+            allIds.forEach(id => {
+                if(!app.gameData.items[id] && !CONSTANTS.KNOWN_KIT_IDS[id]) {
+                    unknownIdsToFetch.push(id);
+                }
+            });
+
+            // 4. Dynamic Fetch
+            if(unknownIdsToFetch.length > 0) {
+                const uniqueIds = [...new Set(unknownIdsToFetch)];
+                const chunks = [];
+                for(let i=0; i<uniqueIds.length; i+=200) chunks.push(uniqueIds.slice(i, i+200));
+                
+                const itemInfos = await Promise.all(chunks.map(c => 
+                    fetch(`https://api.guildwars2.com/v2/items?ids=${c.join(',')}&lang=en`).then(r=>r.json())
+                ));
+                
+                itemInfos.flat().forEach(item => {
+                    app.gameData.items[item.id] = item;
+                    
+                    const normName = item.name.replace(/—/g, '-');
+                    // STRICT CHECK: Name MUST contain specific string
+                    if(normName.includes("Legendary Weapon Starter")) {
+                        let setName = null;
+                        if(normName.includes("Universal")) setName = "Universal";
+                        else {
+                            const match = normName.match(/Set\s+(\d+)/);
+                            if(match) setName = "Set " + match[1];
+                        }
+                        if(normName.includes("Legacy")) setName = setName + " (Legacy)";
+                        
+                        if(setName) {
+                            CONSTANTS.KNOWN_KIT_IDS[item.id] = setName;
+                            let cleanSet = setName.replace(" (Legacy)", "");
+                            if(!CONSTANTS.KIT_CONTENTS[setName]) {
+                                CONSTANTS.KIT_CONTENTS[setName] = CONSTANTS.KIT_CONTENTS[cleanSet] || [];
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 5. Build Final Lists
+            inventoryIds.forEach((count, id) => {
+                const name = CONSTANTS.KNOWN_KIT_IDS[id];
+                if(name && CONSTANTS.KIT_CONTENTS[name]) {
+                    app.userData.inventoryKits[id] = {
+                        count: count,
+                        name: name,
+                        choices: CONSTANTS.KIT_CONTENTS[name]
+                    };
+                }
+            });
+
+            vaultIds.forEach(id => {
+                const name = CONSTANTS.KNOWN_KIT_IDS[id];
+                if(name && CONSTANTS.KIT_CONTENTS[name]) {
+                    app.userData.vaultKits[id] = {
+                        name: name,
+                        choices: CONSTANTS.KIT_CONTENTS[name],
+                        stats: vaultStats.get(id)
+                    };
+                }
+            });
+
+        } catch(e) { console.warn("Resource scan error", e); }
+    },
+
+    setPlan: (slotKey, type, kitId = null, itemId = null) => {
+        if(!app.currentKey) return;
+        if(type === 'none') {
+            delete app.userData.planner[slotKey];
+        } else {
+            app.userData.planner[slotKey] = { type, kitId, itemId };
+        }
+        localStorage.setItem(`gw2_planner_${app.currentKey}`, JSON.stringify(app.userData.planner));
+        app.render(); 
+    },
+
+    getSlotKeyFromItemName: (itemName) => {
+        const item = Object.values(app.gameData.items).find(i => i.name === itemName && i.rarity === 'Legendary');
+        if(!item) return null;
+        if(item.type === 'Armor') {
+            let s = item.details.type;
+            if(CONSTANTS.TYPE_MAPPING[s]) s = CONSTANTS.TYPE_MAPPING[s];
+            return `${item.details.weight_class}_${s}`;
+        }
+        let type = item.details ? (item.details.type || item.type) : item.type;
+        if(item.type === 'Back') type = 'Back';
+        if(CONSTANTS.TYPE_MAPPING[type]) type = CONSTANTS.TYPE_MAPPING[type];
+        return type;
+    },
+
+    switchTab: (t) => {
+        app.currentTab = t;
+        document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll(`.tab[onclick="app.switchTab('${t}')"]`).forEach(el => el.classList.add('active'));
+        app.render();
+    },
+
+    calcKitUsage: () => {
+        app.userData.kitUsage = {};
+        Object.keys(app.userData.planner).forEach(k => {
+            const plan = app.userData.planner[k];
+            if(typeof plan === 'boolean') return; 
+
+            if(plan.type === 'kit' && plan.kitId) {
+                app.userData.kitUsage[plan.kitId] = (app.userData.kitUsage[plan.kitId] || 0) + 1;
+            }
+        });
+    },
+
+    render: () => {
+        if(!app.gameData.loaded) return;
+        app.calcKitUsage();
+        app.renderKitPanel();
+        const container = document.getElementById('content-area');
+        container.innerHTML = '';
+        const cat = app.currentTab;
+        const allItems = Object.values(app.gameData.items).filter(i => i.rarity === 'Legendary' && i.type !== 'Consumable'); 
+        
+        if(cat === 'armor') app.renderArmor(container, allItems);
+        else if(cat === 'weapons') app.renderWeapons(container, allItems);
+        else {
+            let items = [];
+            if(cat === 'trinkets') items = allItems.filter(i => i.type === 'Trinket' || i.type === 'Back');
+            if(cat === 'special') items = allItems.filter(i => i.type === 'UpgradeComponent' || i.type === 'Relic');
+            const groups = {};
+            items.forEach(i => {
+                let type = i.details ? (i.details.type || i.type) : i.type;
+                if(i.type === 'Back') type = 'Back';
+                if(CONSTANTS.TYPE_MAPPING[type]) type = CONSTANTS.TYPE_MAPPING[type];
+                if(!groups[type]) groups[type] = [];
+                groups[type].push(i);
+            });
+            Object.keys(groups).sort().forEach(type => app.buildAccordion(container, type, groups[type], type));
+        }
+    },
+
+    renderKitPanel: () => {
+        const invKeys = Object.keys(app.userData.inventoryKits);
+        const vaultKeys = Object.keys(app.userData.vaultKits);
+        
+        const panel = document.getElementById('kit-panel');
+        if(invKeys.length === 0 && vaultKeys.length === 0) { panel.style.display = 'none'; return; }
+
+        panel.style.display = 'block';
+        const list = document.getElementById('kit-body');
+        list.innerHTML = ''; 
+
+        // 1. INVENTORY SECTION (Interactive)
+        if(invKeys.length > 0) {
+            const h = document.createElement('div');
+            h.className = "kit-section-title";
+            h.innerText = "In Your Bags (Assignable)";
+            list.appendChild(h);
+
+            invKeys.forEach(id => {
+                const kit = app.userData.inventoryKits[id];
+                const used = app.userData.kitUsage[id] || 0;
+                const remaining = kit.count - used;
+                
+                const allocations = {};
+                Object.entries(app.userData.planner).forEach(([slotKey, plan]) => {
+                    if(plan.type === 'kit' && plan.kitId == id) {
+                        allocations[plan.itemId] = true;
+                    }
+                });
+
+                const div = document.createElement('div');
+                div.className = 'kit-row';
+                div.id = `kit-row-${id}`;
+                
+                const mainRow = document.createElement('div');
+                mainRow.className = 'kit-row-main';
+                mainRow.onclick = () => app.toggleKitRow(id);
+                mainRow.innerHTML = `
+                    <div>
+                        <strong>${kit.name}</strong>: 
+                        ${used}/${kit.count} Used 
+                        ${remaining === 0 ? '<span style="color:var(--text-muted)">(All Allocated)</span>' : `<span style="color:var(--success)">(${remaining} Available)</span>`}
+                    </div>
+                    <div>▼</div>
+                `;
+                div.appendChild(mainRow);
+
+                const choicesDiv = document.createElement('div');
+                choicesDiv.className = 'kit-choices';
+                
+                kit.choices.forEach(itemName => {
+                    const slotKey = app.getSlotKeyFromItemName(itemName);
+                    const isSelected = allocations[itemName];
+                    let btnClass = "";
+                    let slotInfo = "";
+
+                    if(isSelected) btnClass = "active";
+                    else if (remaining <= 0) btnClass = "full disabled";
+
+                    if(slotKey) slotInfo = slotKey.replace(/_/g, ' ');
+
+                    // === ENHANCEMENT START: Check Ownership & Category Total ===
+                    const itemObj = Object.values(app.gameData.items).find(i => i.name === itemName);
+                    let statusHtml = "";
+
+                    if (itemObj) {
+                        // 1. Specific Item Check
+                        const ownedCount = app.userData.unlocks[itemObj.id] || 0;
+                        const ownedStr = ownedCount > 0 
+                            ? `<span style="color:var(--success);">(Owned)</span>` 
+                            : `<span style="color:var(--text-muted);">(Not Owned)</span>`;
+
+                        // 2. Category Check
+                        let type = itemObj.details ? (itemObj.details.type || itemObj.type) : itemObj.type;
+                        if (CONSTANTS.TYPE_MAPPING[type]) type = CONSTANTS.TYPE_MAPPING[type];
+
+                        let totalTypeCount = 0;
+                        Object.values(app.gameData.items).forEach(other => {
+                            if (other.rarity === 'Legendary') {
+                                let otherType = other.details ? (other.details.type || other.type) : other.type;
+                                if (CONSTANTS.TYPE_MAPPING[otherType]) otherType = CONSTANTS.TYPE_MAPPING[otherType];
+                                if (otherType === type) {
+                                    totalTypeCount += (app.userData.unlocks[other.id] || 0);
+                                }
+                            }
+                        });
+
+                        statusHtml = `<span style="font-size:0.8em; margin-left:5px;">${ownedStr} <span style="color:#888;">| Total ${type}s: ${totalTypeCount}</span></span>`;
+                    }
+                    // === ENHANCEMENT END ===
+
+                    const btn = document.createElement('button');
+                    btn.className = `choice-btn ${btnClass}`;
+                    btn.onclick = () => {
+                        if(remaining <= 0 && !isSelected) return; 
+                        if(isSelected) app.setPlan(slotKey, 'none');
+                        else app.setPlan(slotKey, 'kit', id, itemName);
+                    };
+                    
+                    btn.innerHTML = `
+                        <div><strong>${itemName}</strong>${statusHtml}<div class="choice-meta">${slotInfo}</div></div>
+                        <div>${isSelected ? '✔' : '+'}</div>
+                    `;
+                    choicesDiv.appendChild(btn);
+                });
+                div.appendChild(choicesDiv);
+                list.appendChild(div);
+            });
+        }
+
+        // 2. VAULT SECTION (Informational)
+        if(vaultKeys.length > 0) {
+            const h = document.createElement('div');
+            h.className = "kit-section-title";
+            h.innerText = "Wizard's Vault Offerings";
+            list.appendChild(h);
+
+            vaultKeys.forEach(id => {
+                const kit = app.userData.vaultKits[id];
+                const stats = kit.stats;
+                const manualBought = app.userData.vaultState[id] || false;
+                
+                let isBought = manualBought;
+                // If Legacy/Featured and API says bought (1/1), trust API
+                // If "Normal", we ONLY trust manual because API is bugged (0/1)
+                if (stats.type !== 'Normal' && stats.purchased >= stats.limit && stats.limit > 0) {
+                    isBought = true;
+                }
+
+                const div = document.createElement('div');
+                div.className = 'vault-row';
+                div.innerHTML = `
+                    <div>
+                        <div class="vault-name">${kit.name}</div>
+                        <div class="vault-meta">
+                            Type: ${stats.type} | API: ${stats.purchased}/${stats.limit}
+                        </div>
+                    </div>
+                    <label class="vault-check ${isBought ? 'checked' : ''}">
+                        <input type="checkbox" ${isBought ? 'checked' : ''} onchange="app.toggleVaultState('${id}')">
+                        ${isBought ? 'Purchased' : 'Buy?'}
+                    </label>
+                `;
+                list.appendChild(div);
+            });
+        }
+    },
+
+    renderWeapons: (container, allItems) => {
+        const weaponItems = allItems.filter(i => i.type === 'Weapon');
+        const groups = {};
+        weaponItems.forEach(i => {
+            let type = i.details.type;
+            if(CONSTANTS.TYPE_MAPPING[type]) type = CONSTANTS.TYPE_MAPPING[type];
+            if(!groups[type]) groups[type] = [];
+            groups[type].push(i);
+        });
+        CONSTANTS.WEAPON_ORDER.forEach(type => {
+            if(groups[type]) app.buildAccordion(container, type, groups[type], type);
+        });
+    },
+
+    renderArmor: (container, allItems) => {
+        const weights = { 'Heavy': {}, 'Medium': {}, 'Light': {} };
+        const slotOrder = ['Headgear', 'Shoulder', 'Chest', 'Hand', 'Leg', 'Foot'];
+        allItems.filter(i => i.type === 'Armor').forEach(i => {
+            const w = i.details.weight_class;
+            let s = i.details.type;
+            if(CONSTANTS.TYPE_MAPPING[s]) s = CONSTANTS.TYPE_MAPPING[s];
+            if(weights[w]) {
+                if(!weights[w][s]) weights[w][s] = [];
+                weights[w][s].push(i);
+            }
+        });
+        ['Heavy', 'Medium', 'Light'].forEach(w => {
+            const wGroup = weights[w];
+            const unlockedIcons = [];
+            let filledSlots = 0;
+            slotOrder.forEach(slot => {
+                const items = wGroup[slot] || [];
+                const unlockedInSlot = items.filter(i => (app.userData.unlocks[i.id] || 0) > 0);
+                if(unlockedInSlot.length > 0) filledSlots++;
+                unlockedInSlot.forEach(i => unlockedIcons.push(i));
+            });
+            const wrapper = document.createElement('div');
+            wrapper.className = 'accordion-item';
+            wrapper.innerHTML = `
+                <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+                    <div class="header-content">
+                        <div class="header-title">${w} Armor</div>
+                        <div class="header-icons">${unlockedIcons.map(i => app.getIconHtml(i)).join('')}</div>
+                    </div>
+                    <div class="header-status">${filledSlots}/6 Slots Unlocked</div>
+                </div>
+                <div class="accordion-body" id="body-${w}"></div>
+            `;
+            container.appendChild(wrapper);
+            const body = wrapper.querySelector(`#body-${w}`);
+            slotOrder.forEach(slot => {
+                if(wGroup[slot]) app.buildAccordion(body, slot, wGroup[slot], `${w}_${slot}`, true);
+            });
+        });
+    },
+
+    buildAccordion: (container, title, items, slotKey, isSub = false) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = isSub ? 'accordion-item sub-accordion' : 'accordion-item';
+
+        let unlockedCount = 0;
+        const unlockedItems = [];
+        items.forEach(i => {
+            const c = app.userData.unlocks[i.id] || 0;
+            if(c > 0) { unlockedCount += c; unlockedItems.push(i); }
+        });
+        const hasLegendary = unlockedCount > 0;
+        
+        let plan = app.userData.planner[slotKey];
+        if(typeof plan === 'boolean') plan = { type: 'manual' }; 
+        const isPlanned = !!plan;
+        const isKitPlan = plan && plan.type === 'kit';
+        let planBadge = '';
+        if(isKitPlan && !hasLegendary) planBadge = '<span style="color:var(--kit); font-weight:bold;">PLANNED (KIT)</span> ';
+        else if(isPlanned && !hasLegendary) planBadge = '<span style="color:var(--planned); font-weight:bold;">PLANNED</span> ';
+
+        wrapper.innerHTML = `
+            <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
+                <div class="header-content">
+                    <div class="header-title">${title}</div>
+                    <div class="header-icons">${unlockedItems.map(i => app.getIconHtml(i)).join('')}</div>
+                </div>
+                <div class="header-status"><div>${planBadge}</div><div style="font-size:0.85em; color:#888;">${unlockedCount} Unlocked</div></div>
+            </div>
+            <div class="accordion-body">
+                <div class="items-container"></div>
+                <div class="planner-area" id="plan-${slotKey.replace(/\s+/g, '-')}"></div>
+            </div>
+        `;
+
+        const list = wrapper.querySelector('.items-container');
+        const relevantKits = []; 
+        items.forEach(i => {
+            const count = app.userData.unlocks[i.id] || 0;
+            const max = app.gameData.maxCounts[i.id] || 1; 
+            Object.keys(app.userData.inventoryKits).forEach(kid => {
+                const k = app.userData.inventoryKits[kid];
+                if(k.choices.includes(i.name)) relevantKits.push({ kitId: kid, itemName: i.name, kitData: k });
+            });
+            const row = document.createElement('div');
+            row.className = 'item-row';
+            row.innerHTML = `
+                <img src="${i.icon}" class="item-icon-lg" onmouseenter="app.showTooltip(event, '${i.id}')" onmouseleave="app.hideTooltip()">
+                <div class="item-info">
+                    <div class="item-name">${i.name}</div>
+                    <div class="item-meta">
+                        ${count > 0 ? `<span class="status-owned">Unlocked: ${count}/${max}</span>` : `<span class="status-locked">Locked (0/${max})</span>` }
+                    </div>
+                </div>
+            `;
+            list.appendChild(row);
+        });
+
+        const safeId = `plan-${slotKey.replace(/\s+/g, '-')}`;
+        const planArea = wrapper.querySelector(`[id="${safeId}"]`);
+        
+        const optNone = app.createPlanOption("radio", !isPlanned, "No Plan", "Clear planning for this slot.", () => app.setPlan(slotKey, 'none'));
+        const optManual = app.createPlanOption("radio", isPlanned && !isKitPlan, "Generic Goal", "I plan to craft or buy a legendary for this slot.", () => app.setPlan(slotKey, 'manual'), "selected");
+
+        planArea.innerHTML = '<span class="planner-header">Planning Goal</span><div class="plan-options"></div>';
+        const optsDiv = planArea.querySelector('.plan-options');
+        optsDiv.appendChild(optNone);
+        optsDiv.appendChild(optManual);
+
+        relevantKits.forEach(rk => {
+            const total = rk.kitData.count;
+            const used = app.userData.kitUsage[rk.kitId] || 0;
+            const isSelf = (plan && plan.kitId == rk.kitId && plan.itemId === rk.itemName);
+            const available = total - used + (isSelf ? 1 : 0);
+            const disabled = available <= 0;
+            const optKit = app.createPlanOption(
+                "radio", isSelf, 
+                `Use Starter Kit (${rk.kitData.name}) for ${rk.itemName}`,
+                `Available: ${available}/${total} kits.`,
+                () => { if(!disabled) app.setPlan(slotKey, 'kit', rk.kitId, rk.itemName); },
+                "selected kit-type", disabled
+            );
+            optsDiv.appendChild(optKit);
+        });
+        container.appendChild(wrapper);
+    },
+
+    createPlanOption: (type, checked, title, sub, onClick, activeClass="selected", disabled=false) => {
+        const div = document.createElement('div');
+        div.className = `plan-option ${checked ? activeClass : ''} ${disabled ? 'disabled' : ''}`;
+        div.onclick = onClick;
+        div.innerHTML = `<div style="font-size:1.2em; color:${checked ? 'var(--planned)' : '#666'}">${checked ? '●' : '○'}</div><div><div style="font-weight:bold; ${checked ? 'color:white' : 'color:#aaa'}">${title}</div><div style="font-size:0.8em; color:#666;">${sub}</div></div>`;
+        return div;
+    },
+
+    getIconHtml: (item) => `<img src="${item.icon}" class="mini-icon" onmouseenter="app.showTooltip(event, '${item.id}')" onmouseleave="app.hideTooltip()">`,
+    showTooltip: (e, itemId) => {
+        const item = app.gameData.items[itemId];
+        if(!item) return;
+        const tt = document.getElementById('tooltip');
+        tt.innerHTML = `<h4>${item.name}</h4><p>${item.details ? (item.details.type || item.type) : item.type}</p>`;
+        tt.style.display = 'block';
+        tt.style.left = (e.clientX + 15) + 'px';
+        tt.style.top = (e.clientY + 15) + 'px';
+    },
+    hideTooltip: () => document.getElementById('tooltip').style.display = 'none'
+};
+
+app.init();
+</script>
+</body>
+</html>
