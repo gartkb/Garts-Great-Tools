@@ -541,7 +541,7 @@ const app = {
     loadGameData: async () => {
         if(app.gameData.loaded) return;
         document.getElementById('loading').style.display = 'block';
-        document.getElementById('loading').innerText = "Fetching Game Database...";
+        document.getElementById('loading').innerText = "Fetching Game Database... (fill in API key if you haven't)";
 
         try {
             const armoryData = await fetch('https://api.guildwars2.com/v2/legendaryarmory?ids=all').then(r=>r.json());
