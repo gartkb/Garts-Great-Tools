@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Superstore Value Sorter (v14.9 - Saved Options)
+// @name         Superstore Value Sorter (v15.0 - Load +1 Page)
 // @namespace    http://tampermonkey.net/
-// @version      14.9
-// @description  Sorts by value. Includes configurable options for Position, Points, and Auto-Loading Pages. All preferences saved.
+// @version      15.0
+// @description  Sorts by value. Includes option to load the next page of results. All settings saved.
 // @match        https://www.realcanadiansuperstore.ca/*
 // @require      https://gartkb.github.io/Garts-Great-Tools/userscript/tm-value-sorter-core.js
 // @grant        none
@@ -14,17 +14,24 @@
     // =========================================================
     // 0. GLOBAL STATE (PERSISTENT)
     // =========================================================
+    
+    // Helper to safely get boolean from local storage
+    const getSavedBool = (key, def) => {
+        const val = localStorage.getItem(key);
+        if (val === null) return def;
+        return val === 'true';
+    };
+
     const STATE = {
-        // Load from LocalStorage
-        usePoints: localStorage.getItem('tm_vs_usePoints') !== 'false', // Default True
-        badgePos: localStorage.getItem('tm_vs_badgePos') || 'top-left', // Default Top-Left
-        loadAll: localStorage.getItem('tm_vs_loadAll') === 'true'       // Default False
+        usePoints: getSavedBool('tm_vs_usePoints', true),
+        badgePos: localStorage.getItem('tm_vs_badgePos') || 'top-left',
+        loadMore: getSavedBool('tm_vs_loadMore', false) // Changed from loadAll to loadMore
     };
 
     function saveState() {
         localStorage.setItem('tm_vs_usePoints', STATE.usePoints);
         localStorage.setItem('tm_vs_badgePos', STATE.badgePos);
-        localStorage.setItem('tm_vs_loadAll', STATE.loadAll);
+        localStorage.setItem('tm_vs_loadMore', STATE.loadMore);
     }
 
     // =========================================================
@@ -298,9 +305,9 @@
             updateAllBadges();
         });
 
-        // 2. Load All Toggle
-        const rowLoadAll = createCheckRow("Load All Pages", STATE.loadAll, (e) => {
-            STATE.loadAll = e.target.checked;
+        // 2. Load More Toggle (UPDATED TEXT)
+        const rowLoadMore = createCheckRow("Load +1 Page", STATE.loadMore, (e) => {
+            STATE.loadMore = e.target.checked;
             saveState();
         });
 
@@ -328,7 +335,7 @@
         rowPos.appendChild(posSelect);
 
         toggleWrapper.appendChild(rowPoints);
-        toggleWrapper.appendChild(rowLoadAll);
+        toggleWrapper.appendChild(rowLoadMore);
         toggleWrapper.appendChild(rowPos);
 
         // 4. Sort Button
@@ -341,118 +348,8 @@
         });
         
         btn.onclick = async () => {
-            if (STATE.loadAll) {
+            if (STATE.loadMore) {
                 btn.disabled = true;
-                btn.innerHTML = "Loading Pages...";
-                await fetchAllPages();
-                btn.innerHTML = "Sorting...";
-                sortGlobal();
-                btn.innerHTML = "Done!";
-                setTimeout(() => { btn.disabled = false; btn.innerHTML = "Sort by Value"; }, 2000);
-            } else {
-                btn.innerHTML = "Sorting...";
-                setTimeout(() => { sortGlobal(); btn.innerHTML = "Sort by Value"; }, 10);
-            }
-        };
-
-        container.appendChild(toggleWrapper);
-        container.appendChild(btn);
-        document.body.appendChild(container);
-    }
-
-    async function fetchAllPages() {
-        let nextLink = document.querySelector('a[aria-label="Next Page"]');
-        let pageCount = 1;
-        
-        while (nextLink && !nextLink.getAttribute('disabled')) {
-            const url = nextLink.href;
-            try {
-                const response = await fetch(url);
-                const text = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(text, "text/html");
-                
-                const newGrid = doc.querySelector('div[class*="product-grid-component"]');
-                if (newGrid && newGrid.children.length > 0) {
-                    const cards = Array.from(newGrid.children);
-                    const currentGrid = document.querySelector('div[class*="product-grid-component"]');
-                    if (currentGrid) {
-                        cards.forEach(card => {
-                            const importedCard = document.adoptNode(card);
-                            currentGrid.appendChild(importedCard);
-                            badgeItem(importedCard);
-                        });
-                    }
-                }
-
-                const newNext = doc.querySelector('a[aria-label="Next Page"]');
-                if (newNext && newNext.href !== url) nextLink = newNext;
-                else nextLink = null;
-                
-                pageCount++;
-                if(pageCount > 20) break; // Safety break
-                await new Promise(r => setTimeout(r, 500));
-                
-            } catch (e) { break; }
-        }
-        
-        const pagination = document.querySelector('div[aria-label="Pagination"]');
-        if(pagination) pagination.style.display = 'none';
-    }
-
-    // =========================================================
-    // 4. ENGINE
-    // =========================================================
-
-    function processBatch(nodeList) {
-        nodeList.forEach(node => { if (node.nodeType === 1) badgeItem(node); });
-    }
-
-    const gridObserver = new MutationObserver((mutations) => mutations.forEach(m => processBatch(m.addedNodes)));
-    const pageObserver = new MutationObserver((mutations) => {
-        mutations.forEach(m => {
-            m.addedNodes.forEach(node => {
-                if (node.nodeType === 1) {
-                    if (node.matches && node.matches('div[class*="product-grid-component"]')) attachToGrid(node);
-                    else if (node.querySelectorAll) node.querySelectorAll('div[class*="product-grid-component"]').forEach(attachToGrid);
-                }
-            });
-        });
-    });
-
-    function attachToGrid(grid) {
-        if (grid.dataset.tmObserved) return;
-        processBatch(grid.childNodes);
-        gridObserver.observe(grid, { childList: true });
-        grid.dataset.tmObserved = "true";
-    }
-
-    function sortGlobal() {
-        updateAllBadges();
-        const grids = Array.from(document.querySelectorAll('div[class*="product-grid-component"]'));
-        if (grids.length === 0) return;
-        
-        const masterGrid = grids[0];
-        let allCards = [];
-        grids.forEach(grid => {
-            allCards.push(...Array.from(grid.children));
-        });
-        
-        allCards.sort((a, b) => (parseFloat(a.dataset.tmVal)||99999) - (parseFloat(b.dataset.tmVal)||99999));
-        
-        const frag = document.createDocumentFragment();
-        allCards.forEach(c => frag.appendChild(c));
-        masterGrid.appendChild(frag);
-        
-        for (let i = 1; i < grids.length; i++) grids[i].style.display = 'none';
-    }
-
-    function init() {
-        initUI();
-        document.querySelectorAll('div[class*="product-grid-component"]').forEach(attachToGrid);
-        pageObserver.observe(document.body, { childList: true, subtree: true });
-    }
-
-    setTimeout(init, 2000);
-
-})();
+                btn.innerHTML = "Fetching Next Page...";
+                // Try to load one page
+                const success = a
