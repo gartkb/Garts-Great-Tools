@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Superstore Value Sorter (v15.2 - Decimal Parsing Fix)
+// @name         Superstore Value Sorter (v15.3 - Weight Priority)
 // @namespace    http://tampermonkey.net/
-// @version      15.2
-// @description  Sorts by value. Fixes parsing for decimal quantities (e.g. 1.54L). All settings saved.
+// @version      15.3
+// @description  Sorts by value. Prioritizes Price-by-Weight over Price-by-Each for food items to fix "Mini vs Jumbo" confusion.
 // @match        https://www.realcanadiansuperstore.ca/*
 // @require      https://gartkb.github.io/Garts-Great-Tools/userscript/tm-value-sorter-core.js
 // @grant        none
@@ -47,12 +47,11 @@
             pointsValue = parseFloat(pointsMatch[1].replace(/,/g, '')) / 1000;
         }
 
-        // --- STEP 2: SHELF UNIT PRICE ---
+        // --- STEP 2: SHELF UNIT PRICE (Store Provided) ---
         let shelfUnitVal = null;
         let shelfUnitType = 'weight';
         let foundUnitPrices = []; 
 
-        // Extract store's unit price (to use as fallback or exclusion)
         const unitMatch = rawText.match(/\$([0-9,.]+)\s*\/\s*([0-9.]*)\s*([a-z]+)/);
         if (unitMatch) {
             const rawPrice = parseFloat(unitMatch[1].replace(/,/g, ''));
@@ -64,13 +63,16 @@
             if (uUnit === 'g' || uUnit === 'ml') {
                 shelfUnitVal = (rawPrice / uQty) * 100;
                 if (uUnit === 'ml') shelfUnitType = 'vol';
+                else shelfUnitType = 'weight';
             }
             else if (uUnit === 'kg' || uUnit === 'l') {
                 shelfUnitVal = (rawPrice / uQty) / 10;
                 if (uUnit === 'l') shelfUnitType = 'vol';
+                else shelfUnitType = 'weight';
             }
             else if (uUnit === 'lb') {
                 shelfUnitVal = (rawPrice / uQty) / 4.536;
+                shelfUnitType = 'weight';
             }
             else if (uUnit === 'ea') {
                 shelfUnitVal = rawPrice / uQty;
@@ -80,7 +82,6 @@
 
         // --- STEP 3: SHELF PRICE ---
         let validPrices = [];
-        
         const multiBuyMatch = rawText.match(/\b([0-9]+)\s*(?:for|\/)\s*\$([0-9,.]+)/);
         if (multiBuyMatch) {
             const qty = parseFloat(multiBuyMatch[1]);
@@ -106,31 +107,54 @@
 
         // --- STEP 4: APPLY POINTS ---
         let effectivePrice = bestShelfPrice;
+        let hasPoints = false;
         if (bestShelfPrice && STATE.usePoints && pointsValue > 0) {
             effectivePrice = Math.max(0.01, bestShelfPrice - pointsValue);
+            hasPoints = true;
         }
 
-        // --- STEP 5: DECISION ---
+        // --- STEP 5: PRIORITY CHECK (Weight > Each) ---
+        // If the store provides a weight/volume, use that instead of trying to parse "10 Pack".
+        // This solves the Mini vs Jumbo croissant issue.
+        if (shelfUnitVal !== null && (shelfUnitType === 'weight' || shelfUnitType === 'vol')) {
+            let finalVal = shelfUnitVal;
+            
+            // Adjust store unit price if we have points or a sale the store unit price didn't catch
+            if (effectivePrice && bestShelfPrice && effectivePrice < bestShelfPrice) {
+                const ratio = effectivePrice / bestShelfPrice;
+                finalVal = shelfUnitVal * ratio;
+            }
+
+            return {
+                val: finalVal,
+                label: `$${finalVal.toFixed(2)}/${shelfUnitType === 'vol' ? '100ml' : '100g'}`,
+                type: shelfUnitType,
+                isDeal: false,
+                hasPoints: hasPoints,
+                priceUsed: effectivePrice
+            };
+        }
+
+        // --- STEP 6: TEXT ANALYSIS FALLBACK ---
+        // Only run this if we DIDN'T find a weight, or if the unit is 'each'
         if (effectivePrice && window.ValueSorter) {
             let title = "";
             const titleEl = card.querySelector('[class*="product-tile__details__info__name"]');
             title = titleEl ? titleEl.innerText : rawText.substring(0, 100);
 
-            // UPDATED REGEX: Supports decimals (e.g. 1.54 or 1,54)
             const sizeInText = rawText.match(/(?:\b|^)((?:\d+(?:[.,]\d+)?)\s*(?:ea|g|kg|ml|l|lb|oz|pk|pack|count|ct|bags?|sachets?|pods?))\b/i);
-            
             if (sizeInText) title += " " + sizeInText[1];
 
             const result = window.ValueSorter.analyze(title, effectivePrice, shelfUnitVal);
             
             if (result) {
-                result.hasPoints = (STATE.usePoints && pointsValue > 0);
+                result.hasPoints = hasPoints;
                 result.priceUsed = effectivePrice; 
                 return result;
             }
         }
 
-        // Fallback
+        // --- STEP 7: FALLBACK ---
         if (shelfUnitVal !== null) {
             return {
                 val: shelfUnitVal,
