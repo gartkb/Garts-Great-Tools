@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Superstore Value Sorter (v14.5 - Smart Tooltip)
+// @name         Superstore Value Sorter (v14.6 - Configurable Position)
 // @namespace    http://tampermonkey.net/
-// @version      14.5
-// @description  Sorts by value. Includes Click-to-Edit badges with "Detected Quantity" tooltips.
+// @version      14.6
+// @description  Sorts by value. Includes Click-to-Edit badges and Position Settings.
 // @match        https://www.realcanadiansuperstore.ca/*
 // @require      https://gartkb.github.io/Garts-Great-Tools/userscript/tm-value-sorter-core.js
 // @grant        none
@@ -13,7 +13,8 @@
 
     // Global State
     const STATE = {
-        usePoints: true // Default: ON
+        usePoints: true,      // Default: ON
+        badgePos: 'top-left'  // Default: Top Left
     };
 
     // =========================================================
@@ -90,7 +91,7 @@
             const titleEl = card.querySelector('[class*="product-tile__details__info__name"]');
             title = titleEl ? titleEl.innerText : rawText.substring(0, 100);
 
-            // Inject Metadata for Core
+            // Inject Metadata
             const sizeInText = rawText.match(/(?:\b|^)(\d+[\s\-]*(?:ea|g|kg|ml|l|lb|oz|pk|pack|count|ct|bags?|sachets?|pods?))\b/i);
             if (sizeInText) {
                 title += " " + sizeInText[1];
@@ -135,6 +136,42 @@
     // 2. VISUALS & INTERACTION
     // =========================================================
 
+    function applyBadgePosition(badge) {
+        // Reset positioning styles
+        badge.style.top = "auto";
+        badge.style.bottom = "auto";
+        badge.style.left = "auto";
+        badge.style.right = "auto";
+        badge.style.transform = "none";
+
+        const P = "6px"; 
+        
+        switch (STATE.badgePos) {
+            case 'top-right':
+                badge.style.top = P; badge.style.right = P;
+                break;
+            case 'top-left':
+                badge.style.top = P; badge.style.left = P;
+                break;
+            case 'bottom-right':
+                badge.style.bottom = P; badge.style.right = P;
+                break;
+            case 'bottom-left':
+                badge.style.bottom = P; badge.style.left = P;
+                break;
+            case 'mid-right':
+                badge.style.top = "50%"; badge.style.right = P;
+                badge.style.transform = "translateY(-50%)";
+                break;
+            case 'mid-left':
+                badge.style.top = "50%"; badge.style.left = P;
+                badge.style.transform = "translateY(-50%)";
+                break;
+            default: // Default Top Left
+                badge.style.top = P; badge.style.left = P;
+        }
+    }
+
     function badgeItem(card) {
         if(card.dataset.tmManual) return; 
 
@@ -148,31 +185,31 @@
         badge.className = 'tm-badge';
         badge.innerText = data.label;
 
-        // --- CALCULATE DETECTED QUANTITY FOR TOOLTIP ---
+        // Tooltip logic
         let tooltip = "Click to set manual quantity";
         if (data.priceUsed && data.val > 0) {
             let qty = 0;
             if (data.type === 'each') {
                 qty = data.priceUsed / data.val;
             } else {
-                // Weight/Vol is normalized to 100g/100ml
                 qty = (data.priceUsed / data.val) * 100;
             }
-            // Round to handle floating point errors (e.g. 3.9999 -> 4)
             qty = Math.round(qty * 100) / 100;
-            
             let unitLabel = data.type === 'each' ? 'items' : (data.type === 'vol' ? 'ml' : 'g');
             tooltip = `Detected: ${qty} ${unitLabel}\nPrice: $${data.priceUsed.toFixed(2)}\nClick to edit`;
         }
         badge.title = tooltip;
 
-        // UPDATED POSITION: Bottom Left
+        // Base Styles
         Object.assign(badge.style, {
-            position: "absolute", bottom: "6px", left: "6px",
+            position: "absolute",
             padding: "3px 6px", borderRadius: "4px", fontSize: "12px",
             fontWeight: "800", zIndex: "20", boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
             fontFamily: "sans-serif", cursor: "pointer"
         });
+
+        // Apply Dynamic Position
+        applyBadgePosition(badge);
 
         // Colors
         if (data.type === 'unknown') {
@@ -190,30 +227,17 @@
 
         if (data.hasPoints) badge.innerText += " (pts)";
 
-        // --- MANUAL OVERRIDE HANDLER ---
         badge.onclick = (e) => {
-            e.preventDefault();
-            e.stopPropagation(); 
-
+            e.preventDefault(); e.stopPropagation(); 
             const currentQty = (data.priceUsed && data.val > 0 && data.type === 'each') ? Math.round(data.priceUsed / data.val) : "";
-            
-            const userQty = prompt(
-                `Manual Override for ${data.priceUsed ? '$'+data.priceUsed.toFixed(2) : 'Item'}\n` +
-                (badge.title ? `(${badge.title.split('\n')[0]})\n` : "") + 
-                `\nEnter Item Count (e.g. 4 for 4 cartridges):`, 
-                currentQty
-            );
-            
+            const userQty = prompt(`Manual Override for ${data.priceUsed ? '$'+data.priceUsed.toFixed(2) : 'Item'}\nEnter Item Count:`, currentQty);
             const qty = parseFloat(userQty);
 
             if (qty > 0 && data.priceUsed) {
                 const newVal = data.priceUsed / qty;
                 badge.innerText = `$${newVal.toFixed(2)}/ea (Manual)`;
-                badge.title = `Manual Override: ${qty} items`;
                 badge.style.background = "#ffffcc"; 
                 badge.style.color = "#000";
-                badge.style.border = "1px dashed #999";
-                
                 card.dataset.tmVal = newVal;
                 card.dataset.tmManual = "true"; 
             }
@@ -227,6 +251,11 @@
     function updateAllBadges() {
         const cards = document.querySelectorAll('div[class*="product-grid-component"] > div');
         cards.forEach(card => badgeItem(card));
+    }
+
+    function repositionAllBadges() {
+        const badges = document.querySelectorAll('.tm-badge');
+        badges.forEach(b => applyBadgePosition(b));
     }
 
     // =========================================================
@@ -245,11 +274,15 @@
 
         const toggleWrapper = document.createElement("div");
         Object.assign(toggleWrapper.style, {
-            background: "rgba(0,0,0,0.7)", padding: "6px 10px", borderRadius: "6px",
-            color: "white", fontSize: "12px", display: "flex", alignItems: "center", gap: "6px",
+            background: "rgba(0,0,0,0.8)", padding: "8px 10px", borderRadius: "6px",
+            color: "white", fontSize: "12px", display: "flex", flexDirection: "column", gap: "6px",
             fontFamily: "sans-serif"
         });
 
+        // 1. Points Toggle
+        const row1 = document.createElement("div");
+        row1.style.display = "flex"; row1.style.alignItems = "center"; row1.style.gap = "6px";
+        
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.checked = STATE.usePoints;
@@ -261,9 +294,42 @@
         };
         const label = document.createElement("span");
         label.innerText = "Incl. Points";
-        toggleWrapper.appendChild(checkbox);
-        toggleWrapper.appendChild(label);
+        row1.appendChild(checkbox);
+        row1.appendChild(label);
 
+        // 2. Position Select
+        const row2 = document.createElement("div");
+        row2.style.display = "flex"; row2.style.alignItems = "center"; row2.style.gap = "6px";
+
+        const posSelect = document.createElement("select");
+        Object.assign(posSelect.style, { fontSize: "11px", padding: "2px", borderRadius: "3px", cursor: "pointer" });
+        
+        const opts = [
+            {v: 'top-left', t: 'Top Left'},
+            {v: 'top-right', t: 'Top Right'},
+            {v: 'bottom-left', t: 'Btm Left'},
+            {v: 'bottom-right', t: 'Btm Right'},
+            {v: 'mid-left', t: 'Mid Left'},
+            {v: 'mid-right', t: 'Mid Right'}
+        ];
+        opts.forEach(o => {
+            const opt = document.createElement("option");
+            opt.value = o.v; opt.innerText = o.t;
+            if(o.v === STATE.badgePos) opt.selected = true;
+            posSelect.appendChild(opt);
+        });
+
+        posSelect.onchange = (e) => {
+            STATE.badgePos = e.target.value;
+            repositionAllBadges();
+        };
+        
+        row2.appendChild(posSelect);
+
+        toggleWrapper.appendChild(row1);
+        toggleWrapper.appendChild(row2);
+
+        // 3. Sort Button
         const btn = document.createElement("button");
         btn.innerHTML = "Sort by Value";
         Object.assign(btn.style, {
