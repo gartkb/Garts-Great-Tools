@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         Superstore Value Sorter (v15.0 - Load +1 Page)
+// @name         Superstore Value Sorter (v15.1 - Load +1 Page)
 // @namespace    http://tampermonkey.net/
-// @version      15.0
+// @version      15.1
 // @description  Sorts by value. Includes option to load the next page of results. All settings saved.
 // @match        https://www.realcanadiansuperstore.ca/*
 // @require      https://gartkb.github.io/Garts-Great-Tools/userscript/tm-value-sorter-core.js
