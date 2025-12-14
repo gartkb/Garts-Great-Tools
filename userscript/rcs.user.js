@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Superstore Value Sorter (v14.7 - Fix Parsing)
+// @name         Superstore Value Sorter (v14.9 - Saved Options)
 // @namespace    http://tampermonkey.net/
-// @version      14.7
-// @description  Sorts by value. Includes Click-to-Edit badges and Configurable/Persistent Position. Fixes unit price confusion.
+// @version      14.9
+// @description  Sorts by value. Includes configurable options for Position, Points, and Auto-Loading Pages. All preferences saved.
 // @match        https://www.realcanadiansuperstore.ca/*
 // @require      https://gartkb.github.io/Garts-Great-Tools/userscript/tm-value-sorter-core.js
 // @grant        none
@@ -15,13 +15,16 @@
     // 0. GLOBAL STATE (PERSISTENT)
     // =========================================================
     const STATE = {
-        usePoints: localStorage.getItem('tm_vs_usePoints') !== 'false', 
-        badgePos: localStorage.getItem('tm_vs_badgePos') || 'top-left'
+        // Load from LocalStorage
+        usePoints: localStorage.getItem('tm_vs_usePoints') !== 'false', // Default True
+        badgePos: localStorage.getItem('tm_vs_badgePos') || 'top-left', // Default Top-Left
+        loadAll: localStorage.getItem('tm_vs_loadAll') === 'true'       // Default False
     };
 
     function saveState() {
         localStorage.setItem('tm_vs_usePoints', STATE.usePoints);
         localStorage.setItem('tm_vs_badgePos', STATE.badgePos);
+        localStorage.setItem('tm_vs_loadAll', STATE.loadAll);
     }
 
     // =========================================================
@@ -29,7 +32,6 @@
     // =========================================================
 
     function parseCardData(card) {
-        // Get text but preserve some spacing for regex safety
         const rawText = (card.innerText || "").toLowerCase().replace(/[\r\n]+/g, " ").replace(/\s+/g, " ");
 
         // --- STEP 1: POINTS ---
@@ -39,16 +41,15 @@
             pointsValue = parseFloat(pointsMatch[1].replace(/,/g, '')) / 1000;
         }
 
-        // --- STEP 2: SHELF UNIT PRICE (Fallback & Exclusion) ---
+        // --- STEP 2: SHELF UNIT PRICE (Exclusion Logic) ---
         let shelfUnitVal = null;
         let shelfUnitType = 'weight';
-        let foundUnitPrices = []; // Store prices found here to exclude them later
+        let foundUnitPrices = []; 
 
-        // Regex handles "$0.67/100g", "$0.67 / 100 g", "$0.67/lb"
         const unitMatch = rawText.match(/\$([0-9,.]+)\s*\/\s*([0-9.]*)\s*([a-z]+)/);
         if (unitMatch) {
             const rawPrice = parseFloat(unitMatch[1].replace(/,/g, ''));
-            foundUnitPrices.push(rawPrice); // Add to exclusion list
+            foundUnitPrices.push(rawPrice); 
 
             const uQty = parseFloat(unitMatch[2]) || 1;
             const uUnit = unitMatch[3];
@@ -73,7 +74,6 @@
         // --- STEP 3: SHELF PRICE ---
         let validPrices = [];
         
-        // 3a. Handle "2 for $5"
         const multiBuyMatch = rawText.match(/\b([0-9]+)\s*(?:for|\/)\s*\$([0-9,.]+)/);
         if (multiBuyMatch) {
             const qty = parseFloat(multiBuyMatch[1]);
@@ -81,18 +81,15 @@
             if (qty > 0) validPrices.push(total / qty);
         }
 
-        // 3b. Clean text to remove distractions
         const cleanForPrice = rawText
-            .replace(/save\s*\$[0-9,.]+/g, "")           // Remove "Save $2.00"
-            .replace(/after limit\s*\$[0-9,.]+/g, "")    // Remove "after limit $8.49"
-            .replace(/\$[0-9,.]+\s*\/\s*[0-9.]*\s*[a-z]+/g, "") // Remove "$0.67/100g"
-            .replace(/about\s*\$[0-9,.]+/g, "");         // Remove "about $..."
-
-        // 3c. Extract remaining prices
+            .replace(/save\s*\$[0-9,.]+/g, "")
+            .replace(/after limit\s*\$[0-9,.]+/g, "")
+            .replace(/\$[0-9,.]+\s*\/\s*[0-9.]*\s*[a-z]+/g, "")
+            .replace(/about\s*\$[0-9,.]+/g, "");
+        
         const pMatches = [...cleanForPrice.matchAll(/\$([0-9,.]+)/g)];
         pMatches.forEach(m => {
             const val = parseFloat(m[1].replace(/,/g, ''));
-            // Filter: Must be > $0.10 AND not equal to the unit price we found earlier
             if (val > 0.1 && !foundUnitPrices.includes(val)) {
                 validPrices.push(val);
             }
@@ -113,9 +110,7 @@
             title = titleEl ? titleEl.innerText : rawText.substring(0, 100);
 
             const sizeInText = rawText.match(/(?:\b|^)(\d+[\s\-]*(?:ea|g|kg|ml|l|lb|oz|pk|pack|count|ct|bags?|sachets?|pods?))\b/i);
-            if (sizeInText) {
-                title += " " + sizeInText[1];
-            }
+            if (sizeInText) title += " " + sizeInText[1];
 
             const result = window.ValueSorter.analyze(title, effectivePrice, shelfUnitVal);
             
@@ -259,7 +254,7 @@
     }
 
     // =========================================================
-    // 3. UI
+    // 3. UI & INFINITE LOADING
     // =========================================================
 
     function initUI() {
@@ -279,39 +274,45 @@
             fontFamily: "sans-serif"
         });
 
+        // Helper to create checkbox row
+        function createCheckRow(labelText, checked, onChange) {
+            const row = document.createElement("div");
+            row.style.display = "flex"; row.style.alignItems = "center"; row.style.gap = "6px";
+            const box = document.createElement("input");
+            box.type = "checkbox";
+            box.checked = checked;
+            box.style.cursor = "pointer";
+            box.onchange = onChange;
+            const lbl = document.createElement("span");
+            lbl.innerText = labelText;
+            row.appendChild(box);
+            row.appendChild(lbl);
+            return row;
+        }
+
         // 1. Points Toggle
-        const row1 = document.createElement("div");
-        row1.style.display = "flex"; row1.style.alignItems = "center"; row1.style.gap = "6px";
-        
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.checked = STATE.usePoints;
-        checkbox.style.cursor = "pointer";
-        checkbox.onchange = (e) => {
+        const rowPoints = createCheckRow("Incl. Points", STATE.usePoints, (e) => {
             STATE.usePoints = e.target.checked;
-            saveState(); // SAVE
+            saveState(); 
             document.querySelectorAll('[data-tm-manual]').forEach(c => delete c.dataset.tmManual);
             updateAllBadges();
-        };
-        const label = document.createElement("span");
-        label.innerText = "Incl. Points";
-        row1.appendChild(checkbox);
-        row1.appendChild(label);
+        });
 
-        // 2. Position Select
-        const row2 = document.createElement("div");
-        row2.style.display = "flex"; row2.style.alignItems = "center"; row2.style.gap = "6px";
+        // 2. Load All Toggle
+        const rowLoadAll = createCheckRow("Load All Pages", STATE.loadAll, (e) => {
+            STATE.loadAll = e.target.checked;
+            saveState();
+        });
 
+        // 3. Position Select
+        const rowPos = document.createElement("div");
+        rowPos.style.display = "flex"; rowPos.style.alignItems = "center"; rowPos.style.gap = "6px";
         const posSelect = document.createElement("select");
         Object.assign(posSelect.style, { fontSize: "11px", padding: "2px", borderRadius: "3px", cursor: "pointer" });
-        
         const opts = [
-            {v: 'top-left', t: 'Top Left'},
-            {v: 'top-right', t: 'Top Right'},
-            {v: 'bottom-left', t: 'Btm Left'},
-            {v: 'bottom-right', t: 'Btm Right'},
-            {v: 'mid-left', t: 'Mid Left'},
-            {v: 'mid-right', t: 'Mid Right'}
+            {v: 'top-left', t: 'Top Left'}, {v: 'top-right', t: 'Top Right'},
+            {v: 'bottom-left', t: 'Btm Left'}, {v: 'bottom-right', t: 'Btm Right'},
+            {v: 'mid-left', t: 'Mid Left'}, {v: 'mid-right', t: 'Mid Right'}
         ];
         opts.forEach(o => {
             const opt = document.createElement("option");
@@ -319,19 +320,18 @@
             if(o.v === STATE.badgePos) opt.selected = true;
             posSelect.appendChild(opt);
         });
-
         posSelect.onchange = (e) => {
             STATE.badgePos = e.target.value;
-            saveState(); // SAVE
+            saveState();
             repositionAllBadges();
         };
-        
-        row2.appendChild(posSelect);
+        rowPos.appendChild(posSelect);
 
-        toggleWrapper.appendChild(row1);
-        toggleWrapper.appendChild(row2);
+        toggleWrapper.appendChild(rowPoints);
+        toggleWrapper.appendChild(rowLoadAll);
+        toggleWrapper.appendChild(rowPos);
 
-        // 3. Sort Button
+        // 4. Sort Button
         const btn = document.createElement("button");
         btn.innerHTML = "Sort by Value";
         Object.assign(btn.style, {
@@ -339,14 +339,65 @@
             border: "2px solid #fff", borderRadius: "8px", fontWeight: "bold", cursor: "pointer",
             boxShadow: "0 4px 6px rgba(0,0,0,0.3)", fontFamily: "sans-serif"
         });
-        btn.onclick = () => {
-            btn.innerHTML = "Sorting...";
-            setTimeout(() => { sortGlobal(); btn.innerHTML = "Sort by Value"; }, 10);
+        
+        btn.onclick = async () => {
+            if (STATE.loadAll) {
+                btn.disabled = true;
+                btn.innerHTML = "Loading Pages...";
+                await fetchAllPages();
+                btn.innerHTML = "Sorting...";
+                sortGlobal();
+                btn.innerHTML = "Done!";
+                setTimeout(() => { btn.disabled = false; btn.innerHTML = "Sort by Value"; }, 2000);
+            } else {
+                btn.innerHTML = "Sorting...";
+                setTimeout(() => { sortGlobal(); btn.innerHTML = "Sort by Value"; }, 10);
+            }
         };
 
         container.appendChild(toggleWrapper);
         container.appendChild(btn);
         document.body.appendChild(container);
+    }
+
+    async function fetchAllPages() {
+        let nextLink = document.querySelector('a[aria-label="Next Page"]');
+        let pageCount = 1;
+        
+        while (nextLink && !nextLink.getAttribute('disabled')) {
+            const url = nextLink.href;
+            try {
+                const response = await fetch(url);
+                const text = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, "text/html");
+                
+                const newGrid = doc.querySelector('div[class*="product-grid-component"]');
+                if (newGrid && newGrid.children.length > 0) {
+                    const cards = Array.from(newGrid.children);
+                    const currentGrid = document.querySelector('div[class*="product-grid-component"]');
+                    if (currentGrid) {
+                        cards.forEach(card => {
+                            const importedCard = document.adoptNode(card);
+                            currentGrid.appendChild(importedCard);
+                            badgeItem(importedCard);
+                        });
+                    }
+                }
+
+                const newNext = doc.querySelector('a[aria-label="Next Page"]');
+                if (newNext && newNext.href !== url) nextLink = newNext;
+                else nextLink = null;
+                
+                pageCount++;
+                if(pageCount > 20) break; // Safety break
+                await new Promise(r => setTimeout(r, 500));
+                
+            } catch (e) { break; }
+        }
+        
+        const pagination = document.querySelector('div[aria-label="Pagination"]');
+        if(pagination) pagination.style.display = 'none';
     }
 
     // =========================================================
@@ -380,15 +431,19 @@
         updateAllBadges();
         const grids = Array.from(document.querySelectorAll('div[class*="product-grid-component"]'));
         if (grids.length === 0) return;
+        
         const masterGrid = grids[0];
         let allCards = [];
         grids.forEach(grid => {
             allCards.push(...Array.from(grid.children));
         });
+        
         allCards.sort((a, b) => (parseFloat(a.dataset.tmVal)||99999) - (parseFloat(b.dataset.tmVal)||99999));
+        
         const frag = document.createDocumentFragment();
         allCards.forEach(c => frag.appendChild(c));
         masterGrid.appendChild(frag);
+        
         for (let i = 1; i < grids.length; i++) grids[i].style.display = 'none';
     }
 
