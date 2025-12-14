@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Superstore Value Sorter (v15.3 - Weight Priority)
+// @name         Superstore Value Sorter (v15.4 - Manual Calc & Glitch Fix)
 // @namespace    http://tampermonkey.net/
-// @version      15.3
-// @description  Sorts by value. Prioritizes Price-by-Weight over Price-by-Each for food items to fix "Mini vs Jumbo" confusion.
+// @version      15.4
+// @description  Sorts by value. Calculates unit price manually to fix sale/limit/typo errors on store labels.
 // @match        https://www.realcanadiansuperstore.ca/*
 // @require      https://gartkb.github.io/Garts-Great-Tools/userscript/tm-value-sorter-core.js
 // @grant        none
@@ -40,48 +40,18 @@
     function parseCardData(card) {
         const rawText = (card.innerText || "").toLowerCase().replace(/[\r\n]+/g, " ").replace(/\s+/g, " ");
 
-        // --- STEP 1: POINTS ---
+        // --- STEP 1: EXTRACT POINTS ---
         let pointsValue = 0;
         const pointsMatch = rawText.match(/([0-9,]+)\s*pc optimum points/);
         if (pointsMatch) {
             pointsValue = parseFloat(pointsMatch[1].replace(/,/g, '')) / 1000;
         }
 
-        // --- STEP 2: SHELF UNIT PRICE (Store Provided) ---
-        let shelfUnitVal = null;
-        let shelfUnitType = 'weight';
-        let foundUnitPrices = []; 
-
-        const unitMatch = rawText.match(/\$([0-9,.]+)\s*\/\s*([0-9.]*)\s*([a-z]+)/);
-        if (unitMatch) {
-            const rawPrice = parseFloat(unitMatch[1].replace(/,/g, ''));
-            foundUnitPrices.push(rawPrice); 
-
-            const uQty = parseFloat(unitMatch[2]) || 1;
-            const uUnit = unitMatch[3];
-
-            if (uUnit === 'g' || uUnit === 'ml') {
-                shelfUnitVal = (rawPrice / uQty) * 100;
-                if (uUnit === 'ml') shelfUnitType = 'vol';
-                else shelfUnitType = 'weight';
-            }
-            else if (uUnit === 'kg' || uUnit === 'l') {
-                shelfUnitVal = (rawPrice / uQty) / 10;
-                if (uUnit === 'l') shelfUnitType = 'vol';
-                else shelfUnitType = 'weight';
-            }
-            else if (uUnit === 'lb') {
-                shelfUnitVal = (rawPrice / uQty) / 4.536;
-                shelfUnitType = 'weight';
-            }
-            else if (uUnit === 'ea') {
-                shelfUnitVal = rawPrice / uQty;
-                shelfUnitType = 'each';
-            }
-        }
-
-        // --- STEP 3: SHELF PRICE ---
+        // --- STEP 2: EXTRACT BEST PRICE ---
+        // We do this BEFORE weight, because we want to calculate the unit price ourselves.
         let validPrices = [];
+        
+        // Handle "2 for $5"
         const multiBuyMatch = rawText.match(/\b([0-9]+)\s*(?:for|\/)\s*\$([0-9,.]+)/);
         if (multiBuyMatch) {
             const qty = parseFloat(multiBuyMatch[1]);
@@ -89,23 +59,23 @@
             if (qty > 0) validPrices.push(total / qty);
         }
 
+        // Clean text to avoid confusing the regex with unit prices or savings
         const cleanForPrice = rawText
             .replace(/save\s*\$[0-9,.]+/g, "")
             .replace(/after limit\s*\$[0-9,.]+/g, "")
-            .replace(/\$[0-9,.]+\s*\/\s*[0-9.]*\s*[a-z]+/g, "")
+            // Remove the store's displayed unit price so we don't grab it as the item price
+            .replace(/\$\s*[0-9,.]+\s*\/\s*[0-9.]*\s*[a-z]+/g, "") 
             .replace(/about\s*\$[0-9,.]+/g, "");
         
-        const pMatches = [...cleanForPrice.matchAll(/\$([0-9,.]+)/g)];
+        const pMatches = [...cleanForPrice.matchAll(/\$\s*([0-9,.]+)/g)];
         pMatches.forEach(m => {
             const val = parseFloat(m[1].replace(/,/g, ''));
-            if (val > 0.1 && !foundUnitPrices.includes(val)) {
-                validPrices.push(val);
-            }
+            if (val > 0.1) validPrices.push(val);
         });
 
         let bestShelfPrice = validPrices.length > 0 ? Math.min(...validPrices) : null;
-
-        // --- STEP 4: APPLY POINTS ---
+        
+        // Apply Points
         let effectivePrice = bestShelfPrice;
         let hasPoints = false;
         if (bestShelfPrice && STATE.usePoints && pointsValue > 0) {
@@ -113,66 +83,89 @@
             hasPoints = true;
         }
 
-        // --- STEP 5: PRIORITY CHECK (Weight > Each) ---
-        // If the store provides a weight/volume, use that instead of trying to parse "10 Pack".
-        // This solves the Mini vs Jumbo croissant issue.
-        if (shelfUnitVal !== null && (shelfUnitType === 'weight' || shelfUnitType === 'vol')) {
-            let finalVal = shelfUnitVal;
-            
-            // Adjust store unit price if we have points or a sale the store unit price didn't catch
-            if (effectivePrice && bestShelfPrice && effectivePrice < bestShelfPrice) {
-                const ratio = effectivePrice / bestShelfPrice;
-                finalVal = shelfUnitVal * ratio;
+        // --- STEP 3: EXTRACT WEIGHT/VOLUME (MANUAL PARSING) ---
+        // This regex looks for: "1.5 kg", "500 g", "6x200 ml", "284x284.0 g"
+        const weightRegex = /(?:^|\s)(\d+(?:\.\d+)?)\s*(?:[xX]\s*(\d+(?:\.\d+)?))?\s*(g|kg|ml|l|lb|oz)\b/i;
+        const weightMatch = rawText.match(weightRegex);
+
+        if (weightMatch && effectivePrice) {
+            let num1 = parseFloat(weightMatch[1]);
+            let num2 = weightMatch[2] ? parseFloat(weightMatch[2]) : 1;
+            const unit = weightMatch[3];
+
+            // ** GLITCH FIX **: 
+            // If text is "284x284.0 g", the store made a typo.
+            // If the two numbers are roughly equal (and > 1), assume it's NOT a multipack, but a typo.
+            if (num2 > 1 && Math.abs(num1 - num2) < 0.5) {
+                num2 = 1; 
             }
 
+            let totalUnits = num1 * num2;
+            let normalizedUnits = totalUnits;
+            let type = 'weight';
+            let labelUnit = '100g';
+
+            // Normalize to 100g / 100ml / 1 lb
+            if (unit === 'kg') { normalizedUnits = totalUnits * 1000; }
+            else if (unit === 'g') { normalizedUnits = totalUnits; }
+            else if (unit === 'l') { normalizedUnits = totalUnits * 1000; type = 'vol'; labelUnit = '100ml'; }
+            else if (unit === 'ml') { normalizedUnits = totalUnits; type = 'vol'; labelUnit = '100ml'; }
+            else if (unit === 'lb') { normalizedUnits = totalUnits * 453.6; } // convert to g for calculation? 
+            else if (unit === 'oz') { normalizedUnits = totalUnits * 28.35; }
+
+            // If we have lb/oz, maybe we want to keep it in imperial? 
+            // For now, let's normalize everything to $/100g or $/100ml for easy comparison
+            
+            // Calculate Unit Price
+            // Price per 100 units
+            const unitPrice = (effectivePrice / normalizedUnits) * 100;
+            
             return {
-                val: finalVal,
-                label: `$${finalVal.toFixed(2)}/${shelfUnitType === 'vol' ? '100ml' : '100g'}`,
-                type: shelfUnitType,
+                val: unitPrice,
+                label: `$${unitPrice.toFixed(2)}/${labelUnit}`,
+                type: type,
                 isDeal: false,
                 hasPoints: hasPoints,
                 priceUsed: effectivePrice
             };
         }
 
-        // --- STEP 6: TEXT ANALYSIS FALLBACK ---
-        // Only run this if we DIDN'T find a weight, or if the unit is 'each'
-        if (effectivePrice && window.ValueSorter) {
-            let title = "";
-            const titleEl = card.querySelector('[class*="product-tile__details__info__name"]');
-            title = titleEl ? titleEl.innerText : rawText.substring(0, 100);
-
-            const sizeInText = rawText.match(/(?:\b|^)((?:\d+(?:[.,]\d+)?)\s*(?:ea|g|kg|ml|l|lb|oz|pk|pack|count|ct|bags?|sachets?|pods?))\b/i);
-            if (sizeInText) title += " " + sizeInText[1];
-
-            const result = window.ValueSorter.analyze(title, effectivePrice, shelfUnitVal);
+        // --- STEP 4: FALLBACK (Use Store String) ---
+        // Only if regex failed (e.g. items sold by "each" or weird formatting)
+        let shelfUnitVal = null;
+        let shelfUnitType = 'each';
+        const storeUnitMatch = rawText.match(/\$\s*([0-9,.]+)\s*\/\s*([0-9.]*)\s*([a-z]+)/);
+        
+        if (storeUnitMatch) {
+            const rawPrice = parseFloat(storeUnitMatch[1].replace(/,/g, ''));
+            const uQty = parseFloat(storeUnitMatch[2]) || 1;
+            const uUnit = storeUnitMatch[3];
             
-            if (result) {
-                result.hasPoints = hasPoints;
-                result.priceUsed = effectivePrice; 
-                return result;
+            if (uUnit === 'ea') {
+                shelfUnitVal = rawPrice / uQty;
+                // If we have an effective price (points/sale), adjust the ratio
+                if (effectivePrice && bestShelfPrice) {
+                    shelfUnitVal = shelfUnitVal * (effectivePrice / bestShelfPrice);
+                }
+                return {
+                    val: shelfUnitVal,
+                    label: `$${shelfUnitVal.toFixed(2)}/ea`,
+                    type: 'each',
+                    isDeal: false,
+                    hasPoints: hasPoints,
+                    priceUsed: effectivePrice
+                };
             }
         }
 
-        // --- STEP 7: FALLBACK ---
-        if (shelfUnitVal !== null) {
-            return {
-                val: shelfUnitVal,
-                label: `$${shelfUnitVal.toFixed(2)}/${shelfUnitType === 'vol' ? '100ml' : (shelfUnitType === 'each' ? 'ea' : '100g')}`,
-                type: shelfUnitType,
-                isDeal: false,
-                hasPoints: false,
-                priceUsed: effectivePrice || bestShelfPrice
-            };
-        }
-
+        // --- STEP 5: ABSOLUTE FALLBACK ---
         if (effectivePrice) {
              return {
                 val: 9999,
                 label: "Set Qty",
                 type: 'unknown',
                 isDeal: false,
-                hasPoints: false,
+                hasPoints: hasPoints,
                 priceUsed: effectivePrice
             };
         }
@@ -222,12 +215,16 @@
 
         let tooltip = "Click to set manual quantity";
         if (data.priceUsed && data.val > 0) {
-            let qty = 0;
-            if (data.type === 'each') qty = data.priceUsed / data.val;
-            else qty = (data.priceUsed / data.val) * 100;
-            qty = Math.round(qty * 100) / 100;
+            // Reverse calc for tooltip display
+            let detectedQty = 0;
+            if (data.type === 'each') detectedQty = data.priceUsed / data.val;
+            else detectedQty = (data.priceUsed / data.val) * 100; 
+
+            // Round nicely
+            detectedQty = Math.round(detectedQty * 100) / 100;
+            
             let unitLabel = data.type === 'each' ? 'items' : (data.type === 'vol' ? 'ml' : 'g');
-            tooltip = `Detected: ${qty} ${unitLabel}\nPrice: $${data.priceUsed.toFixed(2)}\nClick to edit`;
+            tooltip = `Detected: ${detectedQty} ${unitLabel}\nPrice: $${data.priceUsed.toFixed(2)}\nClick to edit`;
         }
         badge.title = tooltip;
 
