@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Superstore Value Sorter (v14.6 - Configurable Position)
+// @name         Superstore Value Sorter (v14.6 - Persistent Settings)
 // @namespace    http://tampermonkey.net/
 // @version      14.6
-// @description  Sorts by value. Includes Click-to-Edit badges and Position Settings.
+// @description  Sorts by value. Includes Click-to-Edit badges and Configurable/Persistent Position.
 // @match        https://www.realcanadiansuperstore.ca/*
 // @require      https://gartkb.github.io/Garts-Great-Tools/userscript/tm-value-sorter-core.js
 // @grant        none
@@ -11,11 +11,19 @@
 (function() {
     'use strict';
 
-    // Global State
+    // =========================================================
+    // 0. GLOBAL STATE (PERSISTENT)
+    // =========================================================
     const STATE = {
-        usePoints: true,      // Default: ON
-        badgePos: 'top-left'  // Default: Top Left
+        // Load from LocalStorage or default to True/Top-Left
+        usePoints: localStorage.getItem('tm_vs_usePoints') !== 'false', 
+        badgePos: localStorage.getItem('tm_vs_badgePos') || 'top-left'
     };
+
+    function saveState() {
+        localStorage.setItem('tm_vs_usePoints', STATE.usePoints);
+        localStorage.setItem('tm_vs_badgePos', STATE.badgePos);
+    }
 
     // =========================================================
     // 1. DATA PARSING
@@ -91,7 +99,6 @@
             const titleEl = card.querySelector('[class*="product-tile__details__info__name"]');
             title = titleEl ? titleEl.innerText : rawText.substring(0, 100);
 
-            // Inject Metadata
             const sizeInText = rawText.match(/(?:\b|^)(\d+[\s\-]*(?:ea|g|kg|ml|l|lb|oz|pk|pack|count|ct|bags?|sachets?|pods?))\b/i);
             if (sizeInText) {
                 title += " " + sizeInText[1];
@@ -137,28 +144,16 @@
     // =========================================================
 
     function applyBadgePosition(badge) {
-        // Reset positioning styles
-        badge.style.top = "auto";
-        badge.style.bottom = "auto";
-        badge.style.left = "auto";
-        badge.style.right = "auto";
+        badge.style.top = "auto"; badge.style.bottom = "auto";
+        badge.style.left = "auto"; badge.style.right = "auto";
         badge.style.transform = "none";
 
         const P = "6px"; 
-        
         switch (STATE.badgePos) {
-            case 'top-right':
-                badge.style.top = P; badge.style.right = P;
-                break;
-            case 'top-left':
-                badge.style.top = P; badge.style.left = P;
-                break;
-            case 'bottom-right':
-                badge.style.bottom = P; badge.style.right = P;
-                break;
-            case 'bottom-left':
-                badge.style.bottom = P; badge.style.left = P;
-                break;
+            case 'top-right':    badge.style.top = P; badge.style.right = P; break;
+            case 'top-left':     badge.style.top = P; badge.style.left = P; break;
+            case 'bottom-right': badge.style.bottom = P; badge.style.right = P; break;
+            case 'bottom-left':  badge.style.bottom = P; badge.style.left = P; break;
             case 'mid-right':
                 badge.style.top = "50%"; badge.style.right = P;
                 badge.style.transform = "translateY(-50%)";
@@ -167,8 +162,7 @@
                 badge.style.top = "50%"; badge.style.left = P;
                 badge.style.transform = "translateY(-50%)";
                 break;
-            default: // Default Top Left
-                badge.style.top = P; badge.style.left = P;
+            default: badge.style.top = P; badge.style.left = P;
         }
     }
 
@@ -185,22 +179,17 @@
         badge.className = 'tm-badge';
         badge.innerText = data.label;
 
-        // Tooltip logic
         let tooltip = "Click to set manual quantity";
         if (data.priceUsed && data.val > 0) {
             let qty = 0;
-            if (data.type === 'each') {
-                qty = data.priceUsed / data.val;
-            } else {
-                qty = (data.priceUsed / data.val) * 100;
-            }
+            if (data.type === 'each') qty = data.priceUsed / data.val;
+            else qty = (data.priceUsed / data.val) * 100;
             qty = Math.round(qty * 100) / 100;
             let unitLabel = data.type === 'each' ? 'items' : (data.type === 'vol' ? 'ml' : 'g');
             tooltip = `Detected: ${qty} ${unitLabel}\nPrice: $${data.priceUsed.toFixed(2)}\nClick to edit`;
         }
         badge.title = tooltip;
 
-        // Base Styles
         Object.assign(badge.style, {
             position: "absolute",
             padding: "3px 6px", borderRadius: "4px", fontSize: "12px",
@@ -208,10 +197,8 @@
             fontFamily: "sans-serif", cursor: "pointer"
         });
 
-        // Apply Dynamic Position
         applyBadgePosition(badge);
 
-        // Colors
         if (data.type === 'unknown') {
              badge.style.background = "#eee"; badge.style.color = "#555";
         } else if (data.isDeal) {
@@ -289,6 +276,7 @@
         checkbox.style.cursor = "pointer";
         checkbox.onchange = (e) => {
             STATE.usePoints = e.target.checked;
+            saveState(); // SAVE
             document.querySelectorAll('[data-tm-manual]').forEach(c => delete c.dataset.tmManual);
             updateAllBadges();
         };
@@ -321,6 +309,7 @@
 
         posSelect.onchange = (e) => {
             STATE.badgePos = e.target.value;
+            saveState(); // SAVE
             repositionAllBadges();
         };
         
