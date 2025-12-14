@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         Superstore Value Sorter (v14.4 - Smart Tooltip)
+// @name         Superstore Value Sorter (v14.5 - Smart Tooltip)
 // @namespace    http://tampermonkey.net/
-// @version      14.4
+// @version      14.5
 // @description  Sorts by value. Includes Click-to-Edit badges with "Detected Quantity" tooltips.
 // @match        https://www.realcanadiansuperstore.ca/*
 // @require      https://gartkb.github.io/Garts-Great-Tools/userscript/tm-value-sorter-core.js
@@ -166,8 +166,9 @@
         }
         badge.title = tooltip;
 
+        // UPDATED POSITION: Bottom Left
         Object.assign(badge.style, {
-            position: "absolute", top: "6px", right: "6px",
+            position: "absolute", bottom: "6px", left: "6px",
             padding: "3px 6px", borderRadius: "4px", fontSize: "12px",
             fontWeight: "800", zIndex: "20", boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
             fontFamily: "sans-serif", cursor: "pointer"
