@@ -352,4 +352,130 @@
                 btn.disabled = true;
                 btn.innerHTML = "Fetching Next Page...";
                 // Try to load one page
-                const success = a
+                const success = await fetchNextPage();
+                
+                if(success) {
+                    btn.innerHTML = "Sorting...";
+                    sortGlobal();
+                    btn.innerHTML = "Done! (+1 Page)";
+                } else {
+                    btn.innerHTML = "No More Pages";
+                    sortGlobal(); // Sort whatever we have anyway
+                }
+
+                setTimeout(() => { btn.disabled = false; btn.innerHTML = "Sort by Value"; }, 2000);
+            } else {
+                btn.innerHTML = "Sorting...";
+                setTimeout(() => { sortGlobal(); btn.innerHTML = "Sort by Value"; }, 10);
+            }
+        };
+
+        container.appendChild(toggleWrapper);
+        container.appendChild(btn);
+        document.body.appendChild(container);
+    }
+
+    // --- FETCH NEXT PAGE LOGIC ---
+    async function fetchNextPage() {
+        const nextLink = document.querySelector('a[aria-label="Next Page"]');
+        if (!nextLink || nextLink.getAttribute('disabled')) return false;
+
+        const url = nextLink.href;
+        try {
+            const response = await fetch(url);
+            const text = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(text, "text/html");
+            
+            // 1. Append Products
+            const newGrid = doc.querySelector('div[class*="product-grid-component"]');
+            if (newGrid && newGrid.children.length > 0) {
+                const cards = Array.from(newGrid.children);
+                const currentGrid = document.querySelector('div[class*="product-grid-component"]');
+                if (currentGrid) {
+                    cards.forEach(card => {
+                        const importedCard = document.adoptNode(card);
+                        currentGrid.appendChild(importedCard);
+                        badgeItem(importedCard);
+                    });
+                }
+            } else {
+                return false; // No products found
+            }
+
+            // 2. Update Pagination in DOM so we can find the NEXT next link later
+            const oldPagination = document.querySelector('div[aria-label="Pagination"]');
+            const newPagination = doc.querySelector('div[aria-label="Pagination"]');
+            
+            if (oldPagination && newPagination) {
+                oldPagination.innerHTML = newPagination.innerHTML;
+            } else if (oldPagination) {
+                // If no new pagination (end of results), hide the old one
+                oldPagination.style.display = 'none';
+            }
+
+            return true;
+
+        } catch (e) {
+            console.error(e);
+            return false;
+        }
+    }
+
+    // =========================================================
+    // 4. ENGINE
+    // =========================================================
+
+    function processBatch(nodeList) {
+        nodeList.forEach(node => { if (node.nodeType === 1) badgeItem(node); });
+    }
+
+    const gridObserver = new MutationObserver((mutations) => mutations.forEach(m => processBatch(m.addedNodes)));
+    const pageObserver = new MutationObserver((mutations) => {
+        mutations.forEach(m => {
+            m.addedNodes.forEach(node => {
+                if (node.nodeType === 1) {
+                    if (node.matches && node.matches('div[class*="product-grid-component"]')) attachToGrid(node);
+                    else if (node.querySelectorAll) node.querySelectorAll('div[class*="product-grid-component"]').forEach(attachToGrid);
+                }
+            });
+        });
+    });
+
+    function attachToGrid(grid) {
+        if (grid.dataset.tmObserved) return;
+        processBatch(grid.childNodes);
+        gridObserver.observe(grid, { childList: true });
+        grid.dataset.tmObserved = "true";
+    }
+
+    function sortGlobal() {
+        updateAllBadges();
+        const grids = Array.from(document.querySelectorAll('div[class*="product-grid-component"]'));
+        if (grids.length === 0) return;
+        
+        const masterGrid = grids[0];
+        let allCards = [];
+        grids.forEach(grid => {
+            allCards.push(...Array.from(grid.children));
+        });
+        
+        allCards.sort((a, b) => (parseFloat(a.dataset.tmVal)||99999) - (parseFloat(b.dataset.tmVal)||99999));
+        
+        const frag = document.createDocumentFragment();
+        allCards.forEach(c => frag.appendChild(c));
+        masterGrid.appendChild(frag);
+        
+        // Hide subsequent grid containers (page 2, etc if they exist separately)
+        for (let i = 1; i < grids.length; i++) grids[i].style.display = 'none';
+    }
+
+    function init() {
+        initUI();
+        document.querySelectorAll('div[class*="product-grid-component"]').forEach(attachToGrid);
+        pageObserver.observe(document.body, { childList: true, subtree: true });
+    }
+
+    setTimeout(init, 2000);
+
+})();
