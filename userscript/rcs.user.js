@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Superstore Value Sorter (v14.6 - Persistent Settings)
+// @name         Superstore Value Sorter (v14.7 - Fix Parsing)
 // @namespace    http://tampermonkey.net/
-// @version      14.6
-// @description  Sorts by value. Includes Click-to-Edit badges and Configurable/Persistent Position.
+// @version      14.7
+// @description  Sorts by value. Includes Click-to-Edit badges and Configurable/Persistent Position. Fixes unit price confusion.
 // @match        https://www.realcanadiansuperstore.ca/*
 // @require      https://gartkb.github.io/Garts-Great-Tools/userscript/tm-value-sorter-core.js
 // @grant        none
@@ -15,7 +15,6 @@
     // 0. GLOBAL STATE (PERSISTENT)
     // =========================================================
     const STATE = {
-        // Load from LocalStorage or default to True/Top-Left
         usePoints: localStorage.getItem('tm_vs_usePoints') !== 'false', 
         badgePos: localStorage.getItem('tm_vs_badgePos') || 'top-left'
     };
@@ -30,6 +29,7 @@
     // =========================================================
 
     function parseCardData(card) {
+        // Get text but preserve some spacing for regex safety
         const rawText = (card.innerText || "").toLowerCase().replace(/[\r\n]+/g, " ").replace(/\s+/g, " ");
 
         // --- STEP 1: POINTS ---
@@ -39,35 +39,41 @@
             pointsValue = parseFloat(pointsMatch[1].replace(/,/g, '')) / 1000;
         }
 
-        // --- STEP 2: SHELF UNIT PRICE (Fallback) ---
+        // --- STEP 2: SHELF UNIT PRICE (Fallback & Exclusion) ---
         let shelfUnitVal = null;
         let shelfUnitType = 'weight';
-        
-        const unitMatch = rawText.match(/\$([0-9,.]+)\s*\/\s*([0-9.]*)?\s*([a-z]+)/);
+        let foundUnitPrices = []; // Store prices found here to exclude them later
+
+        // Regex handles "$0.67/100g", "$0.67 / 100 g", "$0.67/lb"
+        const unitMatch = rawText.match(/\$([0-9,.]+)\s*\/\s*([0-9.]*)\s*([a-z]+)/);
         if (unitMatch) {
-            const uPrice = parseFloat(unitMatch[1].replace(/,/g, ''));
+            const rawPrice = parseFloat(unitMatch[1].replace(/,/g, ''));
+            foundUnitPrices.push(rawPrice); // Add to exclusion list
+
             const uQty = parseFloat(unitMatch[2]) || 1;
             const uUnit = unitMatch[3];
 
             if (uUnit === 'g' || uUnit === 'ml') {
-                shelfUnitVal = (uPrice / uQty) * 100;
+                shelfUnitVal = (rawPrice / uQty) * 100;
                 if (uUnit === 'ml') shelfUnitType = 'vol';
             }
             else if (uUnit === 'kg' || uUnit === 'l') {
-                shelfUnitVal = (uPrice / uQty) / 10;
+                shelfUnitVal = (rawPrice / uQty) / 10;
                 if (uUnit === 'l') shelfUnitType = 'vol';
             }
             else if (uUnit === 'lb') {
-                shelfUnitVal = (uPrice / uQty) / 4.536;
+                shelfUnitVal = (rawPrice / uQty) / 4.536;
             }
             else if (uUnit === 'ea') {
-                shelfUnitVal = uPrice / uQty;
+                shelfUnitVal = rawPrice / uQty;
                 shelfUnitType = 'each';
             }
         }
 
         // --- STEP 3: SHELF PRICE ---
         let validPrices = [];
+        
+        // 3a. Handle "2 for $5"
         const multiBuyMatch = rawText.match(/\b([0-9]+)\s*(?:for|\/)\s*\$([0-9,.]+)/);
         if (multiBuyMatch) {
             const qty = parseFloat(multiBuyMatch[1]);
@@ -75,14 +81,21 @@
             if (qty > 0) validPrices.push(total / qty);
         }
 
-        const cleanForPrice = rawText.replace(/save\s*\$[0-9,.]+/g, "")
-                                     .replace(/\$[0-9,.]+\s*\/\s*[0-9a-z]+/g, "")
-                                     .replace(/about\s*\$[0-9,.]+/g, "");
-        
+        // 3b. Clean text to remove distractions
+        const cleanForPrice = rawText
+            .replace(/save\s*\$[0-9,.]+/g, "")           // Remove "Save $2.00"
+            .replace(/after limit\s*\$[0-9,.]+/g, "")    // Remove "after limit $8.49"
+            .replace(/\$[0-9,.]+\s*\/\s*[0-9.]*\s*[a-z]+/g, "") // Remove "$0.67/100g"
+            .replace(/about\s*\$[0-9,.]+/g, "");         // Remove "about $..."
+
+        // 3c. Extract remaining prices
         const pMatches = [...cleanForPrice.matchAll(/\$([0-9,.]+)/g)];
         pMatches.forEach(m => {
             const val = parseFloat(m[1].replace(/,/g, ''));
-            if (val > 0.1) validPrices.push(val);
+            // Filter: Must be > $0.10 AND not equal to the unit price we found earlier
+            if (val > 0.1 && !foundUnitPrices.includes(val)) {
+                validPrices.push(val);
+            }
         });
 
         let bestShelfPrice = validPrices.length > 0 ? Math.min(...validPrices) : null;
