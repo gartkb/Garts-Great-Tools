@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Superstore Value Sorter (v15.1 - Load +1 Page)
+// @name         Superstore Value Sorter (v15.2 - Decimal Parsing Fix)
 // @namespace    http://tampermonkey.net/
-// @version      15.1
-// @description  Sorts by value. Includes option to load the next page of results. All settings saved.
+// @version      15.2
+// @description  Sorts by value. Fixes parsing for decimal quantities (e.g. 1.54L). All settings saved.
 // @match        https://www.realcanadiansuperstore.ca/*
 // @require      https://gartkb.github.io/Garts-Great-Tools/userscript/tm-value-sorter-core.js
 // @grant        none
@@ -15,7 +15,6 @@
     // 0. GLOBAL STATE (PERSISTENT)
     // =========================================================
     
-    // Helper to safely get boolean from local storage
     const getSavedBool = (key, def) => {
         const val = localStorage.getItem(key);
         if (val === null) return def;
@@ -25,7 +24,7 @@
     const STATE = {
         usePoints: getSavedBool('tm_vs_usePoints', true),
         badgePos: localStorage.getItem('tm_vs_badgePos') || 'top-left',
-        loadMore: getSavedBool('tm_vs_loadMore', false) // Changed from loadAll to loadMore
+        loadMore: getSavedBool('tm_vs_loadMore', false)
     };
 
     function saveState() {
@@ -48,11 +47,12 @@
             pointsValue = parseFloat(pointsMatch[1].replace(/,/g, '')) / 1000;
         }
 
-        // --- STEP 2: SHELF UNIT PRICE (Exclusion Logic) ---
+        // --- STEP 2: SHELF UNIT PRICE ---
         let shelfUnitVal = null;
         let shelfUnitType = 'weight';
         let foundUnitPrices = []; 
 
+        // Extract store's unit price (to use as fallback or exclusion)
         const unitMatch = rawText.match(/\$([0-9,.]+)\s*\/\s*([0-9.]*)\s*([a-z]+)/);
         if (unitMatch) {
             const rawPrice = parseFloat(unitMatch[1].replace(/,/g, ''));
@@ -116,7 +116,9 @@
             const titleEl = card.querySelector('[class*="product-tile__details__info__name"]');
             title = titleEl ? titleEl.innerText : rawText.substring(0, 100);
 
-            const sizeInText = rawText.match(/(?:\b|^)(\d+[\s\-]*(?:ea|g|kg|ml|l|lb|oz|pk|pack|count|ct|bags?|sachets?|pods?))\b/i);
+            // UPDATED REGEX: Supports decimals (e.g. 1.54 or 1,54)
+            const sizeInText = rawText.match(/(?:\b|^)((?:\d+(?:[.,]\d+)?)\s*(?:ea|g|kg|ml|l|lb|oz|pk|pack|count|ct|bags?|sachets?|pods?))\b/i);
+            
             if (sizeInText) title += " " + sizeInText[1];
 
             const result = window.ValueSorter.analyze(title, effectivePrice, shelfUnitVal);
@@ -281,7 +283,6 @@
             fontFamily: "sans-serif"
         });
 
-        // Helper to create checkbox row
         function createCheckRow(labelText, checked, onChange) {
             const row = document.createElement("div");
             row.style.display = "flex"; row.style.alignItems = "center"; row.style.gap = "6px";
@@ -297,7 +298,6 @@
             return row;
         }
 
-        // 1. Points Toggle
         const rowPoints = createCheckRow("Incl. Points", STATE.usePoints, (e) => {
             STATE.usePoints = e.target.checked;
             saveState(); 
@@ -305,13 +305,11 @@
             updateAllBadges();
         });
 
-        // 2. Load More Toggle (UPDATED TEXT)
         const rowLoadMore = createCheckRow("Load +1 Page", STATE.loadMore, (e) => {
             STATE.loadMore = e.target.checked;
             saveState();
         });
 
-        // 3. Position Select
         const rowPos = document.createElement("div");
         rowPos.style.display = "flex"; rowPos.style.alignItems = "center"; rowPos.style.gap = "6px";
         const posSelect = document.createElement("select");
@@ -338,7 +336,6 @@
         toggleWrapper.appendChild(rowLoadMore);
         toggleWrapper.appendChild(rowPos);
 
-        // 4. Sort Button
         const btn = document.createElement("button");
         btn.innerHTML = "Sort by Value";
         Object.assign(btn.style, {
@@ -351,7 +348,6 @@
             if (STATE.loadMore) {
                 btn.disabled = true;
                 btn.innerHTML = "Fetching Next Page...";
-                // Try to load one page
                 const success = await fetchNextPage();
                 
                 if(success) {
@@ -360,9 +356,8 @@
                     btn.innerHTML = "Done! (+1 Page)";
                 } else {
                     btn.innerHTML = "No More Pages";
-                    sortGlobal(); // Sort whatever we have anyway
+                    sortGlobal(); 
                 }
-
                 setTimeout(() => { btn.disabled = false; btn.innerHTML = "Sort by Value"; }, 2000);
             } else {
                 btn.innerHTML = "Sorting...";
@@ -375,7 +370,6 @@
         document.body.appendChild(container);
     }
 
-    // --- FETCH NEXT PAGE LOGIC ---
     async function fetchNextPage() {
         const nextLink = document.querySelector('a[aria-label="Next Page"]');
         if (!nextLink || nextLink.getAttribute('disabled')) return false;
@@ -387,7 +381,6 @@
             const parser = new DOMParser();
             const doc = parser.parseFromString(text, "text/html");
             
-            // 1. Append Products
             const newGrid = doc.querySelector('div[class*="product-grid-component"]');
             if (newGrid && newGrid.children.length > 0) {
                 const cards = Array.from(newGrid.children);
@@ -400,17 +393,15 @@
                     });
                 }
             } else {
-                return false; // No products found
+                return false; 
             }
 
-            // 2. Update Pagination in DOM so we can find the NEXT next link later
             const oldPagination = document.querySelector('div[aria-label="Pagination"]');
             const newPagination = doc.querySelector('div[aria-label="Pagination"]');
             
             if (oldPagination && newPagination) {
                 oldPagination.innerHTML = newPagination.innerHTML;
             } else if (oldPagination) {
-                // If no new pagination (end of results), hide the old one
                 oldPagination.style.display = 'none';
             }
 
@@ -466,7 +457,6 @@
         allCards.forEach(c => frag.appendChild(c));
         masterGrid.appendChild(frag);
         
-        // Hide subsequent grid containers (page 2, etc if they exist separately)
         for (let i = 1; i < grids.length; i++) grids[i].style.display = 'none';
     }
 
