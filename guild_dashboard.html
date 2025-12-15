@@ -53,6 +53,10 @@
         .val-silver { color: #bdc3c7; }
         .val-copper { color: #e67e22; }
 
+        /* --- NEW STASH TOTAL STYLE --- */
+        .stash-total-value { display: none; margin-right: 15px; font-weight: bold; font-size: 0.85rem; color: #bdc3c7; }
+        .show-values-active .stash-total-value { display: flex; align-items: center; }
+
         .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); gap: 8px; }
         
         .item-slot { background: rgba(0,0,0,0.3); border-radius: 4px; aspect-ratio: 1; position: relative; border: 1px solid rgba(255,255,255,0.05); transition: transform 0.1s; cursor: help; }
@@ -896,13 +900,33 @@
             g.stash.forEach(tab => {
                 const grid = document.createElement('div');
                 grid.className = 'item-grid';
+                
+                // --- NEW CALCULATION LOGIC ---
+                let tabTotal = 0;
+                const inventory = tab.inventory || [];
+                inventory.forEach(s => {
+                    if (s && itemPrices.has(s.id)) {
+                        tabTotal += (itemPrices.get(s.id).sells * s.count);
+                    }
+                });
+                // -----------------------------
+
                 const title = document.createElement('div');
                 title.className = 'stash-section-title';
                 let name = "Stash";
                 if(tab.upgrade_id===58) name="Stash"; if(tab.upgrade_id===377) name="Trove"; if(tab.upgrade_id===59) name="Cave";
-                const inventory = tab.inventory || [];
+                
                 const coinString = tab.coins && tab.coins > 0 ? `<div class="stash-coins">${formatCoins(tab.coins)}</div>` : '';
-                title.innerHTML = `<span>${name} <span style="font-size:0.8rem;opacity:0.7">(${inventory.filter(x=>x).length})</span></span> ${coinString}`;
+                
+                // --- UPDATED TITLE HTML ---
+                title.innerHTML = `
+                    <span>${name} <span style="font-size:0.8rem;opacity:0.7">(${inventory.filter(x=>x).length})</span></span> 
+                    <div style="display:flex; align-items:center;">
+                        <div class="stash-total-value">Items: ${formatCoins(tabTotal)}</div>
+                        ${coinString}
+                    </div>`;
+                // --------------------------
+
                 ui.body.appendChild(title);
                 
                 inventory.forEach(slot => {
