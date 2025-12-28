@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GW2 Relic Manager (v10)</title>
+    <style>
+        :root {
+            --bg: #101012;
+            --panel: #1b1b1e;
+            --border: #333;
+            --accent: #c38d38; /* GW2 Gold */
+            --text: #eee;
+            --sub: #888;
+            --green: #43a047;
+            --red: #e53935;
+            --blue: #2196f3;
+            --yellow: #ffeb3b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        header { text-align: center; margin-bottom: 25px; }
+        h1 { color: var(--accent); margin: 0 0 5px 0; }
+        p { color: var(--sub); font-size: 0.9em; margin: 0; }
+
+        /* Controls */
+        .controls-area {
+            background: var(--panel);
+            padding: 20px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+            padding: 12px;
+            background: #080808;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 4px;
+            min-width: 300px;
+            font-family: monospace;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .btn-load { background: var(--accent); color: #111; }
+        .btn-load:hover { background: #b88a3e; }
+        .btn-reset { background: #333; color: #fff; }
+        .btn-reset:hover { background: #444; }
+        .btn-clear-manual { background: #37474f; color: #bbb; font-size: 0.8em; }
+
+        #status-msg { text-align: center; color: var(--accent); margin-bottom: 10px; min-height: 20px; font-family: monospace; }
+
+        /* Filters */
+        .filter-panel {
+            display: none;
+            border-top: 1px solid #333;
+            padding-top: 15px;
+        }
+        .filter-panel.visible { display: block; }
+
+        .checkbox-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-group {
+            background: #111;
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid #333;
+            display: flex;
+            gap: 15px;
+        }
+
+        label { display: flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; }
+        input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; }
+
+        #stats-bar { text-align: center; font-size: 1.1em; font-weight: bold; margin-bottom: 15px; }
+        #search-input { width: 100%; max-width: 600px; display: block; margin: 0 auto; padding: 12px; }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 15px;
+        }
+
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+        }
+        .card:hover { border-color: #555; transform: translateY(-2px); z-index: 10; }
+        .card.hidden { display: none; }
+        
+        /* State Colors */
+        .card.state-locked { border-left: 4px solid var(--red); }
+        .card.state-api-unlocked { border-color: rgba(67, 160, 71, 0.4); border-left: 4px solid var(--green); }
+        .card.state-manual-unlocked { border-color: rgba(33, 150, 243, 0.4); border-left: 4px solid var(--blue); }
+
+        .icon {
+            width: 56px;
+            height: 56px;
+            background: #000;
+            border: 1px solid #444;
+            border-radius: 4px;
+            flex-shrink: 0;
+            cursor: help;
+        }
+        .card.state-locked .icon { filter: grayscale(100%) opacity(0.6); }
+
+        .info { flex: 1; overflow: hidden; }
+        .name { display: block; font-weight: bold; color: #fff; margin-bottom: 3px; }
+        .set-name { display: block; font-size: 0.75em; color: var(--sub); text-transform: uppercase; }
+
+        .badges { margin-top: 5px; display: flex; align-items: center; gap: 8px; }
+
+        .badge { font-size: 0.7em; padding: 2px 6px; border-radius: 3px; font-weight: bold; text-transform: uppercase; }
+        .b-api { background: rgba(67, 160, 71, 0.1); color: var(--green); border: 1px solid var(--green); }
+        .b-manual { background: rgba(33, 150, 243, 0.1); color: var(--blue); border: 1px solid var(--blue); }
+        .b-locked { background: rgba(229, 57, 53, 0.1); color: var(--red); border: 1px solid var(--red); }
+
+        .wiki { color: #888; font-size: 0.8em; text-decoration: none; border: 1px solid #444; padding: 1px 6px; border-radius: 4px; }
+        .wiki:hover { background: #444; color: #fff; }
+
+        .toggle-btn {
+            background: transparent;
+            border: 1px solid #444;
+            color: #888;
+            font-size: 0.75em;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: auto;
+        }
+        .toggle-btn:hover { background: #333; color: white; }
+        .card.state-api-unlocked .toggle-btn { display: none; }
+        .card.state-manual-unlocked .toggle-btn { border-color: var(--blue); color: var(--blue); background: rgba(33, 150, 243, 0.1); }
+        .card.state-manual-unlocked .toggle-btn:after { content: " (Undo)"; }
+
+        /* TOOLTIP */
+        .tooltip {
+            visibility: hidden;
+            width: 300px;
+            background-color: rgba(0,0,0,0.95);
+            color: #ddd;
+            text-align: left;
+            border-radius: 4px;
+            padding: 12px;
+            border: 1px solid #555;
+            position: absolute;
+            z-index: 100;
+            top: 100%;
+            left: 10px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.8);
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .tooltip strong { color: var(--accent); display: block; margin-bottom: 8px; border-bottom: 1px solid #333; padding-bottom: 4px; font-size: 1.1em;}
+        .tooltip-hint { display: block; margin-top: 10px; color: var(--accent); font-style: italic; font-size: 0.85em; }
+
+        .card:hover .tooltip { visibility: visible; opacity: 1; }
+        
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>GW2 Relic Manager</h1>
+        <p>API Tracking + Manual Overrides</p>
+    </header>
+
+    <div class="controls-area">
+        <div class="input-row">
+            <input type="text" id="apikey" placeholder="Paste GW2 API Key">
+            <button class="btn-load" onclick="startScan()">Load Data</button>
+            <button class="btn-reset" onclick="resetApp()">Reset Key</button>
+        </div>
+        
+        <div id="status-msg"></div>
+
+        <div class="filter-panel" id="filter-panel">
+            <div class="checkbox-row">
+                <div class="checkbox-group">
+                    <label><input type="checkbox" id="cb-core" checked onchange="applyFilters()"> Core</label>
+                    <label><input type="checkbox" id="cb-soto" checked onchange="applyFilters()"> SotO</label>
+                    <label><input type="checkbox" id="cb-janthir" checked onchange="applyFilters()"> Janthir</label>
+                    <label><input type="checkbox" id="cb-voe" checked onchange="applyFilters()"> VoE</label>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" id="cb-hide-unlocked" onchange="applyFilters()"> Hide Unlocked</label>
+                </div>
+                <button class="btn-clear-manual" onclick="clearManualData()">Clear Manual Data</button>
+            </div>
+
+            <div id="stats-bar"></div>
+            <input type="text" id="search-input" placeholder="Search name, effect, or hint..." onkeyup="applyFilters()">
+        </div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+</div>
+
+<script>
+    const API = 'https://api.guildwars2.com/v2';
+    const CAT_KEYWORDS = ["Rare Collections", "Secrets of the Obscure", "Janthir Wilds", "Visions of Eternity"];
+    
+    let allCardsData = [];
+    let manualOverrides = new Set();
+
+    window.onload = () => {
+        const k = localStorage.getItem('gw2_apikey_v10');
+        if(k) document.getElementById('apikey').value = k;
+        
+        const saved = localStorage.getItem('gw2_manual_relics');
+        if(saved) manualOverrides = new Set(JSON.parse(saved));
+    };
+
+    function log(m) { document.getElementById('status-msg').innerText = m; }
+
+    function resetApp() {
+        localStorage.removeItem('gw2_apikey_v10');
+        document.getElementById('apikey').value = '';
+        document.getElementById('grid').innerHTML = '';
+        document.getElementById('filter-panel').classList.remove('visible');
+        log('Key cleared.');
+    }
+
+    function clearManualData() {
+        if(confirm("Clear all manually unlocked relics?")) {
+            manualOverrides.clear();
+            saveManualData();
+            allCardsData.forEach(c => updateCardDOM(c));
+            applyFilters();
+        }
+    }
+
+    function saveManualData() {
+        localStorage.setItem('gw2_manual_relics', JSON.stringify([...manualOverrides]));
+    }
+
+    async function startScan() {
+        const key = document.getElementById('apikey').value.trim();
+        if(!key) return log('API Key required.');
+        localStorage.setItem('gw2_apikey_v10', key);
+
+        document.getElementById('grid').innerHTML = '';
+        document.getElementById('filter-panel').classList.remove('visible');
+        allCardsData = [];
+
+        try {
+            log('Scanning API...');
+            
+            // 1. Fetch Categories
+            const catsResp = await fetch(`${API}/achievements/categories?ids=all&lang=en`);
+            const allCats = await catsResp.json();
+            const relevantCats = allCats.filter(c => 
+                CAT_KEYWORDS.some(kw => c.name.includes(kw)) || c.name.includes("Relic")
+            );
+
+            let achIds = [];
+            relevantCats.forEach(c => achIds.push(...c.achievements));
+            achIds = [...new Set(achIds)];
+
+            // 2. Fetch Achievements
+            const achDetails = await fetchChunks(`${API}/achievements`, achIds);
+
+            // 3. Filter for Relic Sets
+            const relicSets = achDetails.filter(a => 
+                a.name.toLowerCase().includes('relic') && 
+                a.bits && a.bits.some(b => b.type === 'Item')
+            );
+
+            // 4. Map Bits
+            let itemIds = [];
+            let setMap = new Map();
+
+            relicSets.forEach(set => {
+                const itemBits = set.bits
+                    .map((b, idx) => ({
+                        ...b, 
+                        bitIndex: idx,
+                        hintText: b.text || ""
+                    }))
+                    .filter(b => b.type === 'Item');
+                
+                itemIds.push(...itemBits.map(b => b.id));
+                setMap.set(set.id, itemBits);
+            });
+            itemIds = [...new Set(itemIds)];
+
+            log(`Fetching info for ${itemIds.length} relics...`);
+
+            // 5. Fetch Items & User Progress
+            const [items, userAch] = await Promise.all([
+                fetchChunks(`${API}/items`, itemIds),
+                fetchAccount(key)
+            ]);
+
+            const itemMap = new Map();
+            items.forEach(i => itemMap.set(i.id, i));
+            
+            const userMap = new Map();
+            userAch.forEach(a => userMap.set(a.id, a));
+
+            // 6. Build Data
+            relicSets.forEach(set => {
+                const bits = setMap.get(set.id);
+                const userState = userMap.get(set.id);
+                const userDoneBits = userState ? (userState.bits || []) : [];
+                const isSetDone = userState && userState.done;
+                const group = determineGroup(set.name);
+
+                bits.forEach(bit => {
+                    const item = itemMap.get(bit.id);
+                    if(!item) return;
+
+                    const apiUnlocked = isSetDone || userDoneBits.includes(bit.bitIndex);
+                    const desc = cleanDesc(item.description);
+                    const hint = bit.hintText || "Complete achievement to unlock.";
+
+                    allCardsData.push({
+                        id: item.id,
+                        name: item.name,
+                        icon: item.icon,
+                        description: desc,
+                        hint: hint,
+                        setName: set.name,
+                        group: group,
+                        apiUnlocked: apiUnlocked,
+                        wiki: item.name.replace(/\s/g, '_'),
+                        searchText: (item.name + " " + desc + " " + hint).toLowerCase(), // Pre-compute for speed
+                        element: null 
+                    });
+                });
+            });
+
+            renderGrid();
+            document.getElementById('filter-panel').classList.add('visible');
+            log('Loaded.');
+
+        } catch (e) {
+            console.error(e);
+            log(`Error: ${e.message}`);
+        }
+    }
+
+    async function fetchAccount(key) {
+        const r = await fetch(`${API}/account/achievements?access_token=${key}`);
+        if(!r.ok) throw new Error('Account fetch failed.');
+        return await r.json();
+    }
+
+    async function fetchChunks(endpoint, ids) {
+        let res = [];
+        const size = 200;
+        for(let i=0; i<ids.length; i+=size) {
+            const chunk = ids.slice(i, i+size).join(',');
+            const r = await fetch(`${endpoint}?ids=${chunk}&lang=en`);
+            if(r.ok) res.push(...await r.json());
+        }
+        return res;
+    }
+
+    function determineGroup(name) {
+        const n = name.toLowerCase();
+        if(n.includes('secrets') || n.includes('obscure')) return 'soto';
+        if(n.includes('janthir')) return 'janthir';
+        if(n.includes('eternity') || n.includes('visions')) return 'voe';
+        return 'core';
+    }
+
+    function cleanDesc(txt) {
+        if(!txt) return "No description.";
+        let clean = txt.replace(/<c=@?([^>]+)>(.*?)<\/c>/g, '$2'); 
+        clean = clean.replace(/<c=([^>]+)>(.*?)<\/c>/g, '$2'); 
+        clean = clean.replace(/\n/g, '<br>');
+        return clean;
+    }
+
+    function renderGrid() {
+        const grid = document.getElementById('grid');
+        
+        allCardsData.sort((a,b) => {
+            if(a.group !== b.group) return a.group.localeCompare(b.group);
+            return a.name.localeCompare(b.name);
+        });
+
+        allCardsData.forEach(item => {
+            const el = document.createElement('div');
+            el.className = 'card';
+            
+            el.innerHTML = `
+                <img src="${item.icon}" class="icon" loading="lazy">
+                <div class="info">
+                    <span class="name">${item.name}</span>
+                    <span class="set-name">${item.setName}</span>
+                    <div class="badges">
+                        <span class="badge" id="badge-${item.id}">LOCKED</span>
+                        <a href="https://wiki.guildwars2.com/wiki/${item.wiki}" target="_blank" class="wiki">Wiki</a>
+                    </div>
+                </div>
+                <button class="toggle-btn" onclick="toggleManual(${item.id})">Mark Unlocked</button>
+                <div class="tooltip">
+                    <strong>${item.name}</strong>
+                    ${item.description}
+                    <span class="tooltip-hint">Hint: ${item.hint}</span>
+                </div>
+            `;
+            
+            item.element = el;
+            grid.appendChild(el);
+            updateCardDOM(item);
+        });
+
+        applyFilters();
+    }
+
+    function updateCardDOM(item) {
+        if(!item.element) return;
+        const manual = manualOverrides.has(item.id);
+        const badge = document.getElementById(`badge-${item.id}`);
+
+        item.element.classList.remove('state-locked', 'state-api-unlocked', 'state-manual-unlocked');
+        
+        if (item.apiUnlocked) {
+            item.element.classList.add('state-api-unlocked');
+            badge.className = 'badge b-api';
+            badge.innerText = 'API Unlocked';
+        } else if (manual) {
+            item.element.classList.add('state-manual-unlocked');
+            badge.className = 'badge b-manual';
+            badge.innerText = 'Manual';
+        } else {
+            item.element.classList.add('state-locked');
+            badge.className = 'badge b-locked';
+            badge.innerText = 'Locked';
+        }
+    }
+
+    window.toggleManual = function(id) {
+        if(manualOverrides.has(id)) manualOverrides.delete(id);
+        else manualOverrides.add(id);
+        saveManualData();
+        
+        const item = allCardsData.find(x => x.id === id);
+        if(item) {
+            updateCardDOM(item);
+            applyFilters();
+        }
+    };
+
+    window.applyFilters = function() {
+        const showCore = document.getElementById('cb-core').checked;
+        const showSoto = document.getElementById('cb-soto').checked;
+        const showJanthir = document.getElementById('cb-janthir').checked;
+        const showVoe = document.getElementById('cb-voe').checked;
+        const hideUnlocked = document.getElementById('cb-hide-unlocked').checked;
+        const search = document.getElementById('search-input').value.toLowerCase();
+
+        let visible = 0;
+        let unlocked = 0;
+
+        allCardsData.forEach(c => {
+            const isUnlocked = c.apiUnlocked || manualOverrides.has(c.id);
+            let show = true;
+
+            if(c.group === 'core' && !showCore) show = false;
+            if(c.group === 'soto' && !showSoto) show = false;
+            if(c.group === 'janthir' && !showJanthir) show = false;
+            if(c.group === 'voe' && !showVoe) show = false;
+
+            if(hideUnlocked && isUnlocked) show = false;
+            
+            // SEARCH LOGIC UPDATED
+            if(search && !c.searchText.includes(search)) show = false;
+
+            if(show) {
+                c.element.classList.remove('hidden');
+                visible++;
+                if(isUnlocked) unlocked++;
+            } else {
+                c.element.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('stats-bar').innerText = `Progress: ${unlocked} / ${visible} Unlocked (Visible)`;
+    };
+
+</script>
+</body>
+</html>
