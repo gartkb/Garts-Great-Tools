@@ -258,6 +258,8 @@
         <div class="filter-bar">
              <div class="filter-group">
                 <input type="text" id="roster-search" class="filter-input" placeholder="Search members..." onkeyup="applyRosterFilter()">
+                <!-- Check Ranks Button -->
+                <button onclick="checkRanks()" style="margin-left: 5px; padding: 6px 12px; font-size: 0.9rem;">Check Ranks</button>
             </div>
             <div class="filter-group" style="color:#bdc3c7; font-size:0.9rem;">
                 <span id="roster-total-count">0</span> Members found
@@ -342,6 +344,17 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- RANK CHECK MODAL -->
+<div id="rank-check-modal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span>Rank Mismatches</span>
+            <button class="modal-close" onclick="closeModal('rank-check-modal')">&times;</button>
+        </div>
+        <div id="rank-check-results" style="overflow-y: auto; padding-right: 5px;"></div>
     </div>
 </div>
 
@@ -1227,6 +1240,83 @@
             if(!g.storage) return;
             g.storage.forEach(s => { const u = upgradeDetails.get(s.id); out.value += `[ID:${s.id}] Qty:${s.count} Name:${u?u.name:'Unknown'} Type:${u?u.type:'Unknown'}\n`; });
         });
+    }
+
+    function checkRanks() {
+        const memberMap = new Map(); // Map<AccountName, Array<{guildName, guildTag, rank}>>
+
+        // 1. Aggregate members from all loaded guilds
+        Object.keys(guildData).forEach(gid => {
+            const g = guildData[gid];
+            if (!g.roster) return;
+            
+            g.roster.forEach(m => {
+                const acc = m.name; // Account names are unique identifiers
+                if (!memberMap.has(acc)) memberMap.set(acc, []);
+                memberMap.get(acc).push({ 
+                    guild: g.name, 
+                    tag: g.tag, 
+                    rank: m.rank 
+                });
+            });
+        });
+
+        // 2. Identify mismatches
+        const mismatches = [];
+        memberMap.forEach((entries, accName) => {
+            // User must be in at least 2 guilds to have a mismatch
+            if (entries.length < 2) return;
+
+            // Check if all ranks in the list are identical string matches
+            const firstRank = entries[0].rank;
+            const hasMismatch = entries.some(e => e.rank !== firstRank);
+
+            if (hasMismatch) {
+                mismatches.push({ name: accName, guilds: entries });
+            }
+        });
+
+        // 3. Render Results
+        const container = document.getElementById('rank-check-results');
+        
+        if (mismatches.length === 0) {
+            container.innerHTML = `
+                <div style="text-align:center; padding:40px; color:#2ecc71;">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">✔</div>
+                    <div>No rank mismatches found among shared members.</div>
+                </div>`;
+        } else {
+            let html = `<p style="color:#bdc3c7; margin-bottom:15px; font-size:0.9rem;">
+                Found <strong style="color:#e74c3c">${mismatches.length}</strong> users with inconsistent rank names across your guilds.
+            </p>`;
+            
+            // Sort alphabetically by user name
+            mismatches.sort((a,b) => a.name.localeCompare(b.name));
+
+            html += mismatches.map(m => {
+                const rows = m.guilds.map(g => `
+                    <div style="display:flex; justify-content:space-between; padding: 4px 0; border-bottom:1px solid rgba(255,255,255,0.05);">
+                        <span style="color:#bdc3c7; font-size:0.9rem;">[${g.tag}] ${g.guild}</span>
+                        <span style="color:#f1c40f; font-weight:bold; font-size:0.9rem;">${g.rank}</span>
+                    </div>
+                `).join('');
+
+                return `
+                    <div style="background:rgba(0,0,0,0.3); padding:12px; margin-bottom:10px; border-radius:6px; border:1px solid rgba(52, 152, 219, 0.2);">
+                        <div style="font-weight:bold; color:#3498db; margin-bottom:8px; font-size:1.1rem; display:flex; align-items:center; gap:8px;">
+                            ${m.name}
+                        </div>
+                        <div style="padding-left: 10px; border-left: 2px solid rgba(255,255,255,0.1);">
+                            ${rows}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            container.innerHTML = html;
+        }
+
+        openModal('rank-check-modal');
     }
 </script>
     <p></p>
