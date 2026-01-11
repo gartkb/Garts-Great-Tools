@@ -293,6 +293,14 @@
         .vault-check { display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; color: #aaa;}
         .vault-check input { transform: scale(1.2); accent-color: var(--vault); }
         .vault-check.checked { opacity: 0.5; text-decoration: line-through; }
+        
+        /* Resource Overview */
+        .resource-overview { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 15px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 4px; }
+        .res-badge { flex: 1; min-width: 200px; border: 1px solid #333; padding: 8px; border-radius: 4px; }
+        .res-title { font-weight: bold; color: #e0e0e0; font-size: 0.9em; margin-bottom: 3px; }
+        .res-count { font-size: 1.1em; }
+        .res-ok { color: var(--success); }
+        .res-miss { color: var(--danger); font-weight: bold; }
     </style>
 </head>
 <body>
@@ -328,7 +336,7 @@
     
     <div id="kit-panel" class="open">
         <div class="kit-header" onclick="app.toggleKitPanel()">
-            <h3>🎒 Inventory & Vault Resources</h3>
+            <h3>🎒 Inventory & Resources</h3>
             <span class="kit-toggle-icon">▼</span>
         </div>
         <div id="kit-body">
@@ -381,6 +389,16 @@ const CONSTANTS = {
         "Set 3 (Legacy)": ["The Moot", "The Predator", "The Dreamer", "Frostfang"],
         "Set 9 (Normal)": ["Rodgort", "Sunrise", "Kraitkin", "The Flameseeker Prophecies"],
         "Universal": ["Bolt", "The Moot", "Quip", "The Predator", "The Dreamer", "Frostfang", "The Juggernaut", "Incinerator", "Kamohoali'i Kotaki", "Twilight", "Howler", "Kudzu", "Frenzy", "The Minstrel", "Rodgort", "Sunrise", "Kraitkin", "The Flameseeker Prophecies", "Meteorlogicus", "The Bifrost"]
+    },
+    GEN1_NAMES: [
+        "The Bifrost", "Bolt", "The Dreamer", "The Flameseeker Prophecies", "Frenzy", 
+        "Frostfang", "Howler", "Incinerator", "The Juggernaut", "Kamohoali'i Kotaki", 
+        "Kraitkin", "Kudzu", "Meteorlogicus", "The Minstrel", "The Moot", "The Predator", 
+        "Quip", "Rodgort", "Sunrise", "Twilight"
+    ],
+    RESOURCE_IDS: {
+        BATTLE: 19678,
+        EXPLORATION: 19677
     }
 };
 
@@ -396,7 +414,8 @@ const app = {
         vaultKits: {},     // { name, choices, stats: { purchased, limit, type } }
         planner: {},
         kitUsage: {},
-        vaultState: {}     
+        vaultState: {},
+        resources: { battle: 0, exploration: 0 }     
     },
     currentTab: 'weapons',
 
@@ -508,7 +527,8 @@ const app = {
             vaultKits: {},     
             planner: guestPlan ? JSON.parse(guestPlan) : {},
             kitUsage: {},
-            vaultState: {}     
+            vaultState: {},
+            resources: { battle: 0, exploration: 0 }
         };
 
         // UI Reset
@@ -609,6 +629,7 @@ const app = {
             app.userData.unlocks = cached.unlocks;
             app.userData.inventoryKits = cached.inventoryKits;
             app.userData.vaultKits = cached.vaultKits;
+            app.userData.resources = cached.resources || { battle: 0, exploration: 0 };
             document.getElementById('loading').style.display = 'none';
             app.render();
             return;
@@ -627,7 +648,8 @@ const app = {
             app.accountCache[app.currentKey] = {
                 unlocks: app.userData.unlocks,
                 inventoryKits: app.userData.inventoryKits,
-                vaultKits: app.userData.vaultKits
+                vaultKits: app.userData.vaultKits,
+                resources: app.userData.resources
             };
 
             document.getElementById('loading').style.display = 'none';
@@ -642,10 +664,15 @@ const app = {
     scanResources: async () => {
         app.userData.inventoryKits = {};
         app.userData.vaultKits = {}; 
+        app.userData.resources = { battle: 0, exploration: 0 };
         const inventoryIds = new Map(); 
 
         const addInventoryCount = (id, count) => {
             inventoryIds.set(id, (inventoryIds.get(id) || 0) + count);
+            
+            // Check for specific Gifts
+            if(id === CONSTANTS.RESOURCE_IDS.BATTLE) app.userData.resources.battle += count;
+            if(id === CONSTANTS.RESOURCE_IDS.EXPLORATION) app.userData.resources.exploration += count;
         };
 
         try {
@@ -840,11 +867,57 @@ const app = {
         const vaultKeys = Object.keys(app.userData.vaultKits);
         
         const panel = document.getElementById('kit-panel');
+        /* Even if no kits, show panel for Gift resources if plans exist? 
+           Keeping consistent with original logic, but allowing display if keys exist OR plans exist could be better.
+           For now, stick to original strict display toggle + keys. */
         if(invKeys.length === 0 && vaultKeys.length === 0) { panel.style.display = 'none'; return; }
 
         panel.style.display = 'block';
         const list = document.getElementById('kit-body');
         list.innerHTML = ''; 
+
+        // --- NEW: Resource Overview ---
+        const hRes = document.createElement('div');
+        hRes.className = "kit-section-title";
+        hRes.innerText = "Key Resources for Planned Items";
+        list.appendChild(hRes);
+
+        const resDiv = document.createElement('div');
+        resDiv.className = "resource-overview";
+        
+        // Calculate Needs
+        let plannedCount = 0;
+        let gen1Count = 0;
+        
+        Object.values(app.userData.planner).forEach(plan => {
+            if(plan && (plan.type === 'kit' || plan.type === 'manual')) {
+                plannedCount++;
+                if(plan.itemId && CONSTANTS.GEN1_NAMES.includes(plan.itemId)) {
+                    gen1Count++;
+                }
+            }
+        });
+
+        const battleOwned = app.userData.resources.battle || 0;
+        const exploreOwned = app.userData.resources.exploration || 0;
+        
+        const mkRes = (name, owned, needed) => {
+            const diff = owned - needed;
+            const status = diff >= 0 
+                ? `<span class="res-ok">✔ Covered (Left: ${diff})</span>` 
+                : `<span class="res-miss">Need ${Math.abs(diff)} more</span>`;
+            
+            return `<div class="res-badge">
+                <div class="res-title">${name}</div>
+                <div class="res-count">Owned: ${owned} / Need: ${needed}</div>
+                <div style="font-size:0.85em; margin-top:2px;">${status}</div>
+            </div>`;
+        };
+
+        resDiv.innerHTML = mkRes("Gift of Battle", battleOwned, plannedCount) + 
+                           mkRes("Gift of Exploration", exploreOwned, gen1Count);
+        list.appendChild(resDiv);
+        // ------------------------------
 
         // 1. INVENTORY SECTION (Interactive)
         if(invKeys.length > 0) {
