@@ -301,6 +301,9 @@
         .res-count { font-size: 1.1em; }
         .res-ok { color: var(--success); }
         .res-miss { color: var(--danger); font-weight: bold; }
+        .res-badge.interactive { cursor: help; border-color: var(--accent-dim); transition: border-color 0.2s; }
+        .res-badge.interactive:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
+
     </style>
 </head>
 <body>
@@ -316,11 +319,11 @@
             <button class="btn-danger" onclick="app.removeAccount()" title="Remove current account">Del</button>
         </div>
         <div id="add-account-view" class="acct-row">
-            <input type="text" id="new-api-key" placeholder="Paste API Key (Account, Inventories, Unlocks, Progression)">
+            <input type="text" id="new-api-key" placeholder="Paste API Key (inv, wallet, progression)">
             <button onclick="app.addAccount()">Add Account</button>
             <button class="btn-secondary" id="cancel-add-btn" style="display:none;" onclick="app.showSelectorView()">Cancel</button>
         </div>
-        <div id="scope-warning" class="scope-warning">⚠️ Key missing 'progression' scope. Wizard's Vault kits cannot be scanned.</div>
+        <div id="scope-warning" class="scope-warning">⚠️ Key missing scopes. Wizard's Vault or Wallet data may be incomplete.</div>
     </div>
 </header>
 
@@ -396,9 +399,24 @@ const CONSTANTS = {
         "Kraitkin", "Kudzu", "Meteorlogicus", "The Minstrel", "The Moot", "The Predator", 
         "Quip", "Rodgort", "Sunrise", "Twilight"
     ],
+    // Imperial Favor Related IDs
     RESOURCE_IDS: {
         BATTLE: 19678,
-        EXPLORATION: 19677
+        EXPLORATION: 19677,
+        IMPERIAL_FAVOR_WALLET: 59, // Will be updated dynamically if possible
+        PROVISIONER_TOKEN_WALLET: 50 // Default, will update dynamically
+    },
+    WRIT_IDS: [
+        96680, // Seitung Province
+        96533, // New Kaineng City
+        96561, // Echovald Wilds (UPDATED: Was 97363)
+        95692  // Dragon's End
+    ],
+    WRIT_NAMES: {
+        96680: "Seitung",
+        96533: "N. Kaineng",
+        96561: "Echovald", // Updated ID key
+        95692: "Dragon's End"
     }
 };
 
@@ -411,11 +429,11 @@ const app = {
     userData: {
         unlocks: {},
         inventoryKits: {}, 
-        vaultKits: {},     // { name, choices, stats: { purchased, limit, type } }
+        vaultKits: {},     
         planner: {},
         kitUsage: {},
         vaultState: {},
-        resources: { battle: 0, exploration: 0 }     
+        resources: { battle: 0, exploration: 0, imperialFavor: 0, imperialFavorBreakdown: null, provisionerTokens: 0 }     
     },
     currentTab: 'weapons',
 
@@ -441,10 +459,8 @@ const app = {
         if(app.accounts.length > 0) {
             app.switchAccount(app.accounts[0].key);
         } else {
-            // No account? Load "Guest" planner
             const guestPlan = localStorage.getItem('gw2_planner_guest');
             app.userData.planner = guestPlan ? JSON.parse(guestPlan) : {};
-            
             document.getElementById('loading').style.display = 'none';
             app.render();
         }
@@ -514,34 +530,22 @@ const app = {
         app.accounts = app.accounts.filter(a => a.key !== app.currentKey);
         localStorage.setItem('gw2_accounts', JSON.stringify(app.accounts));
         
-        // Clear cache
         delete app.accountCache[app.currentKey];
-
         app.currentKey = null;
         
-        // Reset user data and load Guest Planner
         const guestPlan = localStorage.getItem('gw2_planner_guest');
         app.userData = {
-            unlocks: {},
-            inventoryKits: {}, 
-            vaultKits: {},     
+            unlocks: {}, inventoryKits: {}, vaultKits: {},     
             planner: guestPlan ? JSON.parse(guestPlan) : {},
-            kitUsage: {},
-            vaultState: {},
-            resources: { battle: 0, exploration: 0 }
+            kitUsage: {}, vaultState: {},
+            resources: { battle: 0, exploration: 0, imperialFavor: 0, imperialFavorBreakdown: null, provisionerTokens: 0 }
         };
 
-        // UI Reset
         document.getElementById('kit-panel').style.display = 'none';
-        
         app.updateAccountUI();
         
-        if(app.accounts.length > 0) {
-            app.switchAccount(app.accounts[0].key);
-        } else {
-            // Render Browse Mode
-            app.render();
-        }
+        if(app.accounts.length > 0) app.switchAccount(app.accounts[0].key);
+        else app.render();
     },
 
     updateAccountUI: () => {
@@ -553,7 +557,6 @@ const app = {
             const sel = document.getElementById('account-select');
             sel.innerHTML = app.accounts.map(a => `<option value="${a.key}">${a.name}</option>`).join('');
             if(app.currentKey) sel.value = app.currentKey;
-            
             app.showSelectorView();
             cancelBtn.style.display = 'inline-block';
         } else {
@@ -592,6 +595,15 @@ const app = {
         document.getElementById('loading').innerText = "Fetching Game Database...";
 
         try {
+            // Fetch Currencies to get Dynamic IDs
+            try {
+                const currencies = await fetch('https://api.guildwars2.com/v2/currencies?ids=all').then(r=>r.json());
+                const fav = currencies.find(c => c.name === "Imperial Favor");
+                if(fav) CONSTANTS.RESOURCE_IDS.IMPERIAL_FAVOR_WALLET = fav.id;
+                const prov = currencies.find(c => c.name === "Provisioner Token");
+                if(prov) CONSTANTS.RESOURCE_IDS.PROVISIONER_TOKEN_WALLET = prov.id;
+            } catch(e) { console.warn("Failed to fetch currencies, using default ID"); }
+
             const armoryData = await fetch('https://api.guildwars2.com/v2/legendaryarmory?ids=all').then(r=>r.json());
             const ids = [];
             armoryData.forEach(entry => {
@@ -629,7 +641,7 @@ const app = {
             app.userData.unlocks = cached.unlocks;
             app.userData.inventoryKits = cached.inventoryKits;
             app.userData.vaultKits = cached.vaultKits;
-            app.userData.resources = cached.resources || { battle: 0, exploration: 0 };
+            app.userData.resources = cached.resources || { battle: 0, exploration: 0, imperialFavor: 0, imperialFavorBreakdown: null, provisionerTokens: 0 };
             document.getElementById('loading').style.display = 'none';
             app.render();
             return;
@@ -664,7 +676,15 @@ const app = {
     scanResources: async () => {
         app.userData.inventoryKits = {};
         app.userData.vaultKits = {}; 
-        app.userData.resources = { battle: 0, exploration: 0 };
+        app.userData.resources = { 
+            battle: 0, 
+            exploration: 0, 
+            imperialFavor: 0,
+            imperialFavorBreakdown: { wallet: 0, writs: {} },
+            provisionerTokens: 0
+        };
+        CONSTANTS.WRIT_IDS.forEach(id => app.userData.resources.imperialFavorBreakdown.writs[id] = 0);
+
         const inventoryIds = new Map(); 
 
         const addInventoryCount = (id, count) => {
@@ -673,17 +693,38 @@ const app = {
             // Check for specific Gifts
             if(id === CONSTANTS.RESOURCE_IDS.BATTLE) app.userData.resources.battle += count;
             if(id === CONSTANTS.RESOURCE_IDS.EXPLORATION) app.userData.resources.exploration += count;
+            
+            // Imperial Favor via Writs (5 Favor per Writ)
+            if(CONSTANTS.WRIT_IDS.includes(id)) {
+                app.userData.resources.imperialFavor += (count * 5);
+                app.userData.resources.imperialFavorBreakdown.writs[id] += count;
+            }
         };
 
         try {
-            // 1. Scan Inventory
             try {
-                const [bank, shared, chars] = await Promise.all([
+                const [bank, shared, chars, wallet, materials] = await Promise.all([
                     fetch(`https://api.guildwars2.com/v2/account/bank?access_token=${app.currentKey}`).then(r=>r.ok?r.json():[]),
                     fetch(`https://api.guildwars2.com/v2/account/inventory?access_token=${app.currentKey}`).then(r=>r.ok?r.json():[]),
-                    fetch(`https://api.guildwars2.com/v2/characters?ids=all&access_token=${app.currentKey}`).then(r=>r.ok?r.json():[])
+                    fetch(`https://api.guildwars2.com/v2/characters?ids=all&access_token=${app.currentKey}`).then(r=>r.ok?r.json():[]),
+                    fetch(`https://api.guildwars2.com/v2/account/wallet?access_token=${app.currentKey}`).then(r=>r.ok?r.json():[]),
+                    fetch(`https://api.guildwars2.com/v2/account/materials?access_token=${app.currentKey}`).then(r=>r.ok?r.json():[])
                 ]);
 
+                // Wallet Processing
+                if(wallet && wallet.length > 0) {
+                    const favor = wallet.find(c => c.id === CONSTANTS.RESOURCE_IDS.IMPERIAL_FAVOR_WALLET);
+                    if(favor) {
+                        app.userData.resources.imperialFavor += favor.value;
+                        app.userData.resources.imperialFavorBreakdown.wallet = favor.value;
+                    }
+                    const prov = wallet.find(c => c.id === CONSTANTS.RESOURCE_IDS.PROVISIONER_TOKEN_WALLET);
+                    if(prov) {
+                        app.userData.resources.provisionerTokens = prov.value;
+                    }
+                }
+
+                // Inventory Processing
                 const collectInv = (items) => {
                     if(!items) return;
                     items.forEach(i => { if(i) addInventoryCount(i.id, i.count); });
@@ -691,8 +732,9 @@ const app = {
 
                 collectInv(bank);
                 collectInv(shared);
+                collectInv(materials);
                 chars.forEach(c => c.bags.forEach(b => b && collectInv(b.inventory)));
-            } catch(e) { console.warn("Inv scan partial error", e); }
+            } catch(e) { console.warn("Resource scan partial error", e); }
 
             // 2. Scan Vault (Collect IDs)
             const vaultIds = new Set();
@@ -705,8 +747,7 @@ const app = {
                 } else if(vaultRes.ok) {
                     const listings = await vaultRes.json();
                     listings.forEach(l => {
-                        // Scan ALL items
-                        if(l.type !== 'Skin' && l.item_id) { // Avoid explicit skins
+                        if(l.type !== 'Skin' && l.item_id) {
                             vaultIds.add(l.item_id);
                             vaultStats.set(l.item_id, { 
                                 purchased: l.purchased || 0, 
@@ -740,9 +781,7 @@ const app = {
                 
                 itemInfos.flat().forEach(item => {
                     app.gameData.items[item.id] = item;
-                    
                     const normName = item.name.replace(/—/g, '-');
-                    // STRICT CHECK: Name MUST contain specific string
                     if(normName.includes("Legendary Weapon Starter")) {
                         let setName = null;
                         if(normName.includes("Universal")) setName = "Universal";
@@ -790,9 +829,7 @@ const app = {
     },
 
     setPlan: (slotKey, type, kitId = null, itemId = null) => {
-        // Allow guest planning
         const storageKey = app.currentKey ? `gw2_planner_${app.currentKey}` : 'gw2_planner_guest';
-
         if(type === 'none') {
             delete app.userData.planner[slotKey];
         } else {
@@ -828,7 +865,6 @@ const app = {
         Object.keys(app.userData.planner).forEach(k => {
             const plan = app.userData.planner[k];
             if(typeof plan === 'boolean') return; 
-
             if(plan.type === 'kit' && plan.kitId) {
                 app.userData.kitUsage[plan.kitId] = (app.userData.kitUsage[plan.kitId] || 0) + 1;
             }
@@ -865,18 +901,13 @@ const app = {
     renderKitPanel: () => {
         const invKeys = Object.keys(app.userData.inventoryKits);
         const vaultKeys = Object.keys(app.userData.vaultKits);
-        
         const panel = document.getElementById('kit-panel');
-        /* Even if no kits, show panel for Gift resources if plans exist? 
-           Keeping consistent with original logic, but allowing display if keys exist OR plans exist could be better.
-           For now, stick to original strict display toggle + keys. */
         if(invKeys.length === 0 && vaultKeys.length === 0) { panel.style.display = 'none'; return; }
 
         panel.style.display = 'block';
         const list = document.getElementById('kit-body');
         list.innerHTML = ''; 
 
-        // --- NEW: Resource Overview ---
         const hRes = document.createElement('div');
         hRes.className = "kit-section-title";
         hRes.innerText = "Key Resources for Planned Items";
@@ -885,41 +916,58 @@ const app = {
         const resDiv = document.createElement('div');
         resDiv.className = "resource-overview";
         
-        // Calculate Needs
         let plannedCount = 0;
         let gen1Count = 0;
+        let gen3Count = 0;
+        let provTokensNeeded = 0;
         
         Object.values(app.userData.planner).forEach(plan => {
             if(plan && (plan.type === 'kit' || plan.type === 'manual')) {
                 plannedCount++;
-                if(plan.itemId && CONSTANTS.GEN1_NAMES.includes(plan.itemId)) {
-                    gen1Count++;
+                if(plan.itemId) {
+                    if(CONSTANTS.GEN1_NAMES.includes(plan.itemId)) gen1Count++;
+                    if(plan.itemId.startsWith("Aurene's")) gen3Count++;
+                    
+                    // Provisioner Token Logic (50 per Gift of Craftsmanship)
+                    if(plan.itemId.includes("Obsidian") || 
+                       plan.itemId.includes("Perfected Envoy") ||
+                       plan.itemId === "Legendary Relic" ||
+                       plan.itemId.includes("Legendary Rune") ||
+                       plan.itemId.includes("Legendary Sigil")) {
+                        provTokensNeeded += 50;
+                    }
                 }
             }
         });
 
         const battleOwned = app.userData.resources.battle || 0;
         const exploreOwned = app.userData.resources.exploration || 0;
+        const favorOwned = app.userData.resources.imperialFavor || 0;
+        const provOwned = app.userData.resources.provisionerTokens || 0;
+        const favorNeeded = gen3Count * 2500;
         
-        const mkRes = (name, owned, needed) => {
+        const mkRes = (name, owned, needed, suffix="", interact=false) => {
             const diff = owned - needed;
             const status = diff >= 0 
                 ? `<span class="res-ok">✔ Covered (Left: ${diff})</span>` 
                 : `<span class="res-miss">Need ${Math.abs(diff)} more</span>`;
             
-            return `<div class="res-badge">
+            const evt = interact ? `onmouseenter="app.showFavorTooltip(event)" onmouseleave="app.hideTooltip()"` : '';
+            const cls = interact ? "res-badge interactive" : "res-badge";
+
+            return `<div class="${cls}" ${evt}>
                 <div class="res-title">${name}</div>
-                <div class="res-count">Owned: ${owned} / Need: ${needed}</div>
+                <div class="res-count">Owned: ${owned}${suffix} / Need: ${needed}${suffix}</div>
                 <div style="font-size:0.85em; margin-top:2px;">${status}</div>
             </div>`;
         };
 
         resDiv.innerHTML = mkRes("Gift of Battle", battleOwned, plannedCount) + 
-                           mkRes("Gift of Exploration", exploreOwned, gen1Count);
+                           mkRes("Gift of Exploration", exploreOwned, gen1Count) +
+                           mkRes("Imperial Favor", favorOwned, favorNeeded, "", true) +
+                           mkRes("Provisioner Tokens", provOwned, provTokensNeeded);
         list.appendChild(resDiv);
-        // ------------------------------
 
-        // 1. INVENTORY SECTION (Interactive)
         if(invKeys.length > 0) {
             const h = document.createElement('div');
             h.className = "kit-section-title";
@@ -933,9 +981,7 @@ const app = {
                 
                 const allocations = {};
                 Object.entries(app.userData.planner).forEach(([slotKey, plan]) => {
-                    if(plan.type === 'kit' && plan.kitId == id) {
-                        allocations[plan.itemId] = true;
-                    }
+                    if(plan.type === 'kit' && plan.kitId == id) allocations[plan.itemId] = true;
                 });
 
                 const div = document.createElement('div');
@@ -961,26 +1007,18 @@ const app = {
                 kit.choices.forEach(itemName => {
                     const slotKey = app.getSlotKeyFromItemName(itemName);
                     const isSelected = allocations[itemName];
-                    let btnClass = "";
-                    let slotInfo = "";
+                    let btnClass = isSelected ? "active" : (remaining <= 0 ? "full disabled" : "");
+                    let slotInfo = slotKey ? slotKey.replace(/_/g, ' ') : "";
 
-                    if(isSelected) btnClass = "active";
-                    else if (remaining <= 0) btnClass = "full disabled";
-
-                    if(slotKey) slotInfo = slotKey.replace(/_/g, ' ');
-
-                    // === ENHANCEMENT START: Check Ownership & Category Total ===
                     const itemObj = Object.values(app.gameData.items).find(i => i.name === itemName);
                     let statusHtml = "";
 
                     if (itemObj) {
-                        // 1. Specific Item Check
                         const ownedCount = app.userData.unlocks[itemObj.id] || 0;
                         const ownedStr = ownedCount > 0 
                             ? `<span style="color:var(--success);">(Owned)</span>` 
                             : `<span style="color:var(--text-muted);">(Not Owned)</span>`;
 
-                        // 2. Category Check
                         let type = itemObj.details ? (itemObj.details.type || itemObj.type) : itemObj.type;
                         if (CONSTANTS.TYPE_MAPPING[type]) type = CONSTANTS.TYPE_MAPPING[type];
 
@@ -994,10 +1032,8 @@ const app = {
                                 }
                             }
                         });
-
                         statusHtml = `<span style="font-size:0.8em; margin-left:5px;">${ownedStr} <span style="color:#888;">| Total ${type}s: ${totalTypeCount}</span></span>`;
                     }
-                    // === ENHANCEMENT END ===
 
                     const btn = document.createElement('button');
                     btn.className = `choice-btn ${btnClass}`;
@@ -1018,7 +1054,6 @@ const app = {
             });
         }
 
-        // 2. VAULT SECTION (Informational)
         if(vaultKeys.length > 0) {
             const h = document.createElement('div');
             h.className = "kit-section-title";
@@ -1029,22 +1064,15 @@ const app = {
                 const kit = app.userData.vaultKits[id];
                 const stats = kit.stats;
                 const manualBought = app.userData.vaultState[id] || false;
-                
                 let isBought = manualBought;
-                // If Legacy/Featured and API says bought (1/1), trust API
-                // If "Normal", we ONLY trust manual because API is bugged (0/1)
-                if (stats.type !== 'Normal' && stats.purchased >= stats.limit && stats.limit > 0) {
-                    isBought = true;
-                }
+                if (stats.type !== 'Normal' && stats.purchased >= stats.limit && stats.limit > 0) isBought = true;
 
                 const div = document.createElement('div');
                 div.className = 'vault-row';
                 div.innerHTML = `
                     <div>
                         <div class="vault-name">${kit.name}</div>
-                        <div class="vault-meta">
-                            Type: ${stats.type} | API: ${stats.purchased}/${stats.limit}
-                        </div>
+                        <div class="vault-meta">Type: ${stats.type} | API: ${stats.purchased}/${stats.limit}</div>
                     </div>
                     <label class="vault-check ${isBought ? 'checked' : ''}">
                         <input type="checkbox" ${isBought ? 'checked' : ''} onchange="app.toggleVaultState('${id}')">
@@ -1086,13 +1114,11 @@ const app = {
             const wGroup = weights[w];
             const unlockedIcons = [];
             
-            // Collect icons for main header
             slotOrder.forEach(slot => {
                 const items = wGroup[slot] || [];
                 const unlockedInSlot = items.filter(i => (app.userData.unlocks[i.id] || 0) > 0);
                 unlockedInSlot.forEach(i => unlockedIcons.push(app.getIconHtml(i)));
 
-                // Check for planned items in this slot
                 const slotKey = `${w}_${slot}`;
                 const plan = app.userData.planner[slotKey];
                 if(plan && (plan.type === 'kit' || plan.type === 'manual') && plan.itemId) {
@@ -1136,7 +1162,6 @@ const app = {
         const iconHtmls = [];
         const unlockedIds = new Set();
 
-        // Owned Icons
         items.forEach(i => {
             const c = app.userData.unlocks[i.id] || 0;
             if(c > 0) { 
@@ -1146,7 +1171,6 @@ const app = {
             }
         });
 
-        // Planned Icons
         const plan = app.userData.planner[slotKey];
         if (plan && (plan.type === 'kit' || plan.type === 'manual') && plan.itemId) {
             const plannedItem = items.find(i => i.name === plan.itemId);
@@ -1156,7 +1180,6 @@ const app = {
         }
 
         const hasLegendary = unlockedCount > 0;
-        
         let planMode = plan ? plan.type : 'none'; 
         let planBadge = '';
         if(planMode === 'kit' && !hasLegendary) planBadge = '<span style="color:var(--kit); font-weight:bold;">PLANNED (KIT)</span> ';
@@ -1262,7 +1285,6 @@ const app = {
         let classes = "mini-icon";
         if(planType === 'kit') classes += " planned-kit";
         else if(planType === 'manual') classes += " planned-manual";
-        
         return `<img src="${item.icon}" class="${classes}" onmouseenter="app.showTooltip(event, '${item.id}')" onmouseleave="app.hideTooltip()">`;
     },
     
@@ -1275,6 +1297,38 @@ const app = {
         tt.style.left = (e.clientX + 15) + 'px';
         tt.style.top = (e.clientY + 15) + 'px';
     },
+
+    showFavorTooltip: (e) => {
+        const b = app.userData.resources.imperialFavorBreakdown;
+        if(!b) return;
+
+        let writTotalFavor = 0;
+        CONSTANTS.WRIT_IDS.forEach(id => {
+            const count = b.writs[id] || 0;
+            writTotalFavor += (count * 5);
+        });
+
+        const tt = document.getElementById('tooltip');
+        tt.innerHTML = `
+            <h4>Imperial Favor Breakdown</h4>
+            <div style="text-align:left; font-size:0.9em;">
+                <div style="margin-bottom:5px;"><strong>Wallet:</strong> ${b.wallet.toLocaleString()}</div>
+                <div style="margin-top:5px; border-top:1px solid #444; padding-top:2px;">
+                    <strong>Writs (1=5 Favor):</strong> +${writTotalFavor.toLocaleString()}
+                </div>
+                <div style="padding-left:10px; color:#ccc; font-size:0.85em; margin-top:3px;">
+                    <div style="display:flex; justify-content:space-between;"><span>${CONSTANTS.WRIT_NAMES[96680]}:</span> <span>${b.writs[96680] || 0}</span></div>
+                    <div style="display:flex; justify-content:space-between;"><span>${CONSTANTS.WRIT_NAMES[96533]}:</span> <span>${b.writs[96533] || 0}</span></div>
+                    <div style="display:flex; justify-content:space-between;"><span>${CONSTANTS.WRIT_NAMES[96561]}:</span> <span>${b.writs[96561] || 0}</span></div>
+                    <div style="display:flex; justify-content:space-between;"><span>${CONSTANTS.WRIT_NAMES[95692]}:</span> <span>${b.writs[95692] || 0}</span></div>
+                </div>
+            </div>
+        `;
+        tt.style.display = 'block';
+        tt.style.left = (e.clientX + 15) + 'px';
+        tt.style.top = (e.clientY + 15) + 'px';
+    },
+
     hideTooltip: () => document.getElementById('tooltip').style.display = 'none'
 };
 
