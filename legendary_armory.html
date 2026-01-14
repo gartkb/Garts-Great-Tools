@@ -404,7 +404,8 @@ const CONSTANTS = {
         BATTLE: 19678,
         EXPLORATION: 19677,
         IMPERIAL_FAVOR_WALLET: 59, // Will be updated dynamically if possible
-        PROVISIONER_TOKEN_WALLET: 50 // Default, will update dynamically
+        PROVISIONER_TOKEN_WALLET: 50, // Default, will update dynamically
+        SPIRIT_SHARDS: 23 // Default, updated dynamically
     },
     WRIT_IDS: [
         96680, // Seitung Province
@@ -433,7 +434,14 @@ const app = {
         planner: {},
         kitUsage: {},
         vaultState: {},
-        resources: { battle: 0, exploration: 0, imperialFavor: 0, imperialFavorBreakdown: null, provisionerTokens: 0 }     
+        resources: { 
+            battle: 0, 
+            exploration: 0, 
+            imperialFavor: 0, 
+            imperialFavorBreakdown: null, 
+            provisionerTokens: 0,
+            spiritShards: 0
+        }     
     },
     currentTab: 'weapons',
 
@@ -538,7 +546,7 @@ const app = {
             unlocks: {}, inventoryKits: {}, vaultKits: {},     
             planner: guestPlan ? JSON.parse(guestPlan) : {},
             kitUsage: {}, vaultState: {},
-            resources: { battle: 0, exploration: 0, imperialFavor: 0, imperialFavorBreakdown: null, provisionerTokens: 0 }
+            resources: { battle: 0, exploration: 0, imperialFavor: 0, imperialFavorBreakdown: null, provisionerTokens: 0, spiritShards: 0 }
         };
 
         document.getElementById('kit-panel').style.display = 'none';
@@ -602,6 +610,8 @@ const app = {
                 if(fav) CONSTANTS.RESOURCE_IDS.IMPERIAL_FAVOR_WALLET = fav.id;
                 const prov = currencies.find(c => c.name === "Provisioner Token");
                 if(prov) CONSTANTS.RESOURCE_IDS.PROVISIONER_TOKEN_WALLET = prov.id;
+                const shards = currencies.find(c => c.name === "Spirit Shard");
+                if(shards) CONSTANTS.RESOURCE_IDS.SPIRIT_SHARDS = shards.id;
             } catch(e) { console.warn("Failed to fetch currencies, using default ID"); }
 
             const armoryData = await fetch('https://api.guildwars2.com/v2/legendaryarmory?ids=all').then(r=>r.json());
@@ -641,7 +651,7 @@ const app = {
             app.userData.unlocks = cached.unlocks;
             app.userData.inventoryKits = cached.inventoryKits;
             app.userData.vaultKits = cached.vaultKits;
-            app.userData.resources = cached.resources || { battle: 0, exploration: 0, imperialFavor: 0, imperialFavorBreakdown: null, provisionerTokens: 0 };
+            app.userData.resources = cached.resources || { battle: 0, exploration: 0, imperialFavor: 0, imperialFavorBreakdown: null, provisionerTokens: 0, spiritShards: 0 };
             document.getElementById('loading').style.display = 'none';
             app.render();
             return;
@@ -681,7 +691,8 @@ const app = {
             exploration: 0, 
             imperialFavor: 0,
             imperialFavorBreakdown: { wallet: 0, writs: {} },
-            provisionerTokens: 0
+            provisionerTokens: 0,
+            spiritShards: 0
         };
         CONSTANTS.WRIT_IDS.forEach(id => app.userData.resources.imperialFavorBreakdown.writs[id] = 0);
 
@@ -721,6 +732,10 @@ const app = {
                     const prov = wallet.find(c => c.id === CONSTANTS.RESOURCE_IDS.PROVISIONER_TOKEN_WALLET);
                     if(prov) {
                         app.userData.resources.provisionerTokens = prov.value;
+                    }
+                    const shards = wallet.find(c => c.id === CONSTANTS.RESOURCE_IDS.SPIRIT_SHARDS);
+                    if(shards) {
+                        app.userData.resources.spiritShards = shards.value;
                     }
                 }
 
@@ -944,20 +959,29 @@ const app = {
         const exploreOwned = app.userData.resources.exploration || 0;
         const favorOwned = app.userData.resources.imperialFavor || 0;
         const provOwned = app.userData.resources.provisionerTokens || 0;
+        const shardsOwned = app.userData.resources.spiritShards || 0;
         const favorNeeded = gen3Count * 2500;
         
         const mkRes = (name, owned, needed, suffix="", interact=false) => {
-            const diff = owned - needed;
-            const status = diff >= 0 
-                ? `<span class="res-ok">✔ Covered (Left: ${diff})</span>` 
-                : `<span class="res-miss">Need ${Math.abs(diff)} more</span>`;
+            let status = "";
+            let countText = `Owned: ${owned}${suffix}`;
+            
+            if (needed !== null) {
+                const diff = owned - needed;
+                status = diff >= 0 
+                    ? `<span class="res-ok">✔ Covered (Left: ${diff})</span>` 
+                    : `<span class="res-miss">Need ${Math.abs(diff)} more</span>`;
+                countText += ` / Need: ${needed}${suffix}`;
+            } else {
+                status = `<span style="color:#aaa; font-style:italic;">(Wallet Currency)</span>`;
+            }
             
             const evt = interact ? `onmouseenter="app.showFavorTooltip(event)" onmouseleave="app.hideTooltip()"` : '';
             const cls = interact ? "res-badge interactive" : "res-badge";
 
             return `<div class="${cls}" ${evt}>
                 <div class="res-title">${name}</div>
-                <div class="res-count">Owned: ${owned}${suffix} / Need: ${needed}${suffix}</div>
+                <div class="res-count">${countText}</div>
                 <div style="font-size:0.85em; margin-top:2px;">${status}</div>
             </div>`;
         };
@@ -965,7 +989,8 @@ const app = {
         resDiv.innerHTML = mkRes("Gift of Battle", battleOwned, plannedCount) + 
                            mkRes("Gift of Exploration", exploreOwned, gen1Count) +
                            mkRes("Imperial Favor", favorOwned, favorNeeded, "", true) +
-                           mkRes("Provisioner Tokens", provOwned, provTokensNeeded);
+                           mkRes("Provisioner Tokens", provOwned, provTokensNeeded) + 
+                           mkRes("Spirit Shards", shardsOwned, null);
         list.appendChild(resDiv);
 
         if(invKeys.length > 0) {
