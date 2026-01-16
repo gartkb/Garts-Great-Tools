@@ -405,7 +405,8 @@ const CONSTANTS = {
         EXPLORATION: 19677,
         IMPERIAL_FAVOR_WALLET: 59, // Will be updated dynamically if possible
         PROVISIONER_TOKEN_WALLET: 50, // Default, will update dynamically
-        SPIRIT_SHARDS: 23 // Default, updated dynamically
+        SPIRIT_SHARDS: 23, // Default, updated dynamically
+        LEGENDARY_INSIGHTS: 58 // Wallet Currency ID
     },
     WRIT_IDS: [
         96680, // Seitung Province
@@ -425,6 +426,7 @@ const app = {
     accounts: [], 
     currentKey: null,
     accountCache: {},
+    preservedOpenIds: new Set(),
     
     gameData: { loaded: false, items: {}, maxCounts: {} },
     userData: {
@@ -440,7 +442,8 @@ const app = {
             imperialFavor: 0, 
             imperialFavorBreakdown: null, 
             provisionerTokens: 0,
-            spiritShards: 0
+            spiritShards: 0,
+            legendaryInsights: 0
         }     
     },
     currentTab: 'weapons',
@@ -546,7 +549,7 @@ const app = {
             unlocks: {}, inventoryKits: {}, vaultKits: {},     
             planner: guestPlan ? JSON.parse(guestPlan) : {},
             kitUsage: {}, vaultState: {},
-            resources: { battle: 0, exploration: 0, imperialFavor: 0, imperialFavorBreakdown: null, provisionerTokens: 0, spiritShards: 0 }
+            resources: { battle: 0, exploration: 0, imperialFavor: 0, imperialFavorBreakdown: null, provisionerTokens: 0, spiritShards: 0, legendaryInsights: 0 }
         };
 
         document.getElementById('kit-panel').style.display = 'none';
@@ -612,6 +615,8 @@ const app = {
                 if(prov) CONSTANTS.RESOURCE_IDS.PROVISIONER_TOKEN_WALLET = prov.id;
                 const shards = currencies.find(c => c.name === "Spirit Shard");
                 if(shards) CONSTANTS.RESOURCE_IDS.SPIRIT_SHARDS = shards.id;
+                const li = currencies.find(c => c.name === "Legendary Insight");
+                if(li) CONSTANTS.RESOURCE_IDS.LEGENDARY_INSIGHTS = li.id;
             } catch(e) { console.warn("Failed to fetch currencies, using default ID"); }
 
             const armoryData = await fetch('https://api.guildwars2.com/v2/legendaryarmory?ids=all').then(r=>r.json());
@@ -651,7 +656,7 @@ const app = {
             app.userData.unlocks = cached.unlocks;
             app.userData.inventoryKits = cached.inventoryKits;
             app.userData.vaultKits = cached.vaultKits;
-            app.userData.resources = cached.resources || { battle: 0, exploration: 0, imperialFavor: 0, imperialFavorBreakdown: null, provisionerTokens: 0, spiritShards: 0 };
+            app.userData.resources = cached.resources || { battle: 0, exploration: 0, imperialFavor: 0, imperialFavorBreakdown: null, provisionerTokens: 0, spiritShards: 0, legendaryInsights: 0 };
             document.getElementById('loading').style.display = 'none';
             app.render();
             return;
@@ -692,7 +697,8 @@ const app = {
             imperialFavor: 0,
             imperialFavorBreakdown: { wallet: 0, writs: {} },
             provisionerTokens: 0,
-            spiritShards: 0
+            spiritShards: 0,
+            legendaryInsights: 0
         };
         CONSTANTS.WRIT_IDS.forEach(id => app.userData.resources.imperialFavorBreakdown.writs[id] = 0);
 
@@ -736,6 +742,10 @@ const app = {
                     const shards = wallet.find(c => c.id === CONSTANTS.RESOURCE_IDS.SPIRIT_SHARDS);
                     if(shards) {
                         app.userData.resources.spiritShards = shards.value;
+                    }
+                    const li = wallet.find(c => c.id === CONSTANTS.RESOURCE_IDS.LEGENDARY_INSIGHTS);
+                    if(li) {
+                        app.userData.resources.legendaryInsights = li.value;
                     }
                 }
 
@@ -888,6 +898,13 @@ const app = {
 
     render: () => {
         if(!app.gameData.loaded) return;
+        
+        // Capture existing open accordions
+        app.preservedOpenIds = new Set();
+        document.querySelectorAll('.accordion-item.open').forEach(el => {
+            if(el.dataset.accId) app.preservedOpenIds.add(el.dataset.accId);
+        });
+
         app.calcKitUsage();
         app.renderKitPanel();
         const container = document.getElementById('content-area');
@@ -938,7 +955,24 @@ const app = {
         
         Object.values(app.userData.planner).forEach(plan => {
             if(plan && (plan.type === 'kit' || plan.type === 'manual')) {
-                plannedCount++;
+                // Determine if Gift of Battle is needed
+                let needsGoB = true;
+                if(plan.itemId) {
+                    const item = Object.values(app.gameData.items).find(i => i.name === plan.itemId);
+                    if(item) {
+                        // Armor: Only WvW Armor (Triumphant) needs GoB. Raid/PvP/Obsidian do not.
+                        if(item.type === 'Armor' && !item.name.includes('Triumphant')) needsGoB = false;
+                        
+                        // Upgrades: Runes, Sigils, Relics do not need GoB
+                        if(item.type === 'UpgradeComponent' || item.type === 'Relic') needsGoB = false;
+
+                        // Specific Items: Ad Infinitum, Ascension, Prismatic Regalia, Transcendence do not need GoB
+                        if(["Ad Infinitum", "The Ascension", "Prismatic Champion's Regalia", "Transcendence"].includes(item.name)) needsGoB = false;
+                    }
+                }
+                
+                if(needsGoB) plannedCount++;
+
                 if(plan.itemId) {
                     if(CONSTANTS.GEN1_NAMES.includes(plan.itemId)) gen1Count++;
                     if(plan.itemId.startsWith("Aurene's")) gen3Count++;
@@ -960,6 +994,7 @@ const app = {
         const favorOwned = app.userData.resources.imperialFavor || 0;
         const provOwned = app.userData.resources.provisionerTokens || 0;
         const shardsOwned = app.userData.resources.spiritShards || 0;
+        const liOwned = app.userData.resources.legendaryInsights || 0;
         const favorNeeded = gen3Count * 2500;
         
         const mkRes = (name, owned, needed, suffix="", interact=false) => {
@@ -990,6 +1025,7 @@ const app = {
                            mkRes("Gift of Exploration", exploreOwned, gen1Count) +
                            mkRes("Imperial Favor", favorOwned, favorNeeded, "", true) +
                            mkRes("Provisioner Tokens", provOwned, provTokensNeeded) + 
+                           mkRes("Legendary Insights", liOwned, null) +
                            mkRes("Spirit Shards", shardsOwned, null);
         list.appendChild(resDiv);
 
@@ -1159,8 +1195,12 @@ const app = {
                 return items.some(i => (app.userData.unlocks[i.id] || 0) > 0);
             }).length;
 
+            const accId = `group-${w}`;
+            const isOpen = app.preservedOpenIds.has(accId) ? ' open' : '';
             const wrapper = document.createElement('div');
-            wrapper.className = 'accordion-item';
+            wrapper.className = `accordion-item${isOpen}`;
+            wrapper.dataset.accId = accId;
+
             wrapper.innerHTML = `
                 <div class="accordion-header" onclick="this.parentElement.classList.toggle('open')">
                     <div class="header-content">
@@ -1180,8 +1220,11 @@ const app = {
     },
 
     buildAccordion: (container, title, items, slotKey, isSub = false) => {
+        const accId = `acc-${slotKey.replace(/\s+/g, '-')}`;
+        const isOpen = app.preservedOpenIds.has(accId) ? ' open' : '';
         const wrapper = document.createElement('div');
-        wrapper.className = isSub ? 'accordion-item sub-accordion' : 'accordion-item';
+        wrapper.className = (isSub ? 'accordion-item sub-accordion' : 'accordion-item') + isOpen;
+        wrapper.dataset.accId = accId;
 
         let unlockedCount = 0;
         const iconHtmls = [];
