@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Superstore Value Sorter (v15.4 - Manual Calc & Glitch Fix)
+// @name         Superstore Value Sorter (v15.7 - Safe Mode)
 // @namespace    http://tampermonkey.net/
-// @version      15.4
-// @description  Sorts by value. Calculates unit price manually to fix sale/limit/typo errors on store labels.
+// @version      15.7
+// @description  Sorts by value. Fixes sorting hang issues. Prioritizes Manual Calc, falls back to Store Unit Price for meat/produce.
 // @match        https://www.realcanadiansuperstore.ca/*
 // @require      https://gartkb.github.io/Garts-Great-Tools/userscript/tm-value-sorter-core.js
 // @grant        none
@@ -12,7 +12,7 @@
     'use strict';
 
     // =========================================================
-    // 0. GLOBAL STATE (PERSISTENT)
+    // 0. GLOBAL STATE
     // =========================================================
     
     const getSavedBool = (key, def) => {
@@ -38,7 +38,10 @@
     // =========================================================
 
     function parseCardData(card) {
-        const rawText = (card.innerText || "").toLowerCase().replace(/[\r\n]+/g, " ").replace(/\s+/g, " ");
+        // Safety check
+        if (!card || !card.innerText) return null;
+
+        const rawText = card.innerText.toLowerCase().replace(/[\r\n]+/g, " ").replace(/\s+/g, " ");
 
         // --- STEP 1: EXTRACT POINTS ---
         let pointsValue = 0;
@@ -47,8 +50,14 @@
             pointsValue = parseFloat(pointsMatch[1].replace(/,/g, '')) / 1000;
         }
 
-        // --- STEP 2: EXTRACT BEST PRICE ---
-        // We do this BEFORE weight, because we want to calculate the unit price ourselves.
+        // --- PREPARE DATA FOR MANUAL CALC ---
+        // We clean the text to find the "Total Price" (Shelf Price).
+        const cleanForPrice = rawText
+            .replace(/save\s*\$[0-9,.]+/g, "")
+            .replace(/after limit\s*\$[0-9,.]+/g, "")
+            .replace(/\$\s*[0-9,.]+\s*\/\s*[0-9.]*\s*[a-z]+/g, "") // Remove store unit strings
+            .replace(/about\s*\$[0-9,.]+/g, ""); // Remove "about" prices
+
         let validPrices = [];
         
         // Handle "2 for $5"
@@ -58,20 +67,14 @@
             const total = parseFloat(multiBuyMatch[2].replace(/,/g, ''));
             if (qty > 0) validPrices.push(total / qty);
         }
-
-        // Clean text to avoid confusing the regex with unit prices or savings
-        const cleanForPrice = rawText
-            .replace(/save\s*\$[0-9,.]+/g, "")
-            .replace(/after limit\s*\$[0-9,.]+/g, "")
-            // Remove the store's displayed unit price so we don't grab it as the item price
-            .replace(/\$\s*[0-9,.]+\s*\/\s*[0-9.]*\s*[a-z]+/g, "") 
-            .replace(/about\s*\$[0-9,.]+/g, "");
         
-        const pMatches = [...cleanForPrice.matchAll(/\$\s*([0-9,.]+)/g)];
-        pMatches.forEach(m => {
+        // Find standalone prices (replaced matchAll with exec for compatibility)
+        const priceRegex = /\$\s*([0-9,.]+)/g;
+        let m;
+        while ((m = priceRegex.exec(cleanForPrice)) !== null) {
             const val = parseFloat(m[1].replace(/,/g, ''));
             if (val > 0.1) validPrices.push(val);
-        });
+        }
 
         let bestShelfPrice = validPrices.length > 0 ? Math.min(...validPrices) : null;
         
@@ -83,41 +86,30 @@
             hasPoints = true;
         }
 
-        // --- STEP 3: EXTRACT WEIGHT/VOLUME (MANUAL PARSING) ---
-        // This regex looks for: "1.5 kg", "500 g", "6x200 ml", "284x284.0 g"
+        // --- STEP 2: TRY MANUAL CALCULATION (Weight in Title) ---
         const weightRegex = /(?:^|\s)(\d+(?:\.\d+)?)\s*(?:[xX]\s*(\d+(?:\.\d+)?))?\s*(g|kg|ml|l|lb|oz)\b/i;
         const weightMatch = rawText.match(weightRegex);
 
+        // If we found a shelf price AND a weight in the title, use manual calc
         if (weightMatch && effectivePrice) {
             let num1 = parseFloat(weightMatch[1]);
             let num2 = weightMatch[2] ? parseFloat(weightMatch[2]) : 1;
             const unit = weightMatch[3];
 
-            // ** GLITCH FIX **: 
-            // If text is "284x284.0 g", the store made a typo.
-            // If the two numbers are roughly equal (and > 1), assume it's NOT a multipack, but a typo.
-            if (num2 > 1 && Math.abs(num1 - num2) < 0.5) {
-                num2 = 1; 
-            }
+            if (num2 > 1 && Math.abs(num1 - num2) < 0.5) { num2 = 1; } // Glitch Fix
 
             let totalUnits = num1 * num2;
             let normalizedUnits = totalUnits;
             let type = 'weight';
             let labelUnit = '100g';
 
-            // Normalize to 100g / 100ml / 1 lb
             if (unit === 'kg') { normalizedUnits = totalUnits * 1000; }
             else if (unit === 'g') { normalizedUnits = totalUnits; }
             else if (unit === 'l') { normalizedUnits = totalUnits * 1000; type = 'vol'; labelUnit = '100ml'; }
             else if (unit === 'ml') { normalizedUnits = totalUnits; type = 'vol'; labelUnit = '100ml'; }
-            else if (unit === 'lb') { normalizedUnits = totalUnits * 453.6; } // convert to g for calculation? 
+            else if (unit === 'lb') { normalizedUnits = totalUnits * 453.6; } 
             else if (unit === 'oz') { normalizedUnits = totalUnits * 28.35; }
 
-            // If we have lb/oz, maybe we want to keep it in imperial? 
-            // For now, let's normalize everything to $/100g or $/100ml for easy comparison
-            
-            // Calculate Unit Price
-            // Price per 100 units
             const unitPrice = (effectivePrice / normalizedUnits) * 100;
             
             return {
@@ -130,32 +122,64 @@
             };
         }
 
-        // --- STEP 4: FALLBACK (Use Store String) ---
-        // Only if regex failed (e.g. items sold by "each" or weird formatting)
-        let shelfUnitVal = null;
-        let shelfUnitType = 'each';
-        const storeUnitMatch = rawText.match(/\$\s*([0-9,.]+)\s*\/\s*([0-9.]*)\s*([a-z]+)/);
+        // --- STEP 3: VARIABLE WEIGHT FALLBACK (Meat/Produce) ---
+        // If Manual Calc failed (no weight in title), look for store's $/unit string.
+        const meatMatch = rawText.match(/\$\s*([0-9,.]+)\s*\/\s*([0-9.]*)\s*(kg|lb|g)\b/i);
+        
+        if (meatMatch) {
+            let uPrice = parseFloat(meatMatch[1].replace(/,/g, ''));
+            let uQty = parseFloat(meatMatch[2]) || 1; 
+            let unit = meatMatch[3];
+            let finalVal = 0;
+
+            if (unit === 'kg') { finalVal = (uPrice / uQty) / 10; } // $/100g
+            else if (unit === 'lb') { finalVal = (uPrice / uQty) / 4.53592; } // $/100g
+            else if (unit === 'g') { finalVal = (uPrice / uQty) * 100; } // $/100g
+
+            // Try to estimate points discount from "About $xx" price
+            if (STATE.usePoints && pointsValue > 0) {
+                 const aboutMatch = rawText.match(/about\s*\$([0-9,.]+)/);
+                 if (aboutMatch) {
+                     const aboutPrice = parseFloat(aboutMatch[1].replace(/,/g, ''));
+                     if (aboutPrice > 0) {
+                        const discountRatio = (aboutPrice - pointsValue) / aboutPrice;
+                        if (discountRatio > 0 && discountRatio < 1) {
+                            finalVal = finalVal * discountRatio;
+                            hasPoints = true;
+                        }
+                     }
+                 }
+            }
+
+            return {
+                val: finalVal,
+                label: `$${finalVal.toFixed(2)}/100g`,
+                type: 'weight',
+                isDeal: false,
+                hasPoints: hasPoints, 
+                priceUsed: uPrice 
+            };
+        }
+
+        // --- STEP 4: GENERIC FALLBACK (Items sold by 'each') ---
+        const storeUnitMatch = rawText.match(/\$\s*([0-9,.]+)\s*\/\s*([0-9.]*)\s*(ea|each|pk)/);
         
         if (storeUnitMatch) {
             const rawPrice = parseFloat(storeUnitMatch[1].replace(/,/g, ''));
             const uQty = parseFloat(storeUnitMatch[2]) || 1;
-            const uUnit = storeUnitMatch[3];
             
-            if (uUnit === 'ea') {
-                shelfUnitVal = rawPrice / uQty;
-                // If we have an effective price (points/sale), adjust the ratio
-                if (effectivePrice && bestShelfPrice) {
-                    shelfUnitVal = shelfUnitVal * (effectivePrice / bestShelfPrice);
-                }
-                return {
-                    val: shelfUnitVal,
-                    label: `$${shelfUnitVal.toFixed(2)}/ea`,
-                    type: 'each',
-                    isDeal: false,
-                    hasPoints: hasPoints,
-                    priceUsed: effectivePrice
-                };
+            let shelfUnitVal = rawPrice / uQty;
+            if (effectivePrice && bestShelfPrice) {
+                shelfUnitVal = shelfUnitVal * (effectivePrice / bestShelfPrice);
             }
+            return {
+                val: shelfUnitVal,
+                label: `$${shelfUnitVal.toFixed(2)}/ea`,
+                type: 'each',
+                isDeal: false,
+                hasPoints: hasPoints,
+                priceUsed: effectivePrice
+            };
         }
 
         // --- STEP 5: ABSOLUTE FALLBACK ---
@@ -203,74 +227,77 @@
     function badgeItem(card) {
         if(card.dataset.tmManual) return; 
 
-        const data = parseCardData(card);
-        const oldBadge = card.querySelector('.tm-badge');
-        if (oldBadge) oldBadge.remove();
+        // Try-Catch inside badge creation to prevent one bad item from crashing the whole script
+        try {
+            const data = parseCardData(card);
+            const oldBadge = card.querySelector('.tm-badge');
+            if (oldBadge) oldBadge.remove();
 
-        if (!data) return;
+            if (!data) return;
 
-        const badge = document.createElement("div");
-        badge.className = 'tm-badge';
-        badge.innerText = data.label;
+            const badge = document.createElement("div");
+            badge.className = 'tm-badge';
+            badge.innerText = data.label;
 
-        let tooltip = "Click to set manual quantity";
-        if (data.priceUsed && data.val > 0) {
-            // Reverse calc for tooltip display
-            let detectedQty = 0;
-            if (data.type === 'each') detectedQty = data.priceUsed / data.val;
-            else detectedQty = (data.priceUsed / data.val) * 100; 
+            let tooltip = "Click to set manual quantity";
+            if (data.priceUsed && data.val > 0) {
+                let detectedQty = 0;
+                if (data.type === 'each') detectedQty = data.priceUsed / data.val;
+                else detectedQty = (data.priceUsed / data.val) * 100; 
 
-            // Round nicely
-            detectedQty = Math.round(detectedQty * 100) / 100;
-            
-            let unitLabel = data.type === 'each' ? 'items' : (data.type === 'vol' ? 'ml' : 'g');
-            tooltip = `Detected: ${detectedQty} ${unitLabel}\nPrice: $${data.priceUsed.toFixed(2)}\nClick to edit`;
-        }
-        badge.title = tooltip;
-
-        Object.assign(badge.style, {
-            position: "absolute",
-            padding: "3px 6px", borderRadius: "4px", fontSize: "12px",
-            fontWeight: "800", zIndex: "20", boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
-            fontFamily: "sans-serif", cursor: "pointer"
-        });
-
-        applyBadgePosition(badge);
-
-        if (data.type === 'unknown') {
-             badge.style.background = "#eee"; badge.style.color = "#555";
-        } else if (data.isDeal) {
-            badge.style.background = "#fffaeb"; badge.style.color = "#b7791f"; badge.style.border = "2px solid #b7791f";
-            badge.innerText += " ⭐";
-        } else if (data.type === 'vol') {
-            badge.style.background = "#ebf8ff"; badge.style.color = "#2b6cb0"; badge.style.border = "1px solid #90cdf4";
-        } else if (data.type === 'each') {
-            badge.style.background = "#faf5ff"; badge.style.color = "#553c9a"; badge.style.border = "1px solid #d6bcfa"; 
-        } else {
-            badge.style.background = "#f0fff4"; badge.style.color = "#22543d"; badge.style.border = "1px solid #9ae6b4";
-        }
-
-        if (data.hasPoints) badge.innerText += " (pts)";
-
-        badge.onclick = (e) => {
-            e.preventDefault(); e.stopPropagation(); 
-            const currentQty = (data.priceUsed && data.val > 0 && data.type === 'each') ? Math.round(data.priceUsed / data.val) : "";
-            const userQty = prompt(`Manual Override for ${data.priceUsed ? '$'+data.priceUsed.toFixed(2) : 'Item'}\nEnter Item Count:`, currentQty);
-            const qty = parseFloat(userQty);
-
-            if (qty > 0 && data.priceUsed) {
-                const newVal = data.priceUsed / qty;
-                badge.innerText = `$${newVal.toFixed(2)}/ea (Manual)`;
-                badge.style.background = "#ffffcc"; 
-                badge.style.color = "#000";
-                card.dataset.tmVal = newVal;
-                card.dataset.tmManual = "true"; 
+                detectedQty = Math.round(detectedQty * 100) / 100;
+                
+                let unitLabel = data.type === 'each' ? 'items' : (data.type === 'vol' ? 'ml' : 'g');
+                tooltip = `Detected: ${detectedQty} ${unitLabel}\nPrice: $${data.priceUsed.toFixed(2)}\nClick to edit`;
             }
-        };
+            badge.title = tooltip;
 
-        if (getComputedStyle(card).position === 'static') card.style.position = 'relative';
-        card.appendChild(badge);
-        card.dataset.tmVal = data.val;
+            Object.assign(badge.style, {
+                position: "absolute",
+                padding: "3px 6px", borderRadius: "4px", fontSize: "12px",
+                fontWeight: "800", zIndex: "20", boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+                fontFamily: "sans-serif", cursor: "pointer"
+            });
+
+            applyBadgePosition(badge);
+
+            if (data.type === 'unknown') {
+                 badge.style.background = "#eee"; badge.style.color = "#555";
+            } else if (data.isDeal) {
+                badge.style.background = "#fffaeb"; badge.style.color = "#b7791f"; badge.style.border = "2px solid #b7791f";
+                badge.innerText += " ⭐";
+            } else if (data.type === 'vol') {
+                badge.style.background = "#ebf8ff"; badge.style.color = "#2b6cb0"; badge.style.border = "1px solid #90cdf4";
+            } else if (data.type === 'each') {
+                badge.style.background = "#faf5ff"; badge.style.color = "#553c9a"; badge.style.border = "1px solid #d6bcfa"; 
+            } else {
+                badge.style.background = "#f0fff4"; badge.style.color = "#22543d"; badge.style.border = "1px solid #9ae6b4";
+            }
+
+            if (data.hasPoints) badge.innerText += " (pts)";
+
+            badge.onclick = (e) => {
+                e.preventDefault(); e.stopPropagation(); 
+                const currentQty = (data.priceUsed && data.val > 0 && data.type === 'each') ? Math.round(data.priceUsed / data.val) : "";
+                const userQty = prompt(`Manual Override for ${data.priceUsed ? '$'+data.priceUsed.toFixed(2) : 'Item'}\nEnter Item Count:`, currentQty);
+                const qty = parseFloat(userQty);
+
+                if (qty > 0 && data.priceUsed) {
+                    const newVal = data.priceUsed / qty;
+                    badge.innerText = `$${newVal.toFixed(2)}/ea (Manual)`;
+                    badge.style.background = "#ffffcc"; 
+                    badge.style.color = "#000";
+                    card.dataset.tmVal = newVal;
+                    card.dataset.tmManual = "true"; 
+                }
+            };
+
+            if (getComputedStyle(card).position === 'static') card.style.position = 'relative';
+            card.appendChild(badge);
+            card.dataset.tmVal = data.val;
+        } catch (err) {
+            console.error("TM Sorter: Error processing card", card, err);
+        }
     }
 
     function updateAllBadges() {
@@ -369,20 +396,34 @@
             if (STATE.loadMore) {
                 btn.disabled = true;
                 btn.innerHTML = "Fetching Next Page...";
-                const success = await fetchNextPage();
-                
-                if(success) {
-                    btn.innerHTML = "Sorting...";
-                    sortGlobal();
-                    btn.innerHTML = "Done! (+1 Page)";
-                } else {
-                    btn.innerHTML = "No More Pages";
-                    sortGlobal(); 
+                try {
+                    const success = await fetchNextPage();
+                    if(success) {
+                        btn.innerHTML = "Sorting...";
+                        sortGlobal();
+                        btn.innerHTML = "Done! (+1 Page)";
+                    } else {
+                        btn.innerHTML = "No More Pages";
+                        sortGlobal(); 
+                    }
+                } catch(e) {
+                    console.error(e);
+                    btn.innerHTML = "Error!";
                 }
                 setTimeout(() => { btn.disabled = false; btn.innerHTML = "Sort by Value"; }, 2000);
             } else {
                 btn.innerHTML = "Sorting...";
-                setTimeout(() => { sortGlobal(); btn.innerHTML = "Sort by Value"; }, 10);
+                // Short timeout to allow UI update before heavy lifting
+                setTimeout(() => {
+                    try {
+                        sortGlobal();
+                    } catch (e) {
+                        console.error("TM Sorter: Critical Sort Error", e);
+                        alert("Error sorting items. Check console.");
+                    } finally {
+                        btn.innerHTML = "Sort by Value";
+                    }
+                }, 10);
             }
         };
 
@@ -396,42 +437,36 @@
         if (!nextLink || nextLink.getAttribute('disabled')) return false;
 
         const url = nextLink.href;
-        try {
-            const response = await fetch(url);
-            const text = await response.text();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(text, "text/html");
-            
-            const newGrid = doc.querySelector('div[class*="product-grid-component"]');
-            if (newGrid && newGrid.children.length > 0) {
-                const cards = Array.from(newGrid.children);
-                const currentGrid = document.querySelector('div[class*="product-grid-component"]');
-                if (currentGrid) {
-                    cards.forEach(card => {
-                        const importedCard = document.adoptNode(card);
-                        currentGrid.appendChild(importedCard);
-                        badgeItem(importedCard);
-                    });
-                }
-            } else {
-                return false; 
+        const response = await fetch(url);
+        const text = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, "text/html");
+        
+        const newGrid = doc.querySelector('div[class*="product-grid-component"]');
+        if (newGrid && newGrid.children.length > 0) {
+            const cards = Array.from(newGrid.children);
+            const currentGrid = document.querySelector('div[class*="product-grid-component"]');
+            if (currentGrid) {
+                cards.forEach(card => {
+                    const importedCard = document.adoptNode(card);
+                    currentGrid.appendChild(importedCard);
+                    badgeItem(importedCard);
+                });
             }
-
-            const oldPagination = document.querySelector('div[aria-label="Pagination"]');
-            const newPagination = doc.querySelector('div[aria-label="Pagination"]');
-            
-            if (oldPagination && newPagination) {
-                oldPagination.innerHTML = newPagination.innerHTML;
-            } else if (oldPagination) {
-                oldPagination.style.display = 'none';
-            }
-
-            return true;
-
-        } catch (e) {
-            console.error(e);
-            return false;
+        } else {
+            return false; 
         }
+
+        const oldPagination = document.querySelector('div[aria-label="Pagination"]');
+        const newPagination = doc.querySelector('div[aria-label="Pagination"]');
+        
+        if (oldPagination && newPagination) {
+            oldPagination.innerHTML = newPagination.innerHTML;
+        } else if (oldPagination) {
+            oldPagination.style.display = 'none';
+        }
+
+        return true;
     }
 
     // =========================================================
