@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DST Policy Visualizer - 10min Precision</title>
+    <style>
+        * { box-sizing: border-box; font-family: system-ui, 'Segoe UI', Roboto, sans-serif; }
+        body {
+            background: #0b1b2a;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 16px 10px;
+        }
+        .card {
+            max-width: 1400px;
+            width: 100%;
+            background: #153043;
+            border-radius: 40px;
+            padding: 24px 20px;
+            box-shadow: 0 25px 45px #030b12, 0 0 0 1px #3d6a90 inset;
+        }
+        h1 {
+            color: #ffefcf;
+            font-weight: 400;
+            font-size: 2.1rem;
+            margin: 0 0 18px 0;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        h1 span {
+            background: #1e405b;
+            padding: 6px 24px;
+            border-radius: 60px;
+            font-size: 1.1rem;
+            border: 1px solid #9bc1e6;
+            color: #f7e5b1;
+        }
+        .top-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px 35px;
+            background: #0e2638;
+            border-radius: 50px;
+            padding: 22px 30px;
+            margin-bottom: 20px;
+            border: 1px solid #3573a0;
+            align-items: center;
+        }
+        .loc-group {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        .loc-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #d2ebff;
+        }
+        .loc-item input {
+            background: #1f405d;
+            border: 1px solid #7fb1dc;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 40px;
+            width: 85px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .loc-item button {
+            background: #3e6a90;
+            border: none;
+            color: white;
+            padding: 6px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            border: 1px solid #b3d9ff;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+        .loc-item button:hover {
+            background: #578bb8;
+            border-color: #ffe396;
+        }
+        .schedule-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px 25px;
+            align-items: center;
+        }
+        .sch-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #ffefc0;
+        }
+        .sch-item input[type=time] {
+            background: #1f405d;
+            border: 1px solid #a2c6ed;
+            color: white;
+            border-radius: 40px;
+            padding: 5px 14px;
+            font-size: 1rem;
+        }
+        .tab-bar {
+            display: flex;
+            gap: 12px;
+            margin: 10px 0 20px 0;
+            background: #0b202f;
+            padding: 12px 20px;
+            border-radius: 60px;
+            border: 1px solid #3f6f96;
+            flex-wrap: wrap;
+        }
+        .tab {
+            background: #1d405b;
+            color: #d2ecff;
+            padding: 10px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border: 1px solid #7da9d1;
+            transition: 0.2s;
+        }
+        .tab.active {
+            background: #f5cd7a;
+            color: #0b263a;
+            border-color: #ffdcaa;
+            font-weight: 700;
+        }
+        .legend-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px 40px;
+            background: #112c40;
+            border-radius: 40px;
+            padding: 10px 28px;
+            margin: 10px 0 20px 0;
+            align-items: center;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .swatch {
+            width: 28px; height: 20px;
+            border-radius: 30px;
+        }
+        .swatch.day { background: #fedb86; border: 1px solid #ffbc4c; }
+        .swatch.civil { background: #7faec9; border: 1px solid #c1e2ff; }
+        .swatch.naut { background: #38658a; border: 1px solid #9ac2e5; }
+        .swatch.night { background: #111e2b; border: 1px solid #4d7496; }
+        .line-swatch {
+            width: 28px; height: 4px; border-radius: 4px;
+        }
+        .line-swatch.wake { background: #e6a177; }
+        .line-swatch.work { background: #479e93; }
+        .line-swatch.bed { background: #aa6ecb; }
+        .plot-container {
+            background: #0b202f;
+            border-radius: 40px;
+            padding: 25px 20px;
+            border: 1px solid #3f7199;
+            margin-top: 15px;
+            min-height: 600px;
+            width: 100%;
+        }
+        .visualization {
+            width: 100%;
+            height: 100%;
+        }
+        .month-axis {
+            display: flex;
+            width: 100%;
+            margin-bottom: 10px;
+            padding-left: 80px;
+        }
+        .month-tick {
+            flex: 1;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #bad2f0;
+        }
+        .graph-row {
+            display: flex;
+            align-items: stretch;
+            height: 500px;
+            width: 100%;
+        }
+        .y-axis {
+            width: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            background: #1b3a53;
+            border-radius: 30px 0 0 30px;
+            border: 1px solid #4e84b0;
+            border-right: none;
+            padding: 15px 0;
+            color: #ebf5ff;
+            font-weight: 600;
+        }
+        .y-axis span {
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            font-size: 0.9rem;
+        }
+        .heatmap {
+            flex: 1;
+            display: flex;
+            background: #1a3347;
+            border-radius: 0 30px 30px 0;
+            border: 1px solid #4e84b0;
+            overflow: hidden;
+        }
+        .month-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border-right: 1px solid #2f5980;
+            height: 100%;
+        }
+        .month-col:last-child {
+            border-right: none;
+        }
+        .min-cell {
+            width: 100%;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            transition: 0.05s;
+        }
+        .min-cell:hover {
+            filter: brightness(1.3);
+            z-index: 10;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .line-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .personal-line {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            opacity: 0.9;
+            box-shadow: 0 0 0 1px #00000070, 0 2px 4px black;
+            z-index: 20;
+            border-radius: 4px;
+            transform: translateY(-50%);
+        }
+        .line-wake { background: #e6a177; }
+        .line-work { background: #479e93; }
+        .line-bed { background: #aa6ecb; }
+        .footer-note {
+            margin-top: 20px;
+            text-align: center;
+            color: #cbe2ff;
+            font-size: 0.95rem;
+        }
+        .scenario-title {
+            font-size: 1.8rem;
+            font-weight: 500;
+            color: #fbdd9d;
+            margin-bottom: 20px;
+        }
+        .update-btn {
+            background: #2a577b;
+            border: none;
+            color: white;
+            padding: 8px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            border: 1px solid #9bc1e6;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-left: auto;
+        }
+        .update-btn:hover { background: #3d73a0; }
+        .precision-badge {
+            background: #1e405b;
+            color: #ffefcf;
+            padding: 4px 16px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            border: 1px solid #7faec9;
+            margin-left: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>🗓️ DST Policy Visualizer <span>10-minute precision</span></h1>
+
+    <div class="top-panel">
+        <div class="loc-group">
+            <div class="loc-item">
+                <span>🌐 Latitude</span>
+                <input type="number" id="lat" value="49.14" step="0.1" min="-60" max="70">
+            </div>
+            <div class="loc-item">
+                <span>🗺️ Longitude</span>
+                <input type="number" id="lon" value="-122.6" step="0.1" min="-130" max="-60">
+            </div>
+            <div class="loc-item">
+                <button id="geoBtn">📍 use my location</button>
+            </div>
+        </div>
+        <div class="schedule-group">
+            <div class="sch-item"><label>⏰ Wake</label> <input type="time" id="wakeTime" value="07:00"></div>
+            <div class="sch-item"><label>💼 Work start</label> <input type="time" id="workStart" value="09:00"></div>
+            <div class="sch-item"><label>🏁 Work end</label> <input type="time" id="workEnd" value="17:00"></div>
+            <div class="sch-item"><label>😴 Bed</label> <input type="time" id="bedTime" value="23:00"></div>
+        </div>
+        <button class="update-btn" id="applyBtn">↻ Update</button>
+        <span class="precision-badge">⏱️ 10min intervals · 144 cells/day</span>
+    </div>
+
+    <div class="tab-bar">
+        <div class="tab active" data-policy="current">🌓 Current (mix DST/ST)</div>
+        <div class="tab" data-policy="permDST">☀️ Permanent DST</div>
+        <div class="tab" data-policy="permST">🌙 Permanent Standard</div>
+    </div>
+
+    <div class="legend-bar">
+        <div class="legend-item"><span class="swatch day"></span> Sunlight</div>
+        <div class="legend-item"><span class="swatch civil"></span> Civil twilight</div>
+        <div class="legend-item"><span class="swatch naut"></span> Nautical twilight</div>
+        <div class="legend-item"><span class="swatch night"></span> Night</div>
+        <div class="legend-item"><span class="line-swatch wake"></span> Wake</div>
+        <div class="legend-item"><span class="line-swatch work"></span> Work period</div>
+        <div class="legend-item"><span class="line-swatch bed"></span> Bed</div>
+    </div>
+
+    <div class="plot-container" id="plotContainer">
+        <div class="visualization" id="visualization"></div>
+    </div>
+    
+    <div class="footer-note">
+        ⏰ <strong>Vertical: 24 hours</strong> (0 at top → 24 at bottom). Each column = one month with 144 rows (10min intervals).<br>
+        Hover for exact time and light condition. Fine-grained colors show precise twilight transitions.
+    </div>
+</div>
+
+<script>
+    (function() {
+        // Get DOM elements
+        const latInp = document.getElementById('lat');
+        const lonInp = document.getElementById('lon');
+        const wakeInp = document.getElementById('wakeTime');
+        const workStartInp = document.getElementById('workStart');
+        const workEndInp = document.getElementById('workEnd');
+        const bedInp = document.getElementById('bedTime');
+        const applyBtn = document.getElementById('applyBtn');
+        const geoBtn = document.getElementById('geoBtn');
+        const viz = document.getElementById('visualization');
+        const tabs = document.querySelectorAll('.tab');
+        
+        let activePolicy = 'current';
+
+        // Month data
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+        // Geolocation
+        geoBtn.addEventListener('click', () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        latInp.value = pos.coords.latitude.toFixed(2);
+                        lonInp.value = pos.coords.longitude.toFixed(2);
+                        updateDisplay();
+                    },
+                    (err) => alert('Location error: ' + err.message)
+                );
+            } else {
+                alert('Geolocation not supported');
+            }
+        });
+
+        // Tab switching
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                activePolicy = tab.dataset.policy;
+                updateDisplay();
+            });
+        });
+
+        // Time conversion
+        function timeToDecimal(timeStr) {
+            if (!timeStr) return 7;
+            const [h, m] = timeStr.split(':').map(Number);
+            return h + m/60;
+        }
+
+        function formatAMPM(hourDecimal) {
+            let h = Math.floor(hourDecimal);
+            let m = Math.round((hourDecimal - h) * 60);
+            if (m === 60) { 
+                h += 1; 
+                m = 0; 
+            }
+            if (h >= 24) h = h - 24;
+            
+            const h12 = h % 12;
+            const hour12 = h12 === 0 ? 12 : h12;
+            const ampm = h < 12 ? 'AM' : 'PM';
+            return `${hour12}:${m < 10 ? '0' + m : m} ${ampm}`;
+        }
+
+        function formatTimeFromMinutes(minutes) {
+            const h = Math.floor(minutes / 60);
+            const m = minutes % 60;
+            const h12 = h % 12;
+            const hour12 = h12 === 0 ? 12 : h12;
+            const ampm = h < 12 ? 'AM' : 'PM';
+            return `${hour12}:${m < 10 ? '0' + m : m} ${ampm}`;
+        }
+
+        // Sun position calculation with high precision
+        function getDayTimes(lat, lon, dayOfYear, dstOffset) {
+            try {
+                const phi = lat * Math.PI / 180;
+                const decl = 0.4095 * Math.sin(2 * Math.PI * (dayOfYear - 80) / 365.25);
+                const eqTime = 4 * (0.170 * Math.sin(4 * Math.PI * (dayOfYear - 80) / 365.25) - 0.129 * Math.sin(2 * Math.PI * (dayOfYear - 80) / 365.25));
+                
+                function ha(angleDeg) {
+                    const cosHa = (Math.cos(angleDeg * Math.PI / 180) - Math.sin(phi) * Math.sin(decl)) / (Math.cos(phi) * Math.cos(decl));
+                    if (cosHa >= 1) return 0;
+                    if (cosHa <= -1) return Math.PI;
+                    return Math.acos(cosHa);
+                }
+
+                const haSun = ha(90.833);
+                const haCivil = ha(96);
+                const haNaut = ha(102);
+
+                const lonCorr = lon / 15;
+                const noonStd = 12 - 8 - lonCorr - eqTime / 60;
+                
+                function wrap(h) {
+                    h = h % 24;
+                    if (h < 0) h += 24;
+                    return h;
+                }
+
+                const sunrise = wrap(noonStd - haSun * 12 / Math.PI);
+                const sunset = wrap(noonStd + haSun * 12 / Math.PI);
+                const dawnCivil = wrap(noonStd - haCivil * 12 / Math.PI);
+                const duskCivil = wrap(noonStd + haCivil * 12 / Math.PI);
+                const dawnNaut = wrap(noonStd - haNaut * 12 / Math.PI);
+                const duskNaut = wrap(noonStd + haNaut * 12 / Math.PI);
+
+                if (dstOffset === 0) {
+                    return { sunrise, sunset, dawnCivil, duskCivil, dawnNaut, duskNaut };
+                } else {
+                    return {
+                        sunrise: wrap(sunrise + 1),
+                        sunset: wrap(sunset + 1),
+                        dawnCivil: wrap(dawnCivil + 1),
+                        duskCivil: wrap(duskCivil + 1),
+                        dawnNaut: wrap(dawnNaut + 1),
+                        duskNaut: wrap(duskNaut + 1)
+                    };
+                }
+            } catch (e) {
+                console.error('Error in getDayTimes:', e);
+                return {
+                    sunrise: 6, sunset: 18,
+                    dawnCivil: 5, duskCivil: 19,
+                    dawnNaut: 4, duskNaut: 20
+                };
+            }
+        }
+
+        function isCurrentDST(dayOfYear) {
+            return (dayOfYear >= 69 && dayOfYear <= 307);
+        }
+
+        function getLightTypeForTime(minutes, times) {
+            const t = minutes / 60; // convert to hours
+            const sunrise = times.sunrise;
+            const sunset = times.sunset;
+            const dawnCivil = times.dawnCivil;
+            const duskCivil = times.duskCivil;
+            const dawnNaut = times.dawnNaut;
+            const duskNaut = times.duskNaut;
+            
+            // Handle wrap-around for times that cross midnight
+            if (dawnNaut > duskNaut) {
+                // For high latitudes where twilight can wrap
+                if (t >= dawnNaut || t < duskNaut) return 'nautical';
+            }
+            if (dawnCivil > duskCivil) {
+                if (t >= dawnCivil || t < duskCivil) return 'civil';
+            }
+            if (sunrise > sunset) {
+                if (t >= sunrise || t < sunset) return 'day';
+            }
+            
+            // Normal case - no wrap
+            if (t >= dawnNaut && t < dawnCivil) return 'nautical';
+            if (t >= dawnCivil && t < sunrise) return 'civil';
+            if (t >= sunrise && t < sunset) return 'day';
+            if (t >= sunset && t < duskCivil) return 'civil';
+            if (t >= duskCivil && t < duskNaut) return 'nautical';
+            
+            return 'night';
+        }
+
+        function getMonthData(lat, lon, monthIndex, policy, wakeDec, workStartDec, workEndDec, bedDec) {
+            const dayOfYear = monthDays.slice(0, monthIndex).reduce((a, b) => a + b, 0) + 14;
+            
+            let dstOffset = 0;
+            if (policy === 'permDST') dstOffset = 1;
+            else if (policy === 'permST') dstOffset = 0;
+            else {
+                dstOffset = isCurrentDST(dayOfYear) ? 1 : 0;
+            }
+
+            const times = getDayTimes(lat, lon, dayOfYear, dstOffset);
+            
+            // Generate 10-minute intervals (144 per day)
+            const minuteTypes = [];
+            for (let m = 0; m < 144; m++) {
+                const minutes = m * 10;
+                const type = getLightTypeForTime(minutes, times);
+                minuteTypes.push(type);
+            }
+
+            // Line positions - using top position
+            let bed = bedDec;
+            if (bed < wakeDec) bed += 24;
+
+            return {
+                minuteTypes,
+                times,
+                lines: {
+                    wake: (wakeDec % 24) / 24,
+                    workStart: (workStartDec % 24) / 24,
+                    workEnd: (workEndDec % 24) / 24,
+                    bed: (bed % 24) / 24
+                }
+            };
+        }
+
+        function updateDisplay() {
+            try {
+                const lat = parseFloat(latInp.value) || 49.14;
+                const lon = parseFloat(lonInp.value) || -122.6;
+                const wakeDec = timeToDecimal(wakeInp.value);
+                const workStartDec = timeToDecimal(workStartInp.value);
+                const workEndDec = timeToDecimal(workEndInp.value);
+                const bedDec = timeToDecimal(bedInp.value);
+
+                // Get data for all months
+                const monthData = [];
+                for (let m = 0; m < 12; m++) {
+                    monthData.push(getMonthData(lat, lon, m, activePolicy, wakeDec, workStartDec, workEndDec, bedDec));
+                }
+
+                // Policy title
+                let policyTitle = 'Current (mix DST/ST)';
+                if (activePolicy === 'permDST') policyTitle = 'Permanent DST (UTC-7)';
+                if (activePolicy === 'permST') policyTitle = 'Permanent Standard (UTC-8)';
+
+                // Build HTML
+                let html = `<div class="scenario-title">${policyTitle}</div>`;
+
+                // Month axis
+                html += '<div class="month-axis">';
+                for (let m = 0; m < 12; m++) {
+                    html += `<div class="month-tick">${months[m]}</div>`;
+                }
+                html += '</div>';
+
+                // Graph row
+                html += '<div class="graph-row">';
+                html += '<div class="y-axis">';
+                html += '<span>0</span><span>12</span><span>24</span>';
+                html += '</div>';
+                html += '<div class="heatmap">';
+
+                // Create month columns with 10-minute resolution
+                for (let m = 0; m < 12; m++) {
+                    const d = monthData[m];
+                    const times = d.times;
+                    const sunriseStr = formatAMPM(times.sunrise);
+                    const sunsetStr = formatAMPM(times.sunset);
+                    
+                    html += `<div class="month-col" title="${months[m]} · Sunrise ${sunriseStr} · Sunset ${sunsetStr}">`;
+
+                    // Add 10-minute cells (144 per month column)
+                    for (let min = 0; min < 144; min++) {
+                        const type = d.minuteTypes[min];
+                        let bgColor = '#142635'; // night
+                        if (type === 'day') bgColor = '#fedb86';
+                        else if (type === 'civil') bgColor = '#7faec9';
+                        else if (type === 'nautical') bgColor = '#38658a';
+                        
+                        const hour = Math.floor(min * 10 / 60);
+                        const minute = (min * 10) % 60;
+                        const timeStr = formatTimeFromMinutes(min * 10);
+                        html += `<div class="min-cell" style="background-color: ${bgColor}; height: ${100/144}%;" title="${timeStr} - ${type}"></div>`;
+                    }
+
+                    // Line container for personal times
+                    html += '<div class="line-container">';
+                    
+                    // Add personal lines
+                    const lines = d.lines;
+                    html += `<div class="personal-line line-wake" style="top: ${lines.wake * 100}%;"></div>`;
+                    html += `<div class="personal-line line-work" style="top: ${lines.workStart * 100}%;"></div>`;
+                    html += `<div class="personal-line line-work" style="top: ${lines.workEnd * 100}%;"></div>`;
+                    html += `<div class="personal-line line-bed" style="top: ${lines.bed * 100}%;"></div>`;
+                    
+                    html += '</div>'; // close line-container
+                    html += '</div>'; // close month-col
+                }
+
+                html += '</div></div>'; // close heatmap and graph-row
+                viz.innerHTML = html;
+                
+            } catch (e) {
+                console.error('Display error:', e);
+                viz.innerHTML = `<div class="debug-info">Error rendering display: ${e.message}</div>`;
+            }
+        }
+
+        // Event listeners
+        applyBtn.addEventListener('click', updateDisplay);
+        window.addEventListener('load', updateDisplay);
+        
+        // Also update when inputs change
+        [latInp, lonInp, wakeInp, workStartInp, workEndInp, bedInp].forEach(input => {
+            input.addEventListener('change', updateDisplay);
+        });
+    })();
+</script>
+</body>
+</html>
