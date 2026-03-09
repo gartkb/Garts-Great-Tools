@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Superstore Value Sorter (v16.0 - Auto Lazy-Load)
+// @name         Superstore Value Sorter (v16.2 - Layout Protection)
 // @namespace    http://tampermonkey.net/
-// @version      16.0
-// @description  Sorts safely without breaking the CSS Grid layout. Auto-scrolls to bypass lazy-loading.
+// @version      16.2
+// @description  Sorts safely across lazy-loaded chunks while protecting ad banners and page layout from breaking.
 // @match        https://www.realcanadiansuperstore.ca/*
 // @require      https://gartkb.github.io/Garts-Great-Tools/userscript/tm-value-sorter-core.js
 // @grant        none
@@ -342,12 +342,11 @@
     // 3. UI, LAZY LOADING, & INFINITE PAGINATION
     // =========================================================
 
-    // NEW: Auto-scroll function to force React to load all images/data
     async function forceLoadAll() {
         return new Promise((resolve) => {
             const distance = 800; 
             const delay = 100;    
-            let maxScrolls = 30;  
+            let maxScrolls = 35;  
             let scrolls = 0;
             
             const startY = window.scrollY;
@@ -356,11 +355,9 @@
                 window.scrollBy(0, distance);
                 scrolls++;
 
-                // If we reach the bottom of the page OR hit the max safety scroll limit
                 if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight - 100 || scrolls >= maxScrolls) {
                     clearInterval(timer);
                     
-                    // Scroll back up to the grid so the top deals are visible
                     const grid = document.querySelector('div[class*="product-grid-component"]');
                     if (grid) {
                         const topPos = grid.getBoundingClientRect().top + window.scrollY - 150;
@@ -369,8 +366,7 @@
                         window.scrollTo({ top: startY, behavior: 'auto' });
                     }
                     
-                    // Give DOM a split second to attach newly fetched elements
-                    setTimeout(resolve, 350);
+                    setTimeout(resolve, 800);
                 }
             }, delay);
         });
@@ -458,28 +454,20 @@
             btn.disabled = true;
 
             try {
-                // 1. Force the page to render lazy-loaded items via smooth rapid scroll
                 btn.innerHTML = "Loading items...";
                 await forceLoadAll();
                 
-                // 2. Fetch the next page if requested
                 if (STATE.loadMore) {
                     btn.innerHTML = "Fetching +1 Page...";
-                    const success = await fetchNextPage();
-                    if (!success) {
-                        console.log("No more pages to fetch.");
-                    }
-                    // Give DOM a bit of time to register the new nodes
-                    await new Promise(r => setTimeout(r, 400));
+                    await fetchNextPage();
+                    await new Promise(r => setTimeout(r, 600));
                 }
 
-                // 3. Sort the items
                 btn.innerHTML = "Sorting...";
-                await new Promise(r => setTimeout(r, 10)); // tiny delay to let UI text update
+                await new Promise(r => setTimeout(r, 10)); 
                 
                 sortGlobal();
 
-                // 4. Reset Button
                 btn.innerHTML = STATE.loadMore ? "Done! (+1 Page)" : "Done!";
                 setTimeout(() => { btn.innerHTML = "Sort by Value"; }, 2000);
             } catch (e) {
@@ -581,21 +569,117 @@
         }
     }
 
+    function getCommonAncestor(elements) {
+        if (elements.length === 0) return null;
+        let ancestor = elements[0];
+        for (let i = 1; i < elements.length; i++) {
+            while (ancestor && !ancestor.contains(elements[i])) {
+                ancestor = ancestor.parentElement;
+            }
+        }
+        return ancestor;
+    }
+
     function sortGlobal() {
         updateAllBadges();
-        const grids = Array.from(document.querySelectorAll('div[class*="product-grid-component"]'));
-        const containers = grids.map(g => getGridContainer(g)).filter(Boolean);
         
+        const grids = Array.from(document.querySelectorAll('div[class*="product-grid-component"]'));
+        let containers = grids.map(g => getGridContainer(g)).filter(Boolean);
+        
+        containers = containers.filter(c => c.children.length > 0);
+        if (containers.length === 0) return;
+
+        // 1. Find the primary product grid to act as an anchor point
+        const largestContainer = containers.reduce((a, b) => a.children.length > b.children.length ? a : b);
+        
+        // 2. Define a "Safe Zone" to prevent the Wormhole from consuming the entire page layout.
+        let safeAncestor = largestContainer;
+        let levels = 0;
+        while (safeAncestor && safeAncestor.parentElement && levels < 5) {
+            const parent = safeAncestor.parentElement;
+            if (['BODY', 'MAIN', 'HEADER', 'FOOTER'].includes(parent.tagName)) break;
+            
+            if (parent.className && typeof parent.className === 'string') {
+                const cn = parent.className.toLowerCase();
+                // If we hit a major layout wrapper, stop climbing
+                if (cn.includes('layout') || cn.includes('page-wrapper') || cn.includes('main-content') || cn.includes('sidebar')) {
+                    break; 
+                }
+            }
+            safeAncestor = parent;
+            levels++;
+        }
+
+        // 3. Only group grids strictly inside the Safe Zone
+        containers = containers.filter(c => safeAncestor.contains(c));
+        if (containers.length === 0) return;
+
+        let allCards =[];
         containers.forEach(container => {
-            let allCards = Array.from(container.children);
-            if (allCards.length === 0) return;
-            
-            allCards.sort((a, b) => (parseFloat(a.dataset.tmVal)||99999) - (parseFloat(b.dataset.tmVal)||99999));
-            
-            allCards.forEach((c, index) => {
-                c.style.order = index + 1;
-            });
+            const validCards = Array.from(container.children).filter(c => c.nodeType === 1);
+            allCards.push(...validCards);
         });
+
+        if (allCards.length === 0) return;
+
+        allCards.sort((a, b) => (parseFloat(a.dataset.tmVal)||99999) - (parseFloat(b.dataset.tmVal)||99999));
+        
+        allCards.forEach((c, index) => {
+            c.style.order = index + 1;
+        });
+
+        // 4. Implement CSS Layout Wormhole to visually group React chunks
+        if (containers.length > 1) {
+            const firstContainer = containers[0];
+            const computed = window.getComputedStyle(firstContainer);
+            
+            const commonParent = getCommonAncestor(containers);
+            
+            if (commonParent && commonParent !== document.body) {
+                if (computed.display.includes('grid')) {
+                    commonParent.style.display = 'grid';
+                    commonParent.style.gridTemplateColumns = computed.gridTemplateColumns;
+                    commonParent.style.gap = computed.gap;
+                    commonParent.style.padding = computed.padding;
+                    commonParent.style.alignItems = computed.alignItems;
+                } else {
+                    commonParent.style.display = 'flex';
+                    commonParent.style.flexWrap = 'wrap';
+                    commonParent.style.gap = computed.gap || '16px';
+                }
+
+                containers.forEach((container) => {
+                    let current = container;
+                    while (current && current !== commonParent && current !== document.body) {
+                        current.style.display = 'contents';
+                        current = current.parentElement;
+                    }
+                });
+
+                // PROTECT NON-PRODUCT UI ELEMENTS (Ads, Banners, Headers)
+                let passedGrid = false;
+                Array.from(commonParent.children).forEach(child => {
+                    let isWormholePath = containers.some(c => child === c || child.contains(c));
+                    if (isWormholePath) {
+                        passedGrid = true;
+                    } else {
+                        // Expand the ad to full width so it doesn't get squished into a tiny grid cell
+                        child.style.gridColumn = '1 / -1';
+                        child.style.width = '100%';
+                        child.style.display = 'block';
+                        // Maintain layout: keep top items at top, bottom items at bottom
+                        child.style.order = passedGrid ? 999999 : -1;
+                    }
+                });
+            }
+        } else {
+            const c = containers[0];
+            const computed = window.getComputedStyle(c);
+            if (!computed.display.includes('grid') && !computed.display.includes('flex')) {
+                c.style.display = 'flex';
+                c.style.flexWrap = 'wrap';
+            }
+        }
     }
 
     function init() {
