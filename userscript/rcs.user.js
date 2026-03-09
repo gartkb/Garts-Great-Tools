@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Superstore Value Sorter (v15.7 - Safe Mode)
+// @name         Superstore Value Sorter (v16.0 - Auto Lazy-Load)
 // @namespace    http://tampermonkey.net/
-// @version      15.7
-// @description  Sorts by value. Fixes sorting hang issues. Prioritizes Manual Calc, falls back to Store Unit Price for meat/produce.
+// @version      16.0
+// @description  Sorts safely without breaking the CSS Grid layout. Auto-scrolls to bypass lazy-loading.
 // @match        https://www.realcanadiansuperstore.ca/*
 // @require      https://gartkb.github.io/Garts-Great-Tools/userscript/tm-value-sorter-core.js
 // @grant        none
@@ -38,29 +38,24 @@
     // =========================================================
 
     function parseCardData(card) {
-        // Safety check
         if (!card || !card.innerText) return null;
 
         const rawText = card.innerText.toLowerCase().replace(/[\r\n]+/g, " ").replace(/\s+/g, " ");
 
-        // --- STEP 1: EXTRACT POINTS ---
         let pointsValue = 0;
         const pointsMatch = rawText.match(/([0-9,]+)\s*pc optimum points/);
         if (pointsMatch) {
             pointsValue = parseFloat(pointsMatch[1].replace(/,/g, '')) / 1000;
         }
 
-        // --- PREPARE DATA FOR MANUAL CALC ---
-        // We clean the text to find the "Total Price" (Shelf Price).
         const cleanForPrice = rawText
             .replace(/save\s*\$[0-9,.]+/g, "")
             .replace(/after limit\s*\$[0-9,.]+/g, "")
-            .replace(/\$\s*[0-9,.]+\s*\/\s*[0-9.]*\s*[a-z]+/g, "") // Remove store unit strings
-            .replace(/about\s*\$[0-9,.]+/g, ""); // Remove "about" prices
+            .replace(/\$\s*[0-9,.]+\s*\/\s*[0-9.]*\s*[a-z]+/g, "") 
+            .replace(/about\s*\$[0-9,.]+/g, ""); 
 
-        let validPrices = [];
+        let validPrices =[];
         
-        // Handle "2 for $5"
         const multiBuyMatch = rawText.match(/\b([0-9]+)\s*(?:for|\/)\s*\$([0-9,.]+)/);
         if (multiBuyMatch) {
             const qty = parseFloat(multiBuyMatch[1]);
@@ -68,7 +63,6 @@
             if (qty > 0) validPrices.push(total / qty);
         }
         
-        // Find standalone prices (replaced matchAll with exec for compatibility)
         const priceRegex = /\$\s*([0-9,.]+)/g;
         let m;
         while ((m = priceRegex.exec(cleanForPrice)) !== null) {
@@ -78,7 +72,6 @@
 
         let bestShelfPrice = validPrices.length > 0 ? Math.min(...validPrices) : null;
         
-        // Apply Points
         let effectivePrice = bestShelfPrice;
         let hasPoints = false;
         if (bestShelfPrice && STATE.usePoints && pointsValue > 0) {
@@ -86,17 +79,15 @@
             hasPoints = true;
         }
 
-        // --- STEP 2: TRY MANUAL CALCULATION (Weight in Title) ---
         const weightRegex = /(?:^|\s)(\d+(?:\.\d+)?)\s*(?:[xX]\s*(\d+(?:\.\d+)?))?\s*(g|kg|ml|l|lb|oz)\b/i;
         const weightMatch = rawText.match(weightRegex);
 
-        // If we found a shelf price AND a weight in the title, use manual calc
         if (weightMatch && effectivePrice) {
             let num1 = parseFloat(weightMatch[1]);
             let num2 = weightMatch[2] ? parseFloat(weightMatch[2]) : 1;
             const unit = weightMatch[3];
 
-            if (num2 > 1 && Math.abs(num1 - num2) < 0.5) { num2 = 1; } // Glitch Fix
+            if (num2 > 1 && Math.abs(num1 - num2) < 0.5) { num2 = 1; } 
 
             let totalUnits = num1 * num2;
             let normalizedUnits = totalUnits;
@@ -122,8 +113,6 @@
             };
         }
 
-        // --- STEP 3: VARIABLE WEIGHT FALLBACK (Meat/Produce) ---
-        // If Manual Calc failed (no weight in title), look for store's $/unit string.
         const meatMatch = rawText.match(/\$\s*([0-9,.]+)\s*\/\s*([0-9.]*)\s*(kg|lb|g)\b/i);
         
         if (meatMatch) {
@@ -132,11 +121,10 @@
             let unit = meatMatch[3];
             let finalVal = 0;
 
-            if (unit === 'kg') { finalVal = (uPrice / uQty) / 10; } // $/100g
-            else if (unit === 'lb') { finalVal = (uPrice / uQty) / 4.53592; } // $/100g
-            else if (unit === 'g') { finalVal = (uPrice / uQty) * 100; } // $/100g
+            if (unit === 'kg') { finalVal = (uPrice / uQty) / 10; } 
+            else if (unit === 'lb') { finalVal = (uPrice / uQty) / 4.53592; } 
+            else if (unit === 'g') { finalVal = (uPrice / uQty) * 100; } 
 
-            // Try to estimate points discount from "About $xx" price
             if (STATE.usePoints && pointsValue > 0) {
                  const aboutMatch = rawText.match(/about\s*\$([0-9,.]+)/);
                  if (aboutMatch) {
@@ -161,7 +149,6 @@
             };
         }
 
-        // --- STEP 4: GENERIC FALLBACK (Items sold by 'each') ---
         const storeUnitMatch = rawText.match(/\$\s*([0-9,.]+)\s*\/\s*([0-9.]*)\s*(ea|each|pk)/);
         
         if (storeUnitMatch) {
@@ -182,7 +169,6 @@
             };
         }
 
-        // --- STEP 5: ABSOLUTE FALLBACK ---
         if (effectivePrice) {
              return {
                 val: 9999,
@@ -225,15 +211,14 @@
     }
 
     function badgeItem(card) {
-        if(card.dataset.tmManual) return; 
+        if (card.dataset.tmManual) return; 
 
-        // Try-Catch inside badge creation to prevent one bad item from crashing the whole script
         try {
             const data = parseCardData(card);
             const oldBadge = card.querySelector('.tm-badge');
             if (oldBadge) oldBadge.remove();
 
-            if (!data) return;
+            if (!data) return; 
 
             const badge = document.createElement("div");
             badge.className = 'tm-badge';
@@ -300,9 +285,52 @@
         }
     }
 
+    function getGridContainer(gridElement) {
+        if (!gridElement) return null;
+        let bestNode = gridElement;
+        let maxScore = 0;
+        let maxChildren = 0;
+        
+        function traverse(node, depth) {
+            if (!node || node.nodeType !== 1 || depth > 10) return;
+            
+            let childCount = node.children.length;
+            if (childCount > 1) {
+                let score = 0;
+                for (let i = 0; i < childCount; i++) {
+                    const txt = node.children[i].innerText || "";
+                    if (txt.includes('$') || txt.includes('¢')) {
+                        score++;
+                    }
+                }
+                if (score > maxScore || (score === maxScore && childCount > maxChildren)) {
+                    maxScore = score;
+                    maxChildren = childCount;
+                    bestNode = node;
+                }
+            }
+            Array.from(node.children).forEach(child => traverse(child, depth + 1));
+        }
+        
+        traverse(gridElement, 0);
+        
+        if (maxScore === 0) {
+            let current = gridElement;
+            while (current && current.children.length === 1) {
+                current = current.children[0];
+            }
+            return current;
+        }
+        
+        return bestNode;
+    }
+
     function updateAllBadges() {
-        const cards = document.querySelectorAll('div[class*="product-grid-component"] > div');
-        cards.forEach(card => badgeItem(card));
+        const grids = Array.from(document.querySelectorAll('div[class*="product-grid-component"]'));
+        const containers = grids.map(g => getGridContainer(g)).filter(Boolean);
+        containers.forEach(container => {
+            Array.from(container.children).forEach(card => badgeItem(card));
+        });
     }
 
     function repositionAllBadges() {
@@ -311,8 +339,42 @@
     }
 
     // =========================================================
-    // 3. UI & INFINITE LOADING
+    // 3. UI, LAZY LOADING, & INFINITE PAGINATION
     // =========================================================
+
+    // NEW: Auto-scroll function to force React to load all images/data
+    async function forceLoadAll() {
+        return new Promise((resolve) => {
+            const distance = 800; 
+            const delay = 100;    
+            let maxScrolls = 30;  
+            let scrolls = 0;
+            
+            const startY = window.scrollY;
+
+            const timer = setInterval(() => {
+                window.scrollBy(0, distance);
+                scrolls++;
+
+                // If we reach the bottom of the page OR hit the max safety scroll limit
+                if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight - 100 || scrolls >= maxScrolls) {
+                    clearInterval(timer);
+                    
+                    // Scroll back up to the grid so the top deals are visible
+                    const grid = document.querySelector('div[class*="product-grid-component"]');
+                    if (grid) {
+                        const topPos = grid.getBoundingClientRect().top + window.scrollY - 150;
+                        window.scrollTo({ top: topPos, behavior: 'auto' });
+                    } else {
+                        window.scrollTo({ top: startY, behavior: 'auto' });
+                    }
+                    
+                    // Give DOM a split second to attach newly fetched elements
+                    setTimeout(resolve, 350);
+                }
+            }, delay);
+        });
+    }
 
     function initUI() {
         if (document.getElementById('tm-ui-container')) return;
@@ -362,7 +424,7 @@
         rowPos.style.display = "flex"; rowPos.style.alignItems = "center"; rowPos.style.gap = "6px";
         const posSelect = document.createElement("select");
         Object.assign(posSelect.style, { fontSize: "11px", padding: "2px", borderRadius: "3px", cursor: "pointer" });
-        const opts = [
+        const opts =[
             {v: 'top-left', t: 'Top Left'}, {v: 'top-right', t: 'Top Right'},
             {v: 'bottom-left', t: 'Btm Left'}, {v: 'bottom-right', t: 'Btm Right'},
             {v: 'mid-left', t: 'Mid Left'}, {v: 'mid-right', t: 'Mid Right'}
@@ -393,37 +455,39 @@
         });
         
         btn.onclick = async () => {
-            if (STATE.loadMore) {
-                btn.disabled = true;
-                btn.innerHTML = "Fetching Next Page...";
-                try {
+            btn.disabled = true;
+
+            try {
+                // 1. Force the page to render lazy-loaded items via smooth rapid scroll
+                btn.innerHTML = "Loading items...";
+                await forceLoadAll();
+                
+                // 2. Fetch the next page if requested
+                if (STATE.loadMore) {
+                    btn.innerHTML = "Fetching +1 Page...";
                     const success = await fetchNextPage();
-                    if(success) {
-                        btn.innerHTML = "Sorting...";
-                        sortGlobal();
-                        btn.innerHTML = "Done! (+1 Page)";
-                    } else {
-                        btn.innerHTML = "No More Pages";
-                        sortGlobal(); 
+                    if (!success) {
+                        console.log("No more pages to fetch.");
                     }
-                } catch(e) {
-                    console.error(e);
-                    btn.innerHTML = "Error!";
+                    // Give DOM a bit of time to register the new nodes
+                    await new Promise(r => setTimeout(r, 400));
                 }
-                setTimeout(() => { btn.disabled = false; btn.innerHTML = "Sort by Value"; }, 2000);
-            } else {
+
+                // 3. Sort the items
                 btn.innerHTML = "Sorting...";
-                // Short timeout to allow UI update before heavy lifting
-                setTimeout(() => {
-                    try {
-                        sortGlobal();
-                    } catch (e) {
-                        console.error("TM Sorter: Critical Sort Error", e);
-                        alert("Error sorting items. Check console.");
-                    } finally {
-                        btn.innerHTML = "Sort by Value";
-                    }
-                }, 10);
+                await new Promise(r => setTimeout(r, 10)); // tiny delay to let UI text update
+                
+                sortGlobal();
+
+                // 4. Reset Button
+                btn.innerHTML = STATE.loadMore ? "Done! (+1 Page)" : "Done!";
+                setTimeout(() => { btn.innerHTML = "Sort by Value"; }, 2000);
+            } catch (e) {
+                console.error("TM Sorter Error:", e);
+                btn.innerHTML = "Error!";
+                setTimeout(() => { btn.innerHTML = "Sort by Value"; }, 2000);
+            } finally {
+                btn.disabled = false;
             }
         };
 
@@ -442,14 +506,20 @@
         const parser = new DOMParser();
         const doc = parser.parseFromString(text, "text/html");
         
-        const newGrid = doc.querySelector('div[class*="product-grid-component"]');
-        if (newGrid && newGrid.children.length > 0) {
-            const cards = Array.from(newGrid.children);
-            const currentGrid = document.querySelector('div[class*="product-grid-component"]');
-            if (currentGrid) {
+        const newGridElement = doc.querySelector('div[class*="product-grid-component"]');
+        const newContainer = getGridContainer(newGridElement);
+        
+        if (newContainer && newContainer.children.length > 0) {
+            const cards = Array.from(newContainer.children);
+            
+            const currentGrids = Array.from(document.querySelectorAll('div[class*="product-grid-component"]'));
+            const currentContainers = currentGrids.map(g => getGridContainer(g)).filter(Boolean);
+            
+            if (currentContainers.length > 0) {
+                const currentContainer = currentContainers[0];
                 cards.forEach(card => {
                     const importedCard = document.adoptNode(card);
-                    currentGrid.appendChild(importedCard);
+                    currentContainer.appendChild(importedCard);
                     badgeItem(importedCard);
                 });
             }
@@ -491,29 +561,41 @@
 
     function attachToGrid(grid) {
         if (grid.dataset.tmObserved) return;
-        processBatch(grid.childNodes);
-        gridObserver.observe(grid, { childList: true });
-        grid.dataset.tmObserved = "true";
+        
+        const container = getGridContainer(grid);
+        if (container && container.children.length > 0) {
+            Array.from(container.children).forEach(badgeItem);
+            gridObserver.observe(container, { childList: true });
+            grid.dataset.tmObserved = "true";
+        } else {
+            const tempObserver = new MutationObserver(() => {
+                const c = getGridContainer(grid);
+                if (c && c.children.length > 0) {
+                    tempObserver.disconnect();
+                    Array.from(c.children).forEach(badgeItem);
+                    gridObserver.observe(c, { childList: true });
+                    grid.dataset.tmObserved = "true";
+                }
+            });
+            tempObserver.observe(grid, { childList: true, subtree: true });
+        }
     }
 
     function sortGlobal() {
         updateAllBadges();
         const grids = Array.from(document.querySelectorAll('div[class*="product-grid-component"]'));
-        if (grids.length === 0) return;
+        const containers = grids.map(g => getGridContainer(g)).filter(Boolean);
         
-        const masterGrid = grids[0];
-        let allCards = [];
-        grids.forEach(grid => {
-            allCards.push(...Array.from(grid.children));
+        containers.forEach(container => {
+            let allCards = Array.from(container.children);
+            if (allCards.length === 0) return;
+            
+            allCards.sort((a, b) => (parseFloat(a.dataset.tmVal)||99999) - (parseFloat(b.dataset.tmVal)||99999));
+            
+            allCards.forEach((c, index) => {
+                c.style.order = index + 1;
+            });
         });
-        
-        allCards.sort((a, b) => (parseFloat(a.dataset.tmVal)||99999) - (parseFloat(b.dataset.tmVal)||99999));
-        
-        const frag = document.createDocumentFragment();
-        allCards.forEach(c => frag.appendChild(c));
-        masterGrid.appendChild(frag);
-        
-        for (let i = 1; i < grids.length; i++) grids[i].style.display = 'none';
     }
 
     function init() {
