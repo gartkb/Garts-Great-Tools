@@ -1,0 +1,3086 @@
+{
+  "upgrades": [
+    {
+      "id": 91536,
+      "name": "Legendary Rune",
+      "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+      "type": "Rune",
+      "bonuses": [],
+      "description": "",
+      "rarity": "Legendary"
+    },
+    {
+      "id": 91505,
+      "name": "Legendary Sigil",
+      "icon": "https://render.guildwars2.com/file/2DDB0E173860AD433DF6D8AF412FDAFB9BCC4FB9/2179569.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "",
+      "rarity": "Legendary"
+    },
+    {
+      "id": 38206,
+      "name": "Superior Rune of Altruism",
+      "icon": "https://render.guildwars2.com/file/054CCE66F235B4DCAF1213389203BFFDE43004E7/526278.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Healing",
+        "+5% Boon Duration",
+        "+50 Healing",
+        "+10% Boon Duration",
+        "+100 Healing",
+        "+125 Vitality"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 48907,
+      "name": "Superior Rune of Antitoxin",
+      "icon": "https://render.guildwars2.com/file/0747F00D03B499F1CEE2075F9FFE9F4998C6D2B6/665777.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Condition Damage",
+        "-5% Incoming Condition Duration",
+        "+50 Condition Damage",
+        "-10% Incoming Condition Duration",
+        "+100 Condition Damage",
+        "+125 Vitality"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24765,
+      "name": "Superior Rune of Balthazar",
+      "icon": "https://render.guildwars2.com/file/7CEF770BE7E6A5E507B6D98018155CD2395FAD18/220694.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Condition Damage",
+        "+10% Burning Duration",
+        "+50 Condition Damage",
+        "+20% Burning Duration",
+        "+100 Condition Damage",
+        "+20% Burning Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24732,
+      "name": "Superior Rune of Divinity",
+      "icon": "https://render.guildwars2.com/file/7431F5E2780106172D4A97C863D80BDAAC681FBF/220697.png",
+      "type": "Rune",
+      "bonuses": [
+        "+8 to All Stats",
+        "+10 to All Stats",
+        "+12 to All Stats",
+        "+14 to All Stats",
+        "+16 to All Stats",
+        "+18 to All Stats"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 73653,
+      "name": "Superior Rune of Durability",
+      "icon": "https://render.guildwars2.com/file/585BF273BFCD9D12F462087A19FBD12DF755269A/681057.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Toughness",
+        "+5% Boon Duration",
+        "+50 Toughness",
+        "+10% Boon Duration",
+        "+100 Toughness",
+        "+125 Vitality"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24768,
+      "name": "Superior Rune of Dwayna",
+      "icon": "https://render.guildwars2.com/file/AFB370B09F230D76014E55662924CDFB5AD947A3/220699.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Healing",
+        "+10% Regeneration Duration",
+        "+50 Healing",
+        "+20% Regeneration Duration",
+        "+100 Healing",
+        "+125 Vitality"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 67344,
+      "name": "Superior Rune of Evasion",
+      "icon": "https://render.guildwars2.com/file/32C4042A0F1D53041C4190760B7BCA1FDADA90E1/866849.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Ferocity",
+        "+10% Swiftness Duration",
+        "+50 Ferocity",
+        "+20% Swiftness Duration",
+        "+100 Ferocity",
+        "+125 Ferocity"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 44951,
+      "name": "Superior Rune of Exuberance",
+      "icon": "https://render.guildwars2.com/file/5FBA08E65429F5AF91CE4776F6AC4972FCF93E50/619710.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Vitality",
+        "+35 Healing",
+        "+50 Vitality",
+        "+65 Precision",
+        "+100 Vitality",
+        "+125 Power"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 89999,
+      "name": "Superior Rune of Fireworks",
+      "icon": "https://render.guildwars2.com/file/CECC01C8220163A9646171B0BAA528B73DE3D527/2100803.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+5% Boon Duration",
+        "+50 Power",
+        "+10% Boon Duration",
+        "+100 Power",
+        "+10% Boon Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24779,
+      "name": "Superior Rune of Grenth",
+      "icon": "https://render.guildwars2.com/file/5930FE034AD9067EC7DF633C683927EB4A0F509F/220706.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Condition Damage",
+        "+10% Chill Duration",
+        "+50 Condition Damage",
+        "+20% Chill Duration",
+        "+100 Condition Damage",
+        "+20% Chill Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24729,
+      "name": "Superior Rune of Hoelbrak",
+      "icon": "https://render.guildwars2.com/file/150204B4552ED82CD15204ACC7360198F51F6C13/220708.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+10% Might Duration",
+        "+50 Power",
+        "-10% Incoming Condition Duration",
+        "+100 Power",
+        "+10% Boon Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24703,
+      "name": "Superior Rune of Infiltration",
+      "icon": "https://render.guildwars2.com/file/F9C62BCFB70106EEBCA33C4AC35352CE2A082F10/220710.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+35 Precision",
+        "+50 Power",
+        "+65 Precision",
+        "+100 Power",
+        "+125 Precision"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 70600,
+      "name": "Superior Rune of Leadership",
+      "icon": "https://render.guildwars2.com/file/0CD614069C9917057D1BEC5B060E689E18E8EE51/1201517.png",
+      "type": "Rune",
+      "bonuses": [
+        "+8 to All Stats",
+        "+5% Boon Duration",
+        "+12 to All Stats",
+        "+10% Boon Duration",
+        "+16 to All Stats",
+        "+10% Boon Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24776,
+      "name": "Superior Rune of Lyssa",
+      "icon": "https://render.guildwars2.com/file/0A5ED9EE533DC7116A7D50EAAECD5A1FF024ACFE/220713.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Precision",
+        "+5% Condition Duration",
+        "+50 Precision",
+        "+10% Boon Duration",
+        "+100 Precision",
+        "+10% Condition Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24771,
+      "name": "Superior Rune of Melandru",
+      "icon": "https://render.guildwars2.com/file/66A56E6838D707BBBAD0B8D0091425502F7E3AF4/220714.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Toughness",
+        "+35 Vitality",
+        "+50 Toughness",
+        "-10% Incoming Condition Duration",
+        "+100 Toughness",
+        "-10% Incoming Condition Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24708,
+      "name": "Superior Rune of Mercy",
+      "icon": "https://render.guildwars2.com/file/6866D3A85960F806E67C616E5709F97F0D025F02/220715.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Toughness",
+        "+35 Healing Power",
+        "+50 Toughness",
+        "+65 Healing",
+        "+100 Toughness",
+        "+125 Healing"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 81091,
+      "name": "Superior Rune of Nature's Bounty",
+      "icon": "https://render.guildwars2.com/file/A891700CDC179D6CC4B2FDC82F4052AC19F41801/1676536.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Healing",
+        "-5% Incoming Condition Duration",
+        "+50 Healing",
+        "-10% Incoming Condition Duration",
+        "+100 Healing",
+        "-10% Incoming Condition Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24860,
+      "name": "Superior Rune of Orr",
+      "icon": "https://render.guildwars2.com/file/27245474E83839DC6648F22CF6B5F4B09514DF11/220743.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Condition Damage",
+        "-5% Incoming Condition Duration",
+        "+50 Condition Damage",
+        "-10% Incoming Condition Duration",
+        "+100 Condition Damage",
+        "-10% Incoming Condition Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 44957,
+      "name": "Superior Rune of Perplexity",
+      "icon": "https://render.guildwars2.com/file/F67A922A4624470EBAD493920DC1EE2616769E9D/619716.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Condition Damage",
+        "+10% Confusion Duration",
+        "+50 Condition Damage",
+        "+20% Confusion Duration",
+        "+100 Condition Damage",
+        "+20% Confusion Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 67342,
+      "name": "Superior Rune of Radiance",
+      "icon": "https://render.guildwars2.com/file/BAB7FAD330A0EC183426D646C2440BCB7F74324D/866847.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Vitality",
+        "+5% Boon Duration",
+        "+50 Vitality",
+        "+10% Boon Duration",
+        "+100 Vitality",
+        "+10% Boon Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24717,
+      "name": "Superior Rune of Rage",
+      "icon": "https://render.guildwars2.com/file/5F65FDA9D721B6BA5654E5ED29A42B01C04DF2DA/220719.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Ferocity",
+        "+10% Fury Duration",
+        "+50 Ferocity",
+        "+20% Fury Duration",
+        "+100 Ferocity",
+        "+125 Ferocity"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24726,
+      "name": "Superior Rune of Rata Sum",
+      "icon": "https://render.guildwars2.com/file/1434C3CEC42A4F0D4861F013B899D9CBFE91E836/220720.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Precision",
+        "+10% Poison Duration",
+        "+50 Precision",
+        "+20% Weakness Duration",
+        "+100 Precision",
+        "+10% Condition Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 49460,
+      "name": "Superior Rune of Resistance",
+      "icon": "https://render.guildwars2.com/file/585BF273BFCD9D12F462087A19FBD12DF755269A/681057.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Toughness",
+        "-5% Incoming Condition Duration",
+        "+50 Toughness",
+        "-10% Incoming Condition Duration",
+        "+100 Toughness",
+        "-10% Incoming Condition Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24857,
+      "name": "Superior Rune of Sanctuary",
+      "icon": "https://render.guildwars2.com/file/7C142C0B6558D2DCDB01E580A04321302F4F5B40/220742.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Vitality",
+        "+5% Boon Duration",
+        "+50 Vitality",
+        "+10% Boon Duration",
+        "+100 Vitality",
+        "+125 Vitality"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24738,
+      "name": "Superior Rune of Scavenging",
+      "icon": "https://render.guildwars2.com/file/C9BEBEB9D8ADA51C1D9DEB67A3C079B5037E9833/221082.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Condition Damage",
+        "+35 Vitality",
+        "+50 Condition Damage",
+        "+65 Vitality",
+        "+100 Condition Damage",
+        "+20% Poison Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 68437,
+      "name": "Superior Rune of Snowfall",
+      "icon": "https://render.guildwars2.com/file/177542577DA8A9500706A80D1F79BB7FD5EA9DD5/924726.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Toughness",
+        "+35 Healing",
+        "+50 Toughness",
+        "+65 Healing",
+        "+100 Toughness",
+        "+25% Movement Speed"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24720,
+      "name": "Superior Rune of Speed",
+      "icon": "https://render.guildwars2.com/file/1ED9421DC70174CA9BBC33075047381C3659C837/220722.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Vitality",
+        "+10% Swiftness Duration",
+        "+50 Vitality",
+        "+20% Swiftness Duration",
+        "+100 Vitality",
+        "+20% Swiftness Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24714,
+      "name": "Superior Rune of Strength",
+      "icon": "https://render.guildwars2.com/file/F33F44776DFCB0D75B48005904E3C75456C4F5FA/220644.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+10% Might Duration",
+        "+50 Power",
+        "+20% Might Duration",
+        "+100 Power",
+        "+20% Might Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 76813,
+      "name": "Superior Rune of Surging",
+      "icon": "https://render.guildwars2.com/file/5C75473F560F80E6A6444147EA5C66F959C46E59/1201524.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+5% Boon Duration",
+        "+50 Power",
+        "+10% Boon Duration",
+        "+100 Power",
+        "+25% Movement Speed"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24794,
+      "name": "Superior Rune of Svanir",
+      "icon": "https://render.guildwars2.com/file/65EA9C9AA55EF137657B65CA18EC98581B54DC0F/220721.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Toughness",
+        "+10% Chill Duration",
+        "+50 Toughness",
+        "+20% Chill Duration",
+        "+100 Toughness",
+        "-66% Incoming Chill Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24830,
+      "name": "Superior Rune of the Adventurer",
+      "icon": "https://render.guildwars2.com/file/3C053CD2680D7DAE5E0899E8F6FF530D0E445704/221141.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Condition Damage",
+        "+35 Power",
+        "+50 Condition Damage",
+        "+65 Power",
+        "+100 Condition Damage",
+        "+125 Power"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24687,
+      "name": "Superior Rune of the Afflicted",
+      "icon": "https://render.guildwars2.com/file/B952E2BB3ACDF477F4C823655DAC1294C9A12745/220692.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Condition Damage",
+        "+10% Poison Duration",
+        "+50 Condition Damage",
+        "+20% Bleeding Duration",
+        "+100 Condition Damage",
+        "+10% Condition Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24750,
+      "name": "Superior Rune of the Air",
+      "icon": "https://render.guildwars2.com/file/0A0CF1DD44A26CCC6BF9ADEE623DCED5070901BB/220693.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Ferocity",
+        "+10% Swiftness Duration",
+        "+50 Ferocity",
+        "+20% Swiftness Duration",
+        "+100 Ferocity",
+        "+20% Swiftness Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24845,
+      "name": "Superior Rune of the Aristocracy",
+      "icon": "https://render.guildwars2.com/file/D8375410EAF95DB5D29CAB063051AD2AA8FAD740/221152.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Condition Damage",
+        "+10% Might Duration",
+        "+50 Condition Damage",
+        "+20% Might Duration",
+        "+100 Condition Damage",
+        "+20% Might Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24854,
+      "name": "Superior Rune of the Baelfire",
+      "icon": "https://render.guildwars2.com/file/BE044D76F2F1762634B00A5E4216E7B8C104D1FB/220741.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+10% Burning Duration",
+        "+50 Power",
+        "+10% Condition Duration",
+        "+100 Power",
+        "+20% Burning Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 71425,
+      "name": "Superior Rune of the Berserker",
+      "icon": "https://render.guildwars2.com/file/EB082298F2B83D4E042EF9C1566F3D4E250EB204/1201518.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Condition Damage",
+        "+35 Power",
+        "+50 Condition Damage",
+        "+65 Power",
+        "+100 Condition Damage",
+        "+125 Condition Damage"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24833,
+      "name": "Superior Rune of the Brawler",
+      "icon": "https://render.guildwars2.com/file/65A51C02312B93452A6EA9F0BF6BB5240894500D/220735.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+35 Toughness",
+        "+50 Power",
+        "+65 Toughness",
+        "+100 Power",
+        "+125 Toughness"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 83367,
+      "name": "Superior Rune of the Cavalier",
+      "icon": "https://render.guildwars2.com/file/C3B4033342280901BB155A7B124ED208DBB83923/1766384.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+35 Toughness",
+        "+50 Power",
+        "+65 Toughness",
+        "+100 Power",
+        "+25% Movement Speed"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24788,
+      "name": "Superior Rune of the Centaur",
+      "icon": "https://render.guildwars2.com/file/37FB0225B2DE715BCB25B02D2914F35DBB080708/220695.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+10% Swiftness Duration",
+        "+50 Power",
+        "+20% Swiftness Duration",
+        "+100 Power",
+        "+20% Swiftness Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 73399,
+      "name": "Superior Rune of the Chronomancer",
+      "icon": "https://render.guildwars2.com/file/80FE6B56334AB53830DD2D0F61992DF4CC44A710/1201519.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+35 Precision",
+        "+50 Power",
+        "+65 Precision",
+        "+100 Power",
+        "+10% Boon Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24741,
+      "name": "Superior Rune of the Citadel",
+      "icon": "https://render.guildwars2.com/file/2647384A4CFBDA013F974944C501E19D092B37A8/220696.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+10% Fury Duration",
+        "+50 Power",
+        "+20% Fury Duration",
+        "+100 Power",
+        "+20% Fury Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 72852,
+      "name": "Superior Rune of the Daredevil",
+      "icon": "https://render.guildwars2.com/file/5957E29A2B985F0FF0E50878F62A702262BC0714/1201520.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+35 Toughness",
+        "+50 Power",
+        "+65 Toughness",
+        "+100 Power",
+        "+125 Condition Damage"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 82791,
+      "name": "Superior Rune of the Deadeye",
+      "icon": "https://render.guildwars2.com/file/17E6C846E62E51AFF8B8AF5A33FD53B391BD7E75/1766386.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+35 Ferocity",
+        "+50 Power",
+        "+65 Ferocity",
+        "+100 Power",
+        "+125 Precision"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 67912,
+      "name": "Superior Rune of the Defender",
+      "icon": "https://render.guildwars2.com/file/0371967D72777E35C2E11E540E462DB2D82BA102/2028758.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Toughness",
+        "+35 Healing",
+        "+50 Toughness",
+        "+65 Healing",
+        "+100 Toughness",
+        "+125 Vitality"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24699,
+      "name": "Superior Rune of the Dolyak",
+      "icon": "https://render.guildwars2.com/file/217571E95C4742460B033E0F5F2B3FB611C9DC4A/220698.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Toughness",
+        "+35 Vitality",
+        "+50 Toughness",
+        "+65 Vitality",
+        "+100 Toughness",
+        "+125 Toughness"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 74978,
+      "name": "Superior Rune of the Dragonhunter",
+      "icon": "https://render.guildwars2.com/file/E698E699D9A75AC90CA47A3FBA0259216C29041D/1201528.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Ferocity",
+        "+35 Power",
+        "+50 Ferocity",
+        "+65 Power",
+        "+100 Ferocity",
+        "+125 Ferocity"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 70450,
+      "name": "Superior Rune of the Druid",
+      "icon": "https://render.guildwars2.com/file/0FBCEEC6A67AE360C81EE314801948A5FA31E2D5/1201521.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Healing",
+        "+35 Vitality",
+        "+50 Healing",
+        "+65 Vitality",
+        "+100 Healing",
+        "+125 Healing"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24723,
+      "name": "Superior Rune of the Eagle",
+      "icon": "https://render.guildwars2.com/file/2966CB3D97E85EB0E4C33AFB6D1FB63D7304EC97/220700.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Precision",
+        "+35 Ferocity",
+        "+50 Precision",
+        "+65 Ferocity",
+        "+100 Precision",
+        "+125 Ferocity"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24744,
+      "name": "Superior Rune of the Earth",
+      "icon": "https://render.guildwars2.com/file/93A53AB1F304354ED1981AB465BCDD51B2F4D857/220701.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Toughness",
+        "+10% Protection Duration",
+        "+50 Toughness",
+        "+20% Protection Duration",
+        "+100 Toughness",
+        "+125 Healing"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24800,
+      "name": "Superior Rune of the Elementalist",
+      "icon": "https://render.guildwars2.com/file/F321ABCA3954145A4A17046D6170767740674866/220730.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+35 Condition Damage",
+        "+50 Power",
+        "+65 Condition Damage",
+        "+100 Power",
+        "+125 Condition Damage"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24812,
+      "name": "Superior Rune of the Engineer",
+      "icon": "https://render.guildwars2.com/file/9896142965DE036D05030D04220A036062545B43/220728.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Toughness",
+        "+35 Condition Damage",
+        "+50 Toughness",
+        "+65 Condition Damage",
+        "+100 Toughness",
+        "+125 Condition Damage"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24747,
+      "name": "Superior Rune of the Fire",
+      "icon": "https://render.guildwars2.com/file/6967534DA6E09150241DC411B0F4A4B415520FF7/220702.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+10% Might Duration",
+        "+50 Power",
+        "+20% Might Duration",
+        "+100 Power",
+        "+20% Burning Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 83338,
+      "name": "Superior Rune of the Firebrand",
+      "icon": "https://render.guildwars2.com/file/5BB9C1FF1BFF6A52217F4007C2B1FFCAB9BCC6B3/1766387.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Condition Damage",
+        "+10% Quickness Duration",
+        "+50 Condition Damage",
+        "+10% Boon Duration",
+        "+100 Condition Damage",
+        "+20% Quickness Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24797,
+      "name": "Superior Rune of the Flame Legion",
+      "icon": "https://render.guildwars2.com/file/776392A017E4DA16BF3DCA69292BB31ABA998010/220703.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+10% Burning Duration",
+        "+50 Power",
+        "+20% Burning Duration",
+        "+100 Power",
+        "+20% Burning Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24696,
+      "name": "Superior Rune of the Flock",
+      "icon": "https://render.guildwars2.com/file/F9D5AFF9E79806AF490FA1E6DD73041D15D401A7/220704.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Healing",
+        "+35 Vitality",
+        "+50 Healing",
+        "+65 Vitality",
+        "+100 Healing",
+        "+125 Vitality"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24851,
+      "name": "Superior Rune of the Forgeman",
+      "icon": "https://render.guildwars2.com/file/0764987FBB1369A74103DE3F1B279C02EA503D02/220740.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Toughness",
+        "+10% Burning Duration",
+        "+50 Toughness",
+        "+20% Burning Duration",
+        "+100 Toughness",
+        "+20% Burning Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24785,
+      "name": "Superior Rune of the Golemancer",
+      "icon": "https://render.guildwars2.com/file/EB4F765E36EC9CF57526789A3EAB6702110D0949/220705.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Ferocity",
+        "+35 Precision",
+        "+50 Ferocity",
+        "+65 Precision",
+        "+100 Ferocity",
+        "+125 Ferocity"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24735,
+      "name": "Superior Rune of the Grove",
+      "icon": "https://render.guildwars2.com/file/1A4B11313EA4B3076232AAA10D0F2F62A50A6179/220707.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Healing",
+        "+10% Protection Duration",
+        "+50 Healing",
+        "+20% Protection Duration",
+        "+100 Healing",
+        "+20% Protection Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24824,
+      "name": "Superior Rune of the Guardian",
+      "icon": "https://render.guildwars2.com/file/AE08720A7849BB97DA0E299C00440EFA5C6B1F98/220733.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Toughness",
+        "+35 Healing",
+        "+50 Toughness",
+        "+65 Healing",
+        "+100 Toughness",
+        "+125 Toughness"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 76100,
+      "name": "Superior Rune of the Herald",
+      "icon": "https://render.guildwars2.com/file/041C98AABD6751C5FAF8AD74F3253CACF0E8DA74/1201522.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Toughness",
+        "+5% Boon Duration",
+        "+50 Toughness",
+        "+10% Boon Duration",
+        "+100 Toughness",
+        "+10% Boon Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 82633,
+      "name": "Superior Rune of the Holosmith",
+      "icon": "https://render.guildwars2.com/file/3AFE1A1A79FCC768DE5A611BFC2A4D0101CBE79A/1766388.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+35 Vitality",
+        "+50 Power",
+        "+65 Vitality",
+        "+100 Power",
+        "+125 Precision"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24753,
+      "name": "Superior Rune of the Ice",
+      "icon": "https://render.guildwars2.com/file/B34492445E5F38655FF49B7FB9EFD4DB03A37A90/220709.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Vitality",
+        "+10% Chill Duration",
+        "+50 Vitality",
+        "+20% Chill Duration",
+        "+100 Vitality",
+        "+125 Vitality"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24762,
+      "name": "Superior Rune of the Krait",
+      "icon": "https://render.guildwars2.com/file/F0932EF967413023BE0CC1EEF5E2536B2764E65A/220711.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Condition Damage",
+        "+10% Bleeding Duration",
+        "+50 Condition Damage",
+        "+20% Bleeding Duration",
+        "+100 Condition Damage",
+        "+20% Bleeding Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24688,
+      "name": "Superior Rune of the Lich",
+      "icon": "https://render.guildwars2.com/file/10324E350DEFA2276F0FD22299D4BAFD00736D18/220712.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Vitality",
+        "+5% Condition Duration",
+        "+50 Vitality",
+        "+10% Condition Duration",
+        "+100 Vitality",
+        "+10% Condition Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 36044,
+      "name": "Superior Rune of the Mad King",
+      "icon": "https://render.guildwars2.com/file/0A0E6F80DA16D7764FFEA33893B66051FBE07A3F/499379.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+5% Condition Duration",
+        "+50 Power",
+        "+20% Bleeding Duration",
+        "+100 Power",
+        "+20% Bleeding Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24803,
+      "name": "Superior Rune of the Mesmer",
+      "icon": "https://render.guildwars2.com/file/D4099559DA2558F9B172EFB306EE0C942193B66F/220727.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+35 Precision",
+        "+50 Power",
+        "+65 Precision",
+        "+100 Power",
+        "+33% Daze Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 84127,
+      "name": "Superior Rune of the Mirage",
+      "icon": "https://render.guildwars2.com/file/F59199027BDD14A0F4EB4DE8015CAC7F49E7CCE0/1766389.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Condition Damage",
+        "+35 Toughness",
+        "+50 Condition Damage",
+        "+65 Toughness",
+        "+100 Condition Damage",
+        "+125 Vitality"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24842,
+      "name": "Superior Rune of the Monk",
+      "icon": "https://render.guildwars2.com/file/E028F4BC03E9EC36A368712463D824CEC30FCCDA/220738.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Healing",
+        "+5% Boon Duration",
+        "+50 Healing",
+        "+10% Boon Duration",
+        "+100 Healing",
+        "+125 Healing"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24806,
+      "name": "Superior Rune of the Necromancer",
+      "icon": "https://render.guildwars2.com/file/653A411208E7310CDCE628750C39A5C237F5F220/220726.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Condition Damage",
+        "+35 Vitality",
+        "+50 Condition Damage",
+        "+65 Vitality",
+        "+100 Condition Damage",
+        "+125 Condition Damage"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24848,
+      "name": "Superior Rune of the Nightmare",
+      "icon": "https://render.guildwars2.com/file/2420347B95791503F2E666E948E825A652095395/220739.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Condition Damage",
+        "+10% Fear Duration",
+        "+50 Condition Damage",
+        "+10% Condition Duration",
+        "+100 Condition Damage",
+        "+10% Condition Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24756,
+      "name": "Superior Rune of the Ogre",
+      "icon": "https://render.guildwars2.com/file/136590B36FFC2053D135743B063405C9A54A9E6A/220716.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+35 Ferocity",
+        "+50 Power",
+        "+65 Ferocity",
+        "+100 Power",
+        "+125 Vitality"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24702,
+      "name": "Superior Rune of the Pack",
+      "icon": "https://render.guildwars2.com/file/FEF77764F24C0548271F29337268970C092DA5D3/220717.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+5% Boon Duration",
+        "+50 Power",
+        "+10% Boon Duration",
+        "+100 Power",
+        "+125 Precision"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24782,
+      "name": "Superior Rune of the Privateer",
+      "icon": "https://render.guildwars2.com/file/1C2095ADECD26F212D0F6C47BCCF5B7848B347CF/220718.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+10% Might Duration",
+        "+50 Power",
+        "+20% Might Duration",
+        "+100 Power",
+        "+125 Precision"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24815,
+      "name": "Superior Rune of the Ranger",
+      "icon": "https://render.guildwars2.com/file/74190770191950B5CD9439B93B487816959E9D3B/220729.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Precision",
+        "+35 Ferocity",
+        "+50 Precision",
+        "+65 Ferocity",
+        "+100 Precision",
+        "+125 Precision"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 70829,
+      "name": "Superior Rune of the Reaper",
+      "icon": "https://render.guildwars2.com/file/4A990939E313EC37284DF1B1435435A7CE036930/1201525.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+35 Toughness",
+        "+50 Power",
+        "+65 Toughness",
+        "+100 Power",
+        "+125 Precision"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 84171,
+      "name": "Superior Rune of the Rebirth",
+      "icon": "https://render.guildwars2.com/file/DA4AF714D87F63978039E053D80F9F717A49D3BE/1766390.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Healing Power",
+        "+5% Boon Duration",
+        "+50 Healing Power",
+        "+10% Boon Duration",
+        "+100 Healing Power",
+        "+125 Toughness"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 83502,
+      "name": "Superior Rune of the Renegade",
+      "icon": "https://render.guildwars2.com/file/6701DC14A246E241E006A54D04206F01997ED8B9/1766391.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Condition Damage",
+        "+35 Ferocity",
+        "+50 Condition Damage",
+        "+65 Ferocity",
+        "+100 Condition Damage",
+        "+125 Condition Damage"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 69370,
+      "name": "Superior Rune of the Revenant",
+      "icon": "https://render.guildwars2.com/file/3C07D12B7B55004FA51C5D4DC20794329BE023B5/1201526.png",
+      "type": "Rune",
+      "bonuses": [
+        "+8 to All Stats",
+        "+10 to All Stats",
+        "+12 to All Stats",
+        "+14 to All Stats",
+        "+16 to All Stats",
+        "+125 Vitality"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24836,
+      "name": "Superior Rune of the Scholar",
+      "icon": "https://render.guildwars2.com/file/4378ABC0415950DAC6A05C76920392D72E242EC2/220736.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+35 Ferocity",
+        "+50 Power",
+        "+65 Ferocity",
+        "+100 Power",
+        "+125 Ferocity"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 83663,
+      "name": "Superior Rune of the Scourge",
+      "icon": "https://render.guildwars2.com/file/53707264D8BA7E692C63769F68DC03B722223CD5/1766392.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Healing Power",
+        "+35 Condition Damage",
+        "+50 Healing Power",
+        "+65 Condition Damage",
+        "+100 Healing Power",
+        "+125 Healing"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 71276,
+      "name": "Superior Rune of the Scrapper",
+      "icon": "https://render.guildwars2.com/file/07FB016965EC6423035D3FEA02CF241D453203EA/1201527.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+35 Toughness",
+        "+50 Power",
+        "+65 Toughness",
+        "+100 Power",
+        "+125 Vitality"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 83964,
+      "name": "Superior Rune of the Soulbeast",
+      "icon": "https://render.guildwars2.com/file/5CCA6A235D02FCA92B5DC90EC82EECD8BE694222/1766385.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Condition Damage",
+        "+35 Power",
+        "+50 Condition Damage",
+        "+65 Power",
+        "+100 Condition Damage",
+        "+125 Vitality"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 84749,
+      "name": "Superior Rune of the Spellbreaker",
+      "icon": "https://render.guildwars2.com/file/0F04D648CC2501FDC6B5E9929F76AD7D16D4AF0F/1766393.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+35 Precision",
+        "+50 Power",
+        "+65 Precision",
+        "+100 Power",
+        "+125 Vitality"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 85713,
+      "name": "Superior Rune of the Stars",
+      "icon": "https://render.guildwars2.com/file/BEDDD1D249DF6FC417451E0CA25F803FA818294A/1894695.png",
+      "type": "Rune",
+      "bonuses": [
+        "+8 to All Stats",
+        "-30% Incoming Weakness Duration",
+        "+12 to All Stats",
+        "-30% Incoming Chill and Cripple Duration",
+        "+16 to All Stats",
+        "-10% Incoming Condition Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 47908,
+      "name": "Superior Rune of the Sunless",
+      "icon": "https://render.guildwars2.com/file/01C3E7BA21ACB2220DEF2713DCA6F5C745CD9106/638381.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Condition Damage",
+        "-5% Incoming Condition Duration",
+        "+50 Condition Damage",
+        "-10% Incoming Condition Duration",
+        "+100 Condition Damage",
+        "+125 Condition Damage"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 76166,
+      "name": "Superior Rune of the Tempest",
+      "icon": "https://render.guildwars2.com/file/D144F10ABB48042794BA0627EE04B3311A4131DB/1201529.png",
+      "type": "Rune",
+      "bonuses": [
+        "+8 to All Stats",
+        "+5% Condition Duration",
+        "+12 to All Stats",
+        "+10% Condition Duration",
+        "+16 to All Stats",
+        "+10% Condition Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24818,
+      "name": "Superior Rune of the Thief",
+      "icon": "https://render.guildwars2.com/file/997AEFF0927F640DE515B4DA516911B3B3B6B9EA/220731.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Precision",
+        "+35 Condition Damage",
+        "+50 Precision",
+        "+65 Condition Damage",
+        "+100 Precision",
+        "+125 Precision"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 67339,
+      "name": "Superior Rune of the Trapper",
+      "icon": "https://render.guildwars2.com/file/4A322301EDD61898193B9B94A0A6A1F1DC06BF24/866844.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Condition Damage",
+        "+5% Condition Duration",
+        "+50 Condition Damage",
+        "+10% Condition Duration",
+        "+100 Condition Damage",
+        "+125 Condition Damage"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24691,
+      "name": "Superior Rune of the Traveler",
+      "icon": "https://render.guildwars2.com/file/3CCCAB48D5D5FAEA14912BC6D3DB1A79DFC4C846/221050.png",
+      "type": "Rune",
+      "bonuses": [
+        "+8 to All Stats",
+        "+5% Boon Duration",
+        "+12 to All Stats",
+        "+10% Boon Duration",
+        "+16 to All Stats",
+        "+25% Movement Speed"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24827,
+      "name": "Superior Rune of the Trooper",
+      "icon": "https://render.guildwars2.com/file/643A3C23647EF27F520860F0EFC7FEEB29766B1A/220734.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Vitality",
+        "+35 Toughness",
+        "+50 Vitality",
+        "+65 Toughness",
+        "+100 Vitality",
+        "+125 Toughness"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24757,
+      "name": "Superior Rune of the Undead",
+      "icon": "https://render.guildwars2.com/file/D32651C75E09C23F0ECD234CE8B1C666E032296C/220723.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Condition Damage",
+        "+35 Toughness",
+        "+50 Condition Damage",
+        "+65 Toughness",
+        "+100 Condition Damage",
+        "+125 Toughness"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24821,
+      "name": "Superior Rune of the Warrior",
+      "icon": "https://render.guildwars2.com/file/ACA8355625070B3706CAE0B49B0549CB12123420/220732.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Vitality",
+        "+35 Power",
+        "+50 Vitality",
+        "+65 Power",
+        "+100 Vitality",
+        "+125 Vitality"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24839,
+      "name": "Superior Rune of the Water",
+      "icon": "https://render.guildwars2.com/file/50C5E3125234FF4525162A052335354D47B50D0F/220737.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Healing",
+        "+5% Boon Duration",
+        "+50 Healing",
+        "+10% Boon Duration",
+        "+100 Healing",
+        "+10% Boon Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 83423,
+      "name": "Superior Rune of the Weaver",
+      "icon": "https://render.guildwars2.com/file/C0D36E7D6CAAA060F2EFB0E1CAA2587002F3F451/1766394.png",
+      "type": "Rune",
+      "bonuses": [
+        "+8 to All Stats",
+        "+10% Burning Duration",
+        "+12 to All Stats",
+        "+20% Chill Duration",
+        "+16 to All Stats",
+        "+10% Condition Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24791,
+      "name": "Superior Rune of the Wurm",
+      "icon": "https://render.guildwars2.com/file/D0076C2606409FD9AE49C562DD963B7B48B90136/220725.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Vitality",
+        "+35 Ferocity",
+        "+50 Vitality",
+        "+65 Ferocity",
+        "+100 Vitality",
+        "+125 Ferocity"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 88118,
+      "name": "Superior Rune of the Zephyrite",
+      "icon": "https://render.guildwars2.com/file/28E50D0A627FFBC7E7112822B8C45C032E39636D/2015082.png",
+      "type": "Rune",
+      "bonuses": [
+        "+8 to All Stats",
+        "+10 to All Stats",
+        "+12 to All Stats",
+        "+14 to All Stats",
+        "+16 to All Stats",
+        "+10% Boon Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 72912,
+      "name": "Superior Rune of Thorns",
+      "icon": "https://render.guildwars2.com/file/32DA0B5704E8DEC0F36B6C460734C496C603541C/1201523.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Condition Damage",
+        "+10% Poison Duration",
+        "+50 Condition Damage",
+        "+20% Poison Duration",
+        "+100 Condition Damage",
+        "+20% Poison Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 44956,
+      "name": "Superior Rune of Tormenting",
+      "icon": "https://render.guildwars2.com/file/F8BC046221EA49EB3D349B5D3C50DDF33213D8B3/619715.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Condition Damage",
+        "+10% Torment Duration",
+        "+50 Condition Damage",
+        "+20% Torment Duration",
+        "+100 Condition Damage",
+        "+20% Torment Duration"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24711,
+      "name": "Superior Rune of Vampirism",
+      "icon": "https://render.guildwars2.com/file/F13EECC6AED473604A097A5DBB0861E3410702EF/220724.png",
+      "type": "Rune",
+      "bonuses": [
+        "+25 Power",
+        "+35 Vitality",
+        "+50 Power",
+        "+65 Vitality",
+        "+100 Power",
+        "+125 Vitality"
+      ],
+      "description": "",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 72872,
+      "name": "Superior Sigil of Absorption",
+      "icon": "https://render.guildwars2.com/file/56CB34140E68F7153DD4F240D2F040D4060B06AA/1201531.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Steal 3 boons when interrupting a foe. <c=@reminder>(Cooldown: 10 seconds) (Cooldown against defiant foes: 3 seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24618,
+      "name": "Superior Sigil of Accuracy",
+      "icon": "https://render.guildwars2.com/file/4B0EFF29FD064E5E93E4F8616BE309A451450AED/220661.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "+7% Critical Chance",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 72092,
+      "name": "Superior Sigil of Agility",
+      "icon": "https://render.guildwars2.com/file/EBC49ABB26A3097F0A4E4C359CDD0B3804BF7D3D/1201534.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Gain 5 seconds of swiftness and 1 second of quickness when swapping to this weapon in combat. (Cooldown: 9 Seconds)",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24612,
+      "name": "Superior Sigil of Agony",
+      "icon": "https://render.guildwars2.com/file/BAF34EB051D118F8A7C1645E0D940ED0660E6269/220658.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Increase Inflicted Bleeding Duration: 20%",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24554,
+      "name": "Superior Sigil of Air",
+      "icon": "https://render.guildwars2.com/file/C337CC61DF2F5EE44B7D053EFF33059111024444/220676.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Unleash a lightning strike upon critically hitting a foe. <br><c=@reminder>(Cooldown: 3 Seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24601,
+      "name": "Superior Sigil of Battle",
+      "icon": "https://render.guildwars2.com/file/A25A5E7D74A6B293B5C6B8EC7EDA1A06C649CBEF/220691.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Gain 5 stacks of might for 12 seconds when swapping to this weapon in combat. (Cooldown: 9 Seconds)",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24584,
+      "name": "Superior Sigil of Benevolence",
+      "icon": "https://render.guildwars2.com/file/0147AE350DEB5561D427EC41F6F4B35523707320/220672.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Gain a charge that grants a 0.5% increase in healing to other allies each time you kill a foe, five charges if you kill an enemy player. <c=@reminder>(Max 25 stacks; ends on down.)</c><br><c=@reminder>(Only one attribute-stacking sigil can be active at a time.)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 67913,
+      "name": "Superior Sigil of Blight",
+      "icon": "https://render.guildwars2.com/file/AE0A1C7816B56296FEA527E1D01376491374195A/941026.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Inflict nearby enemies with 2 stacks of poison for 4 seconds upon landing a critical hit. <br><c=@reminder>(Cooldown: 8 Seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24570,
+      "name": "Superior Sigil of Blood",
+      "icon": "https://render.guildwars2.com/file/BFD4F5E6A8B95866BBA7CDC0E8920D0346337934/220681.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Steal a foe's health upon landing a critical hit. <br><c=@reminder>(Cooldown: 5 Seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24575,
+      "name": "Superior Sigil of Bloodlust",
+      "icon": "https://render.guildwars2.com/file/77AAE10D3E03036D6E00642DEF01E5DF3468524F/220673.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Gain a charge of +10 power each time you kill a foe, five charges if you kill an enemy player. <c=@reminder>(Max 25 stacks; ends on down.)</c> <br><c=@reminder>(Only one attribute-stacking sigil can be active at a time.)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 81045,
+      "name": "Superior Sigil of Bounty",
+      "icon": "https://render.guildwars2.com/file/9B5ADEE61292409C0102AEB9B255CEBD7B6E9EAA/1676537.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Gain a charge of +9 concentration each time you kill a foe, five charges if you kill an enemy player. <c=@reminder>(Max 25 stacks; ends on down.)</c> <br><c=@reminder>(Only one attribute-stacking sigil can be active at a time.)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 44944,
+      "name": "Superior Sigil of Bursting",
+      "icon": "https://render.guildwars2.com/file/7ABFCEDF80329157F734FD56B293765D9B940FAD/619703.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "+5% Condition Damage",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24865,
+      "name": "Superior Sigil of Celerity",
+      "icon": "https://render.guildwars2.com/file/731850AB48F9944BB5FE4A050A71366C0903253E/221167.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Gain quickness for 5 seconds after disabling a foe. (Cooldown: 20 Seconds)",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24645,
+      "name": "Superior Sigil of Centaur Slaying",
+      "icon": "https://render.guildwars2.com/file/4DE74A04923D29D03595E42EB10FBC4F06180994/340599.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "+7% Strike Damage vs. Centaurs\n+3% Strike Damage",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24630,
+      "name": "Superior Sigil of Chilling",
+      "icon": "https://render.guildwars2.com/file/F7C54D53F1CDB2094B9C4FEA2FA455ADC54492B4/220663.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Increase Inflicted Chill Duration: 20%",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 67340,
+      "name": "Superior Sigil of Cleansing",
+      "icon": "https://render.guildwars2.com/file/011CEE62DABFE502E839CA19ECEAA5C523089407/866845.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Remove 3 conditions when swapping to this weapon in combat. <c=@reminder>(Cooldown: 9 Seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 72339,
+      "name": "Superior Sigil of Concentration",
+      "icon": "https://render.guildwars2.com/file/C501D2CCF95A7B59F15EEDEF9C7D42C2DECE48E7/1201533.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "+10% Boon Duration",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24578,
+      "name": "Superior Sigil of Corruption",
+      "icon": "https://render.guildwars2.com/file/D574E4D29FA31DB815F76FD5FE4CA1EBFACA22B9/220668.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Gain a charge of +10 condition damage each time you kill a foe, five charges if you kill an enemy player. <c=@reminder>(Max 25 stacks; ends on down.)</c> <br><c=@reminder>(Only one attribute-stacking sigil can be active at a time.)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 67341,
+      "name": "Superior Sigil of Cruelty",
+      "icon": "https://render.guildwars2.com/file/057D6F9E40020AF09E420B09EBDB4FCD9DE37951/866846.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Gain a charge of +10 ferocity each time you kill a foe, five charges if you kill an enemy player. <c=@reminder>(Max 25 stacks; ends on down.)</c> <br><c=@reminder>(Only one attribute-stacking sigil can be active at a time.)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24636,
+      "name": "Superior Sigil of Debility",
+      "icon": "https://render.guildwars2.com/file/33FB5EED4B3F16F3CC2538B178B645BE5CA67CF2/220667.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Increase Inflicted Weakness Duration: 20%",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24664,
+      "name": "Superior Sigil of Demon Slaying",
+      "icon": "https://render.guildwars2.com/file/991BD2CC63CFE343C5E55D49F657C95E71FD0439/340600.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "+7% Strike Damage vs. Demons, Kryptis, and Titanspawn.\n+3% Strike Damage",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24583,
+      "name": "Superior Sigil of Demons",
+      "icon": "https://render.guildwars2.com/file/52D5D9FE5E0B9091415092A9E21DE830010D2E0E/220674.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Increase the duration of inflicted torment by 20%.",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24654,
+      "name": "Superior Sigil of Destroyer Slaying",
+      "icon": "https://render.guildwars2.com/file/656ABB62BBEC39BC24D002FBE19EFCE953ABEDCD/221036.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "+7% Strike Damage vs. Destroyers\n+3% Strike Damage",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24609,
+      "name": "Superior Sigil of Doom",
+      "icon": "https://render.guildwars2.com/file/6CE4D1D6E5392C4CC8BACA595E3393EBF208BEED/220686.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Your next attack will inflict 3 stacks of poison for 8 seconds after swapping to this weapon in combat. <br><c=@reminder>(Cooldown: 9 Seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 70825,
+      "name": "Superior Sigil of Draining",
+      "icon": "https://render.guildwars2.com/file/C501D2CCF95A7B59F15EEDEF9C7D42C2DECE48E7/1201533.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Steal life when interrupting an enemy. <c=@reminder>(Cooldown against defiant foes: 3 seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24681,
+      "name": "Superior Sigil of Dreams",
+      "icon": "https://render.guildwars2.com/file/3971AF5B6948AF53F9D5A1382F66063234D43301/340617.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "+7% Strike Damage vs. Nightmare Court\n+3% Strike Damage",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24560,
+      "name": "Superior Sigil of Earth",
+      "icon": "https://render.guildwars2.com/file/251EE3B8B5ADB8D7F7A35DBAEFABA35AEACDF51B/220677.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Inflict bleeding for 6 seconds upon critically hitting a foe. <br><c=@reminder>(Cooldown: 2 Seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24661,
+      "name": "Superior Sigil of Elemental Slaying",
+      "icon": "https://render.guildwars2.com/file/94535F0F7030C45F223CA41D71502B9D091D52BE/221043.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "+7% Strike Damage vs. Elementals\n+3% Strike Damage",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24607,
+      "name": "Superior Sigil of Energy",
+      "icon": "https://render.guildwars2.com/file/3A064B97AB7D0E1F1250EFB5F06798A8FE623708/220688.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Gain 50% of your endurance when you swap to this weapon while in combat. <c=@reminder>(Cooldown: 9 Seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24548,
+      "name": "Superior Sigil of Fire",
+      "icon": "https://render.guildwars2.com/file/AFFE7977FCE450E8105EBADA7436050CB7011BDB/220678.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Trigger a flame blast with a 240 radius upon critically hitting a foe. <br><c=@reminder>(Cooldown: 5 Seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24615,
+      "name": "Superior Sigil of Force",
+      "icon": "https://render.guildwars2.com/file/D7420E430D002E07382035EF0D0F77370C4EE6B8/220662.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "+5% Damage",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24567,
+      "name": "Superior Sigil of Frailty",
+      "icon": "https://render.guildwars2.com/file/58EF3FB57B16D9F12ACCC2E67225CC2697C7C866/220683.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Inflict 2 stacks of vulnerability for 8 seconds after striking a foe from behind or the flank or when they are defiant. <c=@reminder>(Cooldown: 2 seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 82876,
+      "name": "Superior Sigil of Frenzy",
+      "icon": "https://render.guildwars2.com/file/AE66AD152AAD72050F7E050AE2E3BBAFC6DF533F/1766395.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Recharge all equipped skills by 2 seconds upon killing an enemy. <c=@reminder>Cooldown: 10 seconds</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 38294,
+      "name": "Superior Sigil of Generosity",
+      "icon": "https://render.guildwars2.com/file/19487F3F01F76165F79D0DCAEF3E7E3FFF5DFEFA/526288.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Transfer a condition upon critically hitting a foe. <br><c=@reminder>(Cooldown: 6 Seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24605,
+      "name": "Superior Sigil of Geomancy",
+      "icon": "https://render.guildwars2.com/file/B79B430645DDF54E6792909A52F5CA40A4911407/220687.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Inflict nearby foes with bleeding for 8 seconds after swapping to this weapon in combat. <br><c=@reminder>(Cooldown: 9 Seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24809,
+      "name": "Superior Sigil of Ghost Slaying",
+      "icon": "https://render.guildwars2.com/file/53B41B4FF6EBD8D45A52F79B5A74D2A6184C0408/340623.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "+7% Strike Damage vs. Ghosts\n+3% Strike Damage",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24648,
+      "name": "Superior Sigil of Grawl Slaying",
+      "icon": "https://render.guildwars2.com/file/5D7569213FFA04AF2B16251102A7A5B1CC70BA60/221030.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "+7% Strike Damage vs. Grawl\n+3% Strike Damage",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24627,
+      "name": "Superior Sigil of Hobbling",
+      "icon": "https://render.guildwars2.com/file/AEB1F57BB591D53B3BD459445C42736722CDA8EE/220660.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Increase Inflicted Cripple Duration: 20%",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 91339,
+      "name": "Superior Sigil of Hologram Slaying",
+      "icon": "https://render.guildwars2.com/file/089B2C17EDE94407C84638E05AD9589165DCA07E/2162990.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "+17% Strike Damage vs. Dragon Bash Holograms\n+3% Strike Damage",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24597,
+      "name": "Superior Sigil of Hydromancy",
+      "icon": "https://render.guildwars2.com/file/B5F3E2021863079919299707290698504B5C7E90/220689.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Damage nearby foes and chill them for 2 seconds when you swap to this weapon while in combat.<br><c=@reminder>(Cooldown: 9 Seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24555,
+      "name": "Superior Sigil of Ice",
+      "icon": "https://render.guildwars2.com/file/10E0D93F4B303CD03F6FEE0C5AAEEB070E0EFAC1/220680.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Chill a foe for 2 seconds after striking from its flank or when they are defiant. <c=@reminder>(Cooldown: 10 seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24651,
+      "name": "Superior Sigil of Icebrood Slaying",
+      "icon": "https://render.guildwars2.com/file/B23A080B973EB8F4090D0EFEC6745DCCE7961231/221033.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "+7% Strike Damage vs. Icebrood\n+3% Strike Damage",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24868,
+      "name": "Superior Sigil of Impact",
+      "icon": "https://render.guildwars2.com/file/D9ACA0C94D90A76B1C500D5DE6D62B6820FEDAE2/221170.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "+7% Strike Damage vs. Stunned or Knocked-Down Foes\n+3% Strike Damage",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 67343,
+      "name": "Superior Sigil of Incapacitation",
+      "icon": "https://render.guildwars2.com/file/F79A51E6B82FEA027FD1BC606441A02309DB9EE1/866848.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Cripple a foe for 2 seconds after striking from its flank or when they are defiant. <c=@reminder>(Cooldown: 5 seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24678,
+      "name": "Superior Sigil of Justice",
+      "icon": "https://render.guildwars2.com/file/FD156EC90AD047B00103EFD703C27563A10232A9/340614.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "+7% Strike Damage vs. Outlaws\n+3% Strike Damage",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 37912,
+      "name": "Superior Sigil of Karka Slaying",
+      "icon": "https://render.guildwars2.com/file/4DE74A04923D29D03595E42EB10FBC4F06180994/340599.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "+7% Strike Damage vs. Karka\n+3% Strike Damage",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24599,
+      "name": "Superior Sigil of Leeching",
+      "icon": "https://render.guildwars2.com/file/BC276BC8AD2497A1E5A905CBDB20425CF2133D78/220690.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Your next attack after swapping to this weapon while in combat steals some health. <c=@reminder>(Cooldown: 9 Seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24582,
+      "name": "Superior Sigil of Life",
+      "icon": "https://render.guildwars2.com/file/A7AE0E9D0DF64B69EF309D93E44FFAA90859ABA0/220670.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Gain a charge of +10 healing each time you kill a foe, five charges if you kill an enemy player. <c=@reminder>(Max 25 stacks; ends on down.)</c> <br><c=@reminder>(Only one attribute-stacking sigil can be active at a time.)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24591,
+      "name": "Superior Sigil of Luck",
+      "icon": "https://render.guildwars2.com/file/A4A317BFD72846C27107A97EED7508A10606D50A/220998.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "75% chance to gain a random boon on killing an enemy.",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24672,
+      "name": "Superior Sigil of Mad Scientists",
+      "icon": "https://render.guildwars2.com/file/BA4C0C33CFB4DC5707DC0E9C01190A1644085908/340608.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "+7% Strike Damage vs. Inquest\n+3% Strike Damage",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 44950,
+      "name": "Superior Sigil of Malice",
+      "icon": "https://render.guildwars2.com/file/797D052CB4EA63A61A3225962128D197ACB3ED17/619709.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "+10% condition duration.",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 68436,
+      "name": "Superior Sigil of Mischief",
+      "icon": "https://render.guildwars2.com/file/7D0CE9A3627F4957BEA2CFE39802EDB4503463D2/924725.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Launch up to 4 blinding snowballs at foes in front of you when you swap to this weapon in combat.<br><c=@reminder>(Cooldown: 9 Seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 49457,
+      "name": "Superior Sigil of Momentum",
+      "icon": "https://render.guildwars2.com/file/391000777F63F2CA05FC015E0C990AD1FEB73526/681056.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Gain a charge of +5 toughness each time you kill a foe, five charges if you kill an enemy player. <c=@reminder>(Max 25 stacks; ends on down.)</c> <br><c=@reminder>(Only one attribute-stacking sigil can be active at a time.)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24572,
+      "name": "Superior Sigil of Nullification",
+      "icon": "https://render.guildwars2.com/file/B926E1026E6E271D3B9F9A177710E3A8C801FFF3/220744.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Remove a boon from a foe after striking from its flank or when they are defiant. <br><c=@reminder>(Cooldown: 5 seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24655,
+      "name": "Superior Sigil of Ogre Slaying",
+      "icon": "https://render.guildwars2.com/file/D947B21C999C455E2EAF9FEDF8080197271CF7E4/221037.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "+7% Strike Damage vs. Ogres\n+3% Strike Damage",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24639,
+      "name": "Superior Sigil of Paralyzation",
+      "icon": "https://render.guildwars2.com/file/0C1378BB6AADCB1C157332776C3476EBC66CD2DA/220665.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "+30% Stun Duration",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24580,
+      "name": "Superior Sigil of Perception",
+      "icon": "https://render.guildwars2.com/file/FA237EF63BC111701FAEC13E312A022E9D44ED93/340593.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Gain a charge of +10 precision each time you kill a foe, five charges if you kill an enemy player. <c=@reminder>(Max 25 stacks; ends on down.)</c> <br><c=@reminder>(Only one attribute-stacking sigil can be active at a time.)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24621,
+      "name": "Superior Sigil of Peril",
+      "icon": "https://render.guildwars2.com/file/F9D2B90F653C555D08B2C62CAC7605AA2793929B/220666.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Increase Inflicted Vulnerability Duration: 20%",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24571,
+      "name": "Superior Sigil of Purity",
+      "icon": "https://render.guildwars2.com/file/C3E907DE24CF72CE490639710F46CDCD917D5B06/220745.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Remove a condition after striking a foe from its flank or when they are defiant. <br><c=@reminder>(Cooldown: 4 seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24561,
+      "name": "Superior Sigil of Rage",
+      "icon": "https://render.guildwars2.com/file/15310B48271FC15332C65C5E02FEC4FFF298B652/220679.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Gain quickness for 3 seconds upon critically hitting a foe. <br><c=@reminder>(Cooldown: 20 Seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 73532,
+      "name": "Superior Sigil of Rending",
+      "icon": "https://render.guildwars2.com/file/0B0BEB4BB555DB4D29019E8052ABF34CA91DB11C/1201536.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Inflict 5 stacks of vulnerability for 10 seconds when interrupting a foe. <c=@reminder>(Cooldown: 3 Seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 44947,
+      "name": "Superior Sigil of Renewal",
+      "icon": "https://render.guildwars2.com/file/F3F0730D5FEE09A7340E2E24E35A7AF304EDAAB7/619706.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Heal Nearby Allies on Weapon Swap (360 Radius) <br><c=@reminder>(Cooldown: 9 Seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24594,
+      "name": "Superior Sigil of Restoration",
+      "icon": "https://render.guildwars2.com/file/0877D8E26B3CE964B3A7C2C324C4629B04362A09/220671.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Gain health when interrupting a foe. <c=@reminder>(Cooldown: 5 Seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 71130,
+      "name": "Superior Sigil of Ruthlessness",
+      "icon": "https://render.guildwars2.com/file/2ACE6E1BF2372CD3BEBE541666A7070BA90F5114/1201530.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Gain 5 stacks of might for 10 seconds when interrupting a foe. <c=@reminder>(Cooldown: 3 Seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24658,
+      "name": "Superior Sigil of Serpent Slaying",
+      "icon": "https://render.guildwars2.com/file/26EEDDE25D6E60A7085610FF4097D763F1293174/221040.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "+7% Strike Damage vs. Krait\n+3% Strike Damage",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 84505,
+      "name": "Superior Sigil of Severance",
+      "icon": "https://render.guildwars2.com/file/396D7A5DBFA03BC49C12DAB532C4E34D342F0B51/1766396.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Upon interrupting an enemy, gain up to 250 precision and ferocity for 4 seconds, depending on level. <c=@reminder>(Cooldown: 1 second)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24624,
+      "name": "Superior Sigil of Smoldering",
+      "icon": "https://render.guildwars2.com/file/60AAB7109E5D679901E00DC066774EE5FB3E6052/220659.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Increase Inflicted Burning Duration: 20%",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24675,
+      "name": "Superior Sigil of Smothering",
+      "icon": "https://render.guildwars2.com/file/EEA1B04CA020A9085B0ED0059A1AA17951D305CF/340611.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "+7% Strike Damage vs. Flame Legion\n+3% Strike Damage",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24684,
+      "name": "Superior Sigil of Sorrow",
+      "icon": "https://render.guildwars2.com/file/7B045AB2949D75A131027B71BC01CAAE4F240D09/340620.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "+7% Strike Damage vs. Dredge\n+3% Strike Damage",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24589,
+      "name": "Superior Sigil of Speed",
+      "icon": "https://render.guildwars2.com/file/E2BE561DB46692BF67F7AF2FDCA21FCA5D250D36/220675.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Gain Swiftness (20 Seconds) on Killing a Foe",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24592,
+      "name": "Superior Sigil of Stamina",
+      "icon": "https://render.guildwars2.com/file/970DD319EC0E7455E941CD5DA840C10EA6EF160E/220669.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Your endurance is refilled each time you kill a foe.",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24562,
+      "name": "Superior Sigil of Strength",
+      "icon": "https://render.guildwars2.com/file/71C00204BDD7FC11AAE1906FC2EF7D37A35DF82E/220682.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Gain might for 10 seconds upon critically hitting a foe. <br><c=@reminder>(Cooldown: 1 Second)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 36053,
+      "name": "Superior Sigil of the Night",
+      "icon": "https://render.guildwars2.com/file/CFDC642093029E790C03381D73C703BDFFA9CDFF/499391.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Outgoing damage is increased by 3% with an additional 7% at night.",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 86170,
+      "name": "Superior Sigil of the Stars",
+      "icon": "https://render.guildwars2.com/file/B9B778FD561C019DC5A3A01D55C234D1E31251CE/1894696.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Gain a charge of +2 to all stats each time you kill a foe, five charges if you kill an enemy player. <c=@reminder>(Max 25 stacks; ends on down.)</c> <br><c=@reminder>(Only one attribute-stacking sigil can be active at a time.)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 48911,
+      "name": "Superior Sigil of Torment",
+      "icon": "https://render.guildwars2.com/file/E42EB6198022E5B4D71C5EE41465DD4EB84A0465/665778.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Inflict 2 stacks of torment for 5 seconds to enemies around your target upon landing a critical hit. <br><c=@reminder>(Cooldown: 5 Seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 74326,
+      "name": "Superior Sigil of Transference",
+      "icon": "https://render.guildwars2.com/file/7A2021FB079CE4FC3A469CAE2B6E6273000E7D45/1201535.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Healing to other allies is increased by 10%.",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24642,
+      "name": "Superior Sigil of Undead Slaying",
+      "icon": "https://render.guildwars2.com/file/3DDBA602C305D0766414DE693D62F71AAB915872/340596.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "+7% Strike Damage vs. Undead\n+3% Strike Damage",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24632,
+      "name": "Superior Sigil of Venom",
+      "icon": "https://render.guildwars2.com/file/080B4F940A05E60A084AA4B1D230F923A1A47CEC/220664.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Increase Inflicted Poison Duration: 20%",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24600,
+      "name": "Superior Sigil of Vision",
+      "icon": "https://render.guildwars2.com/file/1F41DBAFFA5979D7496F2BB9E4D9AE0F2FA4F940/220685.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Critically strike an enemy for 3 seconds after swapping to this weapon in combat. <c=@reminder>(Cooldown: 9 Seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24551,
+      "name": "Superior Sigil of Water",
+      "icon": "https://render.guildwars2.com/file/F117A4F536901B0C69A618EEEB0DA6BDEB075FD8/220684.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "Heal allies within a 360 radius of your target upon landing a critical hit. <br><c=@reminder>(Cooldown: 5 Seconds)</c>",
+      "rarity": "Exotic"
+    },
+    {
+      "id": 24667,
+      "name": "Superior Sigil of Wrath",
+      "icon": "https://render.guildwars2.com/file/E66C5ADB05ED06086EE9AB03CF9830214BA02090/340603.png",
+      "type": "Sigil",
+      "bonuses": [],
+      "description": "+7% Strike Damage vs. Sons of Svanir\n+3% Strike Damage",
+      "rarity": "Exotic"
+    }
+  ],
+  "relics": [
+    {
+      "id": 101582,
+      "name": "Legendary Relic",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Unused Relic Effect Slot"
+    },
+    {
+      "id": 104849,
+      "name": "Relic of Agony",
+      "icon": "https://render.guildwars2.com/file/7060CF69EFEB7A99150F2F1A7E0E1F1D2D9ED0D2/3629395.png",
+      "type": "Relic",
+      "description": "Enemies you interrupt are inflicted with Agony of the Choir.<br><c=@reminder>This trait can only affect enemies with defiance bars once per interval.</c>"
+    },
+    {
+      "id": 101573,
+      "name": "Relic of Akeem",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "When you disable an enemy that is afflicted by 5 or more stacks of confusion or torment, inflict confusion and torment on enemies around the target."
+    },
+    {
+      "id": 104491,
+      "name": "Relic of Altruism",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Grant might and fury to nearby allies after using a healing skill."
+    },
+    {
+      "id": 101487,
+      "name": "Relic of Antitoxin",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Outgoing condition cleanses remove an additional condition. <c=@reminder>This can only affect an ally once every 10 seconds.</c>"
+    },
+    {
+      "id": 102787,
+      "name": "Relic of Atrocity",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Your lifesteal damage and healing is increased."
+    },
+    {
+      "id": 104848,
+      "name": "Relic of Bava Nisos",
+      "icon": "https://render.guildwars2.com/file/213C437140552326BD633D1AFF150B48DF2EB544/3629396.png",
+      "type": "Relic",
+      "description": "Upon using a <c=@abilitytype>stance</c> skill, cleanse conditions from yourself."
+    },
+    {
+      "id": 104800,
+      "name": "Relic of Bloodstone",
+      "icon": "https://render.guildwars2.com/file/A7327A7EDB4705EA05261110526D72AFEAF7DAB4/3629397.png",
+      "type": "Relic",
+      "description": "Gain Bloodstone Volatility when you successfully combo a field with a blast finisher. Blasting at the stack threshold triggers an explosion, granting increased damage."
+    },
+    {
+      "id": 105652,
+      "name": "Relic of Castora",
+      "icon": "https://render.guildwars2.com/file/349EA123E7D870C4199AB268250973FAEC0ADC94/3709379.png",
+      "type": "Relic",
+      "description": "Healing to other allies is increased while they are below the health threshold."
+    },
+    {
+      "id": 101500,
+      "name": "Relic of Cerus",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Upon using an elite skill, summon an Eye of Cerus that emits a rotating line attack, dealing damage and converting boons into conditions."
+    },
+    {
+      "id": 101491,
+      "name": "Relic of Dagda",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "After using an elite skill, fire a projectile at the target or nearest enemy that damages and inflicts conditions. Damage scales with the recharge of the elite skill."
+    },
+    {
+      "id": 101504,
+      "name": "Relic of Durability",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Gain protection and regeneration after using a healing skill."
+    },
+    {
+      "id": 101514,
+      "name": "Relic of Dwayna",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Regeneration you apply is more effective."
+    },
+    {
+      "id": 101441,
+      "name": "Relic of Evasion",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Gain vigor after evading an attack."
+    },
+    {
+      "id": 101563,
+      "name": "Relic of Febe",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "When you use a healing skill, grant nearby allies swiftness and remove movement-impairing conditions from them."
+    },
+    {
+      "id": 104501,
+      "name": "Relic of Fire",
+      "icon": "https://render.guildwars2.com/file/00E5051DCC0EDD58395DF9CEA3456466EA4FD347/3592834.png",
+      "type": "Relic",
+      "description": "Gain fire aura after using a healing skill. Fire aura now increases your outgoing strike damage."
+    },
+    {
+      "id": 101564,
+      "name": "Relic of Fireworks",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Upon dealing strike damage using a weapon skill with a recharge time of 20 seconds or more, deal increased strike damage for a duration. Refreshes duration on stack."
+    },
+    {
+      "id": 107030,
+      "name": "Relic of Fog",
+      "icon": "https://render.guildwars2.com/file/F31809ABA515534B10E7D8B90DDC513DD311A5D6/3745066.png",
+      "type": "Relic",
+      "description": "After dodge rolling in combat, the next incoming strike will always be a glancing blow."
+    },
+    {
+      "id": 103829,
+      "name": "Relic of Geysers",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Restore endurance to allies when you grant them vigor."
+    },
+    {
+      "id": 101649,
+      "name": "Relic of Isgarren",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "After evading an enemy's attack, place the Eye of Isgarren on them for a duration. You deal increased strike and condition duration against enemies with the Eye of Isgarren."
+    },
+    {
+      "id": 101546,
+      "name": "Relic of Karakosa",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Heal other nearby allies when you successfully combo a field with a blast finisher."
+    },
+    {
+      "id": 101461,
+      "name": "Relic of Leadership",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Convert conditions into boons on nearby allies after using an elite skill."
+    },
+    {
+      "id": 101605,
+      "name": "Relic of Lyhr",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Upon healing an ally, shield up to four allies, redirecting a percentage of any strike damage they take to yourself. Allies may only be protected by one shield at a time."
+    },
+    {
+      "id": 101643,
+      "name": "Relic of Mabon",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Upon applying might while in combat, gain Mabon's Strength. At 10 stacks, your might stacks become more effective for a duration, after which you lose all might and Mabon's Strength."
+    },
+    {
+      "id": 101439,
+      "name": "Relic of Mercy",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Revive allies faster and with more health. Only affects players in WvW."
+    },
+    {
+      "id": 104994,
+      "name": "Relic of Mistburn",
+      "icon": "https://render.guildwars2.com/file/FFCB62CF19806066D21C0EA1BA43986C0DA2B6F3/3629399.png",
+      "type": "Relic",
+      "description": "When you grant might to yourself, grant yourself additional might. Gain increased critical-strike chance while at or above the might threshold."
+    },
+    {
+      "id": 101860,
+      "name": "Relic of Mosyn",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Remove a nondamaging condition whenever you evade an attack."
+    },
+    {
+      "id": 104035,
+      "name": "Relic of Mount Balrior",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "After using an elite skill, create an area underneath yourself. Standing in this area increases your outgoing strike damage."
+    },
+    {
+      "id": 101627,
+      "name": "Relic of Nayos",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Removing a condition from yourself heals you."
+    },
+    {
+      "id": 101503,
+      "name": "Relic of Nourys",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Gain stacks of Nourys's Hunger every interval when you remove boons from enemies. Consume 10 stacks to grow larger, dealing increased damage, taking reduced damage, and converting a percentage of outgoing damage into healing."
+    },
+    {
+      "id": 101611,
+      "name": "Relic of Peitha",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "After shadowstepping or using a deception skill, fire a blade at a nearby enemy after a short delay, applying torment and increasing your strike damage against that target."
+    },
+    {
+      "id": 101466,
+      "name": "Relic of Resistance",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Gain resistance after using a healing skill."
+    },
+    {
+      "id": 103984,
+      "name": "Relic of Reunification",
+      "icon": "https://render.guildwars2.com/file/DDC5C072A8E0566CFFF1200404E529DADCD27CF3/3441974.png",
+      "type": "Relic",
+      "description": "Gain frost aura and light aura after using a healing skill."
+    },
+    {
+      "id": 103015,
+      "name": "Relic of Rivers",
+      "icon": "https://render.guildwars2.com/file/4C054AF70F0CE14E46B159686F1AA70A320A1E07/3375221.png",
+      "type": "Relic",
+      "description": "Gain alacrity and regeneration at the end of your dodge roll."
+    },
+    {
+      "id": 106916,
+      "name": "Relic of Shackles",
+      "icon": "https://render.guildwars2.com/file/7946A50DBDC2E45E004AAA801904015C50CC22B3/3745069.png",
+      "type": "Relic",
+      "description": "Tether yourself to enemies when you immobilize them. Deal damage to enemies that are still in range of the tether when it expires. <c=@reminder>Each enemy can only be tethered once per interval.</c>"
+    },
+    {
+      "id": 103507,
+      "name": "Relic of Sorrow",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "After using an elite skill, create an area that protects allies and destroys enemy projectiles."
+    },
+    {
+      "id": 101442,
+      "name": "Relic of Speed",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Increase movement speed when under the effect of swiftness."
+    },
+    {
+      "id": 104274,
+      "name": "Relic of Surging",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Gain shocking aura for 4 seconds after using an elite skill."
+    },
+    {
+      "id": 101511,
+      "name": "Relic of the Adventurer",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Gain 50% endurance after using a healing skill. <c=@reminder>(Cooldown: 20 Seconds)</c>"
+    },
+    {
+      "id": 101493,
+      "name": "Relic of the Afflicted",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Create a Death Nova at a foe's location upon their defeat that inflicts poison and bleeding. <c=@reminder>(Cooldown: 10 Seconds)</c>"
+    },
+    {
+      "id": 107192,
+      "name": "Relic of the Alliance",
+      "icon": "https://render.guildwars2.com/file/406F52FEEF9CC64AF45CA27C4A240A6E0E5443A2/3745064.png",
+      "type": "Relic",
+      "description": "Using a signet skill reduces the recharge of all signet skills."
+    },
+    {
+      "id": 101539,
+      "name": "Relic of the Aristocracy",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Gain 3% condition duration for 8 seconds when inflicting weakness or vulnerability on a foe, up to a maximum of 5 stacks. <c=@reminder>(Cooldown: 1 Second)</c>"
+    },
+    {
+      "id": 101619,
+      "name": "Relic of the Astral Ward",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Gain a Signet of the Astral Ward after using a signet skill. Using a signet skill while this signet is active consumes it to remove conditions from nearby allies and grant them resistance."
+    },
+    {
+      "id": 103977,
+      "name": "Relic of the Beehive",
+      "icon": "https://render.guildwars2.com/file/0D45B8A4A1D8D7FF4BAE196091C76A961D3F9621/3441970.png",
+      "type": "Relic",
+      "description": "After using an elite skill, release a wave of pheromones that causes bees to swarm enemies struck."
+    },
+    {
+      "id": 106364,
+      "name": "Relic of the Biomancer",
+      "icon": "https://render.guildwars2.com/file/5CF5F504B24F210BE209053D2134B89072FC4F29/3709378.png",
+      "type": "Relic",
+      "description": "Heal yourself when you inflict bleeding or poison on a foe."
+    },
+    {
+      "id": 102896,
+      "name": "Relic of the Blightbringer",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Gain stacks of Greer's Virulence when you inflict poison on a foe. After reaching the maximum number of stacks, the next time you inflict poison also inflicts additional conditions on nearby enemies."
+    },
+    {
+      "id": 101600,
+      "name": "Relic of the Brawler",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Deal increased strike damage for a duration when granting protection or resolution to yourself."
+    },
+    {
+      "id": 101534,
+      "name": "Relic of the Cavalier",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Grant yourself aegis, quickness, swiftness, resistance, and might when striking an enemy with your mount's <c=@abilitytype>engage</c> skill."
+    },
+    {
+      "id": 101607,
+      "name": "Relic of the Centaur",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Gain stability when you use a healing skill."
+    },
+    {
+      "id": 101549,
+      "name": "Relic of the Chronomancer",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Gain quickness when you use a <c=@abilitytype>well</c> skill."
+    },
+    {
+      "id": 101647,
+      "name": "Relic of the Citadel",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "After using an elite skill, call down an artillery strike that inflicts stun on the skill target or nearest enemy."
+    },
+    {
+      "id": 103574,
+      "name": "Relic of the Claw",
+      "icon": "https://render.guildwars2.com/file/19B5DB56E495C70754A8BE3621CADC0FD7402845/3375220.png",
+      "type": "Relic",
+      "description": "Deal increased strike damage for a duration after you disable a foe."
+    },
+    {
+      "id": 107061,
+      "name": "Relic of the Coral Heart",
+      "icon": "https://render.guildwars2.com/file/5DD9D2052B2C3EF921EBE6E243580CE3A1011B2F/3745065.png",
+      "type": "Relic",
+      "description": "After using a healing skill, temporarily deal damage to nearby enemies when struck."
+    },
+    {
+      "id": 101644,
+      "name": "Relic of the Daredevil",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "After dodge rolling in combat or evading an attack, your next attack is guaranteed to be a critical hit. <c=@reminder>(Cooldown: 1 Second)</c>"
+    },
+    {
+      "id": 101637,
+      "name": "Relic of the Deadeye",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Deal increased strike damage for a duration when you use a <c=@abilitytype>cantrip</c> skill."
+    },
+    {
+      "id": 101513,
+      "name": "Relic of the Defender",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Heal a percentage of your maximum health after blocking an attack. If you block again within 5 seconds, you heal less each time down to a minimum of 1%."
+    },
+    {
+      "id": 101467,
+      "name": "Relic of the Demon Queen",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Poison that you apply reduces healing by an additional amount. Disabling a foe applies poison. <br><c=@reminder>Disables include stun, taunt, daze, knockback, pull, knockdown, sink, float, fear, and launch.</c>"
+    },
+    {
+      "id": 101590,
+      "name": "Relic of the Dragonhunter",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Enemies hit by your trap skills become hunted by you, increasing your strike damage and condition duration against them."
+    },
+    {
+      "id": 104413,
+      "name": "Relic of the Eagle",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Deal increased strike damage to low-health enemies."
+    },
+    {
+      "id": 104383,
+      "name": "Relic of the Earth",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Grant protection and magnetic aura to allies after using an elite skill."
+    },
+    {
+      "id": 101452,
+      "name": "Relic of the Firebrand",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Upon using the final charge of a mantra skill, gain increased boon duration."
+    },
+    {
+      "id": 105585,
+      "name": "Relic of the First Revenant",
+      "icon": "https://render.guildwars2.com/file/7DA30BCFB0E0A04A5D3DFE3D25DAF142D90E1596/3709380.png",
+      "type": "Relic",
+      "description": "Gain incoming condition damage reduction while you have resistance."
+    },
+    {
+      "id": 101527,
+      "name": "Relic of the Flock",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Grant barrier to yourself and nearby allies after you use a healing skill."
+    },
+    {
+      "id": 107124,
+      "name": "Relic of the Forest Dweller",
+      "icon": "https://render.guildwars2.com/file/DC19DA3EC27F49593B93F9042264F5DD36FED4ED/3745067.png",
+      "type": "Relic",
+      "description": "After using an elite skill, launch bubbles at nearby enemies. Enemies struck by the bubbles become trapped and float for a short period of time."
+    },
+    {
+      "id": 101776,
+      "name": "Relic of the Founding",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Gain barrier when you successfully combo a field with a leap finisher."
+    },
+    {
+      "id": 101489,
+      "name": "Relic of the Fractal",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "When you inflict bleeding on an enemy with 6 or more stacks of bleeding, also inflict burning and torment."
+    },
+    {
+      "id": 104416,
+      "name": "Relic of the Golemancer",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Summon a golem while in combat."
+    },
+    {
+      "id": 101509,
+      "name": "Relic of the Herald",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Gain concentration after granting a boon to an ally."
+    },
+    {
+      "id": 104390,
+      "name": "Relic of the Holosmith",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Create a laser disk after you use an elite skill."
+    },
+    {
+      "id": 101608,
+      "name": "Relic of the Ice",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "After using an elite skill, launch icicles that inflict chilled at nearby enemies."
+    },
+    {
+      "id": 101640,
+      "name": "Relic of the Krait",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "After using an elite skill, emit a wave of corruption that inflicts damaging conditions."
+    },
+    {
+      "id": 104277,
+      "name": "Relic of the Lich",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Summon a jagged horror while in combat."
+    },
+    {
+      "id": 104938,
+      "name": "Relic of the Living City",
+      "icon": "https://render.guildwars2.com/file/6CAF0358FBD9DDD84AB3302E2D67329A3AA83DEC/3629398.png",
+      "type": "Relic",
+      "description": "Complete each trigger once to gain stacks of Titanic Potential:\n• Use a healing skill\n• Use an elite skill\n• Finish a combo field\n• Disable an enemy\n• Evade an attack\nAt 5 stacks, gain Soul of the Titan, providing increased attributes and all boons for its duration."
+    },
+    {
+      "id": 101621,
+      "name": "Relic of the Midnight King",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Grant might and fury to nearby allies when you disable an enemy. <br><c=@reminder>Disables include stun, taunt, daze, knockback, pull, knockdown, sink, float, fear, and launch.</c>"
+    },
+    {
+      "id": 101581,
+      "name": "Relic of the Mirage",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Inflict torment upon successfully evading an attack."
+    },
+    {
+      "id": 106206,
+      "name": "Relic of the Mist Stranger",
+      "icon": "https://render.guildwars2.com/file/2DA75566B948AADFAB0CCF2198F205AF9AE82031/3709381.png",
+      "type": "Relic",
+      "description": "Siphon health whenever you hit a foe."
+    },
+    {
+      "id": 103941,
+      "name": "Relic of the Mists Tide",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Cleanse a condition from yourself when you successfully combo a field with a leap or blast finisher."
+    },
+    {
+      "id": 101630,
+      "name": "Relic of the Monk",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Increase healing effectiveness to allies after granting a boon to an ally."
+    },
+    {
+      "id": 106920,
+      "name": "Relic of the Nautical Beast",
+      "icon": "https://render.guildwars2.com/file/0EE97FA7FB5DC098447AAF6401DF5A09C47B33AD/3745068.png",
+      "type": "Relic",
+      "description": "Create a tidal wave that damages enemies and heals allies when you successfully combo a water field with a leap finisher."
+    },
+    {
+      "id": 101465,
+      "name": "Relic of the Necromancer",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Fear you inflict causes foes to move slower."
+    },
+    {
+      "id": 101453,
+      "name": "Relic of the Nightmare",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "After using an elite skill, send forth a nightmare pulse that inflicts fear and poison on nearby enemies."
+    },
+    {
+      "id": 104334,
+      "name": "Relic of the Ogre",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Summon a rock dog while in combat."
+    },
+    {
+      "id": 101447,
+      "name": "Relic of the Pack",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Grant superspeed to nearby allies after using an elite skill."
+    },
+    {
+      "id": 104733,
+      "name": "Relic of the Phenom",
+      "icon": "https://render.guildwars2.com/file/AD0AE5035A197220507642E1169ED55E0C58A29D/3629400.png",
+      "type": "Relic",
+      "description": "Upon using a <c=@abilitytype>cantrip</c> or <c=@abilitytype>meditation</c> skill, gain protection."
+    },
+    {
+      "id": 106221,
+      "name": "Relic of the Pirate Queen",
+      "icon": "https://render.guildwars2.com/file/6C7D53936BFC0DFD52BACDD9A2C7F0909E424F0D/3709382.png",
+      "type": "Relic",
+      "description": "Gain quickness when you disable a foe."
+    },
+    {
+      "id": 104311,
+      "name": "Relic of the Privateer",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Summon a parrot while in combat."
+    },
+    {
+      "id": 101472,
+      "name": "Relic of the Reaper",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Chill nearby enemies after executing a <c=@abilitytype>shout</c> skill."
+    },
+    {
+      "id": 106355,
+      "name": "Relic of the Scoundrel",
+      "icon": "https://render.guildwars2.com/file/0B58A2B6F00D9657EE141001A8AA240DDBDE300D/3709383.png",
+      "type": "Relic",
+      "description": "Gain increased critical-hit chance for a duration after inflicting blindness or weakness."
+    },
+    {
+      "id": 101634,
+      "name": "Relic of the Scourge",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Upon applying barrier to an ally, gain increased condition duration. <c=@reminder>When this triggers, refresh the duration of all stacks.</c>"
+    },
+    {
+      "id": 101908,
+      "name": "Relic of the Sorcerer",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "When you inflict crippled, chilled, or immobile, you also inflict vulnerability."
+    },
+    {
+      "id": 104022,
+      "name": "Relic of the Steamshrieker",
+      "icon": "https://render.guildwars2.com/file/23B0F0A5BF05E05C9F527BF7EB4962C9F49C6F42/3441975.png",
+      "type": "Relic",
+      "description": "Burn nearby enemies when you successfully combo a water field with a blast or leap finisher."
+    },
+    {
+      "id": 103262,
+      "name": "Relic of the Stormsinger",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "After using a movement skill, your next attack creates an arc of chain lightning that strikes nearby enemies."
+    },
+    {
+      "id": 101541,
+      "name": "Relic of the Sunless",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Using an elite skill summons a pool on the target enemy that inflicts poison and cripple. Pool duration scales with the recharge of the elite skill."
+    },
+    {
+      "id": 101580,
+      "name": "Relic of the Thief",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Upon striking an enemy with a weapon skill that has a recharge or resource cost, gain increased strike damage. <c=@reminder>When this triggers, refresh the duration of all stacks.</c>"
+    },
+    {
+      "id": 101554,
+      "name": "Relic of the Trooper",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Remove a condition from affected allies after using a <c=@abilitytype>shout</c> skill."
+    },
+    {
+      "id": 101767,
+      "name": "Relic of the Twin Generals",
+      "icon": "https://render.guildwars2.com/file/CCEC5A2802D7B7D6C891EA730B5733ADD912B902/3302019.png",
+      "type": "Relic",
+      "description": "Gain might and weaken nearby enemies when you use a healing skill. Gain additional might for each enemy struck."
+    },
+    {
+      "id": 101571,
+      "name": "Relic of the Unseen Invasion",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Grant yourself and nearby allies superspeed when you enter or exit stealth."
+    },
+    {
+      "id": 101545,
+      "name": "Relic of the Warrior",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Weapon swap recharge time is reduced."
+    },
+    {
+      "id": 101474,
+      "name": "Relic of the Water",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Cleanse conditions from yourself and nearby allies after using a healing skill."
+    },
+    {
+      "id": 101943,
+      "name": "Relic of the Wayfinder",
+      "icon": "https://render.guildwars2.com/file/7D28503433AD96CEA902BBCD0411C9BE1D2505F4/3302020.png",
+      "type": "Relic",
+      "description": "Gain increased movement speed, which is further increased while out of combat. When you enter combat, gain a burst of speed."
+    },
+    {
+      "id": 101526,
+      "name": "Relic of the Weaver",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Upon using a <c=@abilitytype>stance</c> skill, deal increased strike damage for a duration."
+    },
+    {
+      "id": 101586,
+      "name": "Relic of the Wizard's Tower",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "After using an elite skill, shield yourself with a projectile-reflecting barrier while summoning a wave that pulls enemies toward you."
+    },
+    {
+      "id": 101618,
+      "name": "Relic of the Zephyrite",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Summon crystals that apply protection and resolution to allies after using an elite skill. Crystal duration scales with the recharge of the used skill."
+    },
+    {
+      "id": 104424,
+      "name": "Relic of Thorns",
+      "icon": "https://render.guildwars2.com/file/B6166933459C27FE500FCC23B572A7AE2A0F4DDA/3592841.png",
+      "type": "Relic",
+      "description": "Gain stacking condition damage when you are hit by a poisoned foe. <c=@reminder>When this triggers, it refreshes the duration of all stacks.</c>"
+    },
+    {
+      "id": 104249,
+      "name": "Relic of Vampirism",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "Siphon life from nearby foes when you use a healing skill. Restore a portion of your maximum health upon killing a foe."
+    },
+    {
+      "id": 101492,
+      "name": "Relic of Vass",
+      "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+      "type": "Relic",
+      "description": "After using a healing or elixir skill, your next few attacks inflict poison. <c=@reminder>Healing skills can only trigger this effect once every interval.</c>"
+    },
+    {
+      "id": 101955,
+      "name": "Relic of Zakiros",
+      "icon": "https://render.guildwars2.com/file/5A5B5D3A4D9DD01F0A115030270A0A6EA353CC65/3302021.png",
+      "type": "Relic",
+      "description": "While you are under the effects of fury, convert a percentage of your outgoing critical-strike damage into healing."
+    }
+  ]
+}

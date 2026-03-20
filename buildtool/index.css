@@ -1,0 +1,2316 @@
+:root {
+  --bg-color: #0f1115;
+  --panel-bg: rgba(25, 28, 36, 0.65);
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --accent: #d92437;
+  /* GW2 classic red accent */
+  --accent-hover: #fa3148;
+  --input-bg: rgba(15, 17, 21, 0.8);
+  --input-border: rgba(255, 255, 255, 0.15);
+  --focus-ring: rgba(217, 36, 55, 0.4);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  /* A subtle thematic background could go here */
+  background-image: radial-gradient(circle at top right, rgba(30, 35, 45, 1) 0%, rgba(15, 17, 21, 1) 100%);
+  min-height: 100vh;
+  display: flex;
+}
+
+h2,
+h3,
+h4 {
+  font-weight: 600;
+  margin-bottom: 1rem;
+  letter-spacing: 0.5px;
+}
+
+/* Glassmorphism Panels */
+.glass-panel {
+  background: var(--panel-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Layout */
+.app-container {
+  display: grid;
+  grid-template-columns: 260px 1fr 300px;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 1800px;
+  margin: 0 auto;
+  height: 100vh;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.build-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.saved-build-item {
+  padding: 0.75rem;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.saved-build-item:hover {
+  border-color: var(--accent);
+  background: rgba(217, 36, 55, 0.1);
+}
+
+.build-info {
+  flex-grow: 1;
+}
+
+.delete-build-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0 0.5rem;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.delete-build-btn:hover {
+  color: var(--accent);
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  overflow-y: auto;
+}
+
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  overflow-y: auto;
+}
+
+/* Buttons */
+.primary-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(217, 36, 55, 0.2);
+}
+
+.primary-btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(217, 36, 55, 0.3);
+}
+
+.primary-btn:active {
+  transform: translateY(0);
+}
+
+.mt-auto {
+  margin-top: auto;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+}
+
+.build-title-input {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  width: 100%;
+  max-width: 400px;
+}
+
+.build-title-input:focus {
+  outline: none;
+  border-bottom: 2px solid var(--accent);
+}
+
+/* Forms & Inputs */
+.styled-select,
+.styled-textarea {
+  width: 100%;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text-primary);
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.styled-select:focus,
+.styled-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.styled-select-sm {
+  width: 100%;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text-primary);
+  padding: 0.4rem;
+  border-radius: 4px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+}
+
+.styled-textarea {
+  resize: vertical;
+  min-height: 150px;
+  flex-grow: 1;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Equipment Grid */
+.equipment-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.gear-column h4 {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--panel-border);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.slot {
+  width: 100%;
+  height: 50px;
+  background: var(--input-bg);
+  border: 1px dashed var(--input-border);
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  transition: all 0.2s;
+  cursor: pointer;
+  position: relative;
+}
+
+.slot.has-stat {
+  width: 70%;
+}
+
+.slot-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.75rem;
+  background: rgba(0, 0, 0, 0.1);
+  padding: 0.2rem;
+  border-radius: 8px;
+}
+
+/* Inline upgrade slots - horizontal layout */
+.slot-container:has(.inline-upgrade) {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.slot-container:has(.inline-upgrade) .slot {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.slot-container:has(.inline-upgrade) .slot.has-stat {
+  flex: 0 0 60%;
+}
+
+.slot-container:has(.inline-upgrade) .inline-upgrade {
+  width: 50px;
+  height: 60px;
+  border: 1px dashed var(--input-border);
+  border-radius: 8px;
+  border-top: 1px dashed var(--input-border);
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  margin-bottom: 0;
+}
+
+/* Weapon slot row for inline sigils */
+.weapon-slot-row {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.weapon-slot-row .slot {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.weapon-slot-row .inline-upgrade {
+  width: 60px;
+  height: 60px;
+  border: 1px dashed var(--input-border);
+  border-radius: 8px;
+  border-top: 1px dashed var(--input-border);
+  margin-bottom: 0;
+}
+
+.upgrade-slot {
+  width: 100%;
+  height: 30px;
+  background: rgba(15, 17, 21, 0.4);
+  border: 1px dashed var(--input-border);
+  border-top: none;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.upgrade-slot:hover {
+  background: rgba(217, 36, 55, 0.15);
+  border-color: var(--accent);
+}
+
+.upgrade-slot::after {
+  content: attr(data-slot);
+  opacity: 0.6;
+}
+
+.upgrade-slot.has-stat::after {
+  display: none;
+}
+
+.relic-slot {
+  height: 45px;
+  border: 1px dashed var(--accent);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.relic-slot.has-stat img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.mt-2 {
+  margin-top: 1.5rem;
+}
+
+/* Weapon Set Toggle */
+.weapon-set-toggle {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+
+.weapon-set-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--input-bg);
+  border: 2px solid var(--input-border);
+  color: var(--text-secondary);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.weapon-set-toggle-btn:hover {
+  border-color: var(--accent);
+  background: rgba(217, 36, 55, 0.1);
+}
+
+.set-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.set-indicator.set-a {
+  background: rgba(217, 36, 55, 0.2);
+  color: var(--text-secondary);
+}
+
+.set-indicator.set-b {
+  background: rgba(217, 36, 55, 0.2);
+  color: var(--text-secondary);
+}
+
+.toggle-arrow {
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+/* Active Set A */
+.weapon-set-toggle-btn.active-set-a .set-indicator.set-a {
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 0 10px rgba(217, 36, 55, 0.5);
+}
+
+/* Active Set B */
+.weapon-set-toggle-btn.active-set-b .set-indicator.set-b {
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 0 10px rgba(217, 36, 55, 0.5);
+}
+
+/* Weapon Set Visual States */
+.weapon-set {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.weapon-set.active-set {
+  border: 2px solid var(--accent);
+  border-radius: 8px;
+  background: rgba(217, 36, 55, 0.05);
+}
+
+.weapon-set.inactive-set {
+  opacity: 0.5;
+}
+
+.weapon-set.inactive-set::after {
+  content: 'INACTIVE';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: rgba(0, 0, 0, 0.7);
+  padding: 4px 8px;
+  border-radius: 4px;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.slot:hover {
+  border-style: solid;
+  border-color: var(--accent);
+  color: white;
+}
+
+.slot::after {
+  content: attr(data-slot);
+}
+
+.slot.has-stat::after {
+  display: none;
+}
+
+.upgrade-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+/* Ensure upgrade slots display icons properly */
+.upgrade-slot.has-stat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upgrade-slot.has-stat img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+/* Specializations */
+.specs-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.specializations-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.spec-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.spec-select {
+  margin-bottom: 0.5rem;
+}
+
+.traits-container {
+  background-color: rgba(0, 0, 0, 0.4);
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+  padding: 0.5rem;
+  border: 1px solid var(--input-border);
+  position: relative;
+  overflow: hidden;
+  transition: background-image 0.3s ease;
+}
+
+/* Add a dark overlay so traits are still visible if the background image is bright */
+.traits-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 17, 21, 0.5);
+  /* Reduced tint to let backgrounds show through */
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Ensure traits grid is above the overlay */
+.traits-grid {
+  position: relative;
+  z-index: 2;
+}
+
+.traits-grid {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+  /* Content sits above overlay */
+}
+
+.trait-tier {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.trait-option {
+  width: 40px;
+  height: 40px;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: all 0.2s;
+}
+
+.trait-option:hover {
+  opacity: 0.8;
+  border-color: var(--text-secondary);
+}
+
+.trait-option.selected {
+  opacity: 1;
+  border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(217, 36, 55, 0.5);
+}
+
+.trait-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.modal-content {
+  width: 90%;
+  max-width: 400px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Exact width to fit 4 columns of 64px icons (4*64 = 256px) */
+#skill-modal .modal-content {
+  max-width: 256px;
+  width: 256px;
+}
+
+/* Remove padding from glass panel in skill modal */
+#skill-modal .glass-panel {
+  padding: 0.125rem;
+}
+
+/* Reduce header spacing in skill modal */
+#skill-modal .modal-header {
+  margin-bottom: 0.5rem;
+  padding: 0.75rem 1rem 0;
+}
+
+/* Reduce search input margin */
+#skill-modal #skill-search.mb-1 {
+  margin-bottom: 0.5rem;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  color: white;
+}
+
+.mb-1 {
+  margin-bottom: 1rem;
+}
+
+.stat-list-container {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+/* Apply-to checkboxes section */
+.apply-to-section {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  background: rgba(217, 36, 55, 0.08);
+  border: 1px solid rgba(217, 36, 55, 0.2);
+  border-radius: 8px;
+}
+
+.apply-to-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-right: 0.5rem;
+}
+
+.apply-to-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.apply-to-checkbox:hover {
+  background: rgba(217, 36, 55, 0.15);
+}
+
+.apply-to-checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.stat-list-item {
+  padding: 0.75rem;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.stat-list-item:hover {
+  border-color: var(--accent);
+  background: rgba(217, 36, 55, 0.1);
+}
+
+/* Tooltip */
+.hover-tooltip {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1000;
+  max-width: 300px;
+  padding: 1rem;
+}
+
+.tooltip-title {
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.2rem;
+}
+
+.tooltip-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Stats */
+.stats-section {
+  flex-shrink: 0;
+}
+
+.notes-section {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.stats-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.stat-name {
+  color: var(--text-secondary);
+}
+
+.stat-value {
+  font-weight: 600;
+  color: white;
+}
+
+/* Skills Section - Legacy (kept for compatibility) */
+.skills-section {
+  margin-bottom: 1.5rem;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+}
+
+.skill-slot-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.skill-slot-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Inline Skills (next to profession) */
+.skills-inline .skill-slot {
+  width: 60px;
+  height: 60px;
+  background: var(--input-bg);
+  border: 1px dashed var(--input-border);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  overflow: hidden;
+  position: relative;
+}
+
+.skills-inline .skill-slot:hover {
+  border-style: solid;
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(217, 36, 55, 0.2);
+}
+
+.skills-inline .skill-slot.has-skill {
+  border-style: solid;
+  border-color: var(--accent);
+  background: rgba(217, 36, 55, 0.05);
+}
+
+.skills-inline .skill-icon {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.skills-inline .skill-slot.empty .skill-icon {
+  display: none;
+}
+
+.skills-inline .skill-slot.empty::after {
+  content: '+';
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+}
+
+.skills-inline .skill-slot.empty:hover::after {
+  color: var(--accent);
+}
+
+/* General skill slot (for non-inline usage) */
+.skill-slot {
+  width: 80px;
+  height: 80px;
+  background: var(--input-bg);
+  border: 1px dashed var(--input-border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  overflow: hidden;
+  position: relative;
+}
+
+.skill-slot:hover {
+  border-style: solid;
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(217, 36, 55, 0.2);
+}
+
+.skill-slot.has-skill {
+  border-style: solid;
+  border-color: var(--accent);
+  background: rgba(217, 36, 55, 0.05);
+}
+
+.skill-icon {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.skill-slot.empty .skill-icon {
+  display: none;
+}
+
+.skill-slot.empty::after {
+  content: '+';
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+}
+
+.skill-slot.empty:hover::after {
+  color: var(--accent);
+}
+
+/* Skills Modal - Compact Layout */
+.skills-grid-modal {
+  display: grid;
+  grid-template-columns: repeat(4, 64px);
+  /* Fixed column width matching icon size */
+  gap: 0;
+  /* No gap between icons */
+  padding: 0;
+  /* No padding around grid */
+  justify-content: center;
+  /* Center the grid in the modal */
+}
+
+.skill-modal-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  min-height: auto;
+  position: relative;
+}
+
+.skill-modal-item:hover {
+  background: rgba(217, 36, 55, 0.1);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 12px rgba(217, 36, 55, 0.2);
+  z-index: 2;
+  outline: 1px solid rgba(217, 36, 55, 0.3);
+  outline-offset: -1px;
+}
+
+.skill-modal-item:active {
+  transform: translateY(0) scale(1.02);
+}
+
+.skill-modal-icon {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.skill-modal-name {
+  display: none;
+  /* Hide text labels - rely on hover tooltips */
+}
+
+/* Tooltip indicator for icon-only layout */
+.skill-modal-item::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(217, 36, 55, 0.3);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.skill-modal-item:hover::after {
+  opacity: 1;
+  background: var(--accent);
+}
+
+/* Stat Combo Icons */
+.stat-icon {
+  background: url("profile-icons-44x44.v3.png") no-repeat;
+  width: 44px;
+  height: 44px;
+  display: inline-block;
+  flex-shrink: 0;
+  background-size: 2024px 44px;
+  /* Adjust based on sprite sheet dimensions */
+}
+
+.stat-icon.berserker {
+  background-position: 0px 0px;
+}
+
+.stat-icon.soldier {
+  background-position: -44px 0px;
+}
+
+.stat-icon.valkyrie {
+  background-position: -88px 0px;
+}
+
+.stat-icon.captain {
+  background-position: -132px 0px;
+}
+
+.stat-icon.rampager {
+  background-position: -176px 0px;
+}
+
+.stat-icon.knight {
+  background-position: -220px 0px;
+}
+
+.stat-icon.cavalier {
+  background-position: -264px 0px;
+}
+
+.stat-icon.giver {
+  background-position: -308px 0px;
+}
+
+.stat-icon.shaman {
+  background-position: -352px 0px;
+}
+
+.stat-icon.carrion {
+  background-position: -396px 0px;
+}
+
+.stat-icon.rabid {
+  background-position: -440px 0px;
+}
+
+.stat-icon.winter {
+  background-position: -484px 0px;
+}
+
+.stat-icon.cleric {
+  background-position: -528px 0px;
+}
+
+.stat-icon.magi {
+  background-position: -572px 0px;
+}
+
+.stat-icon.apothecary {
+  background-position: -616px 0px;
+}
+
+.stat-icon.trailblazer {
+  background-position: -660px 0px;
+}
+
+.stat-icon.wanderer {
+  background-position: -704px 0px;
+}
+
+.stat-icon.minstrel {
+  background-position: -748px 0px;
+}
+
+.stat-icon.celestial {
+  background-position: -792px 0px;
+}
+
+.stat-icon.celestial_simple {
+  background-position: -792px 0px;
+}
+
+.stat-icon.bers_valk {
+  background-position: -836px 0px;
+}
+
+.stat-icon.alter_rabid {
+  background-position: -880px 0px;
+}
+
+.stat-icon.rabid_apo {
+  background-position: -924px 0px;
+}
+
+.stat-icon.viper {
+  background-position: -968px 0px;
+}
+
+.stat-icon.sentinel {
+  background-position: -1012px 0px;
+}
+
+.stat-icon.settler {
+  background-position: -1056px 0px;
+}
+
+.stat-icon.assassin {
+  background-position: -1100px 0px;
+}
+
+.stat-icon.dire {
+  background-position: -1144px 0px;
+}
+
+.stat-icon.zealot {
+  background-position: -1188px 0px;
+}
+
+.stat-icon.nomad {
+  background-position: -1232px 0px;
+}
+
+.stat-icon.sinister {
+  background-position: -1276px 0px;
+}
+
+.stat-icon.vigilant {
+  background-position: -1320px 0px;
+}
+
+.stat-icon.marauder {
+  background-position: -1364px 0px;
+}
+
+.stat-icon.crusader {
+  background-position: -1408px 0px;
+}
+
+.stat-icon.commander {
+  background-position: -1452px 0px;
+}
+
+.stat-icon.seraph {
+  background-position: -1496px 0px;
+}
+
+.stat-icon.marshal {
+  background-position: -1540px 0px;
+}
+
+.stat-icon.grieving {
+  background-position: -1584px 0px;
+}
+
+.stat-icon.apostate {
+  background-position: -1628px 0px;
+}
+
+.stat-icon.forsaken {
+  background-position: -1672px 0px;
+}
+
+.stat-icon.harrier {
+  background-position: -1716px 0px;
+}
+
+.stat-icon.bringer {
+  background-position: -1760px 0px;
+}
+
+.stat-icon.plaguedoctor {
+  background-position: -1804px 0px;
+}
+
+.stat-icon.diviner {
+  background-position: -1848px 0px;
+}
+
+.stat-icon.ritualist {
+  background-position: -1892px 0px;
+}
+
+.stat-icon.dragon {
+  background-position: -1936px 0px;
+}
+
+.stat-icon.demolisher {
+  background-position: -1980px 0px;
+}
+
+/* Update stat list items to display icons */
+.stat-list-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+}
+
+.stat-list-item .stat-icon {
+  width: 32px;
+  height: 32px;
+  background-size: 1472px 32px;
+  /* Scaled down proportionally */
+}
+
+.stat-list-item .stat-icon.berserker {
+  background-position: 0px 0px;
+}
+
+.stat-list-item .stat-icon.soldier {
+  background-position: -32px 0px;
+}
+
+.stat-list-item .stat-icon.valkyrie {
+  background-position: -64px 0px;
+}
+
+.stat-list-item .stat-icon.captain {
+  background-position: -96px 0px;
+}
+
+.stat-list-item .stat-icon.rampager {
+  background-position: -128px 0px;
+}
+
+.stat-list-item .stat-icon.knight {
+  background-position: -160px 0px;
+}
+
+.stat-list-item .stat-icon.cavalier {
+  background-position: -192px 0px;
+}
+
+.stat-list-item .stat-icon.giver {
+  background-position: -224px 0px;
+}
+
+.stat-list-item .stat-icon.shaman {
+  background-position: -256px 0px;
+}
+
+.stat-list-item .stat-icon.carrion {
+  background-position: -288px 0px;
+}
+
+.stat-list-item .stat-icon.rabid {
+  background-position: -320px 0px;
+}
+
+.stat-list-item .stat-icon.winter {
+  background-position: -352px 0px;
+}
+
+.stat-list-item .stat-icon.cleric {
+  background-position: -384px 0px;
+}
+
+.stat-list-item .stat-icon.magi {
+  background-position: -416px 0px;
+}
+
+.stat-list-item .stat-icon.apothecary {
+  background-position: -448px 0px;
+}
+
+.stat-list-item .stat-icon.trailblazer {
+  background-position: -480px 0px;
+}
+
+.stat-list-item .stat-icon.wanderer {
+  background-position: -512px 0px;
+}
+
+.stat-list-item .stat-icon.minstrel {
+  background-position: -544px 0px;
+}
+
+.stat-list-item .stat-icon.celestial {
+  background-position: -576px 0px;
+}
+
+.stat-list-item .stat-icon.celestial_simple {
+  background-position: -576px 0px;
+}
+
+.stat-list-item .stat-icon.bers_valk {
+  background-position: -608px 0px;
+}
+
+.stat-list-item .stat-icon.alter_rabid {
+  background-position: -640px 0px;
+}
+
+.stat-list-item .stat-icon.rabid_apo {
+  background-position: -672px 0px;
+}
+
+.stat-list-item .stat-icon.viper {
+  background-position: -704px 0px;
+}
+
+.stat-list-item .stat-icon.sentinel {
+  background-position: -736px 0px;
+}
+
+.stat-list-item .stat-icon.settler {
+  background-position: -768px 0px;
+}
+
+.stat-list-item .stat-icon.assassin {
+  background-position: -800px 0px;
+}
+
+.stat-list-item .stat-icon.dire {
+  background-position: -832px 0px;
+}
+
+.stat-list-item .stat-icon.zealot {
+  background-position: -864px 0px;
+}
+
+.stat-list-item .stat-icon.nomad {
+  background-position: -896px 0px;
+}
+
+.stat-list-item .stat-icon.sinister {
+  background-position: -928px 0px;
+}
+
+.stat-list-item .stat-icon.vigilant {
+  background-position: -960px 0px;
+}
+
+.stat-list-item .stat-icon.marauder {
+  background-position: -992px 0px;
+}
+
+.stat-list-item .stat-icon.crusader {
+  background-position: -1024px 0px;
+}
+
+.stat-list-item .stat-icon.commander {
+  background-position: -1056px 0px;
+}
+
+.stat-list-item .stat-icon.seraph {
+  background-position: -1088px 0px;
+}
+
+.stat-list-item .stat-icon.marshal {
+  background-position: -1120px 0px;
+}
+
+.stat-list-item .stat-icon.grieving {
+  background-position: -1152px 0px;
+}
+
+.stat-list-item .stat-icon.apostate {
+  background-position: -1184px 0px;
+}
+
+.stat-list-item .stat-icon.forsaken {
+  background-position: -1216px 0px;
+}
+
+.stat-list-item .stat-icon.harrier {
+  background-position: -1248px 0px;
+}
+
+.stat-list-item .stat-icon.bringer {
+  background-position: -1280px 0px;
+}
+
+.stat-list-item .stat-icon.plaguedoctor {
+  background-position: -1312px 0px;
+}
+
+.stat-list-item .stat-icon.diviner {
+  background-position: -1344px 0px;
+}
+
+.stat-list-item .stat-icon.ritualist {
+  background-position: -1376px 0px;
+}
+
+.stat-list-item .stat-icon.dragon {
+  background-position: -1408px 0px;
+}
+
+.stat-list-item .stat-icon.demolisher {
+  background-position: -1440px 0px;
+}
+
+/* Equipment slot with stat icon and slot icon */
+.slot.has-stat .stat-icon {
+  width: 36px;
+  height: 36px;
+  background-size: 1656px 36px;
+  /* Scaled for equipment slots */
+}
+
+/* Slot icon styling */
+.slot .slot-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* Slot with both slot icon and stat/upgrade icon */
+.slot.has-stat .slot-icon-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Slot icon container - ensures proper layout */
+.slot-icon-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  height: 100%;
+  justify-content: flex-start;
+  padding: 0 4px;
+}
+
+/* Empty slot with only slot icon */
+.slot:not(.has-stat) .slot-icon-container {
+  justify-content: center;
+}
+
+/* Ensure slot text doesn't appear when we have slot icon */
+.slot.has-stat::after {
+  display: none;
+}
+
+.slot.has-stat .stat-icon {
+  width: 40px;
+  height: 40px;
+  background-size: 1840px 40px;
+}
+
+.slot.has-stat .upgrade-icon {
+  width: 40px;
+  height: 40px;
+  margin-left: 0;
+}
+
+.slot.has-stat .stat-icon.berserker {
+  background-position: 0px 0px;
+}
+
+.slot.has-stat .stat-icon.soldier {
+  background-position: -40px 0px;
+}
+
+.slot.has-stat .stat-icon.valkyrie {
+  background-position: -80px 0px;
+}
+
+.slot.has-stat .stat-icon.captain {
+  background-position: -120px 0px;
+}
+
+.slot.has-stat .stat-icon.rampager {
+  background-position: -160px 0px;
+}
+
+.slot.has-stat .stat-icon.knight {
+  background-position: -200px 0px;
+}
+
+.slot.has-stat .stat-icon.cavalier {
+  background-position: -240px 0px;
+}
+
+.slot.has-stat .stat-icon.giver {
+  background-position: -280px 0px;
+}
+
+.slot.has-stat .stat-icon.shaman {
+  background-position: -320px 0px;
+}
+
+.slot.has-stat .stat-icon.carrion {
+  background-position: -360px 0px;
+}
+
+.slot.has-stat .stat-icon.rabid {
+  background-position: -400px 0px;
+}
+
+.slot.has-stat .stat-icon.winter {
+  background-position: -440px 0px;
+}
+
+.slot.has-stat .stat-icon.cleric {
+  background-position: -480px 0px;
+}
+
+.slot.has-stat .stat-icon.magi {
+  background-position: -520px 0px;
+}
+
+.slot.has-stat .stat-icon.apothecary {
+  background-position: -560px 0px;
+}
+
+.slot.has-stat .stat-icon.trailblazer {
+  background-position: -600px 0px;
+}
+
+.slot.has-stat .stat-icon.wanderer {
+  background-position: -640px 0px;
+}
+
+.slot.has-stat .stat-icon.minstrel {
+  background-position: -680px 0px;
+}
+
+.slot.has-stat .stat-icon.celestial {
+  background-position: -720px 0px;
+}
+
+.slot.has-stat .stat-icon.celestial_simple {
+  background-position: -720px 0px;
+}
+
+.slot.has-stat .stat-icon.bers_valk {
+  background-position: -760px 0px;
+}
+
+.slot.has-stat .stat-icon.alter_rabid {
+  background-position: -800px 0px;
+}
+
+.slot.has-stat .stat-icon.rabid_apo {
+  background-position: -840px 0px;
+}
+
+.slot.has-stat .stat-icon.viper {
+  background-position: -880px 0px;
+}
+
+.slot.has-stat .stat-icon.sentinel {
+  background-position: -920px 0px;
+}
+
+.slot.has-stat .stat-icon.settler {
+  background-position: -960px 0px;
+}
+
+.slot.has-stat .stat-icon.assassin {
+  background-position: -1000px 0px;
+}
+
+.slot.has-stat .stat-icon.dire {
+  background-position: -1040px 0px;
+}
+
+.slot.has-stat .stat-icon.zealot {
+  background-position: -1080px 0px;
+}
+
+.slot.has-stat .stat-icon.nomad {
+  background-position: -1120px 0px;
+}
+
+.slot.has-stat .stat-icon.sinister {
+  background-position: -1160px 0px;
+}
+
+.slot.has-stat .stat-icon.vigilant {
+  background-position: -1200px 0px;
+}
+
+.slot.has-stat .stat-icon.marauder {
+  background-position: -1240px 0px;
+}
+
+.slot.has-stat .stat-icon.crusader {
+  background-position: -1280px 0px;
+}
+
+.slot.has-stat .stat-icon.commander {
+  background-position: -1320px 0px;
+}
+
+.slot.has-stat .stat-icon.seraph {
+  background-position: -1360px 0px;
+}
+
+.slot.has-stat .stat-icon.marshal {
+  background-position: -1400px 0px;
+}
+
+.slot.has-stat .stat-icon.grieving {
+  background-position: -1440px 0px;
+}
+
+.slot.has-stat .stat-icon.apostate {
+  background-position: -1480px 0px;
+}
+
+.slot.has-stat .stat-icon.forsaken {
+  background-position: -1520px 0px;
+}
+
+.slot.has-stat .stat-icon.harrier {
+  background-position: -1560px 0px;
+}
+
+.slot.has-stat .stat-icon.bringer {
+  background-position: -1600px 0px;
+}
+
+.slot.has-stat .stat-icon.plaguedoctor {
+  background-position: -1640px 0px;
+}
+
+.slot.has-stat .stat-icon.diviner {
+  background-position: -1680px 0px;
+}
+
+.slot.has-stat .stat-icon.ritualist {
+  background-position: -1720px 0px;
+}
+
+.slot.has-stat .stat-icon.dragon {
+  background-position: -1760px 0px;
+}
+
+.slot.has-stat .stat-icon.demolisher {
+  background-position: -1800px 0px;
+}
+
+/* Profession and Skills Row Layout */
+.profession-skills-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Profession Extras (Pets, Legends, Toolbelt) */
+.profession-extras {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 140px;
+  padding-left: 1rem;
+  border-left: 1px solid var(--panel-border);
+}
+
+.profession-extras h4 {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.25rem;
+}
+
+/* Pet/Legend Picker Styles */
+.pet-picker,
+.legend-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pet-slots,
+.legend-slots {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pet-slot,
+.legend-slot {
+  width: 72px;
+  height: 72px;
+  background: var(--input-bg);
+  border: 1px dashed var(--input-border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+}
+
+.pet-slot:hover,
+.legend-slot:hover {
+  border-style: solid;
+  border-color: var(--accent);
+  background: rgba(217, 36, 55, 0.1);
+}
+
+.pet-slot.has-selection,
+.legend-slot.has-selection {
+  border-style: solid;
+  border-color: var(--accent);
+}
+
+/* Active legend slot (currently selected for skills) */
+.legend-slot.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(217, 36, 55, 0.5);
+  background: rgba(217, 36, 55, 0.15);
+}
+
+.legend-slot.active::before {
+  content: 'ACTIVE';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  font-size: 0.5rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(0, 0, 0, 0.7);
+  padding: 1px 4px;
+  border-radius: 2px;
+  z-index: 5;
+}
+
+.pet-icon {
+  width: 140px;
+  height: 140px;
+  min-width: 140px;
+  min-height: 140px;
+  border-radius: 6px;
+  object-fit: cover;
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.legend-icon {
+  width: 64px;
+  height: 64px;
+  min-width: 64px;
+  min-height: 64px;
+  border-radius: 6px;
+  object-fit: contain;
+  display: none;
+}
+
+.pet-slot.has-selection .pet-icon,
+.legend-slot.has-selection .legend-icon {
+  display: block;
+}
+
+.pet-name,
+.legend-name {
+  display: none;
+}
+
+.pet-slot:not(.has-selection)::after,
+.legend-slot:not(.has-selection)::after {
+  content: '+';
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+}
+
+.pet-slot:not(.has-selection):hover::after,
+.legend-slot:not(.has-selection):hover::after {
+  color: var(--accent);
+}
+
+/* Legend Swap Button */
+.legend-swap-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(217, 36, 55, 0.3);
+  margin-left: 0.5rem;
+  align-self: center;
+}
+
+.legend-swap-btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(217, 36, 55, 0.4);
+}
+
+.legend-swap-btn:active {
+  transform: translateY(0);
+}
+
+/* Toolbelt Display Styles */
+.toolbelt-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.toolbelt-slots {
+  display: flex;
+  flex-direction: row;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.toolbelt-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  opacity: 0.8;
+  transition: all 0.2s;
+  position: relative;
+  cursor: pointer;
+}
+
+.toolbelt-slot:hover {
+  opacity: 1;
+  border-color: var(--accent);
+}
+
+.toolbelt-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+.toolbelt-name {
+  display: none;
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.65rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  background: rgba(0, 0, 0, 0.9);
+  padding: 2px 6px;
+  border-radius: 3px;
+  z-index: 10;
+}
+
+.toolbelt-slot:hover .toolbelt-name {
+  display: block;
+}
+
+.toolbelt-empty {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.profession-form-group {
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+.skills-inline {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Compact Profession Display */
+.profession-display {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.profession-display:hover {
+  border-color: var(--accent);
+  background: rgba(217, 36, 55, 0.1);
+}
+
+.profession-icon-container {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.profession-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: contain;
+  display: none;
+}
+
+.profession-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  border: 2px dashed var(--input-border);
+}
+
+.profession-display.has-profession .profession-icon {
+  display: block;
+}
+
+.profession-display.has-profession .profession-placeholder {
+  display: none;
+}
+
+/* Specialization Display */
+.spec-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.spec-icon-display {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: 56px;
+}
+
+.spec-icon-display:hover {
+  border-color: var(--accent);
+  background: rgba(217, 36, 55, 0.1);
+}
+
+.spec-icon-container {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.spec-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: contain;
+  display: none;
+}
+
+.spec-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  border: 2px dashed var(--input-border);
+}
+
+.spec-name {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.spec-elite-badge {
+  font-size: 0.7rem;
+  color: var(--accent);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.spec-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.spec-icon-display.has-spec .spec-icon {
+  display: block;
+}
+
+.spec-icon-display.has-spec .spec-placeholder {
+  display: none;
+}
+
+/* Profession Modal */
+.profession-modal-content {
+  max-width: 500px;
+  width: 90%;
+}
+
+.profession-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  padding: 0.5rem;
+}
+
+.profession-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--input-bg);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.profession-item:hover {
+  border-color: var(--accent);
+  background: rgba(217, 36, 55, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(217, 36, 55, 0.2);
+}
+
+.profession-item.selected {
+  border-color: var(--accent);
+  background: rgba(217, 36, 55, 0.15);
+  box-shadow: 0 0 10px rgba(217, 36, 55, 0.3);
+}
+
+.profession-item-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+.profession-item-name {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+/* Specialization Modal */
+.spec-modal-content {
+  max-width: 600px;
+  width: 90%;
+}
+
+.spec-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  padding: 0.5rem;
+}
+
+.spec-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--input-bg);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.spec-item:hover {
+  border-color: var(--accent);
+  background: rgba(217, 36, 55, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(217, 36, 55, 0.2);
+}
+
+.spec-item.selected {
+  border-color: var(--accent);
+  background: rgba(217, 36, 55, 0.15);
+  box-shadow: 0 0 10px rgba(217, 36, 55, 0.3);
+}
+
+.spec-item.elite {
+  border-color: rgba(217, 36, 55, 0.3);
+}
+
+.spec-item-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+.spec-item-name {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.spec-item-elite {
+  font-size: 0.65rem;
+  color: var(--accent);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Responsiveness */
+@media (max-width: 1400px) {
+  .app-container {
+    grid-template-columns: 220px 1fr 260px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .app-container {
+    grid-template-columns: 1fr 300px;
+  }
+
+  .sidebar {
+    display: none;
+    /* Mobile menu needed */
+  }
+}
+
+@media (max-width: 800px) {
+  .app-container {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .equipment-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .specializations-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Stack profession and skills vertically on smaller screens */
+  .profession-skills-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .skills-inline {
+    margin-top: 0.5rem;
+  }
+
+  /* Reduce skill picker columns on medium screens */
+  .skills-grid-modal {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+
+  /* Reduce skill picker columns on small screens */
+  .skills-grid-modal {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .skill-modal-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .skill-modal-item {
+    min-height: 60px;
+    padding: 0.4rem;
+  }
+
+  /* Smaller skill slots on mobile */
+  .skills-inline .skill-slot {
+    width: 40px;
+    height: 40px;
+  }
+
+  .skills-inline .skill-icon {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+/* Pet/Legend List Items in Modal */
+.pet-list-item,
+.legend-list-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pet-list-item:hover,
+.legend-list-item:hover {
+  border-color: var(--accent);
+  background: rgba(217, 36, 55, 0.1);
+}
+
+.pet-list-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.legend-list-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+.pet-list-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.pet-list-name,
+.legend-list-name {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.pet-list-family {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.pet-list-container,
+.legend-list-container {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-right: 0.5rem;
+  max-height: 400px;
+}
+
+/* Import from Game Modal */
+.api-key-section {
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+}
+
+.api-key-section input[type="password"] {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text-primary);
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.api-key-section input[type="password"]:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+#import-game-modal .modal-content {
+  max-width: 450px;
+  width: 90%;
+}
+
+#import-game-modal .styled-select {
+  width: 100%;
+}
+
+#import-game-modal .primary-btn {
+  margin-top: 0.5rem;
+}

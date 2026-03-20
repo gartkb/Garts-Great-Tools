@@ -1,1 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GW2 Build Storage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css?v=3">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar for saved builds -->
+        <aside class="sidebar glass-panel">
+            <h2>Saved Builds</h2>
+            <div id="build-list" class="build-list">
+                <!-- Build items will be injected here -->
+            </div>
+            <button id="new-build-btn" class="primary-btn mt-auto">+ New Build</button>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="glass-panel header">
+                <input type="text" id="build-name" placeholder="Enter Build Name..." value="New Build"
+                    class="build-title-input">
+                <div class="header-actions">
+                    <button id="save-build-btn" class="primary-btn">Save Build</button>
+                    <button id="import-game-btn" class="primary-btn" style="margin-left: 0.5rem;">Import from
+                        Game</button>
+                    <button id="import-code-btn" class="primary-btn" style="margin-left: 0.5rem;">Import Code</button>
+                    <button id="export-code-btn" class="primary-btn" style="margin-left: 0.5rem;">Export Code</button>
+                </div>
+            </header>
+
+            <div class="build-workspace">
+                <!-- Profession and Specializations -->
+                <section class="glass-panel specs-section">
+                    <h3>Profession & Specializations</h3>
+                    <div class="profession-skills-row">
+                        <div class="form-group profession-form-group">
+                            <label>Profession</label>
+                            <div class="profession-display" id="profession-display">
+                                <div class="profession-icon-container" id="profession-icon-container">
+                                    <img class="profession-icon" id="profession-icon" src="" alt="Select Profession" />
+                                    <div class="profession-placeholder" id="profession-placeholder">?</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="skills-inline">
+                            <div class="skill-slot" data-slot="heal" data-type="Heal">
+                                <img class="skill-icon" src="" alt="Heal Skill" />
+                            </div>
+                            <div class="skill-slot" data-slot="utility1" data-type="Utility">
+                                <img class="skill-icon" src="" alt="Utility Skill" />
+                            </div>
+                            <div class="skill-slot" data-slot="utility2" data-type="Utility">
+                                <img class="skill-icon" src="" alt="Utility Skill" />
+                            </div>
+                            <div class="skill-slot" data-slot="utility3" data-type="Utility">
+                                <img class="skill-icon" src="" alt="Utility Skill" />
+                            </div>
+                            <div class="skill-slot" data-slot="elite" data-type="Elite">
+                                <img class="skill-icon" src="" alt="Elite Skill" />
+                            </div>
+                        </div>
+                        <!-- Profession-specific extras (pets, legends, toolbelt) -->
+                        <div class="profession-extras hidden" id="profession-extras">
+                            <!-- Dynamically populated based on profession -->
+                        </div>
+                        <!-- Legend swap button (hidden by default, shown for Revenant with both legends) -->
+                        <button id="legend-swap-btn" class="legend-swap-btn hidden" title="Swap active legend">⇄
+                            1</button>
+                    </div>
+
+                    <div class="specializations-grid" id="specializations-container">
+                        <!-- 3 Specialization slots will be injected here -->
+                    </div>
+                </section>
+
+                <!-- Equipment Grid -->
+                <section class="glass-panel current-gear">
+                    <h3>Equipment</h3>
+                    <div class="equipment-grid">
+                        <div class="gear-column armor-col">
+                            <h4>Armor</h4>
+                            <div class="slot-container">
+                                <div class="slot" data-slot="Helm"></div>
+                                <div class="upgrade-slot inline-upgrade" data-slot="HelmRune" data-type="Rune"></div>
+                            </div>
+                            <div class="slot-container">
+                                <div class="slot" data-slot="Shoulders"></div>
+                                <div class="upgrade-slot inline-upgrade" data-slot="ShouldersRune" data-type="Rune">
+                                </div>
+                            </div>
+                            <div class="slot-container">
+                                <div class="slot" data-slot="Coat"></div>
+                                <div class="upgrade-slot inline-upgrade" data-slot="CoatRune" data-type="Rune"></div>
+                            </div>
+                            <div class="slot-container">
+                                <div class="slot" data-slot="Gloves"></div>
+                                <div class="upgrade-slot inline-upgrade" data-slot="GlovesRune" data-type="Rune"></div>
+                            </div>
+                            <div class="slot-container">
+                                <div class="slot" data-slot="Leggings"></div>
+                                <div class="upgrade-slot inline-upgrade" data-slot="LeggingsRune" data-type="Rune">
+                                </div>
+                            </div>
+                            <div class="slot-container">
+                                <div class="slot" data-slot="Boots"></div>
+                                <div class="upgrade-slot inline-upgrade" data-slot="BootsRune" data-type="Rune"></div>
+                            </div>
+                        </div>
+                        <div class="gear-column weapons-col">
+                            <h4>Weapons</h4>
+                            <div class="weapon-set-toggle">
+                                <button id="weapon-set-toggle-btn" class="weapon-set-toggle-btn active-set-a"
+                                    title="Toggle active weapon set">
+                                    <span class="set-indicator set-a">A</span>
+                                    <span class="toggle-arrow">⇄</span>
+                                    <span class="set-indicator set-b">B</span>
+                                </button>
+                            </div>
+                            <div class="slot-container weapon-set weapon-set-a">
+                                <div class="weapon-type-selector mb-1">
+                                    <select id="wA1-type" class="styled-select-sm" data-target="WeaponA1">
+                                        <option value="">Type...</option>
+                                    </select>
+                                </div>
+                                <div class="weapon-slot-row">
+                                    <div class="slot" data-slot="WeaponA1"></div>
+                                    <div class="upgrade-slot inline-upgrade" data-slot="WeaponA1Sigil1"
+                                        data-type="Sigil"></div>
+                                    <div class="upgrade-slot inline-upgrade" data-slot="WeaponA1Sigil2"
+                                        data-type="Sigil" style="display:none;"></div>
+                                </div>
+                            </div>
+                            <div class="slot-container weapon-set" id="wA2-container">
+                                <div class="weapon-type-selector mb-1">
+                                    <select id="wA2-type" class="styled-select-sm" data-target="WeaponA2">
+                                        <option value="">Type...</option>
+                                    </select>
+                                </div>
+                                <div class="weapon-slot-row">
+                                    <div class="slot" data-slot="WeaponA2"></div>
+                                    <div class="upgrade-slot inline-upgrade" data-slot="WeaponA2Sigil1"
+                                        data-type="Sigil"></div>
+                                </div>
+                            </div>
+                            <div class="slot-container weapon-set weapon-set-b mt-2">
+                                <div class="weapon-type-selector mb-1">
+                                    <select id="wB1-type" class="styled-select-sm" data-target="WeaponB1">
+                                        <option value="">Type...</option>
+                                    </select>
+                                </div>
+                                <div class="weapon-slot-row">
+                                    <div class="slot" data-slot="WeaponB1"></div>
+                                    <div class="upgrade-slot inline-upgrade" data-slot="WeaponB1Sigil1"
+                                        data-type="Sigil"></div>
+                                    <div class="upgrade-slot inline-upgrade" data-slot="WeaponB1Sigil2"
+                                        data-type="Sigil" style="display:none;"></div>
+                                </div>
+                            </div>
+                            <div class="slot-container weapon-set" id="wB2-container">
+                                <div class="weapon-type-selector mb-1">
+                                    <select id="wB2-type" class="styled-select-sm" data-target="WeaponB2">
+                                        <option value="">Type...</option>
+                                    </select>
+                                </div>
+                                <div class="weapon-slot-row">
+                                    <div class="slot" data-slot="WeaponB2"></div>
+                                    <div class="upgrade-slot inline-upgrade" data-slot="WeaponB2Sigil1"
+                                        data-type="Sigil"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="gear-column trinkets-col">
+                            <h4>Trinkets & Back</h4>
+                            <div class="slot" data-slot="Backpack"></div>
+                            <div class="slot" data-slot="Accessory1"></div>
+                            <div class="slot" data-slot="Accessory2"></div>
+                            <div class="slot" data-slot="Amulet"></div>
+                            <div class="slot" data-slot="Ring1"></div>
+                            <div class="slot" data-slot="Ring2"></div>
+                            <h4 style="margin-top: 1rem;">Relic</h4>
+                            <div class="slot upgrade-slot relic-slot" data-slot="Relic" data-type="Relic"></div>
+
+                            <!-- NEW CONSUMABLE SLOTS -->
+                            <h4 style="margin-top: 1rem;">Consumables</h4>
+                            <div class="slot upgrade-slot" data-slot="Food" data-type="Food"></div>
+                            <div class="slot upgrade-slot" data-slot="UtilityItem" data-type="UtilityItem"></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Right Panel for Stats & Notes -->
+        <aside class="right-panel">
+            <section class="glass-panel stats-section">
+                <h3>Total Stats</h3>
+                <div id="stats-container" class="stats-grid">
+                    <div class="stat-row"><span class="stat-name">Power</span><span class="stat-value">1000</span></div>
+                    <div class="stat-row"><span class="stat-name">Toughness</span><span class="stat-value">1000</span>
+                    </div>
+                    <div class="stat-row"><span class="stat-name">Vitality</span><span class="stat-value">1000</span>
+                    </div>
+                    <div class="stat-row"><span class="stat-name">Precision</span><span class="stat-value">1000</span>
+                    </div>
+                    <!-- Additional stats calculated will be injected -->
+                </div>
+            </section>
+
+            <section class="glass-panel notes-section">
+                <h3>Build Notes</h3>
+                <textarea id="build-notes" placeholder="Add rotation notes, situational gear swaps, etc..."
+                    class="styled-textarea"></textarea>
+            </section>
+        </aside>
+    </div>
+
+    <!-- Stat Selection Modal -->
+    <div id="stat-modal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel">
+            <div class="modal-header">
+                <h3 id="modal-title">Select Stats for <span id="modal-slot-name">Slot</span></h3>
+                <button id="close-modal-btn" class="close-btn">&times;</button>
+            </div>
+            <input type="text" id="stat-search" placeholder="Search..." class="styled-select mb-1" />
+
+            <!-- NEW FILTER FOR UTILITIES -->
+            <div id="utility-filter-container" class="hidden">
+                <select id="utility-stat-filter" class="styled-select mb-1">
+                    <option value="">All Stats</option>
+                    <option value="Power">Power</option>
+                    <option value="Condition Damage">Condition Damage</option>
+                    <option value="Concentration">Concentration</option>
+                    <option value="Healing Power">Healing Power</option>
+                    <option value="Precision">Precision</option>
+                    <option value="Ferocity">Ferocity</option>
+                    <option value="Expertise">Expertise</option>
+                </select>
+            </div>
+
+
+            <!-- NEW SORT BUTTON -->
+            <button id="sort-utility-btn" class="primary-btn hidden mb-1" style="width: 100%;">Sort by Highest Stat
+                Bonus</button>
+            <div class="apply-to-section hidden" id="apply-to-section">
+                <span class="apply-to-label">Also apply to:</span>
+                <label class="apply-to-checkbox">
+                    <input type="checkbox" id="apply-armor"> All Armor
+                </label>
+                <label class="apply-to-checkbox">
+                    <input type="checkbox" id="apply-weapons"> All Weapons
+                </label>
+                <label class="apply-to-checkbox">
+                    <input type="checkbox" id="apply-trinkets"> All Trinkets
+                </label>
+                <label class="apply-to-checkbox">
+                    <input type="checkbox" id="apply-all"> All Categories
+                </label>
+            </div>
+            <div class="stat-list-container" id="modal-stat-list">
+                <!-- Options injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Profession Selection Modal -->
+    <div id="profession-modal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel profession-modal-content">
+            <div class="modal-header">
+                <h3>Select Profession</h3>
+                <button id="close-profession-modal-btn" class="close-btn">&times;</button>
+            </div>
+            <div class="profession-grid" id="profession-grid">
+                <!-- Profession icons will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Specialization Selection Modal -->
+    <div id="spec-modal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel spec-modal-content">
+            <div class="modal-header">
+                <h3 id="spec-modal-title">Select Specialization</h3>
+                <button id="close-spec-modal-btn" class="close-btn">&times;</button>
+            </div>
+            <div class="spec-grid" id="spec-grid">
+                <!-- Specialization icons will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Import from Game Modal -->
+    <div id="import-game-modal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel">
+            <div class="modal-header">
+                <h3>Import Character</h3>
+                <button id="close-import-game-btn" class="close-btn">&times;</button>
+            </div>
+
+            <!-- API Key Management -->
+            <div class="api-key-section mb-1">
+                <input type="password" id="new-api-key" placeholder="Enter GW2 API Key..."
+                    class="build-title-input mb-1" style="width: 100%;">
+                <button id="save-api-key-btn" class="primary-btn">Add Key</button>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                    Requires 'account', 'characters', 'builds', and 'inventories' permissions.
+                </p>
+            </div>
+
+            <!-- Key Selector -->
+            <select id="api-key-selector" class="styled-select mb-1 hidden">
+                <option value="">Select an Account...</option>
+            </select>
+
+            <!-- Character Selector -->
+            <select id="character-selector" class="styled-select mb-1 hidden">
+                <option value="">Select a Character...</option>
+            </select>
+
+            <!-- Tab Selectors (Build & Equipment) -->
+            <div id="tab-selectors" class="hidden mb-1" style="display: flex; gap: 1rem;">
+                <select id="build-tab-selector" class="styled-select" style="flex: 1;"></select>
+                <select id="equip-tab-selector" class="styled-select" style="flex: 1;"></select>
+            </div>
+
+            <button id="execute-import-btn" class="primary-btn hidden" style="width: 100%;">Import Selected
+                Build</button>
+        </div>
+    </div>
+
+    <!-- Global HTML Tooltip -->
+    <div id="global-tooltip" class="glass-panel hover-tooltip hidden">
+        <div id="tooltip-title" class="tooltip-title">Title</div>
+        <div id="tooltip-desc" class="tooltip-desc">Description</div>
+    </div>
+
+    <script type="module" src="js/api.js?v=8"></script>
+    <script type="module" src="js/app.js?v=8"></script>
+</body>
+
+</html>
