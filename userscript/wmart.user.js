@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Walmart.ca Value Sorter (v11.0 - Click-to-Edit)
+// @name         Walmart.ca Value Sorter (v11.1 - Click-to-Edit & Missing Size Fix)
 // @namespace    http://tampermonkey.net/
-// @version      11.0
-// @description  Sorts by value. Includes Click-to-Edit for manual quantity overrides and Smart Tooltips.
+// @version      11.1
+// @description  Sorts by value. Includes Click-to-Edit for manual quantity overrides and Smart Tooltips. Fixed parsing for missing title sizes & cent values.
 // @match        https://www.walmart.ca/*
 // @require      https://gartkb.github.io/Garts-Great-Tools/userscript/tm-value-sorter-core.js
 // @grant        none
@@ -47,20 +47,41 @@
         // --- STEP 2: GET TITLE ---
         const titleElement = card.querySelector('[data-automation-id="product-title"]');
         if (!titleElement) return null;
-        const title = titleElement.innerText;
+        let title = titleElement.innerText; // Changed to 'let' so we can append missing sizes below
 
         // --- STEP 3: OPTIONAL - GET SHELF UNIT PRICE (For Deal Detection) ---
         let shelfUnitVal = null;
+        let shelfUnitQty = null;
+        let shelfUnitType = null;
+        
         const unitPriceDiv = card.querySelector('[data-testid="product-price-per-unit"]');
         if (unitPriceDiv && !isDealPrice) {
             const text = unitPriceDiv.innerText.toLowerCase().trim();
-            // Looks for: $0.50 / 100ml
-            const match = text.match(/([0-9,.]+)\s*(?:[$¢c]?)\s*\/\s*([0-9]*)\s*(g|ml|lb|ea|kg|l)/);
+            // Looks for: $0.50 / 100ml, 79c/100ml, 79 c / 100 ml
+            const match = text.match(/([0-9,.]+)\s*([$¢c]?)\s*\/\s*([0-9]*)\s*(g|ml|lb|ea|kg|l)/i);
             if (match) {
                 let rawVal = parseFloat(match[1].replace(/,/g, ''));
-                if (text.includes('¢') || text.includes(' c')) rawVal = rawVal / 100;
-                shelfUnitVal = rawVal; 
+                let currencySuffix = match[2];
+                
+                // Fix #1: Correctly catch 'c' as cents even if there is no space
+                if (currencySuffix === '¢' || currencySuffix === 'c' || text.includes('¢')) {
+                    rawVal = rawVal / 100;
+                }
+                
+                shelfUnitVal = rawVal;
+                shelfUnitQty = parseFloat(match[3]) || 1; // Default to 1 if blank (e.g. "/ea")
+                shelfUnitType = match[4];
             }
+        }
+
+        // --- STEP 3.5: FIX MISSING SIZES IN TITLE (The Main Fix) ---
+        // If the title doesn't contain a size, but we have total price & shelf unit price,
+        // calculate the exact package size and artificially append it to the title string.
+        // This ensures the Core Module (ValueSorter.analyze) can successfully process it!
+        const hasSize = /[0-9]+\s*(ml|g|kg|lb|l|oz)/i.test(title);
+        if (!hasSize && price > 0 && shelfUnitVal > 0 && shelfUnitQty > 0 && shelfUnitType) {
+            const estimatedSize = Math.round((price / shelfUnitVal) * shelfUnitQty);
+            title += ` - ${estimatedSize}${shelfUnitType}`;
         }
 
         // --- STEP 4: CALL THE CORE MODULE ---
