@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Superstore Value Sorter (v16.5 - Bulletproof UI & Mobile Fix)
+// @name         Superstore Value Sorter (v16.6 - Draggable UI & Mobile Fix)
 // @namespace    http://tampermonkey.net/
-// @version      16.5
-// @description  Sorts safely across lazy-loaded chunks, fixes mobile horizontal overflow, and ensures UI is never hidden.
+// @version      16.6
+// @description  Sorts safely across lazy-loaded chunks, fixes mobile layout, and features a draggable UI that remembers its position.
 // @match        https://www.realcanadiansuperstore.ca/*
 // @require      https://gartkb.github.io/Garts-Great-Tools/userscript/tm-value-sorter-core.js
 // @grant        none
@@ -377,17 +377,54 @@
 
         const container = document.createElement("div");
         container.id = 'tm-ui-container';
-        // MOVED FROM BOTTOM: 20px TO BOTTOM: 120px SO IT CANNOT BE HIDDEN BY MOBILE NAVIGATION BARS
         Object.assign(container.style, {
-            position: "fixed", bottom: "120px", left: "20px", zIndex: "2147483647",
+            position: "fixed", zIndex: "2147483647",
             display: "flex", flexDirection: "column", gap: "8px", alignItems: "flex-start"
         });
 
+        // Initialize Drag Position State
+        const savedX = localStorage.getItem('tm_vs_ui_x');
+        const savedY = localStorage.getItem('tm_vs_ui_y');
+
+        if (savedX && savedY) {
+            let x = parseInt(savedX, 10);
+            let y = parseInt(savedY, 10);
+            
+            // Constrain within bounds if window was resized smaller
+            if (x > window.innerWidth - 80) x = window.innerWidth - 120;
+            if (y > window.innerHeight - 80) y = window.innerHeight - 120;
+            if (x < 0) x = 10;
+            if (y < 0) y = 10;
+
+            container.style.left = x + "px";
+            container.style.top = y + "px";
+            container.style.bottom = "auto";
+        } else {
+            // Default position (reverted to what you asked for!)
+            container.style.left = "20px";
+            container.style.bottom = "20px";
+            container.style.top = "auto";
+        }
+
         const toggleWrapper = document.createElement("div");
         Object.assign(toggleWrapper.style, {
-            background: "rgba(0,0,0,0.8)", padding: "8px 10px", borderRadius: "6px",
-            color: "white", fontSize: "12px", display: "flex", flexDirection: "column", gap: "6px",
-            fontFamily: "sans-serif"
+            background: "rgba(0,0,0,0.8)", borderRadius: "6px",
+            color: "white", fontSize: "12px", display: "flex", flexDirection: "column",
+            fontFamily: "sans-serif", overflow: "hidden", boxShadow: "0 2px 5px rgba(0,0,0,0.3)"
+        });
+
+        // Drag Handle Implementation
+        const dragHandle = document.createElement("div");
+        dragHandle.innerHTML = "⠿ Drag to Move ⠿";
+        Object.assign(dragHandle.style, {
+            background: "rgba(255,255,255,0.15)", padding: "4px 0", textAlign: "center",
+            cursor: "grab", fontSize: "10px", color: "#ddd", userSelect: "none", touchAction: "none"
+        });
+        toggleWrapper.appendChild(dragHandle);
+
+        const controlsWrapper = document.createElement("div");
+        Object.assign(controlsWrapper.style, {
+            padding: "8px 10px", display: "flex", flexDirection: "column", gap: "6px"
         });
 
         function createCheckRow(labelText, checked, onChange) {
@@ -439,14 +476,15 @@
         };
         rowPos.appendChild(posSelect);
 
-        toggleWrapper.appendChild(rowPoints);
-        toggleWrapper.appendChild(rowLoadMore);
-        toggleWrapper.appendChild(rowPos);
+        controlsWrapper.appendChild(rowPoints);
+        controlsWrapper.appendChild(rowLoadMore);
+        controlsWrapper.appendChild(rowPos);
+        toggleWrapper.appendChild(controlsWrapper);
 
         const btn = document.createElement("button");
         btn.innerHTML = "Sort by Value";
         Object.assign(btn.style, {
-            padding: "8px 12px", background: "#2f855a", color: "#fff",
+            padding: "8px 12px", background: "#2f855a", color: "#fff", width: "100%",
             border: "2px solid #fff", borderRadius: "8px", fontWeight: "bold", cursor: "pointer",
             boxShadow: "0 4px 6px rgba(0,0,0,0.3)", fontFamily: "sans-serif"
         });
@@ -483,6 +521,69 @@
         container.appendChild(toggleWrapper);
         container.appendChild(btn);
         document.body.appendChild(container);
+
+        // --- Dragging Logic Engine ---
+        let isDragging = false;
+        let dragStartX = 0, dragStartY = 0;
+        let startLeft = 0, startTop = 0;
+
+        function onDragStart(e) {
+            isDragging = true;
+            dragHandle.style.cursor = "grabbing";
+            
+            const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+            const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+            
+            dragStartX = clientX;
+            dragStartY = clientY;
+            
+            const rect = container.getBoundingClientRect();
+            startLeft = rect.left;
+            startTop = rect.top;
+            
+            // Switch formatting purely to Top/Left pixels to make live dragging accurate
+            container.style.left = startLeft + "px";
+            container.style.top = startTop + "px";
+            container.style.bottom = "auto";
+            container.style.right = "auto";
+
+            document.addEventListener('mousemove', onDragMove, { passive: false });
+            document.addEventListener('touchmove', onDragMove, { passive: false });
+            document.addEventListener('mouseup', onDragEnd);
+            document.addEventListener('touchend', onDragEnd);
+        }
+
+        function onDragMove(e) {
+            if (!isDragging) return;
+            e.preventDefault(); // Prevents page from scrolling behind the UI box while on mobile
+            
+            const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+            const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+            
+            const dx = clientX - dragStartX;
+            const dy = clientY - dragStartY;
+            
+            container.style.left = (startLeft + dx) + "px";
+            container.style.top = (startTop + dy) + "px";
+        }
+
+        function onDragEnd(e) {
+            if (!isDragging) return;
+            isDragging = false;
+            dragHandle.style.cursor = "grab";
+            
+            document.removeEventListener('mousemove', onDragMove);
+            document.removeEventListener('touchmove', onDragMove);
+            document.removeEventListener('mouseup', onDragEnd);
+            document.removeEventListener('touchend', onDragEnd);
+            
+            // Save state persistently so it's identically placed on page reloads
+            localStorage.setItem('tm_vs_ui_x', container.style.left);
+            localStorage.setItem('tm_vs_ui_y', container.style.top);
+        }
+
+        dragHandle.addEventListener('mousedown', onDragStart);
+        dragHandle.addEventListener('touchstart', onDragStart, { passive: false });
     }
 
     async function fetchNextPage() {
@@ -641,7 +742,6 @@
                     commonParent.style.display = 'grid';
                     
                     // --- MOBILE LAYOUT FIX ---
-                    // Fixes the off-screen column issue you asked about!
                     const isMobile = window.innerWidth <= 768;
                     const minWidth = isMobile ? '145px' : '220px';
                     commonParent.style.gridTemplateColumns = `repeat(auto-fill, minmax(${minWidth}, 1fr))`;
