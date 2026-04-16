@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Superstore Value Sorter (v16.4 - Reverted UI / Mobile Fix)
+// @name         Superstore Value Sorter (v16.5 - Bulletproof UI & Mobile Fix)
 // @namespace    http://tampermonkey.net/
-// @version      16.4
-// @description  Sorts safely across lazy-loaded chunks while protecting ad banners and page layout from breaking.
+// @version      16.5
+// @description  Sorts safely across lazy-loaded chunks, fixes mobile horizontal overflow, and ensures UI is never hidden.
 // @match        https://www.realcanadiansuperstore.ca/*
 // @require      https://gartkb.github.io/Garts-Great-Tools/userscript/tm-value-sorter-core.js
 // @grant        none
@@ -377,8 +377,9 @@
 
         const container = document.createElement("div");
         container.id = 'tm-ui-container';
+        // MOVED FROM BOTTOM: 20px TO BOTTOM: 120px SO IT CANNOT BE HIDDEN BY MOBILE NAVIGATION BARS
         Object.assign(container.style, {
-            position: "fixed", bottom: "20px", left: "20px", zIndex: "99999",
+            position: "fixed", bottom: "120px", left: "20px", zIndex: "2147483647",
             display: "flex", flexDirection: "column", gap: "8px", alignItems: "flex-start"
         });
 
@@ -445,7 +446,7 @@
         const btn = document.createElement("button");
         btn.innerHTML = "Sort by Value";
         Object.assign(btn.style, {
-            padding: "8px 12px", background: "#2f855a", color: "fff",
+            padding: "8px 12px", background: "#2f855a", color: "#fff",
             border: "2px solid #fff", borderRadius: "8px", fontWeight: "bold", cursor: "pointer",
             boxShadow: "0 4px 6px rgba(0,0,0,0.3)", fontFamily: "sans-serif"
         });
@@ -639,14 +640,16 @@
                 if (computed.display.includes('grid')) {
                     commonParent.style.display = 'grid';
                     
-                    // --- REVERTED MOBILE FIX ---
-                    // Replaced rigid layout rules with just the column fix
+                    // --- MOBILE LAYOUT FIX ---
+                    // Fixes the off-screen column issue you asked about!
                     const isMobile = window.innerWidth <= 768;
                     const minWidth = isMobile ? '145px' : '220px';
                     commonParent.style.gridTemplateColumns = `repeat(auto-fill, minmax(${minWidth}, 1fr))`;
-                    // ---------------------------
+                    commonParent.style.width = '100%';
+                    commonParent.style.boxSizing = 'border-box';
+                    // -------------------------
 
-                    commonParent.style.gap = computed.gap;
+                    commonParent.style.gap = computed.gap || '16px';
                     commonParent.style.padding = computed.padding;
                     commonParent.style.alignItems = computed.alignItems;
                 } else {
