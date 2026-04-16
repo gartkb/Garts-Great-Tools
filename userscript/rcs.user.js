@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Superstore Value Sorter (v16.2 - Layout Protection)
+// @name         Superstore Value Sorter (v16.3 - Mobile Layout Fix)
 // @namespace    http://tampermonkey.net/
-// @version      16.2
-// @description  Sorts safely across lazy-loaded chunks while protecting ad banners and page layout from breaking.
+// @version      16.3
+// @description  Sorts safely across lazy-loaded chunks while protecting ad banners and fixing mobile off-screen overflow.
 // @match        https://www.realcanadiansuperstore.ca/*
 // @require      https://gartkb.github.io/Garts-Great-Tools/userscript/tm-value-sorter-core.js
 // @grant        none
@@ -638,8 +638,18 @@
             if (commonParent && commonParent !== document.body) {
                 if (computed.display.includes('grid')) {
                     commonParent.style.display = 'grid';
-                    commonParent.style.gridTemplateColumns = computed.gridTemplateColumns;
-                    commonParent.style.gap = computed.gap;
+                    
+                    // --- MOBILE LAYOUT FIX ---
+                    // Instead of copying rigid pixel values that break responsive layouts,
+                    // we dynamically inject responsive columns based on screen width.
+                    const isMobile = window.innerWidth <= 768;
+                    const minWidth = isMobile ? '145px' : '220px';
+                    commonParent.style.gridTemplateColumns = `repeat(auto-fill, minmax(${minWidth}, 1fr))`;
+                    commonParent.style.width = '100%';
+                    commonParent.style.boxSizing = 'border-box';
+                    // -------------------------
+
+                    commonParent.style.gap = computed.gap || '16px';
                     commonParent.style.padding = computed.padding;
                     commonParent.style.alignItems = computed.alignItems;
                 } else {
