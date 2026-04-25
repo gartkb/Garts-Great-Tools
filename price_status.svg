@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <!-- Background Gradient (Emerald Green) -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Rounded App Icon Background -->
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#bgGrad)"/>
+  
+  <!-- Price Tag Outline -->
+  <path d="M 20 12 H 44 C 46.2 12, 48 13.8, 48 16 V 36 L 34.8 49.2 C 33.2 50.8, 30.8 50.8, 29.2 49.2 L 16 36 V 16 C 16 13.8, 17.8 12, 20 12 Z" fill="#ffffff"/>
+  
+  <!-- Tag Hole -->
+  <circle cx="32" cy="17" r="3.5" fill="url(#bgGrad)"/>
+  
+  <!-- Upward Trend/Status Line -->
+  <path d="M 23 37 L 28 31 L 32 34 L 39 26" fill="none" stroke="url(#bgGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Trend Line Arrow Head -->
+  <path d="M 32 26 H 39 V 33" fill="none" stroke="url(#bgGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
