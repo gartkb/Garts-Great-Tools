@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="stoneGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#94A3B8" />
+      <stop offset="100%" stop-color="#475569" />
+    </linearGradient>
+  </defs>
+
+  <!-- Red, Green, Blue WvW Orbs -->
+  <circle cx="32" cy="12" r="7" fill="#EF4444" stroke="#FFFFFF" stroke-width="2" />
+  <circle cx="14" cy="18" r="7" fill="#22C55E" stroke="#FFFFFF" stroke-width="2" />
+  <circle cx="50" cy="18" r="7" fill="#3B82F6" stroke="#FFFFFF" stroke-width="2" />
+
+  <!-- Castle Keep / Tower -->
+  <path d="M 12 24 L 20 24 L 20 32 L 28 32 L 28 24 L 36 24 L 36 32 L 44 32 L 44 24 L 52 24 L 52 60 L 12 60 Z" fill="url(#stoneGrad)" stroke="#1E293B" stroke-width="3" stroke-linejoin="round" />
+  
+  <!-- Castle Door/Archway -->
+  <path d="M 24 60 L 24 50 A 8 8 0 0 1 40 50 L 40 60 Z" fill="#0F172A" />
+  <!-- Small arrow-slits -->
+  <rect x="18" y="42" width="2" height="6" fill="#0F172A" rx="1"/>
+  <rect x="44" y="42" width="2" height="6" fill="#0F172A" rx="1"/>
+</svg>

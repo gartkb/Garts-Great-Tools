@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="bannerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#E11D48" />
+      <stop offset="100%" stop-color="#9F1239" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE047" />
+      <stop offset="100%" stop-color="#CA8A04" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Banner Cloth -->
+  <path d="M 16 10 L 48 10 L 48 56 L 32 44 L 16 56 Z" fill="url(#bannerGrad)" stroke="url(#goldGrad)" stroke-width="3" stroke-linejoin="round" />
+  
+  <!-- Banner Hanging Rod -->
+  <line x1="8" y1="10" x2="56" y2="10" stroke="url(#goldGrad)" stroke-width="6" stroke-linecap="round" />
+  
+  <!-- Central Guild Emblem -->
+  <polygon points="32,20 38,28 32,36 26,28" fill="url(#goldGrad)" />
+  <circle cx="32" cy="28" r="2" fill="#FFFFFF" opacity="0.8" />
+</svg>
