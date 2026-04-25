@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="hex1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#0284C7" />
+    </linearGradient>
+    <linearGradient id="hex2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F472B6" />
+      <stop offset="100%" stop-color="#BE185D" />
+    </linearGradient>
+    <linearGradient id="hex3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#34D399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+  </defs>
+  
+  <g stroke="#0F172A" stroke-width="3" stroke-linejoin="round">
+    <polygon points="32,6 44,13 44,27 32,34 20,27 20,13" fill="url(#hex1)" />
+    <polygon points="20,27 32,34 32,48 20,55 8,48 8,34" fill="url(#hex2)" />
+    <polygon points="44,27 56,34 56,48 44,55 32,48 32,34" fill="url(#hex3)" />
+  </g>
+  
+  <circle cx="32" cy="20" r="4" fill="#FFFFFF" opacity="0.9"/>
+  <circle cx="20" cy="41" r="4" fill="#FFFFFF" opacity="0.9"/>
+  <circle cx="44" cy="41" r="4" fill="#FFFFFF" opacity="0.9"/>
+  
+  <polyline points="32,20 20,41 44,41 32,20" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.5" stroke-linejoin="round"/>
+</svg>
