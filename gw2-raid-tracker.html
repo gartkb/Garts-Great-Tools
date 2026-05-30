@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GW2 Raid Tracker</title>
+<style>
+  :root {
+    --bg: #0d0f12;
+    --bg2: #14171c;
+    --bg3: #1c2028;
+    --bg4: #252b35;
+    --border: #2a3040;
+    --border-light: #3a4255;
+    --text: #c8cdd4;
+    --text-dim: #6b7484;
+    --text-bright: #e8ecf0;
+    --gold: #d4a843;
+    --gold-dim: #8a6f2e;
+    --green: #4caf50;
+    --green-dim: #2d6a2f;
+    --red: #e53935;
+    --red-dim: #8a2020;
+    --blue: #5b9bd5;
+    --blue-dim: #3a6085;
+    --purple: #ab47bc;
+    --orange: #ff9800;
+    --radius: 8px;
+    --radius-sm: 4px;
+    --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: linear-gradient(180deg, var(--bg3) 0%, var(--bg) 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .header h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .header h1 .icon {
+    font-size: 1.6rem;
+  }
+  .header-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  /* ── Buttons ── */
+  .btn {
+    font-family: var(--font);
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 7px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-light);
+    background: var(--bg3);
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .btn:hover { background: var(--bg4); border-color: var(--text-dim); }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary {
+    background: var(--gold-dim);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+  .btn-primary:hover { background: var(--gold); color: #000; }
+  .btn-danger {
+    border-color: var(--red-dim);
+    color: var(--red);
+  }
+  .btn-danger:hover { background: var(--red); color: #fff; }
+  .btn-sm { padding: 4px 10px; font-size: 0.75rem; }
+
+  /* ── Layout ── */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 24px;
+  }
+
+  /* ── Account Cards ── */
+  .account-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .account-header {
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg3);
+    flex-wrap: wrap;
+  }
+  .account-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .account-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg4);
+    border: 2px solid var(--gold-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .account-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-bright);
+  }
+  .account-meta {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+  .account-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+  }
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text-dim);
+  }
+  .status-dot.online { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .status-dot.error { background: var(--red); }
+
+  .account-body {
+    padding: 18px;
+  }
+
+  /* ── Section Headers ── */
+  .section-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .section-count {
+    background: var(--bg4);
+    color: var(--text);
+    font-size: 0.68rem;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+
+  /* ── Raid Wings Grid ── */
+  .wings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .wing-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    transition: border-color 0.15s;
+  }
+  .wing-card:hover { border-color: var(--border-light); }
+  .wing-card.complete { border-color: var(--green-dim); }
+  .wing-card.partial { border-color: var(--gold-dim); }
+  .wing-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .wing-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-bright);
+  }
+  .wing-progress {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 1px 8px;
+    border-radius: 10px;
+  }
+  .wing-progress.done { background: var(--green-dim); color: var(--green); }
+  .wing-progress.partial { background: var(--gold-dim); color: var(--gold); }
+  .wing-progress.none { background: var(--bg4); color: var(--text-dim); }
+
+  .boss-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .boss-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    padding: 3px 6px;
+    border-radius: 3px;
+  }
+  .boss-row:hover { background: var(--bg4); }
+  .boss-check {
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+    border: 1.5px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.65rem;
+    transition: all 0.15s;
+  }
+  .boss-check.done {
+    background: var(--green-dim);
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .boss-name { flex: 1; }
+  .boss-name.done { color: var(--text-dim); text-decoration: line-through; }
+  .boss-type {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    background: var(--bg4);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  /* ── Daily Bounties ── */
+  .bounties-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .bounty-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.15s;
+  }
+  .bounty-card.done { border-color: var(--green-dim); background: rgba(76,175,80,0.06); }
+  .bounty-card.not-done { opacity: 0.55; }
+  .bounty-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--bg4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+  .bounty-card.done .bounty-icon { background: var(--green-dim); }
+  .bounty-name { font-size: 0.8rem; font-weight: 600; }
+  .bounty-card.done .bounty-name { color: var(--green); }
+  .bounty-status { font-size: 0.68rem; color: var(--text-dim); margin-top: 2px; }
+
+  /* ── Weekly Achievements ── */
+  .achievements-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+  .ach-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+  }
+  .ach-row.done { border-color: var(--green-dim); }
+  .ach-check {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.65rem;
+  }
+  .ach-check.done { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+  .ach-name { flex: 1; font-weight: 500; }
+  .ach-name.done { color: var(--text-dim); }
+  .ach-bar {
+    width: 80px;
+    height: 6px;
+    background: var(--bg4);
+    border-radius: 3px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .ach-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s;
+  }
+  .ach-bar-fill.green { background: var(--green); }
+  .ach-bar-fill.gold { background: var(--gold); }
+  .ach-text { font-size: 0.7rem; color: var(--text-dim); min-width: 45px; text-align: right; }
+
+  /* ── Add Account Modal ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 480px;
+    padding: 24px;
+  }
+  .modal h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+  .form-group { margin-bottom: 14px; }
+  .form-group label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .form-group input {
+    width: 100%;
+    padding: 9px 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-group input:focus { border-color: var(--gold); }
+  .form-group .hint {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+  .modal-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+
+  /* ── Empty State ── */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-dim);
+  }
+  .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+  .empty-state h3 { font-size: 1rem; color: var(--text); margin-bottom: 6px; }
+  .empty-state p { font-size: 0.82rem; max-width: 400px; margin: 0 auto 16px; }
+
+  /* ── Loading / Error ── */
+  .loading-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-banner {
+    background: var(--red-dim);
+    border: 1px solid var(--red);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 0.8rem;
+    color: #ff8a80;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ── Last Updated ── */
+  .last-updated {
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    text-align: right;
+    margin-top: 4px;
+  }
+
+  /* ── Settings Panel ── */
+  .settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.82rem;
+  }
+  .settings-row:last-child { border-bottom: none; }
+  .toggle {
+    width: 40px;
+    height: 22px;
+    background: var(--bg4);
+    border-radius: 11px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.2s;
+    border: none;
+  }
+  .toggle.on { background: var(--green-dim); }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background: var(--text);
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: left 0.2s;
+  }
+  .toggle.on::after { left: 20px; background: var(--green); }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .container { padding: 12px 14px; }
+    .header { padding: 12px 14px; }
+    .wings-grid { grid-template-columns: 1fr; }
+    .bounties-grid { grid-template-columns: 1fr 1fr; }
+    .account-header { flex-direction: column; align-items: flex-start; }
+  }
+
+  /* ── Tooltip ── */
+  .tooltip { position: relative; }
+  .tooltip::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg4);
+    color: var(--text);
+    font-size: 0.68rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+    border: 1px solid var(--border);
+    z-index: 10;
+  }
+  .tooltip:hover::after { opacity: 1; }
+
+  /* ── Animations ── */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .account-card { animation: fadeIn 0.3s ease-out; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <h1><span class="icon">⚔️</span> GW2 Raid Tracker</h1>
+  <div class="header-actions">
+    <button class="btn btn-sm" onclick="openSettings()">⚙️ Settings</button>
+    <button class="btn btn-primary" onclick="openAddAccount()">+ Add Account</button>
+  </div>
+</div>
+
+<div class="container" id="accounts-container">
+  <div class="empty-state" id="empty-state">
+    <div class="icon">🗡️</div>
+    <h3>No accounts added</h3>
+    <p>Add your GW2 API key to start tracking weekly raid clears, daily bounties, and achievements.</p>
+    <button class="btn btn-primary" onclick="openAddAccount()">+ Add Your First Account</button>
+  </div>
+</div>
+
+<!-- Add Account Modal -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <h2>⚔️ Add Account</h2>
+    <div class="form-group">
+      <label>Account Label</label>
+      <input type="text" id="input-label" placeholder="e.g. Main Account, Alt #1">
+    </div>
+    <div class="form-group">
+      <label>API Key</label>
+      <input type="text" id="input-key" placeholder="Paste your GW2 API key here" autocomplete="off">
+      <div class="hint">Get your key at <a href="https://account.arena.net/applications" target="_blank" style="color:var(--gold)">account.arena.net/applications</a> — requires <strong>account</strong> and <strong>achievements</strong> permissions.</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeAddAccount()">Cancel</button>
+      <button class="btn btn-primary" onclick="addAccount()">Add Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal">
+    <h2>⚙️ Settings</h2>
+    <div class="settings-row">
+      <span>Auto-refresh interval</span>
+      <select id="refresh-interval" onchange="saveSettings()" style="background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:4px;font-size:0.8rem;">
+        <option value="60">Every 1 min</option>
+        <option value="120" selected>Every 2 min</option>
+        <option value="300">Every 5 min</option>
+        <option value="600">Every 10 min</option>
+        <option value="0">Manual only</option>
+      </select>
+    </div>
+    <div class="settings-row">
+      <span>Show boss encounter types</span>
+      <button class="toggle on" id="toggle-types" onclick="toggleSetting('types')"></button>
+    </div>
+    <div class="settings-row">
+      <span>Compact mode</span>
+      <button class="toggle" id="toggle-compact" onclick="toggleSetting('compact')"></button>
+    </div>
+    <div class="settings-row">
+      <span>Show weekly achievements</span>
+      <button class="toggle on" id="toggle-ach" onclick="toggleSetting('ach')"></button>
+    </div>
+    <div class="settings-row">
+      <span>Show daily bounties</span>
+      <button class="toggle on" id="toggle-bounties" onclick="toggleSetting('bounties')"></button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" onclick="clearAllData()" style="margin-right:auto">Clear All Data</button>
+      <button class="btn btn-primary" onclick="closeSettings()">Done</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// DATA & CONFIG
+// ═══════════════════════════════════════════════════
+
+const GW2_BASE = 'https://api.guildwars2.com/v2';
+
+// Static raid structure — wings and their boss encounters
+const RAID_WINGS = [
+  {
+    id: 'spirit_vale',
+    name: 'Spirit Vale',
+    wing: 'Forsaken Thicket',
+    bosses: [
+      { id: 'vale_guardian', name: 'Vale Guardian', type: 'Boss' },
+      { id: 'spirit_woods', name: 'Spirit Woods', type: 'Checkpoint' },
+      { id: 'gorseval', name: 'Gorseval', type: 'Boss' },
+      { id: 'sabetha', name: 'Sabetha', type: 'Boss' },
+    ]
+  },
+  {
+    id: 'salvation_pass',
+    name: 'Salvation Pass',
+    wing: 'Forsaken Thicket',
+    bosses: [
+      { id: 'slothasor', name: 'Slothasor', type: 'Boss' },
+      { id: 'bandit_trio', name: 'Bandit Trio', type: 'Boss' },
+      { id: 'matthias', name: 'Matthias', type: 'Boss' },
+    ]
+  },
+  {
+    id: 'stronghold_of_the_faithful',
+    name: 'Stronghold of the Faithful',
+    wing: 'Forsaken Thicket',
+    bosses: [
+      { id: 'escort', name: 'Escort', type: 'Boss' },
+      { id: 'keep_construct', name: 'Keep Construct', type: 'Boss' },
+      { id: 'twisted_castle', name: 'Twisted Castle', type: 'Checkpoint' },
+      { id: 'xera', name: 'Xera', type: 'Boss' },
+    ]
+  },
+  {
+    id: 'bastion_of_the_penitent',
+    name: 'Bastion of the Penitent',
+    wing: 'Bastion of the Penitent',
+    bosses: [
+      { id: 'cairn', name: 'Cairn', type: 'Boss' },
+      { id: 'mursaat_overseer', name: 'Mursaat Overseer', type: 'Boss' },
+      { id: 'samarog', name: 'Samarog', type: 'Boss' },
+      { id: 'deimos', name: 'Deimos', type: 'Boss' },
+    ]
+  },
+  {
+    id: 'hall_of_chains',
+    name: 'Hall of Chains',
+    wing: 'Hall of Chains',
+    bosses: [
+      { id: 'soulless_horror', name: 'Soulless Horror', type: 'Boss' },
+      { id: 'river_of_souls', name: 'River of Souls', type: 'Boss' },
+      { id: 'statues_of_grenth', name: 'Statues of Grenth', type: 'Boss' },
+      { id: 'voice_in_the_void', name: 'Voice in the Void', type: 'Boss' },
+    ]
+  },
+  {
+    id: 'mythwright_gambit',
+    name: 'Mythwright Gambit',
+    wing: 'Mythwright Gambit',
+    bosses: [
+      { id: 'conjured_amalgamate', name: 'Conjured Amalgamate', type: 'Boss' },
+      { id: 'twin_largos', name: 'Twin Largos', type: 'Boss' },
+      { id: 'qadim', name: 'Qadim', type: 'Boss' },
+    ]
+  },
+  {
+    id: 'the_key_ahdashim',
+    name: 'Key of Ahdashim',
+    wing: 'Key of Ahdashim',
+    bosses: [
+      { id: 'adina', name: 'Adina', type: 'Boss' },
+      { id: 'sabir', name: 'Sabir', type: 'Boss' },
+      { id: 'gate', name: 'Gate', type: 'Boss' },
+      { id: 'dhuum', name: 'Dhuum', type: 'Boss' },
+    ]
+  },
+  {
+    id: 'mount_balrior',
+    name: 'Mount Balrior',
+    wing: 'Mount Balrior',
+    bosses: [
+      { id: 'camp', name: 'The Storm', type: 'Checkpoint' },
+      { id: 'greer', name: 'Greer', type: 'Boss' },
+      { id: 'decima', name: 'Decima', type: 'Boss' },
+      { id: 'ura', name: 'Ura', type: 'Boss' },
+    ]
+  },
+];
+
+// Daily raid bounty achievement IDs
+const DAILY_BOUNTY_IDS = [9121, 9137, 9197, 9201];
+const DAILY_BOUNTY_NAMES = {
+  9121: 'Shiverpeaks Pass',
+  9137: 'Decima',
+  9197: 'Boneskinner',
+  9201: 'Qadim',
+};
+
+// Weekly raid achievement IDs
+const WEEKLY_ACH_IDS = [9128, 9147, 9111, 9144, 9120, 9156, 9125, 9123];
+const WEEKLY_ACH_NAMES = {
+  9128: 'Weekly Spirit Vale',
+  9147: 'Weekly Salvation Pass',
+  9111: 'Weekly Hall of Chains',
+  9144: 'Weekly Bastion of the Penitent',
+  9120: 'Weekly Mythwright Gambit',
+  9156: 'Weekly Key of Ahdashim',
+  9125: 'Weekly Raid Encounters (All)',
+  9123: 'Weekly Quickplay Raids',
+};
+
+// Wing ID → weekly achievement ID mapping
+const WING_ACH_MAP = {
+  'spirit_vale': 9128,
+  'salvation_pass': 9147,
+  'stronghold_of_the_faithful': null,  // no dedicated weekly ach
+  'bastion_of_the_penitent': 9144,
+  'hall_of_chains': 9111,
+  'mythwright_gambit': 9120,
+  'the_key_ahdashim': 9156,
+  'mount_balrior': null,
+};
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+
+let accounts = [];
+let settings = {
+  refreshInterval: 120,
+  showTypes: true,
+  compact: false,
+  showAch: true,
+  showBounties: true,
+};
+let refreshTimers = {};
+
+// ═══════════════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════════════
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem('gw2_raid_tracker');
+    if (raw) {
+      const data = JSON.parse(raw);
+      accounts = data.accounts || [];
+      settings = { ...settings, ...data.settings };
+    }
+  } catch (e) {
+    console.error('Failed to load data:', e);
+  }
+  applySettings();
+}
+
+function saveData() {
+  try {
+    localStorage.setItem('gw2_raid_tracker', JSON.stringify({ accounts, settings }));
+  } catch (e) {
+    console.error('Failed to save data:', e);
+  }
+}
+
+function clearAllData() {
+  if (!confirm('Remove all accounts and reset settings? This cannot be undone.')) return;
+  accounts = [];
+  stopAllRefresh();
+  saveData();
+  closeSettings();
+  render();
+}
+
+// ═══════════════════════════════════════════════════
+// API HELPERS
+// ═══════════════════════════════════════════════════
+
+async function gw2Fetch(path, apiKey) {
+  const resp = await fetch(GW2_BASE + path, {
+    headers: { 'Authorization': `Bearer ${apiKey}` }
+  });
+  if (!resp.ok) {
+    const text = await resp.text();
+    throw new Error(`GW2 API ${resp.status}: ${text}`);
+  }
+  return resp.json();
+}
+
+async function fetchAccountData(apiKey) {
+  const [accountInfo, raidClears, ...bountyProgress] = await Promise.all([
+    gw2Fetch('/account', apiKey),
+    gw2Fetch('/account/raids', apiKey),
+    // Fetch bounty achievements and weekly achievements in parallel
+    ...[...DAILY_BOUNTY_IDS, ...WEEKLY_ACH_IDS].map(id =>
+      gw2Fetch(`/account/achievements/${id}`, apiKey).catch(() => null)
+    ),
+  ]);
+
+  const bountyMap = {};
+  DAILY_BOUNTY_IDS.forEach((id, i) => {
+    bountyMap[id] = bountyProgress[i];
+  });
+
+  const weeklyMap = {};
+  WEEKLY_ACH_IDS.forEach((id, i) => {
+    weeklyMap[id] = bountyProgress[DAILY_BOUNTY_IDS.length + i];
+  });
+
+  return { accountInfo, raidClears, bountyMap, weeklyMap };
+}
+
+// ═══════════════════════════════════════════════════
+// ACCOUNT MANAGEMENT
+// ═══════════════════════════════════════════════════
+
+function openAddAccount() {
+  document.getElementById('add-modal').classList.add('open');
+  document.getElementById('input-label').value = '';
+  document.getElementById('input-key').value = '';
+  setTimeout(() => document.getElementById('input-label').focus(), 100);
+}
+
+function closeAddAccount() {
+  document.getElementById('add-modal').classList.remove('open');
+}
+
+async function addAccount() {
+  const label = document.getElementById('input-label').value.trim() || 'Unnamed Account';
+  const apiKey = document.getElementById('input-key').value.trim();
+
+  if (!apiKey) {
+    alert('Please enter an API key.');
+    return;
+  }
+
+  // Validate key
+  const btn = document.querySelector('#add-modal .btn-primary');
+  btn.textContent = 'Validating...';
+  btn.disabled = true;
+
+  try {
+    const info = await gw2Fetch('/account', apiKey);
+    const account = {
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      label,
+      apiKey,
+      name: info.name,
+      world: info.world,
+      worldName: null, // could resolve via /v2/worlds
+      lastData: null,
+      lastError: null,
+      lastUpdated: null,
+    };
+    accounts.push(account);
+    saveData();
+    closeAddAccount();
+    render();
+    refreshAccount(account.id);
+  } catch (e) {
+    alert('Invalid API key or network error: ' + e.message);
+  } finally {
+    btn.textContent = 'Add Account';
+    btn.disabled = false;
+  }
+}
+
+function removeAccount(id) {
+  if (!confirm('Remove this account?')) return;
+  stopRefresh(id);
+  accounts = accounts.filter(a => a.id !== id);
+  saveData();
+  render();
+}
+
+// ═════════════════════════════════════════════════════
+// REFRESH / POLLING
+// ═══════════════════════════════════════════════════
+
+async function refreshAccount(id) {
+  const acct = accounts.find(a => a.id === id);
+  if (!acct) return;
+
+  acct.lastError = null;
+  renderAccountCard(acct);
+
+  try {
+    const data = await fetchAccountData(acct.apiKey);
+    acct.lastData = data;
+    acct.lastUpdated = Date.now();
+    acct.lastError = null;
+  } catch (e) {
+    acct.lastError = e.message;
+    acct.lastData = null;
+  }
+
+  saveData();
+  renderAccountCard(acct);
+  scheduleRefresh(acct);
+}
+
+function scheduleRefresh(acct) {
+  stopRefresh(acct.id);
+  if (settings.refreshInterval > 0) {
+    refreshTimers[acct.id] = setTimeout(() => {
+      refreshAccount(acct.id);
+    }, settings.refreshInterval * 1000);
+  }
+}
+
+function stopRefresh(id) {
+  if (refreshTimers[id]) {
+    clearTimeout(refreshTimers[id]);
+    delete refreshTimers[id];
+  }
+}
+
+function stopAllRefresh() {
+  Object.keys(refreshTimers).forEach(id => {
+    clearTimeout(refreshTimers[id]);
+    delete refreshTimers[id];
+  });
+}
+
+function refreshAll() {
+  accounts.forEach(a => refreshAccount(a.id));
+}
+
+// ═══════════════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════════════
+
+function openSettings() {
+  document.getElementById('settings-modal').classList.add('open');
+  document.getElementById('refresh-interval').value = settings.refreshInterval;
+  updateToggle('toggle-types', settings.showTypes);
+  updateToggle('toggle-compact', settings.compact);
+  updateToggle('toggle-ach', settings.showAch);
+  updateToggle('toggle-bounties', settings.showBounties);
+}
+
+function closeSettings() {
+  document.getElementById('settings-modal').classList.remove('open');
+}
+
+function saveSettings() {
+  settings.refreshInterval = parseInt(document.getElementById('refresh-interval').value);
+  saveData();
+  // Reschedule all
+  stopAllRefresh();
+  accounts.forEach(a => scheduleRefresh(a));
+}
+
+function toggleSetting(key) {
+  settings[key === 'types' ? 'showTypes' : key === 'compact' ? 'compact' : key === 'ach' ? 'showAch' : 'showBounties'] ^= true;
+  const map = { types: 'toggle-types', compact: 'toggle-compact', ach: 'toggle-ach', bounties: 'toggle-bounties' };
+  updateToggle(map[key], settings[key === 'types' ? 'showTypes' : key === 'compact' ? 'compact' : key === 'ach' ? 'showAch' : 'showBounties']);
+  saveData();
+  render();
+}
+
+function updateToggle(id, on) {
+  const el = document.getElementById(id);
+  if (on) el.classList.add('on');
+  else el.classList.remove('on');
+}
+
+function applySettings() {
+  document.getElementById('refresh-interval').value = settings.refreshInterval;
+}
+
+// ═══════════════════════════════════════════════════
+// RENDERING
+// ═══════════════════════════════════════════════════
+
+function render() {
+  const container = document.getElementById('accounts-container');
+  const empty = document.getElementById('empty-state');
+
+  if (accounts.length === 0) {
+    container.innerHTML = '';
+    container.appendChild(empty);
+    empty.style.display = 'block';
+    return;
+  }
+
+  empty.style.display = 'none';
+  container.innerHTML = '';
+
+  accounts.forEach(acct => {
+    const card = buildAccountCard(acct);
+    container.appendChild(card);
+  });
+}
+
+function renderAccountCard(acct) {
+  const existing = document.getElementById(`card-${acct.id}`);
+  const newCard = buildAccountCard(acct);
+  if (existing) {
+    existing.replaceWith(newCard);
+  }
+}
+
+function buildAccountCard(acct) {
+  const card = document.createElement('div');
+  card.className = 'account-card';
+  card.id = `card-${acct.id}`;
+
+  const data = acct.lastData;
+  const err = acct.lastError;
+
+  // Header
+  const header = document.createElement('div');
+  header.className = 'account-header';
+  header.innerHTML = `
+    <div class="account-info">
+      <div class="account-avatar">⚔️</div>
+      <div>
+        <div class="account-name">${escapeHtml(acct.label)}</div>
+        <div class="account-meta">${data ? escapeHtml(data.accountInfo.name) : (acct.name || 'Not loaded')} ${acct.world ? '· World ' + acct.world : ''}</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+      <div class="account-status">
+        <div class="status-dot ${data ? 'online' : err ? 'error' : ''}"></div>
+        <span>${data ? 'Synced' : err ? 'Error' : 'Loading...'}</span>
+      </div>
+      <button class="btn btn-sm" onclick="refreshAccount('${acct.id}')" title="Refresh now">🔄</button>
+      <button class="btn btn-sm btn-danger" onclick="removeAccount('${acct.id}')" title="Remove">✕</button>
+    </div>
+  `;
+  card.appendChild(header);
+
+  // Body
+  const body = document.createElement('div');
+  body.className = 'account-body';
+
+  if (err) {
+    body.innerHTML = `<div class="error-banner">⚠️ ${escapeHtml(err)}</div>`;
+  } else if (!data) {
+    body.innerHTML = `<div class="loading-row"><div class="spinner"></div> Loading account data...</div>`;
+  } else {
+    // ── Weekly Raid Clears ──
+    const clearsSet = new Set(data.raidClears);
+    const totalBosses = RAID_WINGS.reduce((s, w) => s + w.bosses.length, 0);
+    const totalClears = data.raidClears.length;
+
+    body.innerHTML += `
+      <div class="section-title">
+        Weekly Raid Clears
+        <span class="section-count">${totalClears}/${totalBosses}</span>
+      </div>
+      <div class="wings-grid">
+        ${RAID_WINGS.map(wing => {
+          const wingClears = wing.bosses.filter(b => clearsSet.has(b.id)).length;
+          const isComplete = wingClears === wing.bosses.length;
+          const isPartial = wingClears > 0;
+          return `
+            <div class="wing-card ${isComplete ? 'complete' : isPartial ? 'partial' : ''}">
+              <div class="wing-header">
+                <span class="wing-name">${escapeHtml(wing.name)}</span>
+                <span class="wing-progress ${isComplete ? 'done' : isPartial ? 'partial' : 'none'}">${wingClears}/${wing.bosses.length}</span>
+              </div>
+              <div class="boss-list">
+                ${wing.bosses.map(boss => {
+                  const done = clearsSet.has(boss.id);
+                  return `
+                    <div class="boss-row">
+                      <div class="boss-check ${done ? 'done' : ''}">${done ? '✓' : ''}</div>
+                      <span class="boss-name ${done ? 'done' : ''}">${escapeHtml(boss.name)}</span>
+                      ${settings.showTypes ? `<span class="boss-type">${boss.type}</span>` : ''}
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+
+    // ── Daily Raid Bounties ──
+    if (settings.showBounties) {
+      const bountyEntries = DAILY_BOUNTY_IDS.map(id => ({
+        id,
+        name: DAILY_BOUNTY_NAMES[id],
+        progress: data.bountyMap[id],
+      }));
+      const bountyDone = bountyEntries.filter(b => b.progress && b.progress.done).length;
+
+      body.innerHTML += `
+        <div class="section-title">
+          Daily Raid Bounties
+          <span class="section-count">${bountyDone}/${bountyEntries.length}</span>
+        </div>
+        <div class="bounties-grid">
+          ${bountyEntries.map(b => {
+            const done = b.progress && b.progress.done;
+            return `
+              <div class="bounty-card ${done ? 'done' : 'not-done'}">
+                <div class="bounty-icon">${done ? '✅' : '⬜'}</div>
+                <div>
+                  <div class="bounty-name">${escapeHtml(b.name)}</div>
+                  <div class="bounty-status">${done ? 'Completed today' : 'Not done'}</div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    // ── Weekly Achievements ──
+    if (settings.showAch) {
+      const achEntries = WEEKLY_ACH_IDS.map(id => ({
+        id,
+        name: WEEKLY_ACH_NAMES[id],
+        progress: data.weeklyMap[id],
+      }));
+
+      body.innerHTML += `
+        <div class="section-title">Weekly Achievements</div>
+        <div class="achievements-list">
+          ${achEntries.map(a => {
+            const done = a.progress && a.progress.done;
+            const current = a.progress ? (a.progress.current || 0) : 0;
+            const max = a.progress ? (a.progress.max || 1) : 1;
+            const pct = Math.round((current / max) * 100);
+            return `
+              <div class="ach-row ${done ? 'done' : ''}">
+                <div class="ach-check ${done ? 'done' : ''}">${done ? '✓' : ''}</div>
+                <span class="ach-name ${done ? 'done' : ''}">${escapeHtml(a.name)}</span>
+                <div class="ach-bar"><div class="ach-bar-fill ${done ? 'green' : 'gold'}" style="width:${pct}%"></div></div>
+                <span class="ach-text">${current}/${max}</span>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    // Last updated
+    if (acct.lastUpdated) {
+      body.innerHTML += `<div class="last-updated">Last updated: ${new Date(acct.lastUpdated).toLocaleString()}</div>`;
+    }
+  }
+
+  card.appendChild(body);
+  return card;
+}
+
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+
+loadData();
+render();
+accounts.forEach(a => {
+  refreshAccount(a.id);
+});
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+  }
+  if (e.key === 'r' && e.ctrlKey) {
+    e.preventDefault();
+    refreshAll();
+  }
+});
+</script>
+</body>
+</html>
