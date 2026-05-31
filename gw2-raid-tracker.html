@@ -1119,7 +1119,20 @@ function applySettings() {
 
 function render() {
   const container = document.getElementById('accounts-container');
-  const empty = document.getElementById('empty-state');
+  let empty = document.getElementById('empty-state');
+
+  // If empty-state was removed from DOM (by previous render), recreate it
+  if (!empty) {
+    empty = document.createElement('div');
+    empty.className = 'empty-state';
+    empty.id = 'empty-state';
+    empty.innerHTML = `
+      <div class="icon">🗡️</div>
+      <h3>No accounts added</h3>
+      <p>Add your GW2 API key to start tracking weekly raid clears, daily bounties, and achievements.</p>
+      <button class="btn btn-primary" onclick="openAddAccount()">+ Add Your First Account</button>
+    `;
+  }
 
   if (accounts.length === 0) {
     container.innerHTML = '';
@@ -1139,9 +1152,15 @@ function render() {
 
 function renderAccountCard(acct) {
   const existing = document.getElementById(`card-${acct.id}`);
-  const newCard = buildAccountCard(acct);
   if (existing) {
+    const newCard = buildAccountCard(acct);
     existing.replaceWith(newCard);
+  } else {
+    const container = document.getElementById('accounts-container');
+    const empty = document.getElementById('empty-state');
+    if (empty) empty.style.display = 'none';
+    const newCard = buildAccountCard(acct);
+    container.appendChild(newCard);
   }
 }
 
