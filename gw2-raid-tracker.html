@@ -705,8 +705,8 @@ let RAID_WINGS = [];
 
 async function fetchRaidStructure() {
   try {
-    const tierIds = await fetch(GW2_BASE + '/raids').then(r => {
-      if (!r.ok) throw new Error(`HTTP ${r.status} for /raids`);
+    const tierIds = await fetch(GW2_BASE + '/raids', { cache: 'no-cache' }).then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status + ' for /raids');
       return r.json();
     });
     if (!Array.isArray(tierIds) || tierIds.length === 0) {
@@ -714,10 +714,12 @@ async function fetchRaidStructure() {
       return;
     }
     const tierData = await Promise.all(
-      tierIds.map(id => fetch(GW2_BASE + '/raids/' + id).then(r => {
-        if (!r.ok) throw new Error(`HTTP ${r.status} for ${id}`);
-        return r.json();
-      }))
+      tierIds.map(function(id) {
+        return fetch(GW2_BASE + '/raids/' + id, { cache: 'no-cache' }).then(function(r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status + ' for ' + id);
+          return r.json();
+        });
+      })
     );
     RAID_WINGS = [];
     for (const tier of tierData) {
