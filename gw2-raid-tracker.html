@@ -705,21 +705,26 @@ let RAID_WINGS = [];
 
 async function fetchRaidStructure() {
   try {
-    // Fetch all wing IDs
-    const wingIds = await fetch(GW2_BASE + '/raids');
-    // Fetch all wing details in parallel
-    const wings = await Promise.all(
-      wingIds.map(id => fetch(GW2_BASE + '/raids/' + id))
+    const tierIds = await fetch(GW2_BASE + '/raids').then(r => {
+      if (!r.ok) throw new Error(`HTTP ${r.status} for /raids`);
+      return r.json();
+    });
+    if (!Array.isArray(tierIds) || tierIds.length === 0) {
+      console.warn('No raid tiers returned');
+      return;
+    }
+    const tierData = await Promise.all(
+      tierIds.map(id => fetch(GW2_BASE + '/raids/' + id).then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status} for ${id}`);
+        return r.json();
+      }))
     );
-    // Flatten wings from all raid tiers, preserving API order
     RAID_WINGS = [];
-    for (const tier of wings) {
+    for (const tier of tierData) {
       for (const w of (tier.wings || [])) {
-        // Format display name from the wing ID
-        const wingName = formatRaidName(w.id);
         RAID_WINGS.push({
           id: w.id,
-          name: wingName,
+          name: formatRaidName(w.id),
           bosses: (w.events || []).map(e => ({
             id: e.id,
             name: formatRaidName(e.id),
@@ -728,9 +733,9 @@ async function fetchRaidStructure() {
         });
       }
     }
+    console.log('RAID_WINGS loaded', RAID_WINGS.length, 'wings');
   } catch (e) {
     console.error('Failed to fetch raid structure:', e);
-    // Fallback: empty, will show loading state
   }
 }
 
