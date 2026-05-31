@@ -341,54 +341,45 @@
     color: var(--text-dim); white-space: nowrap;
   }
 
-  /* ── Weekly Achievements ── */
-  .achievements-list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-bottom: 20px;
-  }
-  .ach-row {
+  /* ── Daily / coming-up dots ── */
+  .qp-progress {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 8px 12px;
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    font-size: 0.8rem;
+    margin-bottom: 8px;
   }
-  .ach-row.done { border-color: var(--green-dim); }
-  .ach-check {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: 2px solid var(--border-light);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    font-size: 0.65rem;
-  }
-  .ach-check.done { border-color: var(--green); background: var(--green-dim); color: var(--green); }
-  .ach-name { flex: 1; font-weight: 500; }
-  .ach-name.done { color: var(--text-dim); }
-  .ach-bar {
-    width: 80px;
-    height: 6px;
+  .qp-bar {
+    flex: 1;
+    height: 8px;
     background: var(--bg4);
-    border-radius: 3px;
+    border-radius: 4px;
     overflow: hidden;
-    flex-shrink: 0;
   }
-  .ach-bar-fill {
+  .qp-bar-fill {
     height: 100%;
-    border-radius: 3px;
+    border-radius: 4px;
     transition: width 0.3s;
   }
-  .ach-bar-fill.green { background: var(--green); }
-  .ach-bar-fill.gold { background: var(--gold); }
-  .ach-text { font-size: 0.7rem; color: var(--text-dim); min-width: 45px; text-align: right; }
+  .qp-bar-fill.green { background: var(--green); }
+  .qp-bar-fill.gold { background: var(--gold); }
+  .qp-text {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    min-width: 80px;
+    text-align: right;
+  }
+
+  /* ── Daily / coming-up dots ── */
+  .dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-left: 4px;
+  }
+  .dot-today { background: #5b9bd5; box-shadow: 0 0 4px #5b9bd8; }
+  .dot-coming { background: #ffb300; box-shadow: 0 0 4px #ffb30080; }
 
   /* ── Weekly Raid Encounters (Strikes) ── */
   .strikes-grid {
@@ -609,6 +600,56 @@
     to { opacity: 1; transform: translateY(0); }
   }
   .account-card { animation: fadeIn 0.3s ease-out; }
+
+  /* ── Account Tabs ── */
+  .tabs-bar {
+    display: flex;
+    gap: 4px;
+    padding: 0 24px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+  }
+  .tab {
+    padding: 10px 18px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+    font-family: var(--font);
+    border-radius: 0;
+  }
+  .tab:hover {
+    color: var(--text-bright);
+    background: var(--bg3);
+  }
+  .tab.active {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+    background: transparent;
+  }
+  .tab .tab-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .tab .tab-dot.online { background: var(--green); }
+  .tab .tab-dot.error { background: var(--red); }
+  .tab .tab-dot.loading { background: var(--orange); }
+  .tab .tab-meta {
+    font-size: 0.68rem;
+    font-weight: 400;
+    color: var(--text-dim);
+    margin-left: 4px;
+  }
 </style>
 </head>
 <body>
@@ -622,9 +663,12 @@
   </div>
 </div>
 
+<!-- Account Tabs (rendered dynamically) -->
+<div class="tabs-bar" id="tabs-bar" style="display:none;"></div>
+
 <div class="container" id="accounts-container">
   <div class="empty-state" id="empty-state">
-    <div class="icon">🗡️</div>
+    <div class="icon">&#x1F5E1;&#xFE0F;</div>
     <h3>No accounts added</h3>
     <p>Add your GW2 API key to start tracking weekly raid clears, daily bounties, and achievements.</p>
     <button class="btn btn-primary" onclick="openAddAccount()">+ Add Your First Account</button>
@@ -672,10 +716,6 @@
     <div class="settings-row">
       <span>Compact mode</span>
       <button class="toggle" id="toggle-compact" onclick="toggleSetting('compact')"></button>
-    </div>
-    <div class="settings-row">
-      <span>Show weekly achievements</span>
-      <button class="toggle on" id="toggle-ach" onclick="toggleSetting('ach')"></button>
     </div>
     <div class="settings-row">
       <span>Show daily bounties</span>
@@ -926,18 +966,10 @@ function getComingUpBountyNameSet() {
   return names;
 }
 
-// Weekly raid achievement IDs
-const WEEKLY_ACH_IDS = [9128, 9147, 9111, 9144, 9120, 9156, 9125, 9123];
-const WEEKLY_ACH_NAMES = {
-  9128: 'Weekly Spirit Vale',
-  9147: 'Weekly Salvation Pass',
-  9111: 'Weekly Hall of Chains',
-  9144: 'Weekly Bastion of the Penitent',
-  9120: 'Weekly Mythwright Gambit',
-  9156: 'Weekly Key of Ahdashim',
-  9125: 'Weekly Raid Encounters',
-  9123: 'Weekly Quickplay Raids',
-};
+// Weekly achievement IDs still needed:
+// 9125 = Weekly Raid Encounters (strikes) — used for strike chip progress
+// 9123 = Weekly Quickplay Raids — shown under daily bounties
+const WEEKLY_ACH_IDS = [9125, 9123];
 
 // Strike encounters tracked by Weekly Raid Encounters (9125) — ordered as in the API.
 // Each entry: { name, bountyId } where bountyId links to the daily bounty achievement.
@@ -963,7 +995,8 @@ const STRIKE_ENCOUNTERS = [
 // Covers raid bosses and strike encounters with naming mismatches vs the bounty list.
 const DISPLAY_NAME_TO_BOUNTY_NAME = {
   // Raid boss name → bounty name
-  'Voice in the Void': 'Voice and Claw of the Fallen',
+  'Adina': 'Cardinal Adina',
+  'Sabir': 'Cardinal Sabir',
   // Strike encounter name (from 9125 bits / API) → bounty name
   'Voice of the Fallen and Claw of the Fallen': 'Voice and Claw of the Fallen',
 };
@@ -989,11 +1022,11 @@ const WING_ACH_MAP = {
 // ═══════════════════════════════════════════════════
 
 let accounts = [];
+let activeAccountId = null; // which account tab is currently shown
 let settings = {
   refreshInterval: 120,
   showTypes: true,
   compact: false,
-  showAch: true,
   showBounties: true,
 };
 let refreshTimers = {};
@@ -1008,25 +1041,66 @@ function loadData() {
     if (raw) {
       const data = JSON.parse(raw);
       accounts = data.accounts || [];
+      activeAccountId = data.activeAccountId || (accounts.length > 0 ? accounts[0].id : null);
       settings = { ...settings, ...data.settings };
     }
   } catch (e) {
     console.error('Failed to load data:', e);
+  }
+  if (accounts.length > 0 && !activeAccountId) {
+    activeAccountId = accounts[0].id;
   }
   applySettings();
 }
 
 function saveData() {
   try {
-    localStorage.setItem('gw2_raid_tracker', JSON.stringify({ accounts, settings }));
+    localStorage.setItem('gw2_raid_tracker', JSON.stringify({ accounts, activeAccountId, settings }));
   } catch (e) {
     console.error('Failed to save data:', e);
   }
 }
 
+// ═══════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════
+
+function switchTab(id) {
+  if (activeAccountId === id) return;
+  activeAccountId = id;
+  saveData();
+  render();
+}
+
+function renderTabs() {
+  const bar = document.getElementById('tabs-bar');
+  if (accounts.length < 2) {
+    bar.style.display = 'none';
+    return;
+  }
+  bar.style.display = 'flex';
+  bar.innerHTML = accounts.map(acct => {
+    const isActive = acct.id === activeAccountId;
+    const data = acct.lastData;
+    const err = acct.lastError;
+    let dotClass = 'loading';
+    if (data) dotClass = 'online';
+    else if (err) dotClass = 'error';
+    const meta = data ? (data.accountInfo ? data.accountInfo.name : '') : '';
+    return `
+      <button class="tab ${isActive ? 'active' : ''}" onclick="switchTab('${acct.id}')">
+        <span class="tab-dot ${dotClass}"></span>
+        ${escapeHtml(acct.label)}
+        ${meta ? `<span class="tab-meta">${escapeHtml(meta)}</span>` : ''}
+      </button>
+    `;
+  }).join('');
+}
+
 function clearAllData() {
   if (!confirm('Remove all accounts and reset settings? This cannot be undone.')) return;
   accounts = [];
+  activeAccountId = null;
   stopAllRefresh();
   saveData();
   closeSettings();
@@ -1152,6 +1226,9 @@ function removeAccount(id) {
   if (!confirm('Remove this account?')) return;
   stopRefresh(id);
   accounts = accounts.filter(a => a.id !== id);
+  if (activeAccountId === id) {
+    activeAccountId = accounts.length > 0 ? accounts[0].id : null;
+  }
   saveData();
   render();
 }
@@ -1218,7 +1295,6 @@ function openSettings() {
   document.getElementById('refresh-interval').value = settings.refreshInterval;
   updateToggle('toggle-types', settings.showTypes);
   updateToggle('toggle-compact', settings.compact);
-  updateToggle('toggle-ach', settings.showAch);
   updateToggle('toggle-bounties', settings.showBounties);
 }
 
@@ -1235,9 +1311,9 @@ function saveSettings() {
 }
 
 function toggleSetting(key) {
-  settings[key === 'types' ? 'showTypes' : key === 'compact' ? 'compact' : key === 'ach' ? 'showAch' : 'showBounties'] ^= true;
-  const map = { types: 'toggle-types', compact: 'toggle-compact', ach: 'toggle-ach', bounties: 'toggle-bounties' };
-  updateToggle(map[key], settings[key === 'types' ? 'showTypes' : key === 'compact' ? 'compact' : key === 'ach' ? 'showAch' : 'showBounties']);
+  settings[key === 'types' ? 'showTypes' : key === 'compact' ? 'compact' : 'showBounties'] ^= true;
+  const map = { types: 'toggle-types', compact: 'toggle-compact', bounties: 'toggle-bounties' };
+  updateToggle(map[key], settings[key === 'types' ? 'showTypes' : key === 'compact' ? 'compact' : 'showBounties']);
   saveData();
   render();
 }
@@ -1283,13 +1359,23 @@ function render() {
   empty.style.display = 'none';
   container.innerHTML = '';
 
-  accounts.forEach(acct => {
+  renderTabs();
+
+  if (accounts.length === 0) return;
+
+  if (!activeAccountId || !accounts.find(a => a.id === activeAccountId)) {
+    activeAccountId = accounts[0].id;
+  }
+
+  const acct = accounts.find(a => a.id === activeAccountId);
+  if (acct) {
     const card = buildAccountCard(acct);
     container.appendChild(card);
-  });
+  }
 }
 
 function renderAccountCard(acct) {
+  if (acct.id !== activeAccountId) return;
   const existing = document.getElementById(`card-${acct.id}`);
   if (existing) {
     const newCard = buildAccountCard(acct);
@@ -1347,8 +1433,15 @@ function buildAccountCard(acct) {
     const totalBosses = RAID_WINGS.reduce((s, w) => s + w.bosses.length, 0);
     const totalClears = data.raidClears.length;
 
-    // Daily indicator sets
-    const todaysNames = getTodaysBountyNameSet();
+    // Daily indicator sets.
+    // "Today" names come from the live API (data.bountyMap), NOT the rotation,
+    // to avoid drift if the rotation epoch is off.
+    // "Coming up" names use the rotation for the preview schedule.
+    const todaysNames = new Set(
+      Object.keys(data.bountyMap).map(Number)
+        .filter(id => ALL_BOUNTY_NAMES[id])
+        .map(id => ALL_BOUNTY_NAMES[id])
+    );
     const comingUpNames = getComingUpBountyNameSet();
 
     body.innerHTML += `
@@ -1494,34 +1587,24 @@ function buildAccountCard(acct) {
       `;
     }
 
-    // ── Weekly Achievements ──
-    if (settings.showAch) {
-      const achEntries = WEEKLY_ACH_IDS.map(id => ({
-        id,
-        name: WEEKLY_ACH_NAMES[id],
-        progress: data.weeklyMap[id],
-      }));
+    // ── Weekly Quickplay Raids ──
+    const qp = data.weeklyMap[9123] || null;
+    const qpDone = qp && qp.done;
+    const qpCurrent = qp ? (qp.current || 0) : 0;
+    const qpMax = qp ? (qp.max || 10) : 10;
+    const qpPct = Math.round((qpCurrent / qpMax) * 100);
 
-      body.innerHTML += `
-        <div class="section-title">Weekly Achievements</div>
-        <div class="achievements-list">
-          ${achEntries.map(a => {
-            const done = a.progress && a.progress.done;
-            const current = a.progress ? (a.progress.current || 0) : 0;
-            const max = a.progress ? (a.progress.max || 1) : 1;
-            const pct = Math.round((current / max) * 100);
-            return `
-              <div class="ach-row ${done ? 'done' : ''}">
-                <div class="ach-check ${done ? 'done' : ''}">${done ? '✓' : ''}</div>
-                <span class="ach-name ${done ? 'done' : ''}">${escapeHtml(a.name)}</span>
-                <div class="ach-bar"><div class="ach-bar-fill ${done ? 'green' : 'gold'}" style="width:${pct}%"></div></div>
-                <span class="ach-text">${current}/${max}</span>
-              </div>
-            `;
-          }).join('')}
-        </div>
-      `;
-    }
+    body.innerHTML += `
+      <div class="section-title">
+        Weekly Quickplay Raids
+        <span class="section-count">${qpCurrent}/${qpMax}</span>
+      </div>
+      <div class="qp-progress">
+        <div class="qp-bar"><div class="qp-bar-fill ${qpDone ? 'green' : 'gold'}" style="width:${qpPct}%"></div></div>
+        <span class="qp-text">${qpDone ? 'Completed' : `${qpCurrent}/${qpMax} raids`}</span>
+      </div>
+      <div style="height:20px;"></div>
+    `;
 
     // Last updated
     if (acct.lastUpdated) {
