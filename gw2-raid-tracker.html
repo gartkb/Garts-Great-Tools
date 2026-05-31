@@ -646,95 +646,93 @@
 
 const GW2_BASE = 'https://api.guildwars2.com/v2';
 
-// Static raid structure — wings and their boss encounters
-const RAID_WINGS = [
-  {
-    id: 'spirit_vale',
-    name: 'Spirit Vale',
-    wing: 'Forsaken Thicket',
-    bosses: [
-      { id: 'vale_guardian', name: 'Vale Guardian', type: 'Boss' },
-      { id: 'spirit_woods', name: 'Spirit Woods', type: 'Checkpoint' },
-      { id: 'gorseval', name: 'Gorseval', type: 'Boss' },
-      { id: 'sabetha', name: 'Sabetha', type: 'Boss' },
-    ]
-  },
-  {
-    id: 'salvation_pass',
-    name: 'Salvation Pass',
-    wing: 'Forsaken Thicket',
-    bosses: [
-      { id: 'slothasor', name: 'Slothasor', type: 'Boss' },
-      { id: 'bandit_trio', name: 'Bandit Trio', type: 'Boss' },
-      { id: 'matthias', name: 'Matthias', type: 'Boss' },
-    ]
-  },
-  {
-    id: 'stronghold_of_the_faithful',
-    name: 'Stronghold of the Faithful',
-    wing: 'Forsaken Thicket',
-    bosses: [
-      { id: 'escort', name: 'Escort', type: 'Boss' },
-      { id: 'keep_construct', name: 'Keep Construct', type: 'Boss' },
-      { id: 'twisted_castle', name: 'Twisted Castle', type: 'Checkpoint' },
-      { id: 'xera', name: 'Xera', type: 'Boss' },
-    ]
-  },
-  {
-    id: 'bastion_of_the_penitent',
-    name: 'Bastion of the Penitent',
-    wing: 'Bastion of the Penitent',
-    bosses: [
-      { id: 'cairn', name: 'Cairn', type: 'Boss' },
-      { id: 'mursaat_overseer', name: 'Mursaat Overseer', type: 'Boss' },
-      { id: 'samarog', name: 'Samarog', type: 'Boss' },
-      { id: 'deimos', name: 'Deimos', type: 'Boss' },
-    ]
-  },
-  {
-    id: 'hall_of_chains',
-    name: 'Hall of Chains',
-    wing: 'Hall of Chains',
-    bosses: [
-      { id: 'soulless_horror', name: 'Soulless Horror', type: 'Boss' },
-      { id: 'river_of_souls', name: 'River of Souls', type: 'Boss' },
-      { id: 'statues_of_grenth', name: 'Statues of Grenth', type: 'Boss' },
-      { id: 'voice_in_the_void', name: 'Voice in the Void', type: 'Boss' },
-    ]
-  },
-  {
-    id: 'mythwright_gambit',
-    name: 'Mythwright Gambit',
-    wing: 'Mythwright Gambit',
-    bosses: [
-      { id: 'conjured_amalgamate', name: 'Conjured Amalgamate', type: 'Boss' },
-      { id: 'twin_largos', name: 'Twin Largos', type: 'Boss' },
-      { id: 'qadim', name: 'Qadim', type: 'Boss' },
-    ]
-  },
-  {
-    id: 'the_key_ahdashim',
-    name: 'Key of Ahdashim',
-    wing: 'Key of Ahdashim',
-    bosses: [
-      { id: 'adina', name: 'Adina', type: 'Boss' },
-      { id: 'sabir', name: 'Sabir', type: 'Boss' },
-      { id: 'gate', name: 'Gate', type: 'Boss' },
-      { id: 'dhuum', name: 'Dhuum', type: 'Boss' },
-    ]
-  },
-  {
-    id: 'mount_balrior',
-    name: 'Mount Balrior',
-    wing: 'Mount Balrior',
-    bosses: [
-      { id: 'camp', name: 'The Storm', type: 'Checkpoint' },
-      { id: 'greer', name: 'Greer', type: 'Boss' },
-      { id: 'decima', name: 'Decima', type: 'Boss' },
-      { id: 'ura', name: 'Ura', type: 'Boss' },
-    ]
-  },
-];
+// ═══════════════════════════════════════════════════
+// RAID STRUCTURE — fetched from /v2/raids at startup
+// Each wing: { id, name, bosses: [{ id, name, type }] }
+// ═══════════════════════════════════════════════════
+
+// Known display names for raid IDs that don't format well from snake_case
+const RAID_DISPLAY_NAMES = {
+  // Wings
+  spirit_vale: 'Spirit Vale',
+  salvation_pass: 'Salvation Pass',
+  stronghold_of_the_faithful: 'Stronghold of the Faithful',
+  bastion_of_the_penitent: 'Bastion of the Penitent',
+  hall_of_chains: 'Hall of Chains',
+  mythwright_gambit: 'Mythwright Gambit',
+  the_key_of_ahdashim: 'Key of Ahdashim',
+  mount_balrior: 'Mount Balrior',
+  // Encounters
+  vale_guardian: 'Vale Guardian',
+  spirit_woods: 'Spirit Woods',
+  gorseval: 'Gorseval',
+  sabetha: 'Sabetha',
+  slothasor: 'Slothasor',
+  bandit_trio: 'Bandit Trio',
+  matthias: 'Matthias',
+  escort: 'Escort',
+  keep_construct: 'Keep Construct',
+  twisted_castle: 'Twisted Castle',
+  xera: 'Xera',
+  cairn: 'Cairn',
+  mursaat_overseer: 'Mursaat Overseer',
+  samarog: 'Samarog',
+  deimos: 'Deimos',
+  soulless_horror: 'Soulless Horror',
+  river_of_souls: 'River of Souls',
+  statues_of_grenth: 'Statues of Grenth',
+  voice_in_the_void: 'Voice in the Void',
+  conjured_amalgamate: 'Conjured Amalgamate',
+  twin_largos: 'Twin Largos',
+  qadim: 'Qadim',
+  adina: 'Adina',
+  sabir: 'Sabir',
+  gate: 'Gate',
+  qadim_the_peerless: 'Qadim the Peerless',
+  camp: 'The Storm',
+  greer: 'Greer',
+  decima: 'Decima',
+  ura: 'Ura',
+};
+
+function formatRaidName(id) {
+  if (RAID_DISPLAY_NAMES[id]) return RAID_DISPLAY_NAMES[id];
+  // Fallback: convert snake_case to Title Case
+  return id.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+let RAID_WINGS = [];
+
+async function fetchRaidStructure() {
+  try {
+    // Fetch all wing IDs
+    const wingIds = await fetch(GW2_BASE + '/raids');
+    // Fetch all wing details in parallel
+    const wings = await Promise.all(
+      wingIds.map(id => fetch(GW2_BASE + '/raids/' + id))
+    );
+    // Flatten wings from all raid tiers, preserving API order
+    RAID_WINGS = [];
+    for (const tier of wings) {
+      for (const w of (tier.wings || [])) {
+        // Format display name from the wing ID
+        const wingName = formatRaidName(w.id);
+        RAID_WINGS.push({
+          id: w.id,
+          name: wingName,
+          bosses: (w.events || []).map(e => ({
+            id: e.id,
+            name: formatRaidName(e.id),
+            type: e.type,
+          })),
+        });
+      }
+    }
+  } catch (e) {
+    console.error('Failed to fetch raid structure:', e);
+    // Fallback: empty, will show loading state
+  }
+}
 
 // Daily bounty IDs are determined by the deterministic 12-day rotation below.
 // Use getBountiesForDay(0) to get today's active bounty entries.
@@ -1381,9 +1379,12 @@ function toggleTomorrow(btn) {
 // ═══════════════════════════════════════════════════
 
 loadData();
-render();
-accounts.forEach(a => {
-  refreshAccount(a.id);
+// Fetch raid structure from API first, then render
+fetchRaidStructure().then(() => {
+  render();
+  accounts.forEach(a => {
+    refreshAccount(a.id);
+  });
 });
 
 // Close modals on overlay click
