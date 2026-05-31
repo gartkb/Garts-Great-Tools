@@ -309,6 +309,25 @@
   .bounty-name { font-size: 0.8rem; font-weight: 600; }
   .bounty-card.done .bounty-name { color: var(--green); }
   .bounty-status { font-size: 0.68rem; color: var(--text-dim); margin-top: 2px; }
+  .bounty-card-tomorrow { border-style: dashed; opacity: 0.7; }
+  .tomorrow-fallback-tag { font-size: 0.6rem; color: var(--orange); margin-left: 6px; font-weight: 600; }
+  .tomorrow-note { font-size: 0.68rem; color: var(--text-dim); margin-top: 8px; font-style: italic; }
+  .tomorrow-section { margin-top: 12px; }
+  .tomorrow-toggle { font-size: 0.75rem; color: var(--text-dim); }
+  .tomorrow-toggle:hover { color: var(--text); }
+  .tomorrow-arrow { font-size: 0.6rem; margin-right: 4px; display: inline-block; }
+
+  /* ── Schedule grid ── */
+  .schedule-grid { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; }
+  .schedule-row { display: flex; align-items: center; gap: 10px; padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .schedule-row:last-child { border-bottom: none; }
+  .schedule-day-label { font-size: 0.72rem; font-weight: 600; color: var(--text-dim); min-width: 90px; text-align: right; flex-shrink: 0; }
+  .schedule-bounties { display: flex; gap: 4px; flex-wrap: wrap; flex: 1; }
+  .schedule-bounty-chip {
+    font-size: 0.68rem; padding: 3px 8px; border-radius: 4px;
+    background: var(--bg4); border: 1px solid var(--border);
+    color: var(--text-dim); white-space: nowrap;
+  }
 
   /* ── Weekly Achievements ── */
   .achievements-list {
@@ -717,14 +736,113 @@ const RAID_WINGS = [
   },
 ];
 
-// Daily raid bounty achievement IDs
+// Daily raid bounty achievement IDs (today's 4 — also used for progress tracking)
 const DAILY_BOUNTY_IDS = [9121, 9137, 9197, 9201];
-const DAILY_BOUNTY_NAMES = {
+
+// ═══════════════════════════════════════════════════
+// BOUNTY ROTATION DATA — from wiki.guildwars2.com/wiki/Daily_Raid_Bounties
+// The rotation is deterministic, based on day-of-year index:
+//   Boss 1: mod 6 cycle   (6 entries)
+//   Boss 2: mod 12 cycle  (12 entries)
+//   Boss 3: mod 12 cycle  (12 entries, 2 have no achievement ID)
+//   Boss 4: mod 6 cycle   (6 entries)
+// Full pattern repeats every lcm(6,12,12,6) = 12 days.
+// ═══════════════════════════════════════════════════
+
+const ALL_BOUNTY_NAMES = {
+  9109: 'Cairn',
+  9115: 'Cold War',
+  9119: 'Conjured Amalgamate',
   9121: 'Shiverpeaks Pass',
+  9122: 'Gorseval',
+  9124: 'Qadim the Peerless',
+  9126: 'Vale Guardian',
+  9127: 'Cardinal Sabir',
+  9131: 'Whisper of Jormag',
+  9134: 'Temple of Febe',
+  9135: 'Slothasor',
   9137: 'Decima',
+  9138: "Old Lion's Court",
+  9139: 'Fraenir of Jormag',
+  9145: 'Cardinal Adina',
+  9146: 'Soulless Horror',
+  9153: 'Aetherblade Hideout',
+  9155: 'Cosmic Observatory',
+  9158: 'Kela',
+  9160: 'Matthias',
+  9161: 'Greer',
+  9162: 'Twin Largos',
+  9163: 'Keep Construct',
+  9168: 'Harvest Temple',
+  9175: 'Voice and Claw of the Fallen',
+  9176: 'Deimos',
+  9179: 'Kaineng Overlook',
+  9185: 'Sabetha',
+  9189: 'Ura',
+  9191: 'Dhuum',
+  9192: 'Mursaat Overseer',
+  9196: 'Xunlai Jade Junkyard',
   9197: 'Boneskinner',
   9201: 'Qadim',
 };
+
+// Rotation slot 1 — mod 6
+const ROTATION_B1 = [
+  9121, 9175, 9139, 9122, 9109, 9192,
+];
+
+// Rotation slot 2 — mod 12
+const ROTATION_B2 = [
+  9153, 9127, 9131, 9126, 9155, 9115,
+  9197, 9185, 9196, 9134, 9163, 9158,
+];
+
+// Rotation slot 3 — mod 12 (entries without achievement IDs use null)
+const ROTATION_B3 = [
+  { id: 9135, name: 'Slothasor' },
+  { id: 9160, name: 'Matthias' },
+  { id: null, name: 'Xera' },
+  { id: null, name: 'Samarog' },
+  { id: 9119, name: 'Conjured Amalgamate' },
+  { id: 9162, name: 'Twin Largos' },
+  { id: 9137, name: 'Decima' },
+  { id: 9145, name: 'Cardinal Adina' },
+  { id: 9138, name: "Old Lion's Court" },
+  { id: 9189, name: 'Ura' },
+  { id: 9179, name: 'Kaineng Overlook' },
+  { id: 9176, name: 'Deimos' },
+];
+
+// Rotation slot 4 — mod 6
+const ROTATION_B4 = [
+  9201, 9124, 9146, 9168, 9191, 9161,
+];
+
+// ── Compute day-of-year index (0-based) ──
+function dayOfYear(date) {
+  const start = new Date(date.getFullYear(), 0, 0);
+  const diff = date - start;
+  return Math.floor(diff / 86400000);
+}
+
+// ── Get the 4 bounty entries for a given day offset from today (0=today, 1=tomorrow, etc.) ──
+function getBountiesForDay(dayOffset) {
+  const d = new Date();
+  d.setDate(d.getDate() + dayOffset);
+  const idx = dayOfYear(d);
+
+  const b1 = ROTATION_B1[idx % 6];
+  const b2 = ROTATION_B2[idx % 12];
+  const b3 = ROTATION_B3[idx % 12];
+  const b4 = ROTATION_B4[idx % 6];
+
+  return [
+    { id: b1, name: ALL_BOUNTY_NAMES[b1] || b1, slot: 1 },
+    { id: b2, name: ALL_BOUNTY_NAMES[b2] || b2, slot: 2 },
+    { id: b3.id, name: b3.name, slot: 3 },
+    { id: b4, name: ALL_BOUNTY_NAMES[b4] || b4, slot: 4 },
+  ];
+}
 
 // Weekly raid achievement IDs
 const WEEKLY_ACH_IDS = [9128, 9147, 9111, 9144, 9120, 9156, 9125, 9123];
@@ -805,9 +923,8 @@ function clearAllData() {
 // ═══════════════════════════════════════════════════
 
 async function gw2Fetch(path, apiKey) {
-  const resp = await fetch(GW2_BASE + path, {
-    headers: { 'Authorization': `Bearer ${apiKey}` }
-  });
+  const url = GW2_BASE + path + (path.includes('?') ? '&' : '?') + 'access_token=' + apiKey;
+  const resp = await fetch(url);
   if (!resp.ok) {
     const text = await resp.text();
     throw new Error(`GW2 API ${resp.status}: ${text}`);
@@ -819,7 +936,6 @@ async function fetchAccountData(apiKey) {
   const [accountInfo, raidClears, ...bountyProgress] = await Promise.all([
     gw2Fetch('/account', apiKey),
     gw2Fetch('/account/raids', apiKey),
-    // Fetch bounty achievements and weekly achievements in parallel
     ...[...DAILY_BOUNTY_IDS, ...WEEKLY_ACH_IDS].map(id =>
       gw2Fetch(`/account/achievements/${id}`, apiKey).catch(() => null)
     ),
@@ -1111,10 +1227,13 @@ function buildAccountCard(acct) {
     if (settings.showBounties) {
       const bountyEntries = DAILY_BOUNTY_IDS.map(id => ({
         id,
-        name: DAILY_BOUNTY_NAMES[id],
+        name: ALL_BOUNTY_NAMES[id],
         progress: data.bountyMap[id],
       }));
       const bountyDone = bountyEntries.filter(b => b.progress && b.progress.done).length;
+
+      // Tomorrow's bounties from deterministic rotation
+      const tomorrowBounties = getBountiesForDay(1);
 
       body.innerHTML += `
         <div class="section-title">
@@ -1134,6 +1253,31 @@ function buildAccountCard(acct) {
               </div>
             `;
           }).join('')}
+        </div>
+        <div class="tomorrow-section">
+          <button class="btn btn-sm tomorrow-toggle" onclick="toggleTomorrow(this)">
+            <span class="tomorrow-arrow">▶</span>
+            Upcoming Bounty Schedule
+          </button>
+          <div class="tomorrow-panel" style="display:none;">
+            <div class="schedule-grid">
+              ${[1,2,3,4,5,6,7,8,9,10,11,12].map(offset => {
+                const bounties = getBountiesForDay(offset);
+                const d = new Date();
+                d.setDate(d.getDate() + offset);
+                const dayName = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                return `
+                  <div class="schedule-row">
+                    <div class="schedule-day-label">${escapeHtml(dayName)}</div>
+                    <div class="schedule-bounties">
+                      ${bounties.map(b => `<span class="schedule-bounty-chip">${escapeHtml(b.name)}</span>`).join('')}
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+            <div class="tomorrow-note">12-day rotation based on wiki.guildwars2.com/wiki/Daily_Raid_Bounties. Full cycle repeats every 12 days.</div>
+          </div>
         </div>
       `;
     }
@@ -1181,6 +1325,18 @@ function escapeHtml(s) {
   const d = document.createElement('div');
   d.textContent = s;
   return d.innerHTML;
+}
+
+function toggleTomorrow(btn) {
+  const panel = btn.nextElementSibling;
+  const arrow = btn.querySelector('.tomorrow-arrow');
+  if (panel.style.display === 'none') {
+    panel.style.display = 'block';
+    arrow.textContent = '▼';
+  } else {
+    panel.style.display = 'none';
+    arrow.textContent = '▶';
+  }
 }
 
 // ═══════════════════════════════════════════════════
