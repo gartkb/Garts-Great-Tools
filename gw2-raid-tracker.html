@@ -820,9 +820,10 @@ const ROTATION_B4 = [
 
 // ── Compute day-of-year index (0-based) using UTC dates.
 // GW2 dailies reset at midnight UTC, so we must use UTC to match.
+// The rotation data is indexed with a 1-based offset, so we add 1.
 function dayOfYearUTC(date) {
   const yearStart = Date.UTC(date.getUTCFullYear(), 0, 1);
-  return Math.floor((date - yearStart) / 86400000);
+  return Math.floor((date - yearStart) / 86400000) + 1;
 }
 
 // ── Get the 4 bounty entries for a given day offset from today (0=today, 1=tomorrow, etc.) ──
@@ -933,25 +934,32 @@ async function gw2Fetch(path, apiKey) {
 }
 
 async function fetchAccountData(apiKey) {
-  const [accountInfo, raidClears, allAchievements] = await Promise.all([
+  const [accountInfo, raidClears, allAchievements, dailyCategory] = await Promise.all([
     gw2Fetch('/account', apiKey),
     gw2Fetch('/account/raids', apiKey),
     gw2Fetch('/account/achievements', apiKey),
+    gw2Fetch('/achievements/categories/475', apiKey).catch(() => null),
   ]);
 
-  // Build lookup sets from the full achievements list
+  // Build lookup from all account achievements
   const achievementMap = {};
   for (const a of allAchievements) {
     achievementMap[a.id] = a;
   }
 
-  // Get today's bounty IDs from the rotation
-  const todaysBounties = getBountiesForDay(0);
+  // Get today's bounty IDs from the live API category endpoint
+  let todaysBountyIds = [];
+  if (dailyCategory && dailyCategory.achievements) {
+    todaysBountyIds = dailyCategory.achievements;
+  } else {
+    // Fallback to deterministic rotation if category endpoint fails
+    todaysBounties = getBountiesForDay(0);
+    todaysBountyIds = todaysBounties.map(b => b.id).filter(id => id !== null);
+  }
+
   const bountyMap = {};
-  for (const b of todaysBounties) {
-    if (b.id !== null) {
-      bountyMap[b.id] = achievementMap[b.id] || null;
-    }
+  for (const id of todaysBountyIds) {
+    bountyMap[id] = achievementMap[id] || null;
   }
 
   const weeklyMap = {};
@@ -1252,15 +1260,13 @@ function buildAccountCard(acct) {
 
     // ── Daily Raid Bounties ──
     if (settings.showBounties) {
-      // Get today's bounty entries from the deterministic rotation
-      const todaysBounties = getBountiesForDay(0);
-      const bountyEntries = todaysBounties
-        .filter(b => b.id !== null)
-        .map(b => ({
-          id: b.id,
-          name: b.name,
-          progress: data.bountyMap[b.id],
-        }));
+      // Get today's bounty entries from the live category API (via bountyMap keys)
+      const bountyIds = Object.keys(data.bountyMap).map(Number);
+      const bountyEntries = bountyIds.map(id => ({
+        id,
+        name: ALL_BOUNTY_NAMES[id] || `Unknown (${id})`,
+        progress: data.bountyMap[id],
+      }));
       const bountyDone = bountyEntries.filter(b => b.progress && b.progress.done).length;
 
       // Tomorrow's bounties from deterministic rotation
