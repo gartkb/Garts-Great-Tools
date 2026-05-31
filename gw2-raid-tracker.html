@@ -736,8 +736,8 @@ const RAID_WINGS = [
   },
 ];
 
-// Daily raid bounty achievement IDs (today's 4 — also used for progress tracking)
-const DAILY_BOUNTY_IDS = [9121, 9137, 9197, 9201];
+// Daily bounty IDs are determined by the deterministic 12-day rotation below.
+// Use getBountiesForDay(0) to get today's active bounty entries.
 
 // ═══════════════════════════════════════════════════
 // BOUNTY ROTATION DATA — from wiki.guildwars2.com/wiki/Daily_Raid_Bounties
@@ -818,18 +818,18 @@ const ROTATION_B4 = [
   9201, 9124, 9146, 9168, 9191, 9161,
 ];
 
-// ── Compute day-of-year index (0-based) ──
-function dayOfYear(date) {
-  const start = new Date(date.getFullYear(), 0, 0);
-  const diff = date - start;
-  return Math.floor(diff / 86400000);
+// ── Compute day-of-year index (0-based) using UTC dates.
+// GW2 dailies reset at midnight UTC, so we must use UTC to match.
+function dayOfYearUTC(date) {
+  const yearStart = Date.UTC(date.getUTCFullYear(), 0, 1);
+  return Math.floor((date - yearStart) / 86400000);
 }
 
 // ── Get the 4 bounty entries for a given day offset from today (0=today, 1=tomorrow, etc.) ──
 function getBountiesForDay(dayOffset) {
   const d = new Date();
-  d.setDate(d.getDate() + dayOffset);
-  const idx = dayOfYear(d);
+  d.setUTCDate(d.getUTCDate() + dayOffset);
+  const idx = dayOfYearUTC(d);
 
   const b1 = ROTATION_B1[idx % 6];
   const b2 = ROTATION_B2[idx % 12];
@@ -933,23 +933,31 @@ async function gw2Fetch(path, apiKey) {
 }
 
 async function fetchAccountData(apiKey) {
-  const [accountInfo, raidClears, ...bountyProgress] = await Promise.all([
+  const [accountInfo, raidClears, allAchievements] = await Promise.all([
     gw2Fetch('/account', apiKey),
     gw2Fetch('/account/raids', apiKey),
-    ...[...DAILY_BOUNTY_IDS, ...WEEKLY_ACH_IDS].map(id =>
-      gw2Fetch(`/account/achievements/${id}`, apiKey).catch(() => null)
-    ),
+    gw2Fetch('/account/achievements', apiKey),
   ]);
 
+  // Build lookup sets from the full achievements list
+  const achievementMap = {};
+  for (const a of allAchievements) {
+    achievementMap[a.id] = a;
+  }
+
+  // Get today's bounty IDs from the rotation
+  const todaysBounties = getBountiesForDay(0);
   const bountyMap = {};
-  DAILY_BOUNTY_IDS.forEach((id, i) => {
-    bountyMap[id] = bountyProgress[i];
-  });
+  for (const b of todaysBounties) {
+    if (b.id !== null) {
+      bountyMap[b.id] = achievementMap[b.id] || null;
+    }
+  }
 
   const weeklyMap = {};
-  WEEKLY_ACH_IDS.forEach((id, i) => {
-    weeklyMap[id] = bountyProgress[DAILY_BOUNTY_IDS.length + i];
-  });
+  for (const id of WEEKLY_ACH_IDS) {
+    weeklyMap[id] = achievementMap[id] || null;
+  }
 
   return { accountInfo, raidClears, bountyMap, weeklyMap };
 }
@@ -1244,11 +1252,15 @@ function buildAccountCard(acct) {
 
     // ── Daily Raid Bounties ──
     if (settings.showBounties) {
-      const bountyEntries = DAILY_BOUNTY_IDS.map(id => ({
-        id,
-        name: ALL_BOUNTY_NAMES[id],
-        progress: data.bountyMap[id],
-      }));
+      // Get today's bounty entries from the deterministic rotation
+      const todaysBounties = getBountiesForDay(0);
+      const bountyEntries = todaysBounties
+        .filter(b => b.id !== null)
+        .map(b => ({
+          id: b.id,
+          name: b.name,
+          progress: data.bountyMap[b.id],
+        }));
       const bountyDone = bountyEntries.filter(b => b.progress && b.progress.done).length;
 
       // Tomorrow's bounties from deterministic rotation
@@ -1283,8 +1295,8 @@ function buildAccountCard(acct) {
               ${[1,2,3,4,5,6,7,8,9,10,11,12].map(offset => {
                 const bounties = getBountiesForDay(offset);
                 const d = new Date();
-                d.setDate(d.getDate() + offset);
-                const dayName = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                d.setUTCDate(d.getUTCDate() + offset);
+                const dayName = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' });
                 return `
                   <div class="schedule-row">
                     <div class="schedule-day-label">${escapeHtml(dayName)}</div>
@@ -1295,7 +1307,7 @@ function buildAccountCard(acct) {
                 `;
               }).join('')}
             </div>
-            <div class="tomorrow-note">12-day rotation based on wiki.guildwars2.com/wiki/Daily_Raid_Bounties. Full cycle repeats every 12 days.</div>
+            <div class="tomorrow-note">12-day rotation based on wiki.guildwars2.com/wiki/Daily_Raid_Bounties. Full cycle repeats every 12 days. GW2 resets at midnight UTC.</div>
           </div>
         </div>
       `;
