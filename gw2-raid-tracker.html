@@ -275,6 +275,18 @@
     border-radius: 3px;
   }
 
+  /* ── Daily / coming-up dots ── */
+  .dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-left: 4px;
+  }
+  .dot-today { background: #5b9bd5; box-shadow: 0 0 4px #5b9bd8; }
+  .dot-coming { background: #ffb300; box-shadow: 0 0 4px #ffb30080; }
+
   /* ── Daily Bounties ── */
   .bounties-grid {
     display: grid;
@@ -377,6 +389,43 @@
   .ach-bar-fill.green { background: var(--green); }
   .ach-bar-fill.gold { background: var(--gold); }
   .ach-text { font-size: 0.7rem; color: var(--text-dim); min-width: 45px; text-align: right; }
+
+  /* ── Weekly Raid Encounters (Strikes) ── */
+  .strikes-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+  .strike-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+  .strike-chip.done { border-color: var(--green-dim); }
+  .strike-chip .strike-check {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    border: 1.5px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.6rem;
+  }
+  .strike-chip.done .strike-check {
+    background: var(--green-dim);
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .strike-chip.done .strike-name { color: var(--text-dim); text-decoration: line-through; }
 
   /* ── Add Account Modal ── */
   .modal-overlay {
@@ -850,6 +899,33 @@ function getBountiesForDay(dayOffset) {
   ];
 }
 
+// ── Daily / weekly indicator helpers ──
+
+// Returns a Set of bounty names that are today's active dailies.
+function getTodaysBountyNameSet() {
+  const todays = getBountiesForDay(0);
+  return new Set(todays.map(b => b.name));
+}
+
+// Returns a Set of bounty names that will appear as dailies between tomorrow
+// and the next weekly reset (Monday 00:00 UTC), exclusive of today.
+function getComingUpBountyNameSet() {
+  const names = new Set();
+  // Days until next Monday (UTC). Sunday=0, Monday=1, ... Saturday=6.
+  // We want tomorrow through end-of-Sunday (the day before Monday reset).
+  const now = new Date();
+  const dayOfWeek = now.getUTCDay(); // 0=Sun
+  // Days remaining until next Monday: if today is Sunday (0), 1 day; Monday (1) → 6 days, etc.
+  const daysUntilMonday = (8 - dayOfWeek) % 7 || 7;
+  for (let offset = 1; offset < daysUntilMonday; offset++) {
+    const bounties = getBountiesForDay(offset);
+    for (const b of bounties) {
+      names.add(b.name);
+    }
+  }
+  return names;
+}
+
 // Weekly raid achievement IDs
 const WEEKLY_ACH_IDS = [9128, 9147, 9111, 9144, 9120, 9156, 9125, 9123];
 const WEEKLY_ACH_NAMES = {
@@ -859,9 +935,42 @@ const WEEKLY_ACH_NAMES = {
   9144: 'Weekly Bastion of the Penitent',
   9120: 'Weekly Mythwright Gambit',
   9156: 'Weekly Key of Ahdashim',
-  9125: 'Weekly Raid Encounters (All)',
+  9125: 'Weekly Raid Encounters',
   9123: 'Weekly Quickplay Raids',
 };
+
+// Strike encounters tracked by Weekly Raid Encounters (9125) — ordered as in the API.
+// Each entry: { name, bountyId } where bountyId links to the daily bounty achievement.
+// Guardian's Glade has no bounty ID yet (null).
+const STRIKE_ENCOUNTERS = [
+  { name: 'Shiverpeaks Pass',       bountyId: 9121 },
+  { name: 'Fraenir of Jormag',      bountyId: 9139 },
+  { name: 'Voice of the Fallen and Claw of the Fallen', bountyId: 9175 },
+  { name: 'Whisper of Jormag',      bountyId: 9131 },
+  { name: 'Boneskinner',            bountyId: 9197 },
+  { name: 'Cold War',               bountyId: 9115 },
+  { name: 'Aetherblade Hideout',    bountyId: 9153 },
+  { name: 'Xunlai Jade Junkyard',   bountyId: 9196 },
+  { name: 'Kaineng Overlook',       bountyId: 9179 },
+  { name: 'Harvest Temple',         bountyId: 9168 },
+  { name: 'Cosmic Observatory',     bountyId: 9155 },
+  { name: 'Temple of Febe',         bountyId: 9134 },
+  { name: "Old Lion's Court",       bountyId: 9138 },
+  { name: "Guardian's Glade",       bountyId: null  },
+];
+
+// Map encounter names (from any source) → bounty name for daily-dot matching.
+// Covers raid bosses and strike encounters with naming mismatches vs the bounty list.
+const DISPLAY_NAME_TO_BOUNTY_NAME = {
+  // Raid boss name → bounty name
+  'Voice in the Void': 'Voice and Claw of the Fallen',
+  // Strike encounter name (from 9125 bits / API) → bounty name
+  'Voice of the Fallen and Claw of the Fallen': 'Voice and Claw of the Fallen',
+};
+
+function resolveToBountyName(name) {
+  return DISPLAY_NAME_TO_BOUNTY_NAME[name] || name;
+}
 
 // Wing ID → weekly achievement ID mapping
 const WING_ACH_MAP = {
@@ -939,11 +1048,12 @@ async function gw2Fetch(path, apiKey) {
 }
 
 async function fetchAccountData(apiKey) {
-  const [accountInfo, raidClears, allAchievements, dailyCategory] = await Promise.all([
+  const [accountInfo, raidClears, allAchievements, dailyCategory, weeklyRaidEncountersDef] = await Promise.all([
     gw2Fetch('/account', apiKey),
     gw2Fetch('/account/raids', apiKey),
     gw2Fetch('/account/achievements', apiKey),
     gw2Fetch('/achievements/categories/475', apiKey).catch(() => null),
+    gw2Fetch('/achievements/9125', apiKey).catch(() => null),
   ]);
 
   // Build lookup from all account achievements
@@ -952,13 +1062,21 @@ async function fetchAccountData(apiKey) {
     achievementMap[a.id] = a;
   }
 
+  // Build strike names from the live API definition (9125), falling back to static list
+  let strikeNames = STRIKE_ENCOUNTERS.map(s => s.name);
+  if (weeklyRaidEncountersDef && Array.isArray(weeklyRaidEncountersDef.bits)) {
+    strikeNames = weeklyRaidEncountersDef.bits
+      .filter(b => b.type === 'Text' && b.text)
+      .map(b => b.text);
+  }
+
   // Get today's bounty IDs from the live API category endpoint
   let todaysBountyIds = [];
   if (dailyCategory && dailyCategory.achievements) {
     todaysBountyIds = dailyCategory.achievements;
   } else {
     // Fallback to deterministic rotation if category endpoint fails
-    todaysBounties = getBountiesForDay(0);
+    const todaysBounties = getBountiesForDay(0);
     todaysBountyIds = todaysBounties.map(b => b.id).filter(id => id !== null);
   }
 
@@ -972,7 +1090,7 @@ async function fetchAccountData(apiKey) {
     weeklyMap[id] = achievementMap[id] || null;
   }
 
-  return { accountInfo, raidClears, bountyMap, weeklyMap };
+  return { accountInfo, raidClears, bountyMap, weeklyMap, strikeNames };
 }
 
 // ═══════════════════════════════════════════════════
@@ -1229,6 +1347,10 @@ function buildAccountCard(acct) {
     const totalBosses = RAID_WINGS.reduce((s, w) => s + w.bosses.length, 0);
     const totalClears = data.raidClears.length;
 
+    // Daily indicator sets
+    const todaysNames = getTodaysBountyNameSet();
+    const comingUpNames = getComingUpBountyNameSet();
+
     body.innerHTML += `
       <div class="section-title">
         Weekly Raid Clears
@@ -1248,15 +1370,63 @@ function buildAccountCard(acct) {
               <div class="boss-list">
                 ${wing.bosses.map(boss => {
                   const done = clearsSet.has(boss.id);
+                  const bossName = boss.name;
+                  // Resolve display name → bounty name for matching
+                  const bountyName = resolveToBountyName(bossName);
+                  const isToday = todaysNames.has(bountyName);
+                  const isComing = !isToday && comingUpNames.has(bountyName);
+                  let dotHtml = '';
+                  if (isToday) dotHtml = '<span class="dot dot-today" title="Today\'s daily"></span>';
+                  else if (isComing) dotHtml = '<span class="dot dot-coming" title="Coming up this week"></span>';
                   return `
                     <div class="boss-row">
                       <div class="boss-check ${done ? 'done' : ''}">${done ? '✓' : ''}</div>
-                      <span class="boss-name ${done ? 'done' : ''}">${escapeHtml(boss.name)}</span>
+                      <span class="boss-name ${done ? 'done' : ''}">${escapeHtml(bossName)}</span>
+                      ${dotHtml}
                       ${settings.showTypes ? `<span class="boss-type">${boss.type}</span>` : ''}
                     </div>
                   `;
                 }).join('')}
               </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+
+    // ── Weekly Raid Encounters (Strikes) ──
+    const weeklyEnc = data.weeklyMap[9125] || null;
+    const strikeBitsDone = weeklyEnc && weeklyEnc.bits ? new Set(weeklyEnc.bits) : new Set();
+    const strikeMax = (data.strikeNames || []).length;
+    const strikeDone = strikeBitsDone.size;
+    // Build sets of strike chip names that are today's dailies or coming up.
+    // Resolves display names → bounty names so the matching works across naming differences.
+    const strikeTodays = new Set();
+    const strikeComing = new Set();
+    for (const s of (data.strikeNames || [])) {
+      const bountyName = resolveToBountyName(s);
+      if (todaysNames.has(bountyName)) strikeTodays.add(s);
+      else if (comingUpNames.has(bountyName)) strikeComing.add(s);
+    }
+
+    body.innerHTML += `
+      <div class="section-title">
+        Weekly Raid Encounters
+        <span class="section-count">${strikeDone}/${strikeMax}</span>
+      </div>
+      <div class="strikes-grid">
+        ${(data.strikeNames || []).map((name, idx) => {
+          const done = strikeBitsDone.has(idx);
+          const isToday = strikeTodays.has(name);
+          const isComing = !isToday && strikeComing.has(name);
+          let dots = '';
+          if (isToday) dots = '<span class="dot dot-today" title="Today\'s daily"></span>';
+          else if (isComing) dots = '<span class="dot dot-coming" title="Coming up this week"></span>';
+          return `
+            <div class="strike-chip ${done ? 'done' : ''}">
+              <span class="strike-check ${done ? 'done' : ''}">${done ? '✓' : ''}</span>
+              <span class="strike-name ${done ? 'done' : ''}">${escapeHtml(name)}</span>
+              ${dots}
             </div>
           `;
         }).join('')}
