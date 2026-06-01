@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
   <defs>
-    <!-- Background radial gradient matching --bg and --bg3 -->
+    <!-- Background radial gradient matching the bg and bg3 variables -->
     <radialGradient id="bgGlow" cx="50%" cy="50%" r="50%">
       <stop offset="0%" stop-color="#1c2028" />
       <stop offset="100%" stop-color="#0d0f12" />
@@ -17,7 +17,7 @@
     <g id="sword">
       <!-- Blade Left Facet (Light Gold) -->
       <path d="M 0,-240 L -16,-40 L -10,0 L 0,0 Z" fill="#e8c36e" />
-      <!-- Blade Right Facet (Darker Gold --gold) -->
+      <!-- Blade Right Facet (Darker Gold variable) -->
       <path d="M 0,-240 L 16,-40 L 10,0 L 0,0 Z" fill="#d4a843" />
       <!-- Fuller / Centerline -->
       <line x1="0" y1="-220" x2="0" y2="-15" stroke="#8a6f2e" stroke-width="2.5" stroke-linecap="round" />
