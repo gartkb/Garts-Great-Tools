@@ -1047,6 +1047,16 @@ function loadData() {
   } catch (e) {
     console.error('Failed to load data:', e);
   }
+  // Discard stale daily data if UTC day has changed since last update
+  const currentUtcDay = dayOfYearUTC(new Date());
+  accounts.forEach(acct => {
+    if (acct.lastUpdated) {
+      const updatedDay = dayOfYearUTC(new Date(acct.lastUpdated));
+      if (updatedDay !== currentUtcDay) {
+        acct.lastData = null;
+      }
+    }
+  });
   if (accounts.length > 0 && !activeAccountId) {
     activeAccountId = accounts[0].id;
   }
@@ -1113,7 +1123,7 @@ function clearAllData() {
 
 async function gw2Fetch(path, apiKey) {
   const url = GW2_BASE + path + (path.includes('?') ? '&' : '?') + 'access_token=' + apiKey;
-  const resp = await fetch(url);
+  const resp = await fetch(url, { cache: 'no-cache' });
   if (!resp.ok) {
     const text = await resp.text();
     throw new Error(`GW2 API ${resp.status}: ${text}`);
