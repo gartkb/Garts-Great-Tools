@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background radial gradient matching --bg and --bg3 -->
+    <radialGradient id="bgGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1c2028" />
+      <stop offset="100%" stop-color="#0d0f12" />
+    </radialGradient>
+    
+    <!-- Central warm glow behind the blades representing a raid encounter/boss target -->
+    <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ff9800" stop-opacity="0.4" />
+      <stop offset="60%" stop-color="#e53935" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#e53935" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Reusable single sword, aligned vertically with origin (0,0) at the crossguard -->
+    <g id="sword">
+      <!-- Blade Left Facet (Light Gold) -->
+      <path d="M 0,-240 L -16,-40 L -10,0 L 0,0 Z" fill="#e8c36e" />
+      <!-- Blade Right Facet (Darker Gold --gold) -->
+      <path d="M 0,-240 L 16,-40 L 10,0 L 0,0 Z" fill="#d4a843" />
+      <!-- Fuller / Centerline -->
+      <line x1="0" y1="-220" x2="0" y2="-15" stroke="#8a6f2e" stroke-width="2.5" stroke-linecap="round" />
+
+      <!-- Left Crossguard Wing -->
+      <path d="M 0,0 L -46,-10 C -48,-15 -52,-15 -54,-10 C -56,-5 -52,5 -40,10 L 0,15 Z" fill="#8a6f2e" />
+      <!-- Right Crossguard Wing -->
+      <path d="M 0,0 L 46,-10 C 48,-15 52,-15 54,-10 C 56,-5 52,5 40,10 L 0,15 Z" fill="#b58c32" />
+      <!-- Guard Center Ruby -->
+      <rect x="-8" y="2" width="16" height="10" rx="2" fill="#e53935" stroke="#8a2020" stroke-width="1.5" />
+
+      <!-- Leather Grip -->
+      <path d="M -8,15 L -8,75 L 8,75 L 8,15 Z" fill="#252b35" />
+      <!-- Grip Ribs (Red Accent) -->
+      <line x1="-8" y1="27" x2="8" y2="27" stroke="#e53935" stroke-width="2" />
+      <line x1="-8" y1="39" x2="8" y2="39" stroke="#e53935" stroke-width="2" />
+      <line x1="-8" y1="51" x2="8" y2="51" stroke="#e53935" stroke-width="2" />
+      <line x1="-8" y1="63" x2="8" y2="63" stroke="#e53935" stroke-width="2" />
+
+      <!-- Pommel -->
+      <circle cx="0" cy="85" r="12" fill="#d4a843" stroke="#8a6f2e" stroke-width="2" />
+      <circle cx="0" cy="85" r="5" fill="#e53935" />
+    </g>
+  </defs>
+
+  <!-- Outer Dark Shield Ring -->
+  <circle cx="256" cy="256" r="236" fill="url(#bgGlow)" stroke="#2a3040" stroke-width="12" />
+  
+  <!-- Inner Gold Trim Ring -->
+  <circle cx="256" cy="256" r="224" fill="none" stroke="#d4a843" stroke-width="4" />
+
+  <!-- Shield Studs (8-Way Symmetry) -->
+  <g fill="#d4a843">
+    <circle cx="256" cy="32" r="6" />
+    <circle cx="414" cy="98" r="6" />
+    <circle cx="480" cy="256" r="6" />
+    <circle cx="414" cy="414" r="6" />
+    <circle cx="256" cy="480" r="6" />
+    <circle cx="98" cy="414" r="6" />
+    <circle cx="32" cy="256" r="6" />
+    <circle cx="98" cy="98" r="6" />
+  </g>
+
+  <!-- Central Warm Raid Glow -->
+  <circle cx="256" cy="256" r="140" fill="url(#centerGlow)" />
+
+  <!-- Crossed Swords (Scaled and positioned symmetrically) -->
+  <g id="crossed-swords" transform="translate(256, 256) scale(1.15) translate(-256, -256)">
+    <!-- Left Sword: pointing up-right -->
+    <use href="#sword" transform="translate(202, 310) rotate(45)" />
+    <!-- Right Sword: pointing up-left -->
+    <use href="#sword" transform="translate(310, 310) rotate(-45)" />
+  </g>
+</svg>
