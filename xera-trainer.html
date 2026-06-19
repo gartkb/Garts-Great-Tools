@@ -248,6 +248,9 @@
         <!-- Inner ring -->
         <circle cx="250" cy="250" r="100" fill="none" stroke="#313142" stroke-width="2" stroke-dasharray="4,4" />
 
+        <!-- Phase Indicator Text (Now in top-left square area, completely outside the circular arena) -->
+        <text id="phase-label" x="25" y="110" fill="#e74c3c" font-size="22" font-weight="bold" font-family="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">Phase 1</text>
+
         <!-- Gravity Well Overlay (Rotated programmatically) -->
         <path id="gravity-well" d="M 250,50 A 200,200 0 0,0 250,450 L 250,250 Z" 
               fill="rgba(155, 89, 182, 0.35)" stroke="#9b59b6" stroke-width="2" style="display: none;" />
@@ -573,6 +576,7 @@
     const laserEl = document.getElementById('center-laser');
     const bubbleEl = document.getElementById('intervention-bubble');
     const glidePathEl = document.getElementById('glide-path');
+    const phaseLabelEl = document.getElementById('phase-label');
     const stepTitleEl = document.getElementById('stepTitle');
     const stepDescEl = document.getElementById('stepDesc');
     const playBtn = document.getElementById('playBtn');
@@ -583,6 +587,15 @@
       // Title and Description updates
       stepTitleEl.innerText = step.title;
       stepDescEl.innerText = step.desc;
+
+      // Update Phase Label dynamically
+      if (currentStep === 5) {
+        phaseLabelEl.textContent = "Intermission";
+      } else if (currentStep > 5) {
+        phaseLabelEl.textContent = "Phase 2";
+      } else {
+        phaseLabelEl.textContent = "Phase 1";
+      }
 
       // Xera & Tank visibility/positions
       if (step.xera) {
