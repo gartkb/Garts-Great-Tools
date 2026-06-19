@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xera Tanking & Movement Guide</title>
+  <style>
+    :root {
+      --bg-dark: #1e1e24;
+      --panel-bg: #2d2d38;
+      --text-main: #f0f0f5;
+      --accent-color: #9b59b6;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      margin-top: 0;
+      margin-bottom: 5px;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      background-color: var(--panel-bg);
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      box-sizing: border-box;
+    }
+
+    .map-wrapper {
+      position: relative;
+      width: 100%;
+      padding-top: 100%; /* Square Aspect Ratio */
+      background-color: #111116;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 15px;
+      border: 1px solid #3d3d4e;
+    }
+
+    .map-wrapper svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* UI Controls */
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      background-color: #3e3e4f;
+      color: var(--text-main);
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #505066;
+    }
+
+    button#playBtn {
+      background-color: var(--accent-color);
+    }
+
+    button#playBtn:hover {
+      background-color: #af73ca;
+    }
+
+    /* Info Panel */
+    .info-panel {
+      background-color: #1a1a22;
+      padding: 12px;
+      border-radius: 4px;
+      border-left: 4px solid var(--accent-color);
+      min-height: 75px;
+    }
+
+    .step-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #dfdfea;
+    }
+
+    .step-desc {
+      font-size: 0.9rem;
+      line-height: 1.4;
+      color: #b0b0c5;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 10px;
+      font-size: 0.8rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    /* Drifting Bloodstone Orb Animations */
+    @keyframes slide-out {
+      0% {
+        transform: translateX(0);
+        opacity: 0.1;
+      }
+      15% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateX(180px);
+        opacity: 0;
+      }
+    }
+
+    .laser-orb {
+      fill: #c0392b;
+      stroke: #f1c40f;
+      stroke-width: 1.5;
+    }
+
+    .orb-delay-0 {
+      animation: slide-out 2.4s infinite linear;
+    }
+
+    .orb-delay-1 {
+      animation: slide-out 2.4s infinite linear;
+      animation-delay: 1.2s;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Xera Tactical Tanking Map</h1>
+  <div style="font-size:0.85rem; color:#8a8a9e; margin-bottom: 15px;">Guild Wars 2 Interactive Training Tool</div>
+
+  <div class="container">
+    <div class="map-wrapper">
+      <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+        
+        <defs>
+          <!-- Glowing filters for squad markers -->
+          <filter id="glow-green" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <filter id="glow-blue" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <filter id="glow-purple" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <filter id="glow-red" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <filter id="glow-lightgreen" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        <!-- Aesthetic Ring Boundary -->
+        <circle cx="250" cy="250" r="215" fill="none" stroke="#252530" stroke-width="1" />
+        
+        <!-- 6 Outer Platforms (Intermission Gliding) -->
+        <circle cx="135" cy="50" r="25" fill="#252533" stroke="#4d4d66" stroke-width="2" />
+        <circle cx="365" cy="50" r="25" fill="#252533" stroke="#4d4d66" stroke-width="2" />
+        <circle cx="480" cy="250" r="25" fill="#252533" stroke="#4d4d66" stroke-width="2" />
+        <circle cx="365" cy="450" r="25" fill="#252533" stroke="#4d4d66" stroke-width="2" />
+        <circle cx="135" cy="450" r="25" fill="#252533" stroke="#4d4d66" stroke-width="2" />
+        <circle cx="20" cy="250" r="25" fill="#252533" stroke="#4d4d66" stroke-width="2" />
+
+        <!-- Intermission Glide Path -->
+        <path id="glide-path" d="M 135,50 L 365,50 L 480,250 L 365,450 L 135,450 L 20,250 Z" 
+              fill="none" stroke="#f1c40f" stroke-dasharray="6,6" stroke-width="2" style="display: none; opacity: 0.6;" />
+
+        <!-- Main Arena Platform -->
+        <circle cx="250" cy="250" r="200" fill="#202029" stroke="#5d5d76" stroke-width="4" />
+        
+        <!-- 12 Arena Spokes (Grid lines matching clock quadrants exactly) -->
+        <g stroke="#323242" stroke-width="1.5">
+          <line x1="250" y1="50" x2="250" y2="450" />
+          <line x1="50" y1="250" x2="450" y2="250" />
+          <line x1="76.8" y1="150" x2="423.2" y2="350" />
+          <line x1="150" y1="76.8" x2="350" y2="423.2" />
+          <line x1="350" y1="76.8" x2="150" y2="423.2" />
+          <line x1="423.2" y1="150" x2="76.8" y2="350" />
+        </g>
+        
+        <!-- Inner ring -->
+        <circle cx="250" cy="250" r="100" fill="none" stroke="#313142" stroke-width="2" stroke-dasharray="4,4" />
+
+        <!-- Gravity Well Overlay (Rotated programmatically) -->
+        <path id="gravity-well" d="M 250,50 A 200,200 0 0,0 250,450 L 250,250 Z" 
+              fill="rgba(155, 89, 182, 0.35)" stroke="#9b59b6" stroke-width="2" style="display: none;" />
+
+        <!-- Center Laser and Drifting Bloodstone Orbs -->
+        <g id="center-laser" style="display: none;">
+          <!-- Central Laser Pillar -->
+          <circle cx="250" cy="250" r="35" fill="rgba(231, 76, 60, 0.45)" stroke="#e74c3c" stroke-width="2" />
+          <circle cx="250" cy="250" r="75" fill="none" stroke="rgba(231, 76, 60, 0.3)" stroke-width="1.5" stroke-dasharray="3,3" />
+          <circle cx="250" cy="250" r="120" fill="none" stroke="rgba(231, 76, 60, 0.2)" stroke-width="1.5" stroke-dasharray="3,3" />
+          <line x1="250" y1="215" x2="250" y2="285" stroke="#e74c3c" stroke-width="3" />
+          <line x1="215" y1="250" x2="285" y2="250" stroke="#e74c3c" stroke-width="3" />
+
+          <!-- Drifting Orbs Spoke System (Staggered keyframe translate) -->
+          <!-- Spoke 0 deg -->
+          <g transform="translate(250, 250) rotate(0)">
+            <circle class="laser-orb orb-delay-0" cx="0" cy="0" r="6" />
+            <circle class="laser-orb orb-delay-1" cx="0" cy="0" r="6" />
+          </g>
+          <!-- Spoke 45 deg -->
+          <g transform="translate(250, 250) rotate(45)">
+            <circle class="laser-orb orb-delay-0" cx="0" cy="0" r="6" />
+            <circle class="laser-orb orb-delay-1" cx="0" cy="0" r="6" />
+          </g>
+          <!-- Spoke 90 deg -->
+          <g transform="translate(250, 250) rotate(90)">
+            <circle class="laser-orb orb-delay-0" cx="0" cy="0" r="6" />
+            <circle class="laser-orb orb-delay-1" cx="0" cy="0" r="6" />
+          </g>
+          <!-- Spoke 135 deg -->
+          <g transform="translate(250, 250) rotate(135)">
+            <circle class="laser-orb orb-delay-0" cx="0" cy="0" r="6" />
+            <circle class="laser-orb orb-delay-1" cx="0" cy="0" r="6" />
+          </g>
+          <!-- Spoke 180 deg -->
+          <g transform="translate(250, 250) rotate(180)">
+            <circle class="laser-orb orb-delay-0" cx="0" cy="0" r="6" />
+            <circle class="laser-orb orb-delay-1" cx="0" cy="0" r="6" />
+          </g>
+          <!-- Spoke 225 deg -->
+          <g transform="translate(250, 250) rotate(225)">
+            <circle class="laser-orb orb-delay-0" cx="0" cy="0" r="6" />
+            <circle class="laser-orb orb-delay-1" cx="0" cy="0" r="6" />
+          </g>
+          <!-- Spoke 270 deg -->
+          <g transform="translate(250, 250) rotate(270)">
+            <circle class="laser-orb orb-delay-0" cx="0" cy="0" r="6" />
+            <circle class="laser-orb orb-delay-1" cx="0" cy="0" r="6" />
+          </g>
+          <!-- Spoke 315 deg -->
+          <g transform="translate(250, 250) rotate(315)">
+            <circle class="laser-orb orb-delay-0" cx="0" cy="0" r="6" />
+            <circle class="laser-orb orb-delay-1" cx="0" cy="0" r="6" />
+          </g>
+        </g>
+
+        <!-- Dynamic Shards Container -->
+        <g id="shards-group"></g>
+
+        <!-- Intervention Bubble (75% Shield) -->
+        <circle id="intervention-bubble" cx="0" cy="0" r="30" fill="rgba(241, 196, 15, 0.25)" 
+                stroke="#f1c40f" stroke-width="2" stroke-dasharray="4,4" style="display: none;" />
+
+        <!-- Boss (Xera) - Front cone now correctly points at the Tank -->
+        <g id="xera" transform="translate(250,250)" style="transition: transform 0.4s ease;">
+          <path d="M 0,0 L -30,-30 A 42,42 0 0,1 30,-30 Z" fill="rgba(231, 76, 60, 0.25)" stroke="rgba(231, 76, 60, 0.5)" stroke-width="1" />
+          <circle cx="0" cy="0" r="14" fill="#e74c3c" stroke="#c0392b" stroke-width="2.5" />
+          <text x="0" y="4" font-size="11" fill="white" font-weight="bold" text-anchor="middle">X</text>
+        </g>
+
+        <!-- Group Stack -->
+        <g id="group-stack" transform="translate(250,250)" style="transition: transform 0.4s ease;">
+          <circle cx="0" cy="0" r="12" fill="#2ecc71" stroke="#27ae60" stroke-width="2" />
+          <text x="0" y="4" font-size="9" fill="white" font-weight="bold" text-anchor="middle">G</text>
+        </g>
+
+        <!-- Tank Indicator -->
+        <g id="tank-stack" transform="translate(250,250)" style="transition: transform 0.4s ease;">
+          <circle cx="0" cy="0" r="10" fill="#3498db" stroke="#2980b9" stroke-width="2" />
+          <text x="0" y="4" font-size="9" fill="white" font-weight="bold" text-anchor="middle">T</text>
+        </g>
+
+        <!-- GW2 SQUAD MARKERS (Moved to bottom of DOM so they render as top-layer overlay) -->
+        <!-- STAR (NW Outer, Medium Green) -->
+        <g transform="translate(145, 145)" filter="url(#glow-green)">
+          <circle cx="0" cy="0" r="15" fill="rgba(46, 204, 113, 0.2)" stroke="#27ae60" stroke-width="2" />
+          <path d="M 0,-8 L 2.4,-3.1 L 7.6,-2.3 L 3.8,1.4 L 4.7,6.6 L 0,4.1 L -4.7,6.6 L -3.8,1.4 L -7.6,-2.3 L -2.4,-3.1 Z" fill="#eefaf2" stroke="#27ae60" stroke-width="1" />
+        </g>
+
+        <!-- ARROW (NW Inner, Bright Light Green Block Arrow) -->
+        <g transform="translate(200.5, 200.5)" filter="url(#glow-lightgreen)">
+          <circle cx="0" cy="0" r="15" fill="rgba(46, 204, 113, 0.2)" stroke="#2ecc71" stroke-width="2" />
+          <!-- Highly distinct up-pointing block arrow -->
+          <path d="M 0,-8 L -6,-2 L -2,-2 L -2,6 L 2,6 L 2,-2 L 6,-2 Z" fill="#eefaf2" stroke="#2ecc71" stroke-width="1.2" />
+        </g>
+
+        <!-- SQUARE (NE Outer, Blue) -->
+        <g transform="translate(356, 144)" filter="url(#glow-blue)">
+          <circle cx="0" cy="0" r="15" fill="rgba(52, 152, 219, 0.2)" stroke="#3498db" stroke-width="2" />
+          <rect x="-6" y="-6" width="12" height="12" fill="#eef7fc" stroke="#3498db" stroke-width="2" rx="1" />
+        </g>
+
+        <!-- CIRCLE (SE Inner, Purple) -->
+        <g transform="translate(299.5, 299.5)" filter="url(#glow-purple)">
+          <circle cx="0" cy="0" r="15" fill="rgba(155, 89, 182, 0.2)" stroke="#9b59b6" stroke-width="2" />
+          <circle cx="0" cy="0" r="7" fill="#f8f3fc" stroke="#9b59b6" stroke-width="2" />
+        </g>
+
+        <!-- HEART (SE Outer, Red) -->
+        <g transform="translate(356, 356)" filter="url(#glow-red)">
+          <circle cx="0" cy="0" r="15" fill="rgba(231, 76, 60, 0.2)" stroke="#e74c3c" stroke-width="2" />
+          <path d="M 0,-5 C -2.5,-8 -5,-5.5 -5,-3 C -5,0.2 0,4 0,4 C 0,4 5,0.2 5,-3 C 5,-5.5 2.5,-8 0,-5 Z" fill="#fdf4f3" stroke="#e74c3c" stroke-width="1.5" />
+        </g>
+
+      </svg>
+    </div>
+
+    <!-- Interface Buttons -->
+    <div class="controls">
+      <button onclick="prevStep()">Prev</button>
+      <button id="playBtn" onclick="togglePlay()">Play ▶</button>
+      <button onclick="nextStep()">Next</button>
+      <button onclick="resetTimeline()">Reset</button>
+    </div>
+
+    <!-- Step Info Panel -->
+    <div class="info-panel">
+      <div class="step-title" id="stepTitle">Loading...</div>
+      <div class="step-desc" id="stepDesc">Please wait.</div>
+    </div>
+
+    <!-- Simple Legend -->
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #e74c3c;"></div>
+        <span>Xera (X)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #3498db;"></div>
+        <span>Tank (T)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #2ecc71;"></div>
+        <span>Squad (G)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #9b59b6;"></div>
+        <span>Gravity Well</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #8e44ad; border-radius: 0;"></div>
+        <span>Bloodstone Shards</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 12 Outer Clock Coordinates for Precise Persistent Shard Spawning
+    const clockCoords = {
+      12: { x: 250, y: 65 },
+      1: { x: 342.5, y: 90 },
+      2: { x: 410, y: 157.5 },
+      3: { x: 435, y: 250 },
+      4: { x: 410, y: 342.5 },
+      5: { x: 342.5, y: 410 },
+      6: { x: 250, y: 435 },
+      7: { x: 157.5, y: 410 },
+      8: { x: 90, y: 342.5 },
+      9: { x: 65, y: 250 },
+      10: { x: 90, y: 157.5 },
+      11: { x: 157.5, y: 90 }
+    };
+
+    // Frame definitions (Symmetric coordinates, Shard Persistence, and exact Well rotations)
+    const steps = [
+      {
+        title: "Step 1: Phase 1 Start (100% HP)",
+        desc: "The tank holds Xera on Arrow (NW inner). The squad stacks tightly behind her. Shards spawn in a clockwise direction starting at 12:00, 1:00, and 2:00. This NW spot is chosen because the upcoming first Gravity Well will cover the opposite East/SE side.",
+        xera: { x: 200.5, y: 200.5, angle: 315 },
+        tank: { x: 180, y: 180 },
+        group: { x: 215, y: 215 },
+        shards: [12, 1, 2], // Initial Clockwise Spawn
+        wellAngle: null,
+        laser: false,
+        bubble: false,
+        intermission: false
+      },
+      {
+        title: "Step 2: Phase 1 - First Gravity Well (~30s)",
+        desc: "The first Gravity Well spawns, covering the East/SE side of the platform (rotated 210°). The squad is completely safe in the opposite corner on Arrow (NW), demonstrating the visual logic of the starting tanking spot.",
+        xera: { x: 200.5, y: 200.5, angle: 315 },
+        tank: { x: 180, y: 180 },
+        group: { x: 215, y: 215 },
+        shards: [12, 1, 2, 3, 4], 
+        wellAngle: 210, // East-tilted well (Well 1)
+        laser: false,
+        bubble: false,
+        intermission: false
+      },
+      {
+        title: "Step 3: Phase 1 - Deadly Attack (75% HP)",
+        desc: "Xera channels her Deadly Attack. A golden Intervention bubble protects the group stack on Arrow. Shards continue spreading clockwise (3:00 and 4:00). The second slated Gravity Well is skipped during her channel.",
+        xera: { x: 200.5, y: 200.5, angle: 315 },
+        tank: { x: 180, y: 180 },
+        group: { x: 215, y: 215 },
+        shards: [12, 1, 2, 3, 4], 
+        wellAngle: null,
+        laser: false,
+        bubble: true,
+        intermission: false
+      },
+      {
+        title: "Step 4: Phase 1 - Second Well & Laser (~60s)",
+        desc: "The second Gravity Well covers the North/NE side (rotated 120°), and the center Laser fires sending red Bloodstone Orbs outward. Tank pulls Xera to the 5:00 position (SE) to keep the squad safely down in the SE/South, clearly away from the deadly boundary line. The shard at 4:00 is cleared.",
+        xera: { x: 342.5, y: 410, angle: 135 },
+        tank: { x: 355, y: 425 },
+        group: { x: 325, y: 395 },
+        // Shards continue clockwise to 5, 6, 7. Shard at 4 is cleared.
+        shards: [12, 1, 2, 3, 5, 6, 7], 
+        wellAngle: 120, // North-tilted well (Well 2)
+        laser: true,
+        bubble: false,
+        intermission: false
+      },
+      {
+        title: "Step 5: Phase 1 - Reset & Third Well (~90s)",
+        desc: "Laser clears. Tank pulls Xera back slightly NE to Square (NE outer, 1:00). The third Gravity Well covers the West/NW side (rotated 30°), keeping the NE completely safe. Squad clears the northern shards (12, 1, 2) while new shards spawn at 8:00 and 9:00.",
+        xera: { x: 356, y: 144, angle: 45 },
+        tank: { x: 371, y: 129 },
+        group: { x: 341, y: 159 },
+        // 12, 1, 2 cleared. 8, 9 spawned.
+        shards: [3, 5, 6, 7, 8, 9], 
+        wellAngle: 30, // West-tilted well (Well 3) shown in background
+        laser: false,
+        bubble: false,
+        intermission: false
+      },
+      {
+        title: "Step 6: Intermission Phase (50% HP)",
+        desc: "Xera disappears. The squad runs to the launch pad and glides together clockwise around the 6 outer platforms, clearing shards sequentially to safely return.",
+        xera: null,
+        tank: null,
+        group: { x: 135, y: 50 }, // Northwest outer platform
+        shards: [],
+        wellAngle: null,
+        laser: false,
+        bubble: false,
+        intermission: true
+      },
+      {
+        title: "Step 7: Phase 2 Return (50% HP)",
+        desc: "The squad returns. Following standard raid strategy, the tank holds Xera directly on Circle (SE inner, 5:00) where the group stacks. Shards spawn counter-clockwise starting from 11:00. This spot is safe from the upcoming West-tilted Gravity Well.",
+        xera: { x: 299.5, y: 299.5, angle: 135 },
+        tank: { x: 315, y: 315 },
+        group: { x: 284, y: 284 },
+        shards: [11, 10, 9], 
+        wellAngle: null,
+        laser: false,
+        bubble: false,
+        intermission: false
+      },
+      {
+        title: "Step 8: Phase 2 - First Gravity Well (~25s)",
+        desc: "The first Gravity Well of Phase 2 spawns on the West side (rotated 30°). The squad remains completely safe in the unshaded Southeast on Circle, illustrating the visual logic of this landing spot.",
+        xera: { x: 299.5, y: 299.5, angle: 135 },
+        tank: { x: 315, y: 315 },
+        group: { x: 284, y: 284 },
+        shards: [11, 10, 9], 
+        wellAngle: 30, // West-tilted well (Well 1)
+        laser: false,
+        bubble: false,
+        intermission: false
+      },
+      {
+        title: "Step 9: Phase 2 - First Beam & Second Well (~50s)",
+        desc: "The first Beam (center Laser) spawns emitting Bloodstone Orbs. The tank pulls Xera to Star (NW outer, 10:00). At 50s, the second Well covers the North/NE side (rotated 120°). The group stands safely in the unshaded NW zone, clear of the well's dividing line.",
+        xera: { x: 115, y: 175, angle: 315 },
+        tank: { x: 95, y: 155 },
+        group: { x: 135, y: 195 },
+        // Shards continue CCW to 8, 7, 6. Shard at 9 is cleared.
+        shards: [11, 10, 8, 7, 6], 
+        wellAngle: 120, // North well overlapping with laser
+        laser: true,
+        bubble: false,
+        intermission: false
+      },
+      {
+        title: "Step 10: Phase 2 - Return to Circle (~75s)",
+        desc: "Once the center laser clears, the tank pulls Xera back to Circle (SE inner, 5:00) to safely wait out the West-tilted well (rotated 30°). The squad clears shards in preparation for the next move.",
+        xera: { x: 299.5, y: 299.5, angle: 135 },
+        tank: { x: 315, y: 315 },
+        group: { x: 284, y: 284 },
+        shards: [11, 10, 8, 7, 6, 5, 4], 
+        wellAngle: 30, // West-tilted well (Well 5)
+        laser: false,
+        bubble: false,
+        intermission: false
+      },
+      {
+        title: "Step 11: Phase 2 - Second Beam & Square (~100s)",
+        desc: "The second center Laser fires sending waves of Orbs outward. The tank pulls Xera to Square (NE outer, 1:00) after the squad has cleared it of shards. The fourth well (rotated 300°) covers the South side, leaving the NE completely safe.",
+        xera: { x: 356, y: 144, angle: 45 },
+        tank: { x: 371, y: 129 },
+        group: { x: 341, y: 159 },
+        // Squares cleared of shards (11, 10, 12, 1, 2 are clear)
+        shards: [8, 7, 6, 5, 4, 3], 
+        wellAngle: 300, // South-tilted well (Well 4)
+        laser: true,
+        bubble: false,
+        intermission: false
+      }
+    ];
+
+    let currentStep = 0;
+    let playInterval = null;
+
+    // Elements
+    const xeraEl = document.getElementById('xera');
+    const groupEl = document.getElementById('group-stack');
+    const tankEl = document.getElementById('tank-stack');
+    const shardsGroup = document.getElementById('shards-group');
+    const wellEl = document.getElementById('gravity-well');
+    const laserEl = document.getElementById('center-laser');
+    const bubbleEl = document.getElementById('intervention-bubble');
+    const glidePathEl = document.getElementById('glide-path');
+    const stepTitleEl = document.getElementById('stepTitle');
+    const stepDescEl = document.getElementById('stepDesc');
+    const playBtn = document.getElementById('playBtn');
+
+    function renderStep() {
+      const step = steps[currentStep];
+      
+      // Title and Description updates
+      stepTitleEl.innerText = step.title;
+      stepDescEl.innerText = step.desc;
+
+      // Xera & Tank visibility/positions
+      if (step.xera) {
+        xeraEl.style.display = 'block';
+        xeraEl.setAttribute('transform', `translate(${step.xera.x}, ${step.xera.y}) rotate(${step.xera.angle})`);
+      } else {
+        xeraEl.style.display = 'none';
+      }
+
+      if (step.tank) {
+        tankEl.style.display = 'block';
+        tankEl.setAttribute('transform', `translate(${step.tank.x}, ${step.tank.y})`);
+      } else {
+        tankEl.style.display = 'none';
+      }
+
+      // Group Position
+      groupEl.setAttribute('transform', `translate(${step.group.x}, ${step.group.y})`);
+
+      // Shards Rendering ( Diamonds mapped exactly to Clock hours )
+      shardsGroup.innerHTML = '';
+      step.shards.forEach(hour => {
+        const coord = clockCoords[hour];
+        if (coord) {
+          const shard = document.createElementNS("http://www.w3.org/2000/svg", "g");
+          shard.setAttribute('transform', `translate(${coord.x}, ${coord.y})`);
+          
+          // Outer Glow
+          const glow = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          glow.setAttribute('cx', '0');
+          glow.setAttribute('cy', '0');
+          glow.setAttribute('r', '8');
+          glow.setAttribute('fill', 'rgba(142, 68, 173, 0.4)');
+          glow.setAttribute('filter', 'url(#glow-purple)');
+          
+          // Diamond Shape
+          const shape = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+          shape.setAttribute('points', '0,-7 6,0 0,7 -6,0');
+          shape.setAttribute('fill', '#9b59b6');
+          shape.setAttribute('stroke', '#dfbdf2');
+          shape.setAttribute('stroke-width', '1');
+          
+          shard.appendChild(glow);
+          shard.appendChild(shape);
+          shardsGroup.appendChild(shard);
+        }
+      });
+
+      // Gravity Wells (Rotated to match precise tilt angles)
+      if (step.wellAngle !== null) {
+        wellEl.setAttribute('transform', `rotate(${step.wellAngle}, 250, 250)`);
+        wellEl.style.display = 'block';
+      } else {
+        wellEl.style.display = 'none';
+      }
+
+      // Center Laser
+      laserEl.style.display = step.laser ? 'block' : 'none';
+
+      // Intervention Bubble
+      if (step.bubble) {
+        bubbleEl.setAttribute('cx', step.group.x);
+        bubbleEl.setAttribute('cy', step.group.y);
+        bubbleEl.style.display = 'block';
+      } else {
+        bubbleEl.style.display = 'none';
+      }
+
+      // Gliding Path indicator
+      glidePathEl.style.display = step.intermission ? 'block' : 'none';
+    }
+
+    function nextStep() {
+      currentStep = (currentStep + 1) % steps.length;
+      renderStep();
+    }
+
+    // Previous step
+    function prevStep() {
+      currentStep = (currentStep - 1 + steps.length) % steps.length;
+      renderStep();
+    }
+
+    function resetTimeline() {
+      pauseTimeline();
+      currentStep = 0;
+      renderStep();
+    }
+
+    function togglePlay() {
+      if (playInterval) {
+        pauseTimeline();
+      } else {
+        playTimeline();
+      }
+    }
+
+    function playTimeline() {
+      playBtn.innerText = "Pause █";
+      playInterval = setInterval(() => {
+        nextStep();
+      }, 5000); // 5 seconds per frame transition
+    }
+
+    function pauseTimeline() {
+      if (playInterval) {
+        clearInterval(playInterval);
+        playInterval = null;
+      }
+      playBtn.innerText = "Play ▶";
+    }
+
+    // Initial load
+    renderStep();
+  </script>
+</body>
+</html>
