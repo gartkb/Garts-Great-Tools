@@ -215,6 +215,11 @@
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
+
+          <!-- Marker definition for arrows -->
+          <marker id="arrowhead" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#dfbdf2" />
+          </marker>
         </defs>
 
         <!-- Aesthetic Ring Boundary -->
@@ -310,6 +315,10 @@
         <!-- Dynamic Shards Container -->
         <g id="shards-group"></g>
 
+        <!-- Curved Arrows for Spawning Direction -->
+        <path id="spawn-arrow-cw" d="M 205,419 A 175,175 0 0,1 81,205" fill="none" stroke="#9b59b6" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrowhead)" filter="url(#glow-purple)" style="display: none;" />
+        <path id="spawn-arrow-ccw" d="M 205,419 A 175,175 0 0,0 419,295" fill="none" stroke="#9b59b6" stroke-width="3" stroke-dasharray="6,4" marker-end="url(#arrowhead)" filter="url(#glow-purple)" style="display: none;" />
+
         <!-- Intervention Bubble (75% Shield) -->
         <circle id="intervention-bubble" cx="0" cy="0" r="30" fill="rgba(241, 196, 15, 0.25)" 
                 stroke="#f1c40f" stroke-width="2" stroke-dasharray="4,4" style="display: none;" />
@@ -334,33 +343,33 @@
         </g>
 
         <!-- GW2 SQUAD MARKERS (Moved to bottom of DOM so they render as top-layer overlay) -->
-        <!-- STAR (NW Outer, Medium Green) -->
-        <g transform="translate(145, 145)" filter="url(#glow-green)">
+        <!-- STAR (NW Outer, Medium Green - Aligned with 10:00 spoke on outer edge) -->
+        <g transform="translate(90, 157.5)" filter="url(#glow-green)">
           <circle cx="0" cy="0" r="15" fill="rgba(46, 204, 113, 0.2)" stroke="#27ae60" stroke-width="2" />
           <path d="M 0,-8 L 2.4,-3.1 L 7.6,-2.3 L 3.8,1.4 L 4.7,6.6 L 0,4.1 L -4.7,6.6 L -3.8,1.4 L -7.6,-2.3 L -2.4,-3.1 Z" fill="#eefaf2" stroke="#27ae60" stroke-width="1" />
         </g>
 
-        <!-- ARROW (NW Inner, Bright Light Green Block Arrow) -->
-        <g transform="translate(200.5, 200.5)" filter="url(#glow-lightgreen)">
+        <!-- ARROW (NW Inner, Bright Light Green Block Arrow - Aligned with 10:00 spoke) -->
+        <g transform="translate(181, 210)" filter="url(#glow-lightgreen)">
           <circle cx="0" cy="0" r="15" fill="rgba(46, 204, 113, 0.2)" stroke="#2ecc71" stroke-width="2" />
           <!-- Highly distinct up-pointing block arrow -->
           <path d="M 0,-8 L -6,-2 L -2,-2 L -2,6 L 2,6 L 2,-2 L 6,-2 Z" fill="#eefaf2" stroke="#2ecc71" stroke-width="1.2" />
         </g>
 
-        <!-- SQUARE (NE Outer, Blue) -->
-        <g transform="translate(356, 144)" filter="url(#glow-blue)">
+        <!-- SQUARE (NE Outer, Blue - Aligned with 1:00 spoke) -->
+        <g transform="translate(325, 120)" filter="url(#glow-blue)">
           <circle cx="0" cy="0" r="15" fill="rgba(52, 152, 219, 0.2)" stroke="#3498db" stroke-width="2" />
           <rect x="-6" y="-6" width="12" height="12" fill="#eef7fc" stroke="#3498db" stroke-width="2" rx="1" />
         </g>
 
-        <!-- CIRCLE (SE Inner, Purple) -->
-        <g transform="translate(299.5, 299.5)" filter="url(#glow-purple)">
+        <!-- CIRCLE (SE Inner, Purple - Aligned with 4:00 spoke) -->
+        <g transform="translate(319, 290)" filter="url(#glow-purple)">
           <circle cx="0" cy="0" r="15" fill="rgba(155, 89, 182, 0.2)" stroke="#9b59b6" stroke-width="2" />
           <circle cx="0" cy="0" r="7" fill="#f8f3fc" stroke="#9b59b6" stroke-width="2" />
         </g>
 
-        <!-- HEART (SE Outer, Red) -->
-        <g transform="translate(356, 356)" filter="url(#glow-red)">
+        <!-- HEART (SE Outer, Red - Aligned with 4:00 spoke on outer edge) -->
+        <g transform="translate(410, 342.5)" filter="url(#glow-red)">
           <circle cx="0" cy="0" r="15" fill="rgba(231, 76, 60, 0.2)" stroke="#e74c3c" stroke-width="2" />
           <path d="M 0,-5 C -2.5,-8 -5,-5.5 -5,-3 C -5,0.2 0,4 0,4 C 0,4 5,0.2 5,-3 C 5,-5.5 2.5,-8 0,-5 Z" fill="#fdf4f3" stroke="#e74c3c" stroke-width="1.5" />
         </g>
@@ -428,11 +437,11 @@
     const steps = [
       {
         title: "Step 1: Phase 1 Start (100% HP)",
-        desc: "The tank holds Xera on Arrow (NW inner). The squad stacks tightly behind her. Shards spawn in a clockwise direction starting at 12:00, 1:00, and 2:00. This NW spot is chosen because the upcoming first Gravity Well will cover the opposite East/SE side.",
-        xera: { x: 200.5, y: 200.5, angle: 315 },
-        tank: { x: 180, y: 180 },
-        group: { x: 215, y: 215 },
-        shards: [12, 1, 2], // Initial Clockwise Spawn
+        desc: "The tank holds Xera on Arrow (NW inner). The squad stacks tightly behind her. Shards spawn in a clockwise direction starting from the 6:00-7:00 wedge (7:00, 8:00, and 9:00). This NW spot is chosen because the upcoming first Gravity Well will cover the opposite East/SE side.",
+        xera: { x: 181, y: 210, angle: 300 },
+        tank: { x: 155, y: 195 },
+        group: { x: 207, y: 225 },
+        shards: [7, 8, 9], // Initial Clockwise Spawn starting at 6-7 wedge
         wellAngle: null,
         laser: false,
         bubble: false,
@@ -440,11 +449,11 @@
       },
       {
         title: "Step 2: Phase 1 - First Gravity Well (~30s)",
-        desc: "The first Gravity Well spawns, covering the East/SE side of the platform (rotated 210°). The squad is completely safe in the opposite corner on Arrow (NW), demonstrating the visual logic of the starting tanking spot.",
-        xera: { x: 200.5, y: 200.5, angle: 315 },
-        tank: { x: 180, y: 180 },
-        group: { x: 215, y: 215 },
-        shards: [12, 1, 2, 3, 4], 
+        desc: "The first Gravity Well spawns, covering the East/SE side of the platform (rotated 210°). Shards continue spawning clockwise (10:00 and 11:00). The tank and squad hold their positions on Arrow, safely away from the well.",
+        xera: { x: 181, y: 210, angle: 300 },
+        tank: { x: 155, y: 195 },
+        group: { x: 207, y: 225 },
+        shards: [7, 8, 9, 10, 11], 
         wellAngle: 210, // East-tilted well (Well 1)
         laser: false,
         bubble: false,
@@ -452,11 +461,11 @@
       },
       {
         title: "Step 3: Phase 1 - Deadly Attack (75% HP)",
-        desc: "Xera channels her Deadly Attack. A golden Intervention bubble protects the group stack on Arrow. Shards continue spreading clockwise (3:00 and 4:00). The second slated Gravity Well is skipped during her channel.",
-        xera: { x: 200.5, y: 200.5, angle: 315 },
-        tank: { x: 180, y: 180 },
-        group: { x: 215, y: 215 },
-        shards: [12, 1, 2, 3, 4], 
+        desc: "Xera channels her Deadly Attack. A golden Intervention bubble protects the group stack on Arrow. Shards continue spreading clockwise (12:00 and 1:00). The second slated Gravity Well is skipped during her channel.",
+        xera: { x: 181, y: 210, angle: 300 },
+        tank: { x: 155, y: 195 },
+        group: { x: 207, y: 225 },
+        shards: [7, 8, 9, 10, 11, 12, 1], 
         wellAngle: null,
         laser: false,
         bubble: true,
@@ -464,32 +473,44 @@
       },
       {
         title: "Step 4: Phase 1 - Second Well & Laser (~60s)",
-        desc: "The second Gravity Well covers the North/NE side (rotated 120°), and the center Laser fires sending red Bloodstone Orbs outward. Tank pulls Xera to the 5:00 position (SE) to keep the squad safely down in the SE/South, clearly away from the deadly boundary line. The shard at 4:00 is cleared.",
-        xera: { x: 342.5, y: 410, angle: 135 },
-        tank: { x: 355, y: 425 },
-        group: { x: 325, y: 395 },
-        // Shards continue clockwise to 5, 6, 7. Shard at 4 is cleared.
-        shards: [12, 1, 2, 3, 5, 6, 7], 
+        desc: "The second Gravity Well covers the North/NE side (rotated 120°), and the center Laser fires sending red Bloodstone Orbs outward. Tank holds Xera on Heart (4:00 outer) while the group stacks safely behind on the Outer SE side, shifting Southwest to stand clearly outside the gravity well effect.",
+        xera: { x: 395, y: 363, angle: 120 },
+        tank: { x: 410, y: 371 },
+        group: { x: 375, y: 343 },
+        // Shards continue clockwise to 2, 3, 5. Shard at 4 is cleared.
+        shards: [7, 8, 9, 10, 11, 12, 1, 2, 3, 5], 
         wellAngle: 120, // North-tilted well (Well 2)
         laser: true,
         bubble: false,
         intermission: false
       },
       {
-        title: "Step 5: Phase 1 - Reset & Third Well (~90s)",
-        desc: "Laser clears. Tank pulls Xera back slightly NE to Square (NE outer, 1:00). The third Gravity Well covers the West/NW side (rotated 30°), keeping the NE completely safe. Squad clears the northern shards (12, 1, 2) while new shards spawn at 8:00 and 9:00.",
-        xera: { x: 356, y: 144, angle: 45 },
-        tank: { x: 371, y: 129 },
-        group: { x: 341, y: 159 },
-        // 12, 1, 2 cleared. 8, 9 spawned.
-        shards: [3, 5, 6, 7, 8, 9], 
+        title: "Step 5: Phase 1 - Pull to Circle",
+        desc: "The tank pulls Xera back to Circle (SE inner, 4:00). The tank positions on the outside to face Xera out away from the center, while the squad stacks safely behind her towards the center.",
+        xera: { x: 319, y: 290, angle: 120 },
+        tank: { x: 345, y: 305 },
+        group: { x: 293, y: 275 },
+        shards: [7, 8, 9, 10, 11, 12, 1, 2, 3, 5],
+        wellAngle: 120,
+        laser: false,
+        bubble: false,
+        intermission: false
+      },
+      {
+        title: "Step 6: Phase 1 - Reset & Third Well (~90s)",
+        desc: "The third Gravity Well covers the West/NW side (rotated 30°), placing its boundary on the 1:00 spoke. The tank pulls Xera back slightly NE to Square (NE outer, 1:00) while shifting the group slightly Southeast to stand clearly outside the gravity well. Squad clears the northern shards (12, 1, 2) while new shards spawn at 6:00.",
+        xera: { x: 350, y: 135, angle: 30 },
+        tank: { x: 365, y: 109 },
+        group: { x: 335, y: 161 },
+        // 12, 1, 2 cleared. 6 spawned.
+        shards: [3, 5, 6, 7, 8, 9, 10, 11], 
         wellAngle: 30, // West-tilted well (Well 3) shown in background
         laser: false,
         bubble: false,
         intermission: false
       },
       {
-        title: "Step 6: Intermission Phase (50% HP)",
+        title: "Step 7: Intermission Phase (50% HP)",
         desc: "Xera disappears. The squad runs to the launch pad and glides together clockwise around the 6 outer platforms, clearing shards sequentially to safely return.",
         xera: null,
         tank: null,
@@ -501,64 +522,87 @@
         intermission: true
       },
       {
-        title: "Step 7: Phase 2 Return (50% HP)",
-        desc: "The squad returns. Following standard raid strategy, the tank holds Xera directly on Circle (SE inner, 5:00) where the group stacks. Shards spawn counter-clockwise starting from 11:00. This spot is safe from the upcoming West-tilted Gravity Well.",
-        xera: { x: 299.5, y: 299.5, angle: 135 },
-        tank: { x: 315, y: 315 },
-        group: { x: 284, y: 284 },
-        shards: [11, 10, 9], 
+        title: "Step 8: Phase 2 Return (50% HP)",
+        desc: "The squad returns. Following standard raid strategy, the tank holds Xera directly on Circle (SE inner, 4:00) where the group stacks. Shards spawn counter-clockwise starting from the 6:00-7:00 wedge (6:00, 5:00, and 4:00). This spot is safe from the upcoming West-tilted Gravity Well.",
+        xera: { x: 319, y: 290, angle: 120 },
+        tank: { x: 345, y: 305 },
+        group: { x: 293, y: 275 },
+        shards: [6, 5, 4], // Initial Counter-Clockwise Spawn starting at 6-7 wedge
         wellAngle: null,
         laser: false,
         bubble: false,
         intermission: false
       },
       {
-        title: "Step 8: Phase 2 - First Gravity Well (~25s)",
-        desc: "The first Gravity Well of Phase 2 spawns on the West side (rotated 30°). The squad remains completely safe in the unshaded Southeast on Circle, illustrating the visual logic of this landing spot.",
-        xera: { x: 299.5, y: 299.5, angle: 135 },
-        tank: { x: 315, y: 315 },
-        group: { x: 284, y: 284 },
-        shards: [11, 10, 9], 
+        title: "Step 9: Phase 2 - First Gravity Well (~25s)",
+        desc: "The first Gravity Well of Phase 2 spawns on the West side (rotated 30°). The squad and tank hold their exact positions from Step 8, staying safely on the unshaded side of the dividing line.",
+        xera: { x: 319, y: 290, angle: 120 },
+        tank: { x: 345, y: 305 },
+        group: { x: 293, y: 275 },
+        shards: [6, 5, 4], 
         wellAngle: 30, // West-tilted well (Well 1)
         laser: false,
         bubble: false,
         intermission: false
       },
       {
-        title: "Step 9: Phase 2 - First Beam & Second Well (~50s)",
-        desc: "The first Beam (center Laser) spawns emitting Bloodstone Orbs. The tank pulls Xera to Star (NW outer, 10:00). At 50s, the second Well covers the North/NE side (rotated 120°). The group stands safely in the unshaded NW zone, clear of the well's dividing line.",
-        xera: { x: 115, y: 175, angle: 315 },
-        tank: { x: 95, y: 155 },
-        group: { x: 135, y: 195 },
-        // Shards continue CCW to 8, 7, 6. Shard at 9 is cleared.
-        shards: [11, 10, 8, 7, 6], 
+        title: "Step 10: Phase 2 - First Deadly Attack (~40% HP) [and at 20%, 10%]",
+        desc: "Xera channels her Deadly Attack at the 40% HP threshold. A golden Intervention bubble protects the group stack on Circle (SE inner, 4:00). Shards continue spreading counter-clockwise to 3:00.",
+        xera: { x: 319, y: 290, angle: 120 },
+        tank: { x: 345, y: 305 },
+        group: { x: 293, y: 275 },
+        shards: [6, 5, 4, 3], 
+        wellAngle: null, // skipped/expired during channel
+        laser: false,
+        bubble: true,
+        intermission: false
+      },
+      {
+        title: "Step 11: Phase 2 - First Beam & Second Well (~50s)",
+        desc: "The first Beam (center Laser) spawns emitting Bloodstone Orbs. The tank pulls Xera to Star (NW outer, 10:00). At 50s, the second Well covers the North/NE side (rotated 120°). Shards continue spawning counter-clockwise (3:00, 2:00, and 1:00). The group stands safely in the unshaded NW zone, shifting Southwest to stay clear of the well's dividing line.",
+        xera: { x: 75, y: 168, angle: 300 },
+        tank: { x: 58, y: 158 },
+        group: { x: 109, y: 188 },
+        shards: [6, 5, 4, 3, 2, 1], 
         wellAngle: 120, // North well overlapping with laser
         laser: true,
         bubble: false,
         intermission: false
       },
       {
-        title: "Step 10: Phase 2 - Return to Circle (~75s)",
-        desc: "Once the center laser clears, the tank pulls Xera back to Circle (SE inner, 5:00) to safely wait out the West-tilted well (rotated 30°). The squad clears shards in preparation for the next move.",
-        xera: { x: 299.5, y: 299.5, angle: 135 },
-        tank: { x: 315, y: 315 },
-        group: { x: 284, y: 284 },
-        shards: [11, 10, 8, 7, 6, 5, 4], 
+        title: "Step 12: Phase 2 - Return to Circle (~75s)",
+        desc: "Once the center laser clears, the tank pulls Xera back to Circle (SE inner, 4:00) to safely wait out the West-tilted well (rotated 30°), keeping the stack shifted slightly Northeast of the dividing line to stand outside the gravity well effect. Shards continue spawning counter-clockwise (12:00, 11:00, and 10:00).",
+        xera: { x: 339, y: 280, angle: 120 },
+        tank: { x: 365, y: 295 },
+        group: { x: 313, y: 265 },
+        shards: [6, 5, 4, 3, 2, 1, 12, 11, 10], 
         wellAngle: 30, // West-tilted well (Well 5)
         laser: false,
         bubble: false,
         intermission: false
       },
       {
-        title: "Step 11: Phase 2 - Second Beam & Square (~100s)",
-        desc: "The second center Laser fires sending waves of Orbs outward. The tank pulls Xera to Square (NE outer, 1:00) after the squad has cleared it of shards. The fourth well (rotated 300°) covers the South side, leaving the NE completely safe.",
-        xera: { x: 356, y: 144, angle: 45 },
-        tank: { x: 371, y: 129 },
-        group: { x: 341, y: 159 },
-        // Squares cleared of shards (11, 10, 12, 1, 2 are clear)
-        shards: [8, 7, 6, 5, 4, 3], 
+        title: "Step 13: Phase 2 - Second Beam & Square (~100s)",
+        desc: "The second center Laser fires sending waves of Orbs outward. The tank pulls Xera to Square (NE outer, 1:00) after the squad has cleared the NE area of shards (1:00, 2:00, and 12:00). New shards spawn counter-clockwise (9:00 and 8:00). The fourth well (rotated 300°) covers the South side, leaving the NE completely safe.",
+        xera: { x: 325, y: 120, angle: 30 },
+        tank: { x: 340, y: 94 },
+        group: { x: 310, y: 146 },
+        // 12, 1, 2 cleared. 9, 8 spawned.
+        shards: [6, 5, 4, 3, 11, 10, 9, 8], 
         wellAngle: 300, // South-tilted well (Well 4)
         laser: true,
+        bubble: false,
+        intermission: false
+      },
+      {
+        title: "Step 14: Phase 2 - Return to Heart (~120s)",
+        desc: "The second center Laser clears. Squad DPS players quickly clear the Bloodstone shard at 4:00 (Heart). Once cleared, the tank pulls Xera back to Heart (4:00 outer) to safely wait out the North/NE tilted well (rotated 120°), keeping the stack shifted safely Southwest.",
+        xera: { x: 395, y: 363, angle: 120 },
+        tank: { x: 410, y: 371 },
+        group: { x: 375, y: 343 },
+        shards: [6, 5, 3, 11, 10, 9, 8], // Shard 4 is cleared by the DPS
+        wellAngle: 120, // North-tilted well
+        laser: false,
         bubble: false,
         intermission: false
       }
@@ -580,6 +624,8 @@
     const stepTitleEl = document.getElementById('stepTitle');
     const stepDescEl = document.getElementById('stepDesc');
     const playBtn = document.getElementById('playBtn');
+    const spawnArrowCwEl = document.getElementById('spawn-arrow-cw');
+    const spawnArrowCcwEl = document.getElementById('spawn-arrow-ccw');
 
     function renderStep() {
       const step = steps[currentStep];
@@ -589,13 +635,17 @@
       stepDescEl.innerText = step.desc;
 
       // Update Phase Label dynamically
-      if (currentStep === 5) {
+      if (currentStep === 6) {
         phaseLabelEl.textContent = "Intermission";
-      } else if (currentStep > 5) {
+      } else if (currentStep > 6) {
         phaseLabelEl.textContent = "Phase 2";
       } else {
         phaseLabelEl.textContent = "Phase 1";
       }
+
+      // Toggle Spawn Arrows
+      spawnArrowCwEl.style.display = (currentStep === 0) ? 'block' : 'none';
+      spawnArrowCcwEl.style.display = (currentStep === 7) ? 'block' : 'none';
 
       // Xera & Tank visibility/positions
       if (step.xera) {
@@ -620,8 +670,9 @@
       step.shards.forEach(hour => {
         const coord = clockCoords[hour];
         if (coord) {
+          const Math_coord = clockCoords[hour];
           const shard = document.createElementNS("http://www.w3.org/2000/svg", "g");
-          shard.setAttribute('transform', `translate(${coord.x}, ${coord.y})`);
+          shard.setAttribute('transform', `translate(${Math_coord.x}, ${Math_coord.y})`);
           
           // Outer Glow
           const glow = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -685,6 +736,7 @@
       renderStep();
     }
 
+    // Toggle Play / Pause
     function togglePlay() {
       if (playInterval) {
         pauseTimeline();
