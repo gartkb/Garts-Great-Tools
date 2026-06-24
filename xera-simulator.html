@@ -1,0 +1,1714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xera Mechanics Training Simulator</title>
+    <style>
+        :root {
+            --bg-color: #12131a;
+            --panel-bg: #1a1c24;
+            --text-color: #e2e8f0;
+            --border-color: #2d313f;
+            --primary: #8a2be2;
+            --danger: #ef4444;
+            --safe: #22c55e;
+            --tank-color: #3b82f6;
+            --group-color: #10b981;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin: 5px 0;
+            text-align: center;
+            color: #d8b4fe;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        .simulation-pane {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .control-pane {
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .card {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            margin-top: 0;
+            margin-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+            color: #c084fc;
+        }
+
+        /* SVG Styles */
+        svg {
+            background-color: #0b0c10;
+            border-radius: 50%;
+            border: 3px solid var(--border-color);
+            touch-action: none;
+        }
+
+        .wedge {
+            fill: rgba(255, 255, 255, 0.02);
+            stroke: rgba(255, 255, 255, 0.05);
+            stroke-width: 1;
+            transition: fill 0.3s;
+        }
+
+        .wedge.gravity-well {
+            fill: rgba(239, 68, 68, 0.35);
+            stroke: rgba(239, 68, 68, 0.6);
+        }
+
+        .wedge.warning-well {
+            fill: rgba(245, 158, 11, 0.15);
+            stroke: rgba(245, 158, 11, 0.3);
+        }
+
+        .diagonal-line {
+            stroke: rgba(255, 255, 255, 0.15);
+            stroke-width: 1.5;
+            stroke-dasharray: 4 4;
+        }
+
+        .ring {
+            stroke: rgba(255, 255, 255, 0.08);
+            fill: none;
+            stroke-width: 1;
+        }
+
+        .clock-label {
+            fill: #71717a;
+            font-size: 13px;
+            font-weight: bold;
+            text-anchor: middle;
+            dominant-baseline: middle;
+        }
+
+        .draggable {
+            cursor: move;
+        }
+
+        /* UI Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .stat-item {
+            background: #232530;
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: 1px solid #2e3142;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        .stat-value {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        /* Real-time status readouts underneath arena */
+        .readout-bar {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 10px;
+            background: #15161e;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .readout-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .readout-title {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .readout-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #e2e8f0;
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        button {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            flex: 1;
+        }
+
+        button:hover {
+            background-color: #2563eb;
+        }
+
+        button.secondary {
+            background-color: #4b5563;
+        }
+
+        button.secondary:hover {
+            background-color: #374151;
+        }
+
+        button.danger-btn {
+            background-color: var(--danger);
+        }
+
+        button.danger-btn:hover {
+            background-color: #dc2626;
+        }
+
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            margin: 8px 0;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        /* Marker Palette */
+        .palette {
+            display: flex;
+            justify-content: space-around;
+            padding: 5px;
+            background: #1e202b;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .palette-item {
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            border: 1px solid transparent;
+        }
+
+        .palette-item:hover {
+            background: #2d3142;
+        }
+
+        .palette-item.active {
+            border-color: #a855f7;
+            background: #2d3142;
+        }
+
+        /* Guide log */
+        .log-box {
+            height: 120px;
+            overflow-y: auto;
+            background: #0b0c10;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 8px;
+            font-size: 0.8rem;
+            line-height: 1.3;
+        }
+
+        .log-entry {
+            margin-bottom: 4px;
+            color: #94a3b8;
+        }
+
+        .log-entry.alert {
+            color: #f59e0b;
+        }
+
+        .log-entry.wipe {
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        /* Active Bubble Event Alert */
+        #bubble-action {
+            display: none;
+            background-color: #7c2d12;
+            border: 1px solid #ea580c;
+            border-radius: 4px;
+            padding: 8px;
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        .laser-core {
+            fill: url(#laserGrad);
+            opacity: 0.8;
+        }
+
+        /* Modal Overlay Styles */
+        .modal-overlay {
+            display: none;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: calc(100% - 20px);
+            height: calc(100% - 20px);
+            background: rgba(11, 12, 16, 0.9);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            border-radius: 50%;
+            z-index: 10;
+            text-align: center;
+            border: 2px solid var(--border-color);
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            color: #d8b4fe;
+            margin: 0 0 8px 0;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .modal-text {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            max-width: 70%;
+            margin: 0 0 20px 0;
+            line-height: 1.4;
+        }
+
+        .modal-btn {
+            background-color: #a855f7;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: bold;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .modal-btn:hover {
+            background-color: #8b5cf6;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Xera Mechanics Training Simulator</h1>
+
+    <div class="container">
+        <!-- SIMULATOR ARENA -->
+        <div class="simulation-pane">
+            
+            <!-- Phase Transition and Victory Modal Overlay -->
+            <div id="modal-overlay" class="modal-overlay">
+                <div id="modal-title" class="modal-title">PHASE 1 COMPLETE</div>
+                <div id="modal-text" class="modal-text">You successfully glided back and landed at the SW platform.</div>
+                <button id="modal-btn" class="modal-btn">Continue</button>
+            </div>
+
+            <svg id="arena" width="460" height="460" viewBox="0 0 500 500">
+                <defs>
+                    <radialGradient id="laserGrad" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#ff0000" />
+                        <stop offset="60%" stop-color="#ff7700" />
+                        <stop offset="100%" stop-color="#ffff00" stop-opacity="0" />
+                    </radialGradient>
+                </defs>
+
+                <!-- Arena Background Sectors -->
+                <g id="wedges-group"></g>
+
+                <!-- Concentric Rings -->
+                <circle cx="250" cy="250" r="40" class="ring" /> <!-- Inner Laser Ring -->
+                <circle cx="250" cy="250" r="130" class="ring" /> <!-- Mid Ring -->
+                <circle cx="250" cy="250" r="220" class="ring" /> <!-- Outer Ring -->
+
+                <!-- Boundary Lines (Lines A & B) -->
+                <line x1="60" y1="360" x2="440" y2="140" class="diagonal-line" /> <!-- Line 4-to-10 -->
+                <line x1="60" y1="140" x2="440" y2="360" class="diagonal-line" /> <!-- Line 1-to-7 -->
+
+                <!-- Laser Core visual -->
+                <circle id="laser-beam" cx="250" cy="250" r="40" />
+
+                <!-- Laser Orbs Container -->
+                <g id="orbs-group"></g>
+
+                <!-- Clock Face Hour Labels (Standard Layout) -->
+                <g id="labels-group"></g>
+
+                <!-- Active Shards Container -->
+                <g id="shards-group"></g>
+
+                <!-- Active Strategy Markers (Arrow, Circle, Heart, Square, Star) -->
+                <g id="strategy-markers-group"></g>
+
+                <!-- Xera Boss -->
+                <g id="xera" class="draggable">
+                    <!-- Blurred Frenzy Indicator (Front Cone) -->
+                    <path id="xera-cone" d="M 0 0 L -40 -100 A 108 108 0 0 1 40 -100 Z" fill="rgba(239, 68, 68, 0.15)" stroke="rgba(239, 68, 68, 0.4)" stroke-width="1.5" style="display: none;" />
+                    <circle cx="0" cy="0" r="18" fill="#ef4444" stroke="#ffffff" stroke-width="1.5" />
+                    <line x1="0" y1="0" x2="0" y2="-18" stroke="#ffffff" stroke-width="2" />
+                    <text x="0" y="4" fill="#ffffff" font-size="10" font-weight="bold" text-anchor="middle">X</text>
+                </g>
+
+                <!-- Group Circle -->
+                <g id="group-squad" class="draggable">
+                    <circle cx="250" cy="300" r="12" fill="#10b981" stroke="#ffffff" stroke-width="1.5" />
+                    <text x="250" y="34" fill="#ffffff" font-size="8" font-weight="bold" text-anchor="middle"></text>
+                </g>
+
+                <!-- Tank Circle -->
+                <g id="tank" class="draggable">
+                    <circle cx="250" cy="275" r="12" fill="#3b82f6" stroke="#ffffff" stroke-width="1.5" />
+                    <line x1="250" y1="275" x2="250" y2="263" stroke="#ffffff" stroke-width="2" />
+                    <text x="250" y="34" fill="#ffffff" font-size="8" font-weight="bold" text-anchor="middle"></text>
+                </g>
+            </svg>
+
+            <!-- Real-time status readouts underneath arena -->
+            <div class="readout-bar">
+                <div class="readout-item">
+                    <div class="readout-title">NEXT LASER</div>
+                    <div id="laser-countdown" class="readout-value">40s</div>
+                </div>
+                <div class="readout-item">
+                    <div class="readout-title">NEXT GRAVITY WELL</div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <svg id="mini-well-svg" width="30" height="30" viewBox="0 0 40 40">
+                            <circle cx="20" cy="20" r="16" fill="none" stroke="#2d313f" stroke-width="2" />
+                            <path id="mini-well-path" d="M 20 4 A 16 16 0 0 1 20 36 Z" fill="rgba(239, 68, 68, 0.7)" transform="rotate(45, 20, 20)" style="display: none;" />
+                        </svg>
+                        <span id="well-countdown" class="readout-value">30s</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Layout Manager Controls -->
+            <div class="readout-bar" style="margin-top: 10px; flex-direction: column; gap: 8px;">
+                <div style="display: flex; gap: 5px; width: 100%;">
+                    <select id="layout-select" style="flex: 1.2; padding: 4px; background: #232530; color: #fff; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.8rem;"></select>
+                    <input type="text" id="layout-name" placeholder="Layout Name" style="flex: 1; padding: 4px; background: #232530; color: #fff; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.8rem;">
+                </div>
+                <div style="display: flex; gap: 5px; width: 100%;">
+                    <button id="btn-save-layout" style="padding: 4px 8px; font-size: 0.8rem;">Save</button>
+                    <button id="btn-delete-layout" class="danger-btn" style="padding: 4px 8px; font-size: 0.8rem;">Delete</button>
+                    <button id="btn-import-export" class="secondary" style="padding: 4px 8px; font-size: 0.8rem;">Share/Import</button>
+                </div>
+                <div id="import-export-container" style="display: none; flex-direction: column; gap: 4px; width: 100%;">
+                    <textarea id="import-export-box" placeholder="Paste JSON coordinate array here" style="width: 100%; height: 50px; background: #0b0c10; color: #94a3b8; font-size: 0.75rem; border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box; resize: none;"></textarea>
+                    <button id="btn-apply-import" style="padding: 4px 8px; font-size: 0.75rem; background: #10b981;">Load Import</button>
+                </div>
+            </div>
+
+            <!-- Raid Markers Palette -->
+            <div class="card" style="width:100%; box-sizing:border-box; margin-top:10px; background: #15161e;">
+                <h2>Raid Markers</h2>
+                <div class="palette">
+                    <div class="palette-item" data-marker="arrow" title="Green Arrow">
+                        <svg width="24" height="24" viewBox="-12 -12 24 24"><polygon points="0,-10 8,8 -8,8" fill="#10b981" /></svg>
+                    </div>
+                    <div class="palette-item" data-marker="circle" title="Purple Circle">
+                        <svg width="24" height="24" viewBox="-12 -12 24 24"><circle r="8" fill="#6b21a8" /></svg>
+                    </div>
+                    <div class="palette-item" data-marker="heart" title="Pink Heart">
+                        <svg width="24" height="24" viewBox="-12 -12 24 24"><path d="M 0 -5 C -3 -9, -9 -6, -5 0 L 0 5 L 5 0 C 9 -6, 3 -9, 0 -5 Z" fill="#ec4899" /></svg>
+                    </div>
+                    <div class="palette-item" data-marker="square" title="Blue Square">
+                        <svg width="24" height="24" viewBox="-12 -12 24 24"><rect x="-7" y="-7" width="14" height="14" fill="#3b82f6" /></svg>
+                    </div>
+                    <div class="palette-item" data-marker="star" title="Yellow Star">
+                        <svg width="24" height="24" viewBox="-12 -12 24 24"><polygon points="0,-10 3,-3 10,-3 4,1 7,8 0,4 -7,8 -4,1 -10,-3 -3,-3" fill="#eab308" /></svg>
+                    </div>
+                </div>
+                <div style="font-size: 0.75rem; color:#94a3b8; text-align:center;">
+                    Select a marker, then click inside the arena to place. Click a placed marker to remove.
+                </div>
+                <div id="marker-coords-list" style="font-size: 0.75rem; color:#64748b; text-align:center; margin-top:8px; min-height: 15px;"></div>
+            </div>
+
+        </div>
+
+        <!-- CONTROL & PARAMETER PANEL -->
+        <div class="control-pane">
+            
+            <!-- Dashboard Stats -->
+            <div class="card">
+                <h2>Encounter Status</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Phase</div>
+                        <div id="phase-lbl" class="stat-value">1 (100% - 50%)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Elapsed Time</div>
+                        <div id="time-lbl" class="stat-value">00:00</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Xera HP</div>
+                        <div id="hp-lbl" class="stat-value">100.0%</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Player Stacks (Max)</div>
+                        <div id="stacks-lbl" class="stat-value">0 / 99</div>
+                    </div>
+                </div>
+
+                <div class="slider-container">
+                    <span class="stat-label">Squad DPS Allocation (Slider)</span>
+                    <input type="range" id="dps-slider" min="0" max="500" value="65">
+                    <span id="dps-val" style="font-size:0.8rem; text-align:right;">65,000 DPS</span>
+                </div>
+
+                <div class="btn-group">
+                    <button id="btn-play">Play</button>
+                    <button id="btn-step" class="secondary">Step (+1s)</button>
+                    <button id="btn-reset" class="danger-btn">Reset</button>
+                </div>
+            </div>
+
+            <!-- Ambient Magic Bubble Action -->
+            <div id="bubble-action">
+                <span style="font-size: 0.9rem; font-weight:bold; color: #ffedd5; display:block; margin-bottom:5px;">⚠️ AMBIENT MAGIC RAIT-WIPE CHANNELING!</span>
+                <button id="btn-bubble" class="secondary" style="background:#ea580c; border:1px solid #ffedd5;">Use Intervention</button>
+                <div id="bubble-timer" style="font-size:0.75rem; margin-top:3px; color:#ffedd5;">Channel: 0.0s / 6.0s</div>
+            </div>
+
+            <!-- Training Log Guide -->
+            <div class="card">
+                <h2>Real-Time Mechanic Warning & Guide</h2>
+                <div id="log-container" class="log-box">
+                    <div class="log-entry">Simulator initialized. Drag the Tank (Blue) and Squad (Green) to position them. Press "Play" to start.</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- CONSTANTS & GEOMETRY ---
+        const CX = 250;
+        const CY = 250;
+        const R_OUT = 220;
+        const R_MID = 130;
+        const R_CENTER = 40;
+        const SHARD_AOE_RADIUS = 130;  // Denotes active danger zone (empowers boss, adds passive stacks)
+        const SHARD_CLEAR_RADIUS = 40; // Group must be this close (px) to destroy crystal
+
+        // Gravity Well Covered sectors
+        const WELLS_P1 = [
+            [1, 2, 3, 4, 5, 6],    // Sec 1 (SE Side)
+            [10, 11, 0, 1, 2, 3],  // Sec 2 (NE Side)
+            [7, 8, 9, 10, 11, 0],  // Sec 3 (NW Side)
+            [4, 5, 6, 7, 8, 9]     // Sec 4 (SW Side)
+        ];
+
+        const WELLS_P2 = [
+            [7, 8, 9, 10, 11, 0],  // Sec 1 (NW Side)
+            [10, 11, 0, 1, 2, 3],  // Sec 2 (NE Side)
+            [4, 5, 6, 7, 8, 9],    // Sec 3 (SW Side)
+            [1, 2, 3, 4, 5, 6]     // Sec 4 (SE Side)
+        ];
+
+        // --- PRE-MADE LAYOUTS ---
+        const PREMADE_LAYOUTS = {
+            "Snowcrows": [{"type":"arrow","x":207.29344810340942,"y":229.130799923601},{"type":"circle","x":280.4431870461553,"y":273.2357895802566},{"type":"heart","x":418.13681329132396,"y":359.294305983487},{"type":"square","x":353.59292598890113,"y":65.83476586918924},{"type":"star","x":60.99397021791769,"y":151.89328227241967}],
+            "Heros/Blish": [{"type":"circle","x":353.59292598890113,"y":70.13769168935076},{"type":"square","x":65.29689603807921,"y":151.89328227241967},{"type":"heart","x":38.403609662069705,"y":248.7091132260539},{"type":"arrow","x":424.59120202156623,"y":367.0395732804957}]
+        };
+
+        // --- ENCOUNTER STATE ---
+        let time = 0;
+        let subTick = 0; // Tracks 100ms ticks inside the 1-second interval
+        let isPlaying = false;
+        let xeraHP = 100.0;
+        let currentPhase = 1;
+        let stacks = 0;
+        let timerInterval = null;
+
+        let shards = Array(12).fill(false);
+        let activeWellIdx = -1; // -1 means none active
+        let wellType = 'inactive'; // 'inactive', 'warning', 'active'
+        let lastWellState = 'inactive';
+        let lastLaserState = 'inactive';
+
+        let laserActive = false;
+        let laserOrbs = [];
+        let bubbleChanneling = false;
+        let bubbleTimer = 0.0;
+        let bubbleSucceeded = false;
+
+        let placedMarkers = []; // { type, x, y }
+        let selectedMarkerType = null;
+        let savedLayouts = {};
+
+        // Entities standard coordinates (X, Y)
+        let tankPos = { x: 250, y: 350 };
+        let groupPos = { x: 230, y: 370 };
+        let xeraPos = { x: 250, y: 250 };
+
+        // --- DOM REFERENCE ---
+        const svg = document.getElementById('arena');
+        const wedgesGroup = document.getElementById('wedges-group');
+        const labelsGroup = document.getElementById('labels-group');
+        const shardsGroup = document.getElementById('shards-group');
+        const orbsGroup = document.getElementById('orbs-group');
+        const markersGroup = document.getElementById('strategy-markers-group');
+        const xeraEl = document.getElementById('xera');
+        const xeraCone = document.getElementById('xera-cone');
+        const groupEl = document.getElementById('group-squad');
+        const tankEl = document.getElementById('tank');
+        const laserEl = document.getElementById('laser-beam');
+
+        const btnPlay = document.getElementById('btn-play');
+        const btnStep = document.getElementById('btn-step');
+        const btnReset = document.getElementById('btn-reset');
+        const dpsSlider = document.getElementById('dps-slider');
+        const dpsVal = document.getElementById('dps-val');
+        const logContainer = document.getElementById('log-container');
+
+        const pLbl = document.getElementById('phase-lbl');
+        const tLbl = document.getElementById('time-lbl');
+        const hpLbl = document.getElementById('hp-lbl');
+        const sLbl = document.getElementById('stacks-lbl');
+
+        const bubbleAction = document.getElementById('bubble-action');
+        const btnBubble = document.getElementById('btn-bubble');
+        const bubbleTimerEl = document.getElementById('bubble-timer');
+
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalTitle = document.getElementById('modal-title');
+        const modalText = document.getElementById('modal-text');
+        const modalBtn = document.getElementById('modal-btn');
+
+        // --- INIT WEDGES & CLOCK LABELS ---
+        function getWedgePath(cx, cy, r, startAngle, endAngle) {
+            const rad = Math.PI / 180;
+            const x1 = cx + r * Math.cos(startAngle * rad);
+            const y1 = cy - r * Math.sin(startAngle * rad);
+            const x2 = cx + r * Math.cos(endAngle * rad);
+            const y2 = cy - r * Math.sin(endAngle * rad);
+            return `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2} Z`;
+        }
+
+        function initArena() {
+            wedgesGroup.innerHTML = '';
+            labelsGroup.innerHTML = '';
+            
+            for (let i = 0; i < 12; i++) {
+                const startAngle = 90 - i * 30;
+                const endAngle = 90 - (i + 1) * 30;
+                
+                const pathStr = getWedgePath(CX, CY, R_OUT, startAngle, endAngle);
+                
+                const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                pathEl.setAttribute('d', pathStr);
+                pathEl.setAttribute('class', 'wedge');
+                pathEl.setAttribute('id', `wedge-${i}`);
+                wedgesGroup.appendChild(pathEl);
+
+                // Hour indicator numbers
+                const midAngle = startAngle - 15;
+                const rad = Math.PI / 180;
+                const lx = CX + 233 * Math.cos(midAngle * rad);
+                const ly = CY - 233 * Math.sin(midAngle * rad);
+                
+                const textEl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                textEl.setAttribute('x', lx);
+                textEl.setAttribute('y', ly);
+                textEl.setAttribute('class', 'clock-label');
+                textEl.textContent = i === 0 ? "12" : i.toString();
+                labelsGroup.appendChild(textEl);
+            }
+            updateEntityPositions();
+            dpsVal.textContent = `${parseInt(dpsSlider.value).toLocaleString()},000 DPS`;
+            updateReadouts();
+        }
+
+        // --- COORDINATE UTILITIES ---
+        function getWedgeIndexFromCoords(x, y) {
+            const dx = x - CX;
+            const dy = y - CY;
+            let angle = Math.atan2(-dy, dx) * 180 / Math.PI;
+            if (angle < 0) angle += 360;
+            return Math.floor((90 - angle + 360) % 360 / 30);
+        }
+
+        function getRadiusFromCoords(x, y) {
+            const dx = x - CX;
+            const dy = y - CY;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist <= R_CENTER) return 0;
+            if (dist <= R_MID) return 1;
+            return 2;
+        }
+
+        function getShardCoords(index) {
+            const angle = 90 - (index + 0.5) * 30;
+            const rad = Math.PI / 180;
+            const sx = CX + 195 * Math.cos(angle * rad);
+            const sy = CY - 195 * Math.sin(angle * rad);
+            return { x: sx, y: sy };
+        }
+
+        // --- INTERACTION / DRAGGING ---
+        let dragTarget = null;
+
+        function makeDraggable(el, updateCallback) {
+            function getMousePos(evt) {
+                const rect = svg.getBoundingClientRect();
+                const x = (evt.clientX - rect.left) * (500 / rect.width);
+                const y = (evt.clientY - rect.top) * (500 / rect.height);
+                return { x, y };
+            }
+
+            function onStart(evt) {
+                if (evt.target.classList.contains('palette-item') || selectedMarkerType) return;
+                evt.preventDefault();
+                dragTarget = el;
+            }
+
+            el.addEventListener('mousedown', onStart);
+            el.addEventListener('touchstart', onStart);
+
+            window.addEventListener('mousemove', (evt) => {
+                if (dragTarget !== el) return;
+                const pos = getMousePos(evt);
+                updateCallback(pos.x, pos.y);
+            });
+
+            window.addEventListener('touchmove', (evt) => {
+                if (dragTarget !== el) return;
+                if (evt.touches.length === 0) return;
+                const pos = getMousePos(evt.touches[0]);
+                updateCallback(pos.x, pos.y);
+            });
+
+            const onEnd = () => { dragTarget = null; };
+            window.addEventListener('mouseup', onEnd);
+            window.addEventListener('touchend', onEnd);
+        }
+
+        makeDraggable(tankEl, (x, y) => {
+            const d = Math.sqrt((x-CX)*(x-CX) + (y-CY)*(y-CY));
+            if (d > R_OUT) {
+                x = CX + (x-CX) * (R_OUT / d);
+                y = CY + (y-CY) * (R_OUT / d);
+            }
+            tankPos = { x, y };
+            updateEntityPositions();
+        });
+
+        makeDraggable(groupEl, (x, y) => {
+            const d = Math.sqrt((x-CX)*(x-CX) + (y-CY)*(y-CY));
+            if (d > R_OUT) {
+                x = CX + (x-CX) * (R_OUT / d);
+                y = CY + (y-CY) * (R_OUT / d);
+            }
+            groupPos = { x, y };
+            updateEntityPositions();
+        });
+
+        svg.addEventListener('click', (evt) => {
+            if (dragTarget) return;
+            if (!selectedMarkerType) return;
+
+            const rect = svg.getBoundingClientRect();
+            const mouseX = (evt.clientX - rect.left) * (500 / rect.width);
+            const mouseY = (evt.clientY - rect.top) * (500 / rect.height);
+
+            const dist = Math.sqrt((mouseX-CX)*(mouseX-CX) + (mouseY-CY)*(mouseY-CY));
+            if (dist > R_OUT) return;
+
+            // Remove any existing marker of the same type to maintain unique single marker representation
+            placedMarkers = placedMarkers.filter(mk => mk.type !== selectedMarkerType);
+
+            placedMarkers.push({ type: selectedMarkerType, x: mouseX, y: mouseY });
+            renderMarkers();
+        });
+
+        // --- RENDERING ---
+        function updateEntityPositions() {
+            const dx = tankPos.x - CX;
+            const dy = tankPos.y - CY;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            
+            if (dist > 30) {
+                xeraPos.x = tankPos.x - (dx / dist) * 25;
+                xeraPos.y = tankPos.y - (dy / dist) * 25;
+            } else {
+                xeraPos = { x: CX, y: CY };
+            }
+
+            const xeraDx = tankPos.x - xeraPos.x;
+            const xeraDy = tankPos.y - xeraPos.y;
+            let rotation = Math.atan2(xeraDx, -xeraDy) * 180 / Math.PI;
+
+            xeraEl.setAttribute('transform', `translate(${xeraPos.x}, ${xeraPos.y}) rotate(${rotation + 180})`);
+            tankEl.setAttribute('transform', `translate(${tankPos.x - 250}, ${tankPos.y - 275})`);
+            groupEl.setAttribute('transform', `translate(${groupPos.x - 250}, ${groupPos.y - 300})`);
+
+            evaluateBlurredFrenzyCone(rotation);
+        }
+
+        function evaluateBlurredFrenzyCone(xeraRotation) {
+            const grpDx = groupPos.x - xeraPos.x;
+            const grpDy = groupPos.y - xeraPos.y;
+            const grpDist = Math.sqrt(grpDx*grpDx + grpDy*grpDy);
+            
+            if (grpDist > 10 && grpDist < 120) {
+                let grpAngle = Math.atan2(grpDy, grpDx) * 180 / Math.PI;
+                let xeraFacingAngle = xeraRotation + 90;
+                
+                let diff = Math.abs(grpAngle - xeraFacingAngle);
+                if (diff > 180) diff = 360 - diff;
+                
+                if (diff <= 45) {
+                    xeraCone.setAttribute('fill', 'rgba(239, 68, 68, 0.4)');
+                    xeraCone.setAttribute('stroke', 'rgba(239, 68, 68, 0.9)');
+                } else {
+                    xeraCone.setAttribute('fill', 'rgba(239, 68, 68, 0.1)');
+                    xeraCone.setAttribute('stroke', 'rgba(239, 68, 68, 0.3)');
+                }
+            } else {
+                xeraCone.setAttribute('fill', 'rgba(239, 68, 68, 0.1)');
+                xeraCone.setAttribute('stroke', 'rgba(239, 68, 68, 0.3)');
+            }
+        }
+
+        function renderShards() {
+            shardsGroup.innerHTML = '';
+            for (let i = 0; i < 12; i++) {
+                if (shards[i]) {
+                    const sCoords = getShardCoords(i);
+
+                    const shardGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                    shardGroup.setAttribute('transform', `translate(${sCoords.x}, ${sCoords.y})`);
+
+                    // Localized AoE Boundary (130px radius)
+                    const pulseRing = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    pulseRing.setAttribute('cx', '0');
+                    pulseRing.setAttribute('cy', '0');
+                    pulseRing.setAttribute('r', SHARD_AOE_RADIUS.toString()); 
+                    pulseRing.setAttribute('fill', 'rgba(217, 70, 239, 0.08)');
+                    pulseRing.setAttribute('stroke', 'rgba(217, 70, 239, 0.4)');
+                    pulseRing.setAttribute('stroke-width', '1.5');
+                    pulseRing.setAttribute('stroke-dasharray', '3 3');
+
+                    // Small inner cleansing threshold circle (40px radius)
+                    const clearRing = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    clearRing.setAttribute('cx', '0');
+                    clearRing.setAttribute('cy', '0');
+                    clearRing.setAttribute('r', SHARD_CLEAR_RADIUS.toString());
+                    clearRing.setAttribute('fill', 'none');
+                    clearRing.setAttribute('stroke', '#a855f7');
+                    clearRing.setAttribute('stroke-width', '1');
+                    clearRing.setAttribute('stroke-dasharray', '2 2');
+                    
+                    const crystal = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                    crystal.setAttribute('points', '0,-12 8,0 0,12 -8,0');
+                    crystal.setAttribute('fill', '#d946ef');
+                    crystal.setAttribute('stroke', '#ffffff');
+                    crystal.setAttribute('stroke-width', '1');
+
+                    shardGroup.appendChild(pulseRing);
+                    shardGroup.appendChild(clearRing);
+                    shardGroup.appendChild(crystal);
+                    shardsGroup.appendChild(shardGroup);
+                }
+            }
+        }
+
+        function renderOrbs() {
+            orbsGroup.innerHTML = '';
+            laserOrbs.forEach(orb => {
+                const rad = Math.PI / 180;
+                const ox = CX + orb.r * Math.cos(orb.angle * rad);
+                const oy = CY - orb.r * Math.sin(orb.angle * rad);
+
+                const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                circle.setAttribute('cx', ox);
+                circle.setAttribute('cy', oy);
+                circle.setAttribute('r', '7');
+                circle.setAttribute('fill', '#f43f5e');
+                circle.setAttribute('stroke', '#ffe4e6');
+                circle.setAttribute('stroke-width', '1.5');
+                orbsGroup.appendChild(circle);
+            });
+        }
+
+        function renderMarkers() {
+            markersGroup.innerHTML = '';
+            placedMarkers.forEach((mk, idx) => {
+                const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                g.setAttribute('transform', `translate(${mk.x}, ${mk.y})`);
+                g.style.cursor = 'pointer';
+
+                const hit = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                hit.setAttribute('r', '14');
+                hit.setAttribute('fill', 'transparent');
+                g.appendChild(hit);
+
+                let markerShape;
+                if (mk.type === 'arrow') {
+                    markerShape = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                    markerShape.setAttribute('points', '0,-10 8,8 -8,8');
+                    markerShape.setAttribute('fill', '#10b981');
+                } else if (mk.type === 'circle') {
+                    markerShape = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    markerShape.setAttribute('r', '8');
+                    markerShape.setAttribute('fill', '#6b21a8');
+                } else if (mk.type === 'heart') {
+                    markerShape = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    markerShape.setAttribute('d', 'M 0 -5 C -3 -9, -9 -6, -5 0 L 0 5 L 5 0 C 9 -6, 3 -9, 0 -5 Z');
+                    markerShape.setAttribute('fill', '#ec4899');
+                } else if (mk.type === 'square') {
+                    markerShape = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    markerShape.setAttribute('x', '-7');
+                    markerShape.setAttribute('y', '-7');
+                    markerShape.setAttribute('width', '14');
+                    markerShape.setAttribute('height', '14');
+                    markerShape.setAttribute('fill', '#3b82f6');
+                } else if (mk.type === 'star') {
+                    markerShape = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                    markerShape.setAttribute('points', '0,-10 3,-3 10,-3 4,1 7,8 0,4 -7,8 -4,1 -10,-3 -3,-3');
+                    markerShape.setAttribute('fill', '#eab308');
+                }
+                markerShape.setAttribute('stroke', '#ffffff');
+                markerShape.setAttribute('stroke-width', '1');
+
+                g.appendChild(markerShape);
+                
+                g.addEventListener('click', (evt) => {
+                    evt.stopPropagation();
+                    placedMarkers.splice(idx, 1);
+                    renderMarkers();
+                });
+
+                markersGroup.appendChild(g);
+            });
+
+            // Update coordinate outputs
+            const coordsList = document.getElementById('marker-coords-list');
+            if (placedMarkers.length > 0) {
+                coordsList.textContent = placedMarkers.map(m => {
+                    const label = m.type.charAt(0).toUpperCase() + m.type.slice(1);
+                    return `${label}: (${Math.round(m.x)}, ${Math.round(m.y)})`;
+                }).join(' | ');
+            } else {
+                coordsList.textContent = "";
+            }
+        }
+
+        // --- PALETTE MARKER SELECTION ---
+        document.querySelectorAll('.palette-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const active = item.classList.contains('active');
+                document.querySelectorAll('.palette-item').forEach(p => p.classList.remove('active'));
+                
+                if (active) {
+                    selectedMarkerType = null;
+                } else {
+                    item.classList.add('active');
+                    selectedMarkerType = item.getAttribute('data-marker');
+                }
+            });
+        });
+
+        // --- PRESETS & LOCAL STORAGE SYSTEM ---
+        function loadLayoutsDropdown() {
+            const select = document.getElementById('layout-select');
+            select.innerHTML = '<option value="">-- Choose Layout --</option>';
+
+            const premadeGroup = document.createElement('optgroup');
+            premadeGroup.label = "Pre-made Layouts";
+            for (let name in PREMADE_LAYOUTS) {
+                const opt = document.createElement('option');
+                opt.value = 'premade_' + name;
+                opt.textContent = name;
+                premadeGroup.appendChild(opt);
+            }
+            select.appendChild(premadeGroup);
+
+            try {
+                savedLayouts = JSON.parse(localStorage.getItem('xera_marker_layouts')) || {};
+            } catch(e) {
+                savedLayouts = {};
+            }
+
+            const customGroup = document.createElement('optgroup');
+            customGroup.label = "Custom Saved Layouts";
+            for (let name in savedLayouts) {
+                const opt = document.createElement('option');
+                opt.value = 'custom_' + name;
+                opt.textContent = name;
+                customGroup.appendChild(opt);
+            }
+            select.appendChild(customGroup);
+        }
+
+        document.getElementById('layout-select').addEventListener('change', (evt) => {
+            const val = evt.target.value;
+            if (!val) return;
+
+            let layout = null;
+            let name = "";
+            if (val.startsWith('premade_')) {
+                name = val.replace('premade_', '');
+                layout = PREMADE_LAYOUTS[name];
+            } else if (val.startsWith('custom_')) {
+                name = val.replace('custom_', '');
+                layout = savedLayouts[name];
+            }
+
+            if (layout) {
+                placedMarkers = JSON.parse(JSON.stringify(layout));
+                document.getElementById('layout-name').value = name;
+                renderMarkers();
+            }
+        });
+
+        document.getElementById('btn-save-layout').addEventListener('click', () => {
+            const name = document.getElementById('layout-name').value.trim();
+            if (!name) {
+                alert("Please enter a name for the layout.");
+                return;
+            }
+            savedLayouts[name] = JSON.parse(JSON.stringify(placedMarkers));
+            localStorage.setItem('xera_marker_layouts', JSON.stringify(savedLayouts));
+            loadLayoutsDropdown();
+            document.getElementById('layout-select').value = 'custom_' + name;
+            log(`Saved layout: "${name}"`);
+        });
+
+        document.getElementById('btn-delete-layout').addEventListener('click', () => {
+            const name = document.getElementById('layout-name').value.trim();
+            if (!name || !savedLayouts[name]) {
+                alert("Please select a saved custom layout to delete.");
+                return;
+            }
+            delete savedLayouts[name];
+            localStorage.setItem('xera_marker_layouts', JSON.stringify(savedLayouts));
+            document.getElementById('layout-name').value = '';
+            loadLayoutsDropdown();
+            placedMarkers = [];
+            renderMarkers();
+            log(`Deleted layout: "${name}"`);
+        });
+
+        document.getElementById('btn-import-export').addEventListener('click', () => {
+            const container = document.getElementById('import-export-container');
+            const box = document.getElementById('import-export-box');
+            if (container.style.display === 'none') {
+                container.style.display = 'flex';
+                box.value = JSON.stringify(placedMarkers);
+            } else {
+                container.style.display = 'none';
+            }
+        });
+
+        document.getElementById('btn-apply-import').addEventListener('click', () => {
+            const box = document.getElementById('import-export-box');
+            try {
+                const parsed = JSON.parse(box.value);
+                if (Array.isArray(parsed)) {
+                    // Filter markers and limit to one of each type
+                    const tempMarkers = parsed.filter(m => ['arrow', 'circle', 'heart', 'square', 'star'].includes(m.type) && typeof m.x === 'number' && typeof m.y === 'number');
+                    const unique = [];
+                    const types = new Set();
+                    tempMarkers.forEach(m => {
+                        if (!types.has(m.type)) {
+                            types.add(m.type);
+                            unique.push(m);
+                        }
+                    });
+                    placedMarkers = unique;
+                    renderMarkers();
+                    log("Imported layout coordinates successfully.");
+                } else {
+                    alert("Invalid format. Expected a JSON array.");
+                }
+            } catch(e) {
+                alert("Failed to parse layout JSON.");
+            }
+        });
+
+        // --- TRAINING LOG FEEDBACK ---
+        function log(msg, type = 'normal') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.innerHTML = `[${formatTime(time)}] ${msg}`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // --- FORMAT TIME ---
+        function formatTime(s) {
+            const mins = Math.floor(s / 60).toString().padStart(2, '0');
+            const secs = (s % 60).toString().padStart(2, '0');
+            return `${mins}:${secs}`;
+        }
+
+        // --- MODAL OVERLAY LOGIC ---
+        function showModal(title, text, buttonLabel, callback) {
+            modalTitle.textContent = title;
+            modalText.textContent = text;
+            modalBtn.textContent = buttonLabel;
+            modalOverlay.style.display = 'flex';
+            
+            modalBtn.onclick = () => {
+                callback();
+                modalOverlay.style.display = 'none';
+            };
+        }
+
+        // --- ENCOUNTER GAME LOOP TICK (100ms interval) ---
+        function tick() {
+            if (bubbleChanneling) {
+                tickBubble();
+                return;
+            }
+
+            // Real-time operations (Boss damage & Orb movement)
+            const dps = parseInt(dpsSlider.value);
+            const dmgPercent = (dps / 220.11) / 10;
+            xeraHP = Math.max(0, xeraHP - dmgPercent);
+            hpLbl.textContent = `${xeraHP.toFixed(1)}%`;
+
+            // Victory state verification
+            if (xeraHP <= 0.0) {
+                xeraHP = 0.0;
+                hpLbl.textContent = "0.0%";
+                isPlaying = false;
+                clearInterval(timerInterval);
+                btnPlay.textContent = "Play";
+                showModal("VICTORY!", "You have successfully defeated Xera! Reset the simulator to practice again.", "Restart", () => {
+                    resetSimulator();
+                });
+                return;
+            }
+
+            // Progress standard clocks on the full second (every 10 ticks)
+            subTick++;
+            if (subTick >= 10) {
+                subTick = 0;
+                time++;
+                tLbl.textContent = formatTime(time);
+
+                // Run standardized spatial timers
+                if (currentPhase === 1) {
+                    runPhase1Timers();
+                } else if (currentPhase === 2) {
+                    runPhase2Timers();
+                }
+            }
+
+            evaluatePhaseAndHPTriggers();
+            tickLaserOrbs();
+            evaluatePlayerGridStanding();
+            updateReadouts();
+
+            renderShards();
+            renderOrbs();
+        }
+
+        function evaluatePhaseAndHPTriggers() {
+            // Check Phase boundary 50%
+            if (currentPhase === 1 && xeraHP <= 50.0) {
+                currentPhase = 2;
+                pLbl.textContent = "2 (50% - 0%)";
+                
+                // Reset standard mechanics parameters
+                time = 0;
+                subTick = 0;
+                shards = Array(12).fill(false);
+                shards[6] = true; // Spawn initial shard at CCW start position (Wedge 6-7)
+                laserActive = false;
+                laserOrbs = [];
+                activeWellIdx = -1;
+                wellType = 'inactive';
+                lastWellState = 'inactive';
+                lastLaserState = 'inactive';
+                clearWedgeHighlights();
+                renderShards();
+                renderOrbs();
+
+                // Automatic Reposition on glide landing: SW Platform (Wedge 7-8)
+                tankPos = { x: 165, y: 335 };
+                groupPos = { x: 155, y: 350 };
+                updateEntityPositions();
+
+                // Pause loop to clearly highlight Phase transition
+                isPlaying = false;
+                clearInterval(timerInterval);
+                btnPlay.textContent = "Play";
+
+                log("⏸️ PHASE 1 COMPLETE! Squad glided back and landed at the SW platform (Wedge 7-8).", "alert");
+                showModal("PHASE 1 COMPLETE", "You successfully completed Phase 1. The squad has glided back and safely landed at the SW platform landing zone.", "Start Phase 2", () => {
+                    updateReadouts();
+                });
+            }
+
+            // Bubble (Ambient Magic) Threshold triggers
+            if (currentPhase === 1) {
+                if (xeraHP <= 75.0 && !bubbleSucceeded && time > 5) {
+                    triggerBubbleEvent();
+                }
+            } else if (currentPhase === 2) {
+                if ((xeraHP <= 35.0 && xeraHP > 30.0 && !bubbleSucceeded) || 
+                    (xeraHP <= 15.0 && xeraHP > 12.0 && !bubbleSucceeded) || 
+                    (xeraHP <= 10.0 && xeraHP > 5.0 && !bubbleSucceeded)) {
+                    triggerBubbleEvent();
+                }
+            }
+        }
+
+        // --- TIMERS LOGIC ---
+        function runPhase1Timers() {
+            if (time % 10 === 0 && time > 0) {
+                const shardIdx = (6 + Math.floor(time / 10)) % 12;
+                shards[shardIdx] = true;
+                log(`New Crystal spawned at Wedge ${shardIdx === 0 ? "12" : shardIdx}. Clear it!`);
+            }
+
+            // Safe State Machine for Gravity Wells (30s Cycle, 15s Warning, 7s Active)
+            const wellCycleTime = time % 30;
+            let tempWellState = 'inactive';
+            let tempWellIdx = -1;
+
+            // Ensures no early phantom spawns before T=30
+            let lastSpawn = Math.floor(time / 30) * 30;
+            let isActive = (time >= 30) && (time >= lastSpawn) && (time < lastSpawn + 7);
+
+            if (isActive) {
+                tempWellState = 'active';
+                tempWellIdx = (lastSpawn / 30 - 1) % 4; // Locked on spawn index
+            } else if (wellCycleTime >= 15) {
+                tempWellState = 'warning';
+                tempWellIdx = Math.floor(time / 30) % 4;
+            }
+
+            wellType = tempWellState;
+            activeWellIdx = tempWellIdx;
+
+            // Log transitions once per phase change
+            if (wellType === 'warning' && lastWellState !== 'warning') {
+                log("⚠️ WARNING: Gravity Well forming soon! Check highlighted sector.", "alert");
+            } else if (wellType === 'active' && lastWellState !== 'active') {
+                log("❌ Gravity Well is active! Avoid red-highlighted side.", "wipe");
+            } else if (wellType === 'inactive' && lastWellState !== 'inactive') {
+                log("Gravity Well has expired.");
+            }
+            lastWellState = wellType;
+
+            // Apply SVG wedge highlights
+            if (wellType === 'active') {
+                highlightWedges(WELLS_P1[activeWellIdx], 'gravity-well');
+            } else if (wellType === 'warning') {
+                highlightWedges(WELLS_P1[activeWellIdx], 'warning-well');
+            } else {
+                clearWedgeHighlights();
+            }
+
+            // Lasers: Spawns at T=40s, repeats every 69s, lasts 24s
+            const laserLoopTime = (time - 40) % 69;
+            if (time >= 40) {
+                if (laserLoopTime === 0) {
+                    laserActive = true;
+                    log("💥 Center Laser Active! Tank pull boss out of Center!", "wipe");
+                } else if (laserLoopTime === 24) {
+                    laserActive = false;
+                    laserOrbs = [];
+                    log("Center Laser despawned.");
+                }
+
+                if (laserActive && laserLoopTime % 2 === 0) {
+                    for (let a = 0; a < 360; a += 60) {
+                        laserOrbs.push({ angle: a, r: 40 });
+                    }
+                }
+            }
+        }
+
+        function runPhase2Timers() {
+            if (time % 10 === 0 && time > 0) {
+                const steps = Math.floor(time / 10);
+                const shardIdx = (6 - steps % 12 + 12) % 12;
+                shards[shardIdx] = true;
+                log(`New Crystal spawned CCW at Wedge ${shardIdx === 0 ? "12" : shardIdx}.`);
+            }
+
+            // Safe State Machine for Gravity Wells (25s Cycle, 10s Warning, 7s Active)
+            const wellCycleTime = time % 25;
+            let tempWellState = 'inactive';
+            let tempWellIdx = -1;
+
+            // Ensures no early phantom spawns before T=25
+            let lastSpawn = Math.floor(time / 25) * 25;
+            let isActive = (time >= 25) && (time >= lastSpawn) && (time < lastSpawn + 7);
+
+            if (isActive) {
+                tempWellState = 'active';
+                tempWellIdx = (lastSpawn / 25 - 1) % 4; // Locked on spawn index
+            } else if (wellCycleTime >= 15) { // 25s cycle - 10s warning = 15s elapsed
+                tempWellState = 'warning';
+                tempWellIdx = Math.floor(time / 25) % 4;
+            }
+
+            wellType = tempWellState;
+            activeWellIdx = tempWellIdx;
+
+            if (wellType === 'warning' && lastWellState !== 'warning') {
+                log("⚠️ WARNING: Gravity Well forming soon! Check highlighted sector.", "alert");
+            } else if (wellType === 'active' && lastWellState !== 'active') {
+                log("❌ Gravity Well is active! Avoid highlighted side.", "wipe");
+            } else if (wellType === 'inactive' && lastWellState !== 'inactive') {
+                log("Gravity Well has expired.");
+            }
+            lastWellState = wellType;
+
+            if (wellType === 'active') {
+                highlightWedges(WELLS_P2[activeWellIdx], 'gravity-well');
+            } else if (wellType === 'warning') {
+                highlightWedges(WELLS_P2[activeWellIdx], 'warning-well');
+            } else {
+                clearWedgeHighlights();
+            }
+
+            // Lasers: Spawns at T=40s, repeats every 64s, lasts 24s
+            const laserLoopTime = (time - 40) % 64;
+            if (time >= 40) {
+                if (laserLoopTime === 0) {
+                    laserActive = true;
+                    log("💥 Center Laser Active! Drag boss away from Center!", "wipe");
+                } else if (laserLoopTime === 24) {
+                    laserActive = false;
+                    laserOrbs = [];
+                    log("Center Laser despawned.");
+                }
+
+                if (laserActive && laserLoopTime % 2 === 0) {
+                    for (let a = 0; a < 360; a += 45) {
+                        laserOrbs.push({ angle: a, r: 40 });
+                    }
+                }
+            }
+        }
+
+        function tickLaserOrbs() {
+            laserOrbs.forEach(orb => orb.r += 2);
+            laserOrbs = laserOrbs.filter(orb => orb.r < R_OUT);
+        }
+
+        // --- DYNAMIC READOUTS ---
+        function updateReadouts() {
+            // Next Laser state and countdown logic
+            const t_laser = currentPhase === 1 ? 69 : 64;
+            let nextLaserText = "";
+            let laserState = 'inactive'; // 'inactive', 'warning', 'active'
+            let nextLaserVal = 0;
+
+            if (laserActive) {
+                laserState = 'active';
+                const elapsedLaser = (time - 40) % t_laser;
+                nextLaserVal = 24 - elapsedLaser;
+                nextLaserText = `ACTIVE (${nextLaserVal}s)`;
+            } else {
+                if (time < 40) {
+                    nextLaserVal = 40 - time;
+                } else {
+                    const elapsedLaser = (time - 40) % t_laser;
+                    nextLaserVal = t_laser - elapsedLaser;
+                }
+                nextLaserText = `${nextLaserVal}s`;
+                if (nextLaserVal <= 20) {
+                    laserState = 'warning';
+                }
+            }
+            document.getElementById('laser-countdown').textContent = nextLaserText;
+
+            // Trigger Laser warnings once
+            if (laserState === 'warning' && lastLaserState !== 'warning') {
+                log("⚠️ WARNING: Center Laser will activate in 20 seconds! Prepare to move to the outer edge.", "alert");
+            }
+            lastLaserState = laserState;
+
+            // Update SVG Laser Visual
+            if (laserState === 'active') {
+                laserEl.style.display = 'block';
+                laserEl.setAttribute('fill', 'url(#laserGrad)');
+                laserEl.setAttribute('stroke', 'none');
+            } else if (laserState === 'warning') {
+                // Dashed hollow warning ring in center preserving the split gravity well visibility
+                laserEl.style.display = 'block';
+                laserEl.setAttribute('fill', 'none');
+                laserEl.setAttribute('stroke', 'rgba(245, 158, 11, 0.75)');
+                laserEl.setAttribute('stroke-width', '3');
+                laserEl.setAttribute('stroke-dasharray', '4 4');
+            } else {
+                laserEl.style.display = 'none';
+            }
+
+            // Next Gravity Well state and countdown logic
+            const t_well = currentPhase === 1 ? 30 : 25;
+            let nextWellText = "";
+            let rotation = 0;
+
+            let lastSpawn = Math.floor(time / t_well) * t_well;
+            let isActive = (time >= t_well) && (time >= lastSpawn) && (time < lastSpawn + 7);
+
+            if (isActive) {
+                const remaining = 7 - (time - lastSpawn);
+                nextWellText = `ACTIVE (${remaining}s)`;
+                const activeIdx = (lastSpawn / t_well - 1) % 4; // Locked on spawn index
+                rotation = getWellRotation(activeIdx);
+            } else {
+                let nextSpawnTime = lastSpawn + t_well;
+                if (time < t_well) nextSpawnTime = t_well;
+                
+                const remaining = nextSpawnTime - time;
+                nextWellText = `${remaining}s`;
+                
+                const nextIdx = Math.floor(time / t_well) % 4;
+                rotation = getWellRotation(nextIdx);
+            }
+
+            document.getElementById('well-countdown').textContent = nextWellText;
+
+            const miniPath = document.getElementById('mini-well-path');
+            miniPath.setAttribute('transform', `rotate(${rotation}, 20, 20)`);
+            miniPath.style.display = 'block';
+        }
+
+        function getWellRotation(idx) {
+            if (currentPhase === 1) {
+                const rotations = [45, 315, 225, 135];
+                return rotations[idx];
+            } else {
+                const rotations = [225, 315, 135, 45];
+                return rotations[idx];
+            }
+        }
+
+        // --- GRID POSITION CHECKS & PENALTIES ---
+        function evaluatePlayerGridStanding() {
+            const grpWedge = getWedgeIndexFromCoords(groupPos.x, groupPos.y);
+            const grpRadius = getRadiusFromCoords(groupPos.x, groupPos.y);
+
+            const tankWedge = getWedgeIndexFromCoords(tankPos.x, tankPos.y);
+            const tankRadius = getRadiusFromCoords(tankPos.x, tankPos.y);
+
+            // Shard AoE evaluation
+            let xeraEmpowered = false;
+
+            for (let i = 0; i < 12; i++) {
+                if (shards[i]) {
+                    const sCoords = getShardCoords(i);
+
+                    // Group / Squad distance to Shard center
+                    const distGrp = Math.sqrt((groupPos.x - sCoords.x) ** 2 + (groupPos.y - sCoords.y) ** 2);
+                    
+                    // Destruction check: Must stand directly on top of shard (Wedge 40px radius)
+                    if (distGrp <= SHARD_CLEAR_RADIUS) {
+                        shards[i] = false; 
+                        stacks = Math.max(0, stacks - 10);
+                        log(`💎 Shard at Wedge ${i === 0 ? "12" : i} destroyed! Squad cleansed -10 stacks.`);
+                        renderShards();
+                        continue;
+                    }
+
+                    // Passive stack penalty: Squad stands in giant AoE but not close enough to clear yet
+                    if (distGrp <= SHARD_AOE_RADIUS) {
+                        stacks += 0.1;
+                    }
+
+                    // Tank distance to Shard
+                    const distTank = Math.sqrt((tankPos.x - sCoords.x) ** 2 + (tankPos.y - sCoords.y) ** 2);
+                    if (distTank <= SHARD_AOE_RADIUS) {
+                        stacks += 0.1; // Accumulate stacks passively
+                    }
+
+                    // Xera distance to Shard
+                    const distXera = Math.sqrt((xeraPos.x - sCoords.x) ** 2 + (xeraPos.y - sCoords.y) ** 2);
+                    if (distXera <= SHARD_AOE_RADIUS) {
+                        xeraEmpowered = true;
+                    }
+                }
+            }
+
+            if (xeraEmpowered && subTick === 0) {
+                log("⚠️ Xera is standing in a crystal AoE! Xera is EMPOWERED (+100% damage, immune to condis)!", "alert");
+            }
+
+            // Gravity Well injury
+            if (activeWellIdx !== -1 && wellType === 'active') {
+                const activeSet = currentPhase === 1 ? WELLS_P1[activeWellIdx] : WELLS_P2[activeWellIdx];
+                
+                if (activeSet.includes(grpWedge)) {
+                    stacks += 0.3;
+                    if (subTick === 0) log("💥 Squad is taking heavy damage and stacking debuff inside Gravity Well!", "alert");
+                }
+                if (activeSet.includes(tankWedge)) {
+                    stacks += 0.3;
+                }
+            }
+
+            // Center Ring is completely safe EXCEPT when active laser is firing
+            if (laserActive) {
+                if (grpRadius === 0) {
+                    stacks += 1.5;
+                    if (subTick === 0) log("💀 Squad stood inside the Center Laser Core!", "wipe");
+                }
+                if (tankRadius === 0) {
+                    stacks += 1.5;
+                }
+            }
+
+            // Laser orb hit collision
+            laserOrbs.forEach(orb => {
+                const grpDx = groupPos.x - CX;
+                const grpDy = groupPos.y - CY;
+                const grpDist = Math.sqrt(grpDx*grpDx + grpDy*grpDy);
+                let grpAngle = Math.atan2(-grpDy, grpDx) * 180 / Math.PI;
+                if (grpAngle < 0) grpAngle += 360;
+
+                let angleDiff = Math.abs(grpAngle - orb.angle);
+                if (angleDiff > 180) angleDiff = 360 - angleDiff;
+
+                if (angleDiff < 12 && Math.abs(grpDist - orb.r) < 15) {
+                    // Orb Penalty decays linearly over distance from the center
+                    let orbPenalty = 10;
+                    if (orb.r > 40) {
+                        orbPenalty = Math.max(0.5, 10 * (1 - (orb.r - 40) / 180));
+                    }
+
+                    stacks += orbPenalty;
+                    orb.r = 999; // Remove
+                    log(`💥 Hit by radiating Energy Orb! Gained +${orbPenalty.toFixed(1)} stacks.`, "alert");
+                }
+            });
+
+            // Cap debuffs and color-code warning status (Do not fail the simulation)
+            stacks = Math.min(99.0, stacks);
+            let displayStacks = Math.floor(stacks);
+
+            if (displayStacks >= 99) {
+                sLbl.style.color = "var(--danger)";
+                sLbl.style.fontWeight = "bold";
+            } else if (displayStacks >= 90) {
+                sLbl.style.color = "var(--danger)";
+                sLbl.style.fontWeight = "bold";
+            } else {
+                sLbl.style.color = "var(--text-color)";
+                sLbl.style.fontWeight = "normal";
+            }
+
+            sLbl.textContent = `${displayStacks} / 99`;
+        }
+
+        // --- AMBIENT MAGIC EVENT LOOP ---
+        function triggerBubbleEvent() {
+            bubbleChanneling = true;
+            bubbleTimer = 0.0;
+            bubbleSucceeded = false;
+            
+            bubbleAction.style.display = 'block';
+            log("🔮 Phantasms prepare a raid-wipe channel. Stand by to use Intervention bubble!", "alert");
+        }
+
+        function tickBubble() {
+            bubbleTimer += 0.1;
+            bubbleTimerEl.textContent = `Channel: ${bubbleTimer.toFixed(1)}s / 6.0s`;
+
+            if (bubbleTimer >= 6.0) {
+                bubbleAction.style.display = 'none';
+                bubbleChanneling = false;
+                
+                if (bubbleSucceeded) {
+                    log("✅ Intervention Bubble successfully protected the squad. Phase continues!");
+                    bubbleSucceeded = true;
+                } else {
+                    stacks = 99;
+                    evaluatePlayerGridStanding();
+                }
+            }
+        }
+
+        btnBubble.addEventListener('click', () => {
+            if (!bubbleChanneling) return;
+            
+            if (bubbleTimer >= 4.0 && bubbleTimer <= 5.5) {
+                bubbleSucceeded = true;
+                btnBubble.style.background = "#22c55e";
+                btnBubble.textContent = "Bubble Active!";
+                log("Shield bubble generated at the correct moment!");
+            } else {
+                log("❌ Shield activated at the wrong time (too early or too late)! The channel will defeat you.", "wipe");
+            }
+        });
+
+        // --- GRID HIGHLIGHT HELPERS ---
+        function highlightWedges(indices, className) {
+            clearWedgeHighlights();
+            indices.forEach(idx => {
+                const el = document.getElementById(`wedge-${idx}`);
+                if (el) el.classList.add(className);
+            });
+        }
+
+        function clearWedgeHighlights() {
+            for (let i = 0; i < 12; i++) {
+                const el = document.getElementById(`wedge-${i}`);
+                if (el) {
+                    el.classList.remove('gravity-well');
+                    el.classList.remove('warning-well');
+                }
+            }
+        }
+
+        // --- SIMULATOR CONTROLS ---
+        btnPlay.addEventListener('click', () => {
+            if (xeraHP <= 0) resetSimulator();
+
+            isPlaying = !isPlaying;
+            if (isPlaying) {
+                btnPlay.textContent = "Pause";
+                timerInterval = setInterval(tick, 100);
+            } else {
+                btnPlay.textContent = "Play";
+                clearInterval(timerInterval);
+            }
+        });
+
+        btnStep.addEventListener('click', () => {
+            if (xeraHP <= 0) resetSimulator();
+            for (let i = 0; i < 10; i++) {
+                tick();
+            }
+        });
+
+        btnReset.addEventListener('click', () => {
+            resetSimulator();
+        });
+
+        dpsSlider.addEventListener('input', () => {
+            dpsVal.textContent = `${parseInt(dpsSlider.value).toLocaleString()},000 DPS`;
+        });
+
+        function resetSimulator() {
+            clearInterval(timerInterval);
+            isPlaying = false;
+            time = 0;
+            subTick = 0;
+            xeraHP = 100.0;
+            currentPhase = 1;
+            stacks = 0;
+            shards = Array(12).fill(false);
+            activeWellIdx = -1;
+            wellType = 'inactive';
+            lastWellState = 'inactive';
+            lastLaserState = 'inactive';
+            laserActive = false;
+            laserOrbs = [];
+            bubbleChanneling = false;
+            bubbleTimer = 0.0;
+            bubbleSucceeded = false;
+
+            btnPlay.textContent = "Play";
+            pLbl.textContent = "1 (100% - 50%)";
+            tLbl.textContent = "00:00";
+            hpLbl.textContent = "100.0%";
+            sLbl.textContent = "0 / 99";
+
+            laserEl.style.display = 'none';
+            laserEl.setAttribute('fill', 'none');
+            laserEl.setAttribute('stroke', 'none');
+            
+            bubbleAction.style.display = 'none';
+            modalOverlay.style.display = 'none';
+            btnBubble.style.background = "#ea580c";
+            btnBubble.textContent = "Use Intervention";
+
+            tankPos = { x: 250, y: 350 };
+            groupPos = { x: 230, y: 370 };
+            
+            clearWedgeHighlights();
+            renderShards();
+            renderOrbs();
+            updateEntityPositions();
+            updateReadouts();
+
+            logContainer.innerHTML = '';
+            log("Simulator reset. Position elements and press play to try again.");
+        }
+
+        initArena();
+        loadLayoutsDropdown();
+    </script>
+</body>
+</html>
