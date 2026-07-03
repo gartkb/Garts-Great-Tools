@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Guild Wars 2 Trading Post Tracker</title>
     <style>
+        /* --- KEEPING ALL CSS AS IS --- */
         * {
             margin: 0;
             padding: 0;
@@ -851,6 +852,7 @@
             color: #e74c3c;
         }
 
+        /* --- STYLES FOR ORDER FILTERS & SORTING --- */
         .order-controls-bar {
             display: flex;
             flex-wrap: wrap;
@@ -905,6 +907,7 @@
             display: none;
         }
 
+        /* Sortable Headers */
         .sortable-th {
             cursor: pointer;
             user-select: none;
@@ -986,6 +989,7 @@
             margin-top: 5px;
         }
 
+        /* NEW: Account Badge Style */
         .notif-account {
             display: inline-block;
             background: rgba(0, 0, 0, 0.3);
@@ -1169,6 +1173,7 @@
                     <button id="toggle-sells" class="order-toggle-btn" onclick="switchOrderType('sells')">Sell
                         Listings</button>
                 </div>
+                <!-- Filter Controls -->
                 <div class="order-controls-bar">
                     <input type="text" id="order-search-input" class="order-search-input"
                         placeholder="Filter items by name..." oninput="handleOrderSearch(this.value)">
@@ -1399,7 +1404,7 @@
             return results;
         }
 
-        // --- Helper to handle GW2 API Pagination automatically ---
+        // --- NEW: Helper to handle GW2 API Pagination automatically ---
         async function fetchPagedEndpoint(url, token) {
             const pageSize = 200;
             const separator = url.includes('?') ? '&' : '?';
@@ -1412,6 +1417,7 @@
                 const totalPages = parseInt(res.headers.get('x-page-total') || 1);
                 let results = await res.json();
 
+                // If active orders exceed 200, fetch the rest in parallel
                 if (totalPages > 1) {
                     const promises = [];
                     for (let i = 1; i < totalPages; i++) {
@@ -1456,6 +1462,7 @@
             localStorage.setItem('gw2_active_notifications', JSON.stringify(activeNotifications));
         }
 
+        // Updated: Now accepts accountName
         function addNotification(type, title, message, accountName) {
             const notif = {
                 id: Date.now() + '-' + Math.random(),
@@ -1655,821 +1662,838 @@
             const invSetting = localStorage.getItem('gw2_enable_inventory');
             if (invSetting !== null) enableInventory = invSetting === 'true';
             document.getElementById('enable-inventory-chk').checked = enableInventory;
-
             const disabled = localStorage.getItem('gw2_disabled_guilds');
             if (disabled) { try { disabledGuilds = new Set(JSON.parse(disabled)); } catch { } }
-
             const known = localStorage.getItem('gw2_known_guilds');
             if (known) { try { knownGuilds = JSON.parse(known); } catch { } }
-
-            document.getElementById('enable-inventory-chk').onchange = (e) => {
-                enableInventory = e.target.checked;
-                localStorage.setItem('gw2_enable_inventory', enableInventory);
-                pollApiData();
-            };
+            renderGuildSettings();
         }
-
         function saveSettings() {
+            localStorage.setItem('gw2_enable_inventory', enableInventory);
             localStorage.setItem('gw2_disabled_guilds', JSON.stringify([...disabledGuilds]));
             localStorage.setItem('gw2_known_guilds', JSON.stringify(knownGuilds));
         }
 
-        async function addApiKey() {
+        function addApiKey() {
             const keyInput = document.getElementById('new-api-key');
             const nameInput = document.getElementById('new-api-name');
             const key = keyInput.value.trim();
-            const nickname = nameInput.value.trim();
-
-            if (!key) return;
-            const normalizedNickname = nickname || await fetchAccountName(key) || `Key-${apiKeys.length + 1}`;
-
-            if (apiKeys.some(x => x.key === key)) {
-                alert('API Key already exists!');
-                return;
-            }
-
-            apiKeys.push({ key, name: normalizedNickname });
+            const name = nameInput.value.trim() || 'Account ' + (apiKeys.length + 1);
+            if (!key) { alert('Please enter an API Key'); return; }
+            apiKeys.push({ key, name });
             saveApiKeys();
-            keyInput.value = '';
-            nameInput.value = '';
-            await pollApiData();
+            keyInput.value = ''; nameInput.value = '';
+            refreshAllData();
         }
-
-        function deleteApiKey(key) {
-            apiKeys = apiKeys.filter(x => x.key !== key);
-            saveApiKeys();
-            pollApiData();
+        function removeApiKey(index) {
+            if (confirm('Remove this API key?')) { apiKeys.splice(index, 1); saveApiKeys(); refreshAllData(); }
         }
-
         function renderApiKeys() {
-            const container = document.getElementById('api-key-list');
-            container.innerHTML = '';
-            if (apiKeys.length === 0) {
-                container.innerHTML = '<div style="color:#95a5a6; font-style:italic;">No API keys added yet.</div>';
-                return;
-            }
-            apiKeys.forEach(x => {
-                const item = document.createElement('div');
-                item.className = 'api-item';
-                const mask = x.key.length > 20 ? x.key.substring(0, 8) + '...' + x.key.substring(x.key.length - 8) : x.key;
-
-                item.innerHTML = `
-                    <div>
-                        <span class="api-name">${x.name}</span>
-                        <span class="api-key-mask">${mask}</span>
-                    </div>
-                    <button class="delete-key-btn" onclick="deleteApiKey('${x.key}')">Remove</button>
-                `;
-                container.appendChild(item);
+            const list = document.getElementById('api-key-list');
+            list.innerHTML = '';
+            if (apiKeys.length === 0) list.innerHTML = '<div style="color:#95a5a6; text-align:center;">No API keys configured.</div>';
+            else apiKeys.forEach((k, i) => {
+                const div = document.createElement('div');
+                div.className = 'api-item';
+                div.innerHTML = `<div><span class="api-name">${k.name}</span><span class="api-key-mask">${k.key.substring(0, 8)}...</span></div><button class="delete-key-btn" onclick="removeApiKey(${i})">Delete</button>`;
+                list.appendChild(div);
             });
         }
-
-        function updateGuildList(accessibleGuilds) {
+        function renderGuildSettings() {
             const container = document.getElementById('guild-list-container');
             container.innerHTML = '';
-
-            const guildIds = Object.keys(accessibleGuilds);
-            if (guildIds.length === 0) {
-                container.innerHTML = '<div style="color:#95a5a6; font-style:italic;">No accessible guilds found (Leader permission required on key).</div>';
-                return;
-            }
-
+            const guildIds = Object.keys(knownGuilds);
+            if (guildIds.length === 0) { container.innerHTML = '<div style="color:#95a5a6; font-style:italic; text-align:center;">Accessible guilds will appear here after data is loaded.</div>'; return; }
             guildIds.forEach(gid => {
-                const gname = accessibleGuilds[gid].name;
-                const gtag = accessibleGuilds[gid].tag;
-                const isChecked = !disabledGuilds.has(gid);
-
+                const g = knownGuilds[gid];
                 const div = document.createElement('div');
                 div.className = 'guild-item';
-                div.innerHTML = `
-                    <input type="checkbox" id="guild-chk-${gid}" ${isChecked ? 'checked' : ''} onchange="toggleGuild('${gid}')">
-                    <label for="guild-chk-${gid}">
-                        <span>${gname}</span>
-                        <span class="guild-tag">[${gtag}]</span>
-                    </label>
-                `;
-                container.appendChild(div);
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = !disabledGuilds.has(gid);
+                checkbox.onchange = () => { if (checkbox.checked) disabledGuilds.delete(gid); else disabledGuilds.add(gid); saveSettings(); };
+                const label = document.createElement('label');
+                label.innerHTML = `<span>${g.name} <span class="guild-tag">[${g.tag}]</span></span>`;
+                label.onclick = () => checkbox.click();
+                div.appendChild(checkbox); div.appendChild(label); container.appendChild(div);
             });
         }
 
-        function toggleGuild(guildId) {
-            if (disabledGuilds.has(guildId)) {
-                disabledGuilds.delete(guildId);
-            } else {
-                disabledGuilds.add(guildId);
-            }
-            saveSettings();
-            pollApiData();
-        }
-
-        // --- API Helpers ---
-        function getHeaders(token) {
-            return { 'Authorization': `Bearer ${token}` };
-        }
-
-        async function fetchAccountName(token) {
-            try {
-                const res = await fetch('https://api.guildwars2.com/v2/account', { headers: getHeaders(token) });
-                if (res.ok) {
-                    const data = await res.json();
-                    return data.name;
-                }
-            } catch { }
-            return null;
-        }
-
-        async function fetchAccountGuilds(token) {
-            try {
-                const res = await fetch('https://api.guildwars2.com/v2/account', { headers: getHeaders(token) });
-                if (res.ok) {
-                    const data = await res.json();
-                    return data.leader || [];
-                }
-            } catch { }
-            return [];
-        }
-
-        async function fetchAccountDelivery(token) {
-            try {
-                const res = await fetch('https://api.guildwars2.com/v2/commerce/delivery', { headers: getHeaders(token) });
-                if (res.ok) { return await res.json(); }
-            } catch { }
-            return null;
-        }
-
-        async function fetchAccountOrders(token) {
-            const buys = await fetchPagedEndpoint('https://api.guildwars2.com/v2/commerce/transactions/current/buys', token) || [];
-            const sells = await fetchPagedEndpoint('https://api.guildwars2.com/v2/commerce/transactions/current/sells', token) || [];
-            return { buys, sells };
-        }
-
-        async function fetchInventoryData(token, accountName) {
-            const inv = [];
-            try {
-                const sharedRes = await fetch('https://api.guildwars2.com/v2/account/inventory', { headers: getHeaders(token) });
-                if (sharedRes.ok) {
-                    const shared = await sharedRes.json();
-                    shared.forEach(x => { if (x) inv.push({ ...x, loc: 'Shared Slot', owner: accountName }); });
-                }
-
-                const bankRes = await fetch('https://api.guildwars2.com/v2/account/bank', { headers: getHeaders(token) });
-                if (bankRes.ok) {
-                    const bank = await bankRes.json();
-                    bank.forEach(x => { if (x) inv.push({ ...x, loc: 'Bank Slot', owner: accountName }); });
-                }
-
-                const charRes = await fetch('https://api.guildwars2.com/v2/characters', { headers: getHeaders(token) });
-                if (charRes.ok) {
-                    const chars = await charRes.json();
-                    await pMap(chars, async (charName) => {
-                        const cUrl = `https://api.guildwars2.com/v2/characters/${encodeURIComponent(charName)}`;
-                        const cRes = await fetch(cUrl, { headers: getHeaders(token) });
-                        if (cRes.ok) {
-                            const cData = await cRes.json();
-                            if (cData.bags) {
-                                cData.bags.forEach((bag) => {
-                                    if (bag && bag.inventory) {
-                                        bag.inventory.forEach(item => {
-                                            if (item) inv.push({ ...item, loc: `Character: ${charName}`, owner: accountName });
-                                        });
+        async function discoverGuilds() {
+            if (apiKeys.length === 0) return;
+            let newGuildsFound = false;
+            const currentValidGuilds = new Set();
+            await pMap(apiKeys, async (account) => {
+                try {
+                    const accRes = await fetch(`https://api.guildwars2.com/v2/account?access_token=${account.key}`);
+                    if (!accRes.ok) return;
+                    const accInfo = await accRes.json();
+                    if (accInfo.guild_leader) {
+                        for (const guildId of accInfo.guild_leader) {
+                            currentValidGuilds.add(guildId);
+                            if (!knownGuilds[guildId]) {
+                                try {
+                                    const gRes = await fetch(`https://api.guildwars2.com/v2/guild/${guildId}`);
+                                    if (gRes.ok) {
+                                        const gInfo = await gRes.json();
+                                        knownGuilds[guildId] = { name: gInfo.name, tag: gInfo.tag };
+                                        newGuildsFound = true;
                                     }
-                                });
-                            }
-                            if (cData.equipment) {
-                                cData.equipment.forEach((eq) => {
-                                    if (eq) inv.push({ id: eq.id, count: 1, loc: `Equipped: ${charName}`, owner: accountName });
-                                });
+                                } catch (e) { }
                             }
                         }
-                    }, 4);
-                }
-            } catch (e) {
-                console.error("Failed fetching inventories", e);
-            }
-            return inv;
-        }
-
-        // --- STATIC ITEM DB (LOCAL SEARCH) ---
-        async function loadStaticItemData() {
-            if (staticItemData) return;
-            try {
-                const res = await fetch('https://api.gw2treasures.com/api/items');
-                if (res.ok) {
-                    const fullList = await res.json();
-                    staticItemData = fullList.map(x => ({ id: Number(x.id), name: x.name }));
-                }
-            } catch (e) {
-                console.error("GW2Treasures list fetch failed. Fallback offline search used.", e);
-                staticItemData = [];
-            }
-        }
-
-        function searchItems(query) {
-            if (!query) return [];
-            query = query.toLowerCase();
-
-            const matchedCustom = CUSTOM_SEARCHABLE_ITEMS.filter(x => x.name.toLowerCase().includes(query) || x.id.toString() === query);
-
-            if (!staticItemData) {
-                return matchedCustom;
-            }
-
-            const results = staticItemData.filter(x => x.name.toLowerCase().includes(query) || x.id.toString() === query);
-            const merged = [...matchedCustom, ...results.filter(r => !matchedCustom.some(c => c.id === r.id))];
-            return merged.slice(0, 50);
-        }
-
-        function displaySearchResults(results) {
-            searchResultsContainer.innerHTML = '';
-            if (results.length === 0) {
-                searchResultsContainer.style.display = 'none';
-                return;
-            }
-            results.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'search-result-item';
-                div.textContent = `${item.name} (${item.id})`;
-                div.onclick = () => {
-                    itemInput.value = item.id;
-                    searchResultsContainer.style.display = 'none';
-                    addToActiveTab(item.id);
-                };
-                searchResultsContainer.appendChild(div);
-            });
-            searchResultsContainer.style.display = 'block';
-        }
-
-        function closeSearchResults() {
-            setTimeout(() => { searchResultsContainer.style.display = 'none'; }, 200);
-        }
-
-        // --- Price Processing & Card Render ---
-        async function fetchPriceChunks(ids) {
-            const uniqueIds = [...new Set(ids)].filter(id => id < 9900000);
-            const chunks = [];
-            const size = 150;
-            for (let i = 0; i < uniqueIds.length; i += size) {
-                chunks.push(uniqueIds.slice(i, i + size));
-            }
-
-            const allPrices = {};
-            await pMap(chunks, async (chunk) => {
-                try {
-                    const res = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${chunk.join(',')}`);
-                    if (res.ok) {
-                        const data = await res.json();
-                        data.forEach(x => { allPrices[x.id] = x; });
                     }
-                } catch { }
+                } catch (e) { }
             }, 3);
-            return allPrices;
+
+            Object.keys(knownGuilds).forEach(gid => {
+                if (!currentValidGuilds.has(gid)) { delete knownGuilds[gid]; disabledGuilds.delete(gid); newGuildsFound = true; }
+            });
+            if (newGuildsFound) { saveSettings(); renderGuildSettings(); }
+        }
+
+        // --- DATA LOGIC ---
+        async function refreshAllData() {
+            discoverGuilds();
+            const promises = [fetchAccountData()];
+            if (enableInventory) promises.push(fetchAccountInventories());
+            else globalInventoryMap.clear();
+
+            await Promise.all(promises);
+            await fetchActiveTabData();
         }
 
         async function fetchActiveTabData() {
-            const activeTab = itemTabs[activeTabIndex];
-            if (!activeTab) return;
-            const items = activeTab.items;
-            if (items.length === 0) {
-                itemsContainer.innerHTML = '<div class="loading">No items in this tab. Add some above!</div>';
+            const currentId = ++fetchIdCounter;
+            const activeIds = itemTabs[activeTabIndex].items;
+
+            if (activeIds.length === 0) {
+                itemsContainer.innerHTML = '<div class="loading">No items in this tab. Drop items here or add new ones.</div>';
                 return;
             }
 
-            const idsToFetch = [...items];
-            items.forEach(id => {
-                if (isContainer(id)) {
-                    CONTAINER_ITEMS[id].items.forEach(child => {
-                        idsToFetch.push(child.id);
-                    });
+            if (itemsContainer.innerHTML.trim() === '') {
+                itemsContainer.innerHTML = '<div class="loading">Loading tab items...</div>';
+            }
+
+            try {
+                const itemResults = await fetchItemData(activeIds);
+
+                if (currentId !== fetchIdCounter) return;
+
+                itemResults.forEach(item => globalItemData.set(item.id, item));
+                updateDomForActiveTab(activeIds);
+            } catch (e) {
+                console.error(e);
+                if (currentId === fetchIdCounter) {
+                    itemsContainer.innerHTML = '<div class="error">Error loading items. Check API limits or try again later.</div>';
                 }
+            }
+        }
+
+        // --- DOM RECONCILIATION ---
+        function updateDomForActiveTab(activeIds) {
+            Array.from(itemsContainer.children).forEach(child => {
+                if (!child.classList.contains('item-card')) child.remove();
             });
 
-            const uniqueIds = [...new Set(idsToFetch)].filter(id => id < 9900000);
+            const existingCards = new Map();
+            itemsContainer.querySelectorAll('.item-card').forEach(el => existingCards.set(Number(el.dataset.itemId), el));
 
-            const detailChunks = [];
-            const size = 150;
-            for (let i = 0; i < uniqueIds.length; i += size) { detailChunks.push(uniqueIds.slice(i, i + size)); }
+            const activeIdSet = new Set(activeIds);
 
-            const fetchedDetails = {};
-            await pMap(detailChunks, async (chunk) => {
-                try {
-                    const res = await fetch(`https://api.guildwars2.com/v2/items?ids=${chunk.join(',')}`);
-                    if (res.ok) {
-                        const data = await res.json();
-                        data.forEach(x => { fetchedDetails[x.id] = x; });
+            existingCards.forEach((el, id) => {
+                if (!activeIdSet.has(id)) el.remove();
+            });
+
+            activeIds.forEach(id => {
+                const data = globalItemData.get(id);
+                if (!data) return;
+
+                if (existingCards.has(id)) {
+                    const card = existingCards.get(id);
+                    const temp = document.createElement('div');
+                    temp.appendChild(createItemCard(data));
+                    if (card.innerHTML !== temp.firstElementChild.innerHTML) {
+                        card.innerHTML = temp.firstElementChild.innerHTML;
+                        const rmBtn = card.querySelector('.remove-btn');
+                        if (rmBtn) rmBtn.addEventListener('click', e => { e.stopPropagation(); removeFromActiveTab(id); });
                     }
-                } catch { }
-            }, 3);
-
-            const fetchedPrices = await fetchPriceChunks(uniqueIds);
-
-            let gemPriceData = null;
-            if (items.includes(GOLD_TO_GEMS_ID) || items.includes(GEMS_TO_GOLD_ID)) {
-                try {
-                    const res = await fetch('https://api.guildwars2.com/v2/commerce/exchange/gems?quantity=10000');
-                    if (res.ok) { gemPriceData = await res.json(); }
-                } catch { }
-            }
-
-            globalItemData.clear();
-            uniqueIds.forEach(id => {
-                const detail = fetchedDetails[id];
-                const price = fetchedPrices[id];
-                if (detail) {
-                    globalItemData.set(id, {
-                        id,
-                        name: detail.name,
-                        icon: detail.icon,
-                        sellPrice: price ? price.buys.unit_price : 0,
-                        buyPrice: price ? price.sells.unit_price : 0
-                    });
+                    itemsContainer.appendChild(card);
+                } else {
+                    itemsContainer.appendChild(createItemCard(data));
                 }
             });
+        }
 
-            if (items.includes(GOLD_TO_GEMS_ID)) {
-                const rate = gemPriceData ? getGoldToGems(gemPriceData) : 0;
-                globalItemData.set(GOLD_TO_GEMS_ID, {
-                    id: GOLD_TO_GEMS_ID,
-                    name: 'Gold to Gems (400 Gems)',
-                    icon: SPECIAL_ITEMS[GOLD_TO_GEMS_ID].icon,
-                    sellPrice: rate,
-                    buyPrice: rate
-                });
-            }
-            if (items.includes(GEMS_TO_GOLD_ID)) {
-                const rate = gemPriceData ? getGemsToGold(gemPriceData) : 0;
-                globalItemData.set(GEMS_TO_GOLD_ID, {
-                    id: GEMS_TO_GOLD_ID,
-                    name: 'Gems to Gold (400 Gems)',
-                    icon: SPECIAL_ITEMS[GEMS_TO_GOLD_ID].icon,
-                    sellPrice: rate,
-                    buyPrice: rate
-                });
-            }
+        async function fetchAccountData() {
+            accountOrdersMap.clear();
+            allAccountOrders = { buys: [], sells: [] }; // Reset global order list
+            deliveryData = [];
+            if (apiKeys.length === 0) return;
 
-            items.forEach(id => {
-                if (isContainer(id)) {
-                    let totalSellPrice = 0;
-                    let totalBuyPrice = 0;
-                    CONTAINER_ITEMS[id].items.forEach(sub => {
-                        const prices = globalItemData.get(sub.id);
-                        if (prices) {
-                            totalSellPrice += prices.sellPrice * sub.avgQuantity * sub.dropProb;
-                            totalBuyPrice += prices.buyPrice * sub.avgQuantity * sub.dropProb;
+            const results = await pMap(apiKeys, async (account) => {
+                try {
+                    // --- UPDATED: Uses fetchPagedEndpoint to handle >50 orders ---
+                    const [buys, sells, delivery] = await Promise.all([
+                        fetchPagedEndpoint('https://api.guildwars2.com/v2/commerce/transactions/current/buys', account.key),
+                        fetchPagedEndpoint('https://api.guildwars2.com/v2/commerce/transactions/current/sells', account.key),
+                        fetch(`https://api.guildwars2.com/v2/commerce/delivery?access_token=${account.key}`).then(r => r.ok ? r.json() : null)
+                    ]);
+
+                    // Fail-Safe: If buys or sells is null, the API failed. Return null for the whole object to filter it out.
+                    if (buys === null || sells === null) return null;
+
+                    return { account: account.name, buys, sells, delivery };
+                } catch (e) { return null; }
+            }, 5);
+
+            const validResults = results.filter(r => r !== null);
+
+            // --- UPDATED ALERT LOGIC ---
+            // 1. Identify which accounts we actually got data for
+            const successfulAccounts = new Set();
+            validResults.forEach(r => successfulAccounts.add(r.account));
+
+            const currentActiveIds = new Set();
+            const extraItemIds = new Set(); // Collect IDs for both delivery AND global orders to fetch names
+
+            validResults.forEach(res => {
+                const processOrders = (list, type) => {
+                    list.forEach(o => {
+                        currentActiveIds.add(o.id);
+                        extraItemIds.add(o.item_id);
+
+                        // Populate Map for specific item cards
+                        if (!accountOrdersMap.has(o.item_id)) accountOrdersMap.set(o.item_id, { buys: [], sells: [] });
+                        accountOrdersMap.get(o.item_id)[type].push({ ...o, accountName: res.account });
+
+                        // Populate Global List
+                        allAccountOrders[type].push({ ...o, accountName: res.account });
+                    });
+                };
+                processOrders(res.buys, 'buys');
+                processOrders(res.sells, 'sells');
+
+                if (res.delivery && (res.delivery.coins > 0 || res.delivery.items.length > 0)) {
+                    res.delivery.items.forEach(i => {
+                        extraItemIds.add(i.id);
+                        if (enableInventory) {
+                            if (!globalInventoryMap.has(i.id)) globalInventoryMap.set(i.id, []);
+                            globalInventoryMap.get(i.id).push({ owner: res.account, source: 'Delivery Box', count: i.count, isGuild: false });
                         }
                     });
-
-                    const customName = CUSTOM_SEARCHABLE_ITEMS.find(x => x.id === id)?.name || 'Custom Container';
-                    globalItemData.set(id, {
-                        id,
-                        name: customName,
-                        icon: fetchedDetails[id] ? fetchedDetails[id].icon : 'https://wiki.guildwars2.com/images/3/3d/Bag_slot.png',
-                        sellPrice: totalSellPrice,
-                        buyPrice: totalBuyPrice,
-                        isContainer: true
-                    });
+                    deliveryData.push({ accountName: res.account, coins: res.delivery.coins, items: res.delivery.items });
                 }
             });
 
-            renderItems();
-        }
+            // --- ROBUST WATCHED ORDER DETECTION ---
+            if (validResults.length > 0) {
+                const ordersToRemove = [];
+                watchedOrders.forEach((details, orderId) => {
+                    // Fail-Safe: If we didn't successfully fetch this specific account, skip logic.
+                    // This prevents alerts when one specific API key times out.
+                    if (!successfulAccounts.has(details.accountName)) return;
 
-        function renderItems() {
-            itemsContainer.innerHTML = '';
-            const activeTab = itemTabs[activeTabIndex];
-            if (!activeTab || activeTab.items.length === 0) return;
+                    if (currentActiveIds.has(orderId)) {
+                        // Order exists: Reset the missing counter
+                        details.missingCount = 0;
+                    } else {
+                        // Order is missing from a successful API response
+                        details.missingCount = (details.missingCount || 0) + 1;
 
-            activeTab.items.forEach(id => {
-                const item = globalItemData.get(id);
-                if (!item) return;
-
-                const card = document.createElement('div');
-                card.className = 'item-card';
-                card.draggable = true;
-                card.dataset.itemId = id;
-
-                card.addEventListener('dragstart', () => { draggedCard = card; card.style.opacity = '0.4'; });
-                card.addEventListener('dragend', () => { draggedCard = null; card.style.opacity = '1'; });
-                card.addEventListener('dragover', (e) => { e.preventDefault(); });
-                card.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    if (draggedCard && draggedCard !== card) {
-                        const curItems = itemTabs[activeTabIndex].items;
-                        const dragId = Number(draggedCard.dataset.itemId);
-                        const dropId = Number(card.dataset.itemId);
-                        const dragIdx = curItems.indexOf(dragId);
-                        const dropIdx = curItems.indexOf(dropId);
-
-                        curItems.splice(dragIdx, 1);
-                        curItems.splice(dropIdx, 0, dragId);
-                        saveTabs();
-                        renderItems();
+                        // Double Confirmation: Must be missing for 2 consecutive successful checks
+                        if (details.missingCount >= 2) {
+                            const typeLabel = details.type === 'buys' ? 'Buy Order Exhausted' : 'Sell Order Fulfilled';
+                            const msg = `${details.quantity}x ${details.itemName} at ${formatCurrency(details.price).gold}g ${formatCurrency(details.price).silver}s`;
+                            // PASSING ACCOUNT NAME HERE
+                            addNotification(details.type, typeLabel, msg, details.accountName);
+                            ordersToRemove.push(orderId);
+                        }
                     }
                 });
 
-                let buyOrdersQty = 0;
-                let sellOrdersQty = 0;
-                let isBuyWatched = false;
-                let isSellWatched = false;
-                let inventoryQty = 0;
-
-                // Restored safeguard checking mock/custom items
-                if (id < 9900000) {
-                    for (const [key, details] of accountOrdersMap) {
-                        details.buys.forEach(o => {
-                            if (o.item_id === id) {
-                                buyOrdersQty += o.quantity;
-                                if (watchedOrders.has(o.created + '-' + o.price)) isBuyWatched = true;
-                            }
-                        });
-                        details.sells.forEach(o => {
-                            if (o.item_id === id) {
-                                sellOrdersQty += o.quantity;
-                                if (watchedOrders.has(o.created + '-' + o.price)) isSellWatched = true;
-                            }
-                        });
-                    }
-
-                    const itemInvEntries = globalInventoryMap.get(id) || [];
-                    itemInvEntries.forEach(entry => { inventoryQty += entry.count; });
-                }
-
-                const buyBadgeClass = buyOrdersQty > 0 ? `icon-buy ${isBuyWatched ? 'icon-warn' : ''}` : '';
-                const sellBadgeClass = sellOrdersQty > 0 ? `icon-sell ${isSellWatched ? 'icon-warn' : ''}` : '';
-                const invBadgeClass = inventoryQty > 0 ? 'icon-inv' : '';
-
-                // Restored special conditional formatting for headers, ids, and pricing rows
-                card.innerHTML = `
-                    <div class="card-actions">
-                        <button class="card-btn remove-btn" onclick="removeFromActiveTab(${id})" title="Remove">×</button>
-                    </div>
-                    <div class="item-header">
-                        <div class="item-image">
-                            <img src="${item.icon}" alt="${item.name}">
-                        </div>
-                        <div class="item-info">
-                            <span class="item-name">
-                                <span>${item.name}</span>
-                                ${id < 9900000 ? `<a href="${GRAPH_URL_TEMPLATE.replace('{id}', id)}" target="_blank" class="graph-link" title="GW2Treasures Graph">📈</a>` : ''}
-                            </span>
-                            <div class="item-id">
-                                <span style="font-size:0.8rem;">ID: ${id < 9900000 ? id : 'Special'}</span>
-                                ${buyOrdersQty > 0 ? `<span class="order-icon ${buyBadgeClass}" onclick="showOrderViewer(${id})" title="Active Buy Orders: ${buyOrdersQty}">📥 ${buyOrdersQty}</span>` : ''}
-                                ${sellOrdersQty > 0 ? `<span class="order-icon ${sellBadgeClass}" onclick="showOrderViewer(${id})" title="Active Sell Listings: ${sellOrdersQty}">📤 ${sellOrdersQty}</span>` : ''}
-                                ${inventoryQty > 0 ? `<span class="order-icon ${invBadgeClass}" onclick="showInventoryLocations(${id})" title="Inventory Units: ${inventoryQty}">🎒 ${inventoryQty}</span>` : ''}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="item-prices">
-                        <div class="price-row" ${isContainer(id) ? `style="cursor:pointer" onclick="showContainerContents(${id})"` : ''}>
-                            <span class="price-label">${id === GOLD_TO_GEMS_ID ? 'Cost in Gold:' : (id === GEMS_TO_GOLD_ID ? 'Receive in Gold:' : 'Sell Order Price:')}</span>
-                            <span class="price-value">${formatPrice(id === GOLD_TO_GEMS_ID || id === GEMS_TO_GOLD_ID ? item.sellPrice : item.buyPrice)}</span>
-                        </div>
-                        <div class="price-row" ${isContainer(id) ? `style="cursor:pointer" onclick="showContainerContents(${id})"` : ''}>
-                            <span class="price-label">${id === GOLD_TO_GEMS_ID || id === GEMS_TO_GOLD_ID ? '' : 'Buy Order Price:'}</span>
-                            <span class="price-value">${id === GOLD_TO_GEMS_ID || id === GEMS_TO_GOLD_ID ? '' : formatPrice(item.sellPrice)}</span>
-                        </div>
-                    </div>
-                `;
-                itemsContainer.appendChild(card);
-            });
-        }
-
-        function formatPrice(copperCount) {
-            copperCount = Math.round(copperCount);
-            if (copperCount <= 0 || isNaN(copperCount)) return '<span style="color:#7f8c8d; font-size:0.95rem;">None</span>';
-            const gold = Math.floor(copperCount / 10000);
-            const silver = Math.floor((copperCount % 10000) / 100);
-            const copper = copperCount % 100;
-
-            let result = '';
-            if (gold > 0) result += `<span class="gold">${gold}g</span> `;
-            if (gold > 0 || silver > 0) result += `<span class="silver">${silver}s</span> `;
-            result += `<span class="copper">${copper}c</span>`;
-            return result;
-        }
-
-        function getGemsToGold(gemPriceData) {
-            return (gemPriceData.coins_per_gem * 400);
-        }
-
-        function getGoldToGems(gemPriceData) {
-            return (4000000 / gemPriceData.coins_per_gem) * 10000;
-        }
-
-        // --- Modals Render Helpers ---
-        function openModal(modalId) { document.getElementById(modalId).style.display = 'flex'; }
-        function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
-
-        function showOrderViewer(itemId) {
-            const modalTitle = document.getElementById('order-modal-title');
-            const modalContent = document.getElementById('order-content');
-            const item = globalItemData.get(itemId);
-
-            modalTitle.textContent = item ? `Active orders for "${item.name}"` : 'Orders';
-
-            let hasOrders = false;
-            let html = '';
-
-            for (const [key, details] of accountOrdersMap) {
-                const buys = details.buys.filter(o => o.item_id === itemId);
-                const sells = details.sells.filter(o => o.item_id === itemId);
-
-                if (buys.length > 0 || sells.length > 0) {
-                    hasOrders = true;
-                    html += `<div class="section-title">${key}</div>`;
-                    html += '<table class="data-table">';
-                    html += '<thead><tr><th>Type</th><th>Qty</th><th>Price</th><th>Placed Date</th><th>Watch</th></tr></thead>';
-                    html += '<tbody>';
-
-                    const renderRows = (arr, typeName) => {
-                        arr.forEach(o => {
-                            const date = new Date(o.created).toLocaleString();
-                            const watchKey = o.created + '-' + o.price;
-                            const isWatched = watchedOrders.has(watchKey);
-                            const watchClass = isWatched ? 'watching' : '';
-                            const watchText = isWatched ? '⭐' : '☆';
-
-                            html += `
-                                <tr>
-                                    <td class="${typeName === 'Buy' ? 'col-account' : 'col-guild'}">${typeName}</td>
-                                    <td class="col-qty">${o.quantity}</td>
-                                    <td>${formatPrice(o.price)}</td>
-                                    <td class="col-date">${date}</td>
-                                    <td>
-                                        <button class="watch-btn ${watchClass}" onclick="toggleWatch('${o.created}', ${o.price}, '${key}', ${itemId}, '${typeName}')">${watchText}</button>
-                                    </td>
-                                </tr>
-                            `;
-                        });
-                    };
-
-                    renderRows(buys, 'Buy');
-                    renderRows(sells, 'Sell');
-
-                    html += '</tbody></table>';
-                }
+                // Cleanup
+                ordersToRemove.forEach(id => watchedOrders.delete(id));
+                saveWatchedOrders(); // Persist the missingCounts
             }
 
-            modalContent.innerHTML = hasOrders ? html : '<div style="color:#95a5a6; font-style:italic;">No active orders found on your registered API keys.</div>';
-            openModal('order-modal');
-        }
+            // Ensure we have item details (names/icons) for everything in delivery boxes AND pending orders
+            if (extraItemIds.size > 0) {
+                const nameMap = new Map();
+                const cached = await getStaticItemDetails([...extraItemIds]);
+                cached.forEach(c => nameMap.set(c.id, { name: c.name, icon: c.icon }));
 
-        window.toggleWatch = function (created, price, accountName, itemId, type) {
-            const key = created + '-' + price;
-            if (watchedOrders.has(key)) {
-                watchedOrders.delete(key);
+                const missing = [...extraItemIds].filter(id => !nameMap.has(id));
+                if (missing.length > 0) {
+                    try {
+                        const apiItems = await fetch(`https://api.guildwars2.com/v2/items?ids=${missing.join(',')}`).then(r => r.ok ? r.json() : []);
+                        await saveStaticItemDetails(apiItems);
+                        apiItems.forEach(i => nameMap.set(i.id, { name: i.name, icon: i.icon }));
+                    } catch (e) { }
+                }
+
+                // Hydrate delivery data
+                deliveryData.forEach(d => {
+                    d.items = d.items.map(i => ({ ...i, ...(nameMap.get(i.id) || { name: `Item ${i.id}`, icon: '' }) }));
+                });
+            }
+
+            if (deliveryData.length > 0) {
+                deliveryBtn.classList.add('has-content');
             } else {
-                watchedOrders.set(key, { created, price, accountName, itemId, type });
+                deliveryBtn.classList.remove('has-content');
             }
-            saveWatchedOrders();
-            showOrderViewer(itemId);
-            renderItems();
-        };
-
-        function showContainerContents(containerId) {
-            const container = CONTAINER_ITEMS[containerId];
-            if (!container) return;
-
-            const modalTitle = document.getElementById('container-modal-title');
-            const modalContent = document.getElementById('container-content');
-
-            const containerItem = globalItemData.get(containerId);
-            modalTitle.textContent = containerItem ? `${containerItem.name} Contents` : 'Container Contents';
-
-            let html = '<table class="data-table">';
-            html += '<thead><tr><th>Icon</th><th>Item Name</th><th>Expected Qty</th><th>Sell Value (Each)</th><th>Expected Value</th></tr></thead>';
-            html += '<tbody>';
-
-            let computedTotalSell = 0;
-            let computedTotalBuy = 0;
-
-            container.items.forEach(sub => {
-                const prices = globalItemData.get(sub.id);
-                if (prices) {
-                    const avgQty = sub.avgQuantity * sub.dropProb;
-                    const valEach = prices.buyPrice;
-                    const valExpect = valEach * avgQty;
-
-                    computedTotalSell += valExpect;
-                    computedTotalBuy += (prices.sellPrice * avgQty);
-
-                    html += `
-                        <tr>
-                            <td><img src="${prices.icon}" style="width:24px; height:24px; border-radius:3px; vertical-align:middle;"></td>
-                            <td><span style="vertical-align:middle;">${prices.name}</span></td>
-                            <td class="col-qty">${avgQty.toFixed(4)}</td>
-                            <td>${formatPrice(valEach)}</td>
-                            <td>${formatPrice(valExpect)}</td>
-                        </tr>
-                    `;
-                }
-            });
-
-            html += `<tr style="border-top: 2px solid #3498db; font-weight:bold;">
-                <td colspan="3">Total Expected Value (average)</td>
-                <td>Buy Orders Value: ${formatPrice(computedTotalBuy)}</td>
-                <td>Sell Orders Value: ${formatPrice(computedTotalSell)}</td>
-            </tr>`;
-
-            html += '</tbody></table>';
-            modalContent.innerHTML = html;
-            openModal('container-modal');
         }
 
-        function showInventoryLocations(itemId) {
-            const modalTitle = document.getElementById('inventory-modal-title');
-            const modalContent = document.getElementById('inventory-content');
-            const item = globalItemData.get(itemId);
+        async function fetchAccountInventories() {
+            globalInventoryMap.clear();
+            if (apiKeys.length === 0 || !enableInventory) return;
+            const processedGuilds = new Set();
+            const addItemToMap = (id, count, owner, source, isGuild = false) => {
+                if (id && count > 0) {
+                    if (!globalInventoryMap.has(id)) globalInventoryMap.set(id, []);
+                    globalInventoryMap.get(id).push({ owner, source, count, isGuild });
+                }
+            };
 
-            modalTitle.textContent = item ? `Inventory distribution for "${item.name}"` : 'Inventory Locations';
+            await pMap(apiKeys, async (account) => {
+                try {
+                    const [mats, bank, shared, chars, accInfo] = await Promise.all([
+                        fetch(`https://api.guildwars2.com/v2/account/materials?access_token=${account.key}`).then(r => r.ok ? r.json() : []),
+                        fetch(`https://api.guildwars2.com/v2/account/bank?access_token=${account.key}`).then(r => r.ok ? r.json() : []),
+                        fetch(`https://api.guildwars2.com/v2/account/inventory?access_token=${account.key}`).then(r => r.ok ? r.json() : []),
+                        fetch(`https://api.guildwars2.com/v2/characters?ids=all&access_token=${account.key}`).then(r => r.ok ? r.json() : []),
+                        fetch(`https://api.guildwars2.com/v2/account?access_token=${account.key}`).then(r => r.ok ? r.json() : {})
+                    ]);
 
-            const locations = globalInventoryMap.get(itemId) || [];
-            if (locations.length === 0) {
-                modalContent.innerHTML = '<div style="color:#95a5a6; font-style:italic;">No physical locations found on your accounts.</div>';
-                openModal('inventory-modal');
-                return;
-            }
+                    if (Array.isArray(mats)) mats.forEach(m => addItemToMap(m.id, m.count, account.name, 'Material Storage'));
+                    if (Array.isArray(bank)) bank.forEach(i => i && addItemToMap(i.id, i.count, account.name, 'Bank Vault'));
+                    if (Array.isArray(shared)) shared.forEach(i => i && addItemToMap(i.id, i.count, account.name, 'Shared Slot'));
 
-            let html = '<table class="data-table">';
-            html += '<thead><tr><th>Account</th><th>Location</th><th>Quantity</th></tr></thead>';
-            html += '<tbody>';
+                    if (Array.isArray(chars)) {
+                        chars.forEach(char => {
+                            if (char.bags) char.bags.forEach(bag => {
+                                if (bag && bag.inventory) bag.inventory.forEach(i => i && addItemToMap(i.id, i.count, account.name, `Char: ${char.name}`));
+                            });
+                        });
+                    }
 
-            locations.forEach(x => {
-                html += `
-                    <tr>
-                        <td class="col-account">${x.owner}</td>
-                        <td class="col-guild">${x.loc}</td>
-                        <td class="col-qty">${x.count}</td>
-                    </tr>
-                `;
-            });
-
-            html += '</tbody></table>';
-            modalContent.innerHTML = html;
-            openModal('inventory-modal');
+                    if (accInfo.guild_leader && Array.isArray(accInfo.guild_leader)) {
+                        for (const guildId of accInfo.guild_leader) {
+                            if (processedGuilds.has(guildId) || disabledGuilds.has(guildId)) continue;
+                            processedGuilds.add(guildId);
+                            try {
+                                const stash = await fetch(`https://api.guildwars2.com/v2/guild/${guildId}/stash?access_token=${account.key}`).then(r => r.ok ? r.json() : []);
+                                const gName = knownGuilds[guildId] ? `Guild: ${knownGuilds[guildId].name} [${knownGuilds[guildId].tag}]` : 'Unknown Guild';
+                                stash.forEach(tab => {
+                                    if (tab.inventory) tab.inventory.forEach(i => i && addItemToMap(i.id, i.count, gName, 'Guild Stash', true));
+                                });
+                            } catch (e) { }
+                        }
+                    }
+                } catch (e) { }
+            }, 2);
         }
 
-        function showDeliveryBox() {
-            const modalContent = document.getElementById('delivery-content');
-            if (deliveryData.length === 0) {
-                modalContent.innerHTML = '<div style="color:#95a5a6; font-style:italic;">No packages waiting inside any account delivery box.</div>';
-                openModal('delivery-modal');
-                return;
-            }
+        // --- IDB CACHE ---
+        function getDb() {
+            return new Promise((resolve, reject) => {
+                const req = indexedDB.open('GW2TrackerDB', 1);
+                req.onerror = () => reject(req.error);
+                req.onsuccess = () => resolve(req.result);
+                req.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains('itemDetails')) db.createObjectStore('itemDetails', { keyPath: 'id' });
+                    if (!db.objectStoreNames.contains('files')) db.createObjectStore('files');
+                };
+            });
+        }
 
-            let html = '';
-            deliveryData.forEach(acc => {
-                const totalCoins = acc.coins || 0;
-                const itemsList = acc.items || [];
+        async function getStaticItemDetails(ids) {
+            if (!ids.length) return [];
+            try {
+                const db = await getDb();
+                const tx = db.transaction('itemDetails', 'readonly');
+                const store = tx.objectStore('itemDetails');
+                const results = [];
+                await Promise.all(ids.map(id => new Promise(res => {
+                    const req = store.get(id);
+                    req.onsuccess = () => res(req.result ? results.push(req.result) : null);
+                    req.onerror = () => res(null);
+                })));
+                return results;
+            } catch (e) { return []; }
+        }
 
-                if (totalCoins === 0 && itemsList.length === 0) return;
-
-                html += `<div class="inv-owner-header">${acc.account} Delivery Box</div>`;
-                html += '<table class="data-table" style="margin-bottom:20px;">';
-                html += '<thead><tr><th>Item / Icon</th><th>Quantity Waiting</th></tr></thead>';
-                html += '<tbody>';
-
-                if (totalCoins > 0) {
-                    html += `
-                        <tr>
-                            <td>
-                                <img src="https://wiki.guildwars2.com/images/d/d1/Gold_coin.png" class="delivery-icon">
-                                <span class="delivery-item-name">Coins / Refund</span>
-                            </td>
-                            <td>${formatPrice(totalCoins)}</td>
-                        </tr>
-                    `;
-                }
-
-                itemsList.forEach(item => {
-                    const detail = globalItemData.get(item.id);
-                    const icon = detail ? detail.icon : 'https://wiki.guildwars2.com/images/a/af/Unknown_Item.png';
-                    const name = detail ? detail.name : `Item ID: ${item.id}`;
-
-                    html += `
-                        <tr>
-                            <td>
-                                <img src="${icon}" class="delivery-icon">
-                                <span class="delivery-item-name">${name}</span>
-                            </td>
-                            <td class="col-qty">${item.count}</td>
-                        </tr>
-                    `;
+        async function saveStaticItemDetails(items) {
+            if (!items || !items.length) return;
+            try {
+                const db = await getDb();
+                const tx = db.transaction('itemDetails', 'readwrite');
+                const store = tx.objectStore('itemDetails');
+                items.forEach(item => {
+                    if (item && item.id) store.put({ id: item.id, name: item.name, icon: item.icon, rarity: item.rarity });
                 });
-
-                html += '</tbody></table>';
-            });
-
-            modalContent.innerHTML = html || '<div style="color:#95a5a6; font-style:italic;">No packages waiting inside any account delivery box.</div>';
-            openModal('delivery-modal');
+                await new Promise(resolve => { tx.oncomplete = resolve; tx.onerror = resolve; });
+            } catch (e) { }
         }
 
-        function showGlobalOrders() {
-            selectedOrderAccounts.clear();
-            for (const [key] of accountOrdersMap) { selectedOrderAccounts.add(key); }
+        async function getCachedSearchFile() {
+            if (staticItemData) return staticItemData;
+            try {
+                const db = await getDb();
+                const tx = db.transaction('files', 'readonly');
+                const req = tx.objectStore('files').get('gw2_items_v2');
+                const res = await new Promise(r => { req.onsuccess = () => r(req.result); req.onerror = () => r(null); });
+                if (res) { staticItemData = res; return res; }
+            } catch (e) { }
+
+            try {
+                const res = await fetch('gw2-items.json?' + Date.now());
+                if (res.ok) {
+                    const d = await res.json();
+                    const items = d.items || [];
+                    const db = await getDb();
+                    const tx = db.transaction('files', 'readwrite');
+                    tx.objectStore('files').put(items, 'gw2_items_v2');
+                    staticItemData = items;
+                    return items;
+                }
+            } catch (e) { }
+            return [];
+        }
+
+        // --- ROBUST ITEM FETCHING ---
+        async function fetchItemData(itemIds) {
+            if (itemIds.length === 0) return [];
+            const resultsMap = new Map();
+            const specialIds = itemIds.filter(id => [GOLD_TO_GEMS_ID, GEMS_TO_GOLD_ID].includes(id));
+            const containerIds = itemIds.filter(isContainer);
+            const regularIds = itemIds.filter(id => !specialIds.includes(id) && !containerIds.includes(id));
+
+            const cachedStatic = await getStaticItemDetails(regularIds);
+            cachedStatic.forEach(i => resultsMap.set(i.id, { ...i, buyPrice: null, sellPrice: null }));
+
+            const missingStaticIds = regularIds.filter(id => !resultsMap.has(id));
+
+            const promises = [];
+
+            if (missingStaticIds.length > 0) {
+                promises.push(fetch(`https://api.guildwars2.com/v2/items?ids=${missingStaticIds.join(',')}`)
+                    .then(r => r.ok ? r.json() : [])
+                    .then(async items => {
+                        if (Array.isArray(items)) {
+                            await saveStaticItemDetails(items);
+                            items.forEach(i => resultsMap.set(i.id, { id: i.id, name: i.name, icon: i.icon, buyPrice: null, sellPrice: null }));
+                        }
+                    }).catch(e => console.warn('Static fetch failed', e))
+                );
+            }
+
+            if (regularIds.length > 0) {
+                promises.push(fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${regularIds.join(',')}`)
+                    .then(r => r.ok ? r.json() : [])
+                    .then(prices => {
+                        if (Array.isArray(prices)) {
+                            prices.forEach(p => {
+                                if (resultsMap.has(p.id)) {
+                                    const i = resultsMap.get(p.id);
+                                    i.buyPrice = p.buys.unit_price;
+                                    i.sellPrice = p.sells.unit_price;
+                                }
+                            });
+                        }
+                    }).catch(e => console.warn('Price fetch failed', e))
+                );
+            }
+
+            specialIds.forEach(sid => {
+                const def = SPECIAL_ITEMS[sid];
+                promises.push(
+                    (sid === GEMS_TO_GOLD_ID
+                        ? fetch('https://api.guildwars2.com/v2/commerce/exchange/gems?quantity=400')
+                        : fetch('https://api.guildwars2.com/v2/commerce/exchange/coins?quantity=10000000'))
+                        .then(r => r.ok ? r.json() : null)
+                        .then(d => {
+                            if (d) {
+                                if (sid === GEMS_TO_GOLD_ID) resultsMap.set(sid, { ...def, returnFor400Gems: d.quantity });
+                                else resultsMap.set(sid, { ...def, costFor400Gems: Math.round((400 / (d.quantity / 1000)) * 10000) });
+                            } else {
+                                throw new Error();
+                            }
+                        }).catch(() => resultsMap.set(sid, { ...def, costFor400Gems: null, returnFor400Gems: null }))
+                );
+            });
+
+            if (containerIds.length > 0) {
+                const childSet = new Set();
+                containerIds.forEach(cid => CONTAINER_ITEMS[cid].items.forEach(i => childSet.add(i.id)));
+
+                promises.push(fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${Array.from(childSet).join(',')}`)
+                    .then(r => r.ok ? r.json() : [])
+                    .then(async prices => {
+                        const childPriceMap = new Map();
+                        if (Array.isArray(prices)) prices.forEach(p => childPriceMap.set(p.id, p.sells?.unit_price));
+
+                        const childIds = Array.from(childSet);
+                        const childStatic = await getStaticItemDetails(childIds);
+                        const childNameMap = new Map();
+                        childStatic.forEach(i => childNameMap.set(i.id, i.name));
+                        const missingChildren = childIds.filter(id => !childNameMap.has(id));
+
+                        if (missingChildren.length > 0) {
+                            try {
+                                const apiChildren = await fetch(`https://api.guildwars2.com/v2/items?ids=${missingChildren.join(',')}`).then(r => r.ok ? r.json() : []);
+                                if (Array.isArray(apiChildren)) {
+                                    await saveStaticItemDetails(apiChildren);
+                                    apiChildren.forEach(i => childNameMap.set(i.id, i.name));
+                                }
+                            } catch (e) { }
+                        }
+
+                        const containerStatic = await getStaticItemDetails(containerIds);
+                        containerStatic.forEach(c => resultsMap.set(c.id, { ...c, isContainer: true }));
+                        const missingCont = containerIds.filter(id => !resultsMap.has(id));
+                        if (missingCont.length > 0) {
+                            try {
+                                const apiCont = await fetch(`https://api.guildwars2.com/v2/items?ids=${missingCont.join(',')}`).then(r => r.ok ? r.json() : []);
+                                if (Array.isArray(apiCont)) {
+                                    await saveStaticItemDetails(apiCont);
+                                    apiCont.forEach(c => resultsMap.set(c.id, { ...c, isContainer: true }));
+                                }
+                            } catch (e) { }
+                        }
+
+                        containerIds.forEach(cid => {
+                            if (!resultsMap.has(cid)) return;
+                            const item = resultsMap.get(cid);
+                            let total = 0;
+                            const breakdown = [];
+                            CONTAINER_ITEMS[cid].items.forEach(d => {
+                                const p = childPriceMap.get(d.id);
+                                const name = childNameMap.get(d.id) || `Item ${d.id}`;
+                                if (p) {
+                                    const val = p * d.avgQuantity * d.dropProb;
+                                    total += val;
+                                    breakdown.push({ name, avgQty: d.avgQuantity, prob: d.dropProb, expectedCopper: Math.round(val) });
+                                } else {
+                                    breakdown.push({ name, avgQty: d.avgQuantity, prob: d.dropProb, expectedCopper: null });
+                                }
+                            });
+                            item.sellPrice = Math.round(total);
+                            item.buyPrice = null;
+                            item.containerContents = breakdown;
+                        });
+                    }).catch(e => console.warn('Container fetch failed', e)));
+            }
+
+            await Promise.all(promises);
+            return itemIds.map(id => resultsMap.get(id)).filter(Boolean);
+        }
+
+        // --- UI HELPERS ---
+        function formatCurrency(copper) {
+            if (copper === null || copper === undefined || isNaN(copper)) return { gold: '-', silver: '-', copper: '-' };
+            const gold = Math.floor(copper / 10000);
+            const silver = Math.floor((copper % 10000) / 100);
+            const copperRemainder = copper % 100;
+            return { gold, silver, copper: copperRemainder };
+        }
+        function createCurrencyElement(copperValue) {
+            const { gold, silver, copper } = formatCurrency(copperValue);
+            const elem = document.createElement('div');
+            elem.className = 'price-value';
+            if (gold === '-' && silver === '-' && copper === '-') {
+                elem.innerHTML = '<span style="color:#e74c3c;">N/A</span>';
+                return elem;
+            }
+            elem.innerHTML = `
+                ${gold > 0 ? `<span class="gold">${gold}</span>` : ''}
+                ${silver > 0 || gold > 0 ? `<span class="silver">${silver}</span>` : ''}
+                <span class="copper">${copper}</span>
+            `;
+            return elem;
+        }
+
+        function createItemCard(itemData) {
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            card.dataset.itemId = itemData.id;
+            card.draggable = true;
+
+            const isSpecial = [GOLD_TO_GEMS_ID, GEMS_TO_GOLD_ID].includes(itemData.id);
+            const graphUrl = GRAPH_URL_TEMPLATE.replace('{id}', itemData.id);
+            const safeName = itemData.name.replace(/'/g, "\\'");
+            const orders = accountOrdersMap.get(itemData.id) || { buys: [], sells: [] };
+            const inventory = globalInventoryMap.get(itemData.id) || [];
+
+            let buyClass = '';
+            let buyTitle = 'You have active Buy Orders';
+            if (orders.buys.length > 0 && itemData.buyPrice) {
+                const maxUserPrice = Math.max(...orders.buys.map(o => o.price));
+                if (maxUserPrice < itemData.buyPrice) { buyClass = ' icon-warn'; buyTitle = 'Your Buy Orders are outbid'; }
+            }
+
+            let sellClass = '';
+            let sellTitle = 'You have active Sell Orders';
+            if (orders.sells.length > 0 && itemData.sellPrice) {
+                const minUserPrice = Math.min(...orders.sells.map(o => o.price));
+                if (minUserPrice > itemData.sellPrice) { sellClass = ' icon-warn'; sellTitle = 'Your Sell Listings are underbid'; }
+            }
+
+            let emojisHtml = '';
+            if (orders.buys.length > 0) emojisHtml += `<span class="order-icon icon-buy${buyClass}" onclick="openOrderModal('buys', ${itemData.id}, '${safeName}')" title="${buyTitle}">🛒</span>`;
+            if (orders.sells.length > 0) emojisHtml += `<span class="order-icon icon-sell${sellClass}" onclick="openOrderModal('sells', ${itemData.id}, '${safeName}')" title="${sellTitle}">🏷️</span>`;
+            if (inventory.length > 0) emojisHtml += `<span class="order-icon icon-inv" onclick="openInventoryModal(${itemData.id}, '${safeName}')" title="You possess this item">👜</span>`;
+            if (itemData.isContainer) emojisHtml += `<span class="order-icon icon-info" onclick="openContainerModal(${itemData.id})" title="View Contents">ℹ️</span>`;
+
+            const idHtml = isSpecial ? 'Special' : `ID: ${itemData.id} ${emojisHtml}`;
+            const actionBtns = `<div class="card-actions"><button class="card-btn remove-btn" data-item-id="${itemData.id}" title="Remove Item">×</button></div>`;
+
+            let mainContent = '';
+            if (isSpecial) {
+                let label = itemData.id === GOLD_TO_GEMS_ID ? 'Cost for 400 Gems:' : 'Return for 400 Gems:';
+                let val = itemData.id === GOLD_TO_GEMS_ID ? itemData.costFor400Gems : itemData.returnFor400Gems;
+                mainContent = `
+                    <div class="item-header">
+                        <div class="item-image"><img src="${itemData.icon}"></div>
+                        <div class="item-info"><div class="item-name">${itemData.name}</div><div class="item-id">Special</div></div>
+                        ${actionBtns}
+                    </div>
+                    <div class="item-prices"><div class="price-row"><div class="price-label">${label}</div>${createCurrencyElement(val).outerHTML}</div></div>`;
+            } else if (itemData.isContainer) {
+                mainContent = `
+                    <div class="item-header">
+                        <div class="item-image"><img src="${itemData.icon}"></div>
+                        <div class="item-info"><div class="item-name"><a href="${graphUrl}" target="_blank" class="graph-link">📈</a> ${itemData.name}</div><div class="item-id">${idHtml} • Container</div></div>
+                        ${actionBtns}
+                    </div>
+                    <div class="item-prices"><div class="price-row"><div class="price-label">Expected Value:</div>${createCurrencyElement(itemData.sellPrice).outerHTML}</div><div class="price-row"><div class="price-label">Buy Price:</div><span style="color:#e74c3c;">Not Tradable</span></div></div>`;
+            } else {
+                mainContent = `
+                    <div class="item-header">
+                        <div class="item-image"><img src="${itemData.icon}"></div>
+                        <div class="item-info"><div class="item-name"><a href="${graphUrl}" target="_blank" class="graph-link">📈</a> ${itemData.name}</div><div class="item-id">${idHtml}</div></div>
+                        ${actionBtns}
+                    </div>
+                    <div class="item-prices"><div class="price-row"><div class="price-label">Buy Price:</div>${createCurrencyElement(itemData.buyPrice).outerHTML}</div><div class="price-row"><div class="price-label">Sell Price:</div>${createCurrencyElement(itemData.sellPrice).outerHTML}</div></div>`;
+            }
+
+            card.innerHTML = mainContent;
+            const rmBtn = card.querySelector('.remove-btn');
+            if (rmBtn) rmBtn.addEventListener('click', e => { e.stopPropagation(); removeFromActiveTab(Number(e.target.dataset.itemId)); });
+            card.addEventListener('dragstart', handleDragStart); card.addEventListener('dragover', handleDragOver); card.addEventListener('drop', handleDrop); card.addEventListener('dragend', handleDragEnd);
+            return card;
+        }
+
+        // --- MODALS ---
+        function openInventoryModal(itemId, itemName) {
+            const items = globalInventoryMap.get(itemId) || [];
+            document.getElementById('inventory-modal-title').textContent = `Inventory Locations for ${itemName}`;
+            document.getElementById('inventory-modal').style.display = 'flex';
+            const content = document.getElementById('inventory-content');
+            if (items.length === 0) { content.innerHTML = '<div style="text-align:center; padding:20px;">None found.</div>'; return; }
+
+            const groups = {}; let grandTotal = 0;
+            items.forEach(i => {
+                if (!groups[i.owner]) groups[i.owner] = { isGuild: i.isGuild, total: 0, sources: {} };
+                if (!groups[i.owner].sources[i.source]) groups[i.owner].sources[i.source] = 0;
+                groups[i.owner].sources[i.source] += i.count; groups[i.owner].total += i.count; grandTotal += i.count;
+            });
+            let html = `<table class="data-table"><thead><tr><th style="width:60%">Location</th><th>Count</th></tr></thead><tbody>`;
+            Object.keys(groups).sort((a, b) => groups[a].isGuild === groups[b].isGuild ? a.localeCompare(b) : groups[a].isGuild ? 1 : -1).forEach(owner => {
+                html += `<tr class="inv-owner-header"><td class="${groups[owner].isGuild ? 'col-guild' : 'col-account'}">${owner}</td><td style="font-weight:bold;">Total: ${groups[owner].total}</td></tr>`;
+                Object.keys(groups[owner].sources).sort().forEach(src => html += `<tr><td style="padding-left: 20px;">- ${src}</td><td class="col-qty">${groups[owner].sources[src]}</td></tr>`);
+            });
+            html += `<tr style="border-top: 2px solid #3498db; background: rgba(255,255,255,0.05);"><td style="text-align:right; font-weight:bold;">Grand Total:</td><td class="col-qty" style="font-size:1.1em;">${grandTotal}</td></tr></tbody></table>`;
+            content.innerHTML = html;
+        }
+
+        function openOrderModal(type, itemId, itemName) {
+            const orders = accountOrdersMap.get(itemId)?.[type] || [];
+            const itemData = globalItemData.get(itemId);
+            document.getElementById('order-modal-title').textContent = `${type === 'buys' ? 'Buy' : 'Sell'} Orders for ${itemName}`;
+            document.getElementById('order-modal').style.display = 'flex';
+            const content = document.getElementById('order-content');
+
+            if (orders.length === 0) { content.innerHTML = '<div style="text-align:center; padding:20px;">No active orders found.</div>'; return; }
+
+            orders.sort((a, b) => type === 'buys' ? b.price - a.price : a.price - b.price);
+
+            const table = document.createElement('table');
+            table.className = 'data-table';
+            table.innerHTML = `<thead><tr><th>Watch</th><th>Account</th><th>Qty</th><th>Unit Price</th><th>Total Value</th><th>Date Placed</th></tr></thead>`;
+            const tbody = document.createElement('tbody');
+
+            orders.forEach(order => {
+                let warningHtml = '';
+                if (itemData) {
+                    if (type === 'buys' && itemData.buyPrice && order.price < itemData.buyPrice) warningHtml = ' <span title="Outbid by current market">⚠️</span>';
+                    else if (type === 'sells' && itemData.sellPrice && order.price > itemData.sellPrice) warningHtml = ' <span title="Undercut by current market">⚠️</span>';
+                }
+
+                const tr = document.createElement('tr');
+
+                const isWatched = watchedOrders.has(order.id);
+                const watchBtn = document.createElement('button');
+                watchBtn.className = `watch-btn ${isWatched ? 'watching' : ''}`;
+                watchBtn.innerHTML = '🔔';
+                watchBtn.title = isWatched ? "Click to stop watching" : "Alarm when this order finishes";
+                watchBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if (watchedOrders.has(order.id)) {
+                        watchedOrders.delete(order.id);
+                        watchBtn.classList.remove('watching');
+                        watchBtn.title = "Alarm when this order finishes";
+                    } else {
+                        // UPDATED: Save accountName and missingCount
+                        watchedOrders.set(order.id, {
+                            id: order.id,
+                            itemId: itemId,
+                            itemName: itemName,
+                            accountName: order.accountName, // Crucial for multi-account logic
+                            type: type,
+                            price: order.price,
+                            quantity: order.quantity,
+                            missingCount: 0 // Reset counter
+                        });
+                        watchBtn.classList.add('watching');
+                        watchBtn.title = "Click to stop watching";
+                    }
+                    saveWatchedOrders();
+                };
+
+                const tdWatch = document.createElement('td');
+                tdWatch.appendChild(watchBtn);
+
+                tr.innerHTML = `
+                    <td class="col-account">${order.accountName}</td>
+                    <td class="col-qty">${order.quantity}</td>
+                    <td>${createCurrencyElement(order.price).outerHTML}${warningHtml}</td>
+                    <td>${createCurrencyElement(order.quantity * order.price).outerHTML}</td>
+                    <td class="col-date">${new Date(order.created).toLocaleString()}</td>
+                `;
+                tr.prepend(tdWatch);
+                tbody.appendChild(tr);
+            });
+
+            table.appendChild(tbody);
+            content.innerHTML = '';
+            content.appendChild(table);
+        }
+
+        // Global Order Modal (UPDATED)
+        async function openGlobalOrdersModal() {
+            // Initialize selected accounts to all if empty
+            if (selectedOrderAccounts.size === 0 && apiKeys.length > 0) {
+                apiKeys.forEach(k => selectedOrderAccounts.add(k.name));
+            }
+
+            // Render Account Checkboxes
+            const accContainer = document.getElementById('order-account-filters');
+            accContainer.innerHTML = '';
+            apiKeys.forEach(k => {
+                const isChecked = selectedOrderAccounts.has(k.name);
+                const label = document.createElement('label');
+                label.className = `order-acc-chk ${isChecked ? '' : 'unchecked'}`;
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = isChecked;
+
+                checkbox.onchange = () => {
+                    if (checkbox.checked) {
+                        selectedOrderAccounts.add(k.name);
+                        label.classList.remove('unchecked');
+                    } else {
+                        selectedOrderAccounts.delete(k.name);
+                        label.classList.add('unchecked');
+                    }
+                    renderGlobalOrders();
+                };
+
+                label.appendChild(checkbox);
+                label.appendChild(document.createTextNode(' ' + k.name));
+                accContainer.appendChild(label);
+            });
+
+            // Reset search
             orderSearchQuery = '';
             document.getElementById('order-search-input').value = '';
 
-            buildOrderFiltersBar();
-            renderGlobalOrdersTable();
-            openModal('global-orders-modal');
+            document.getElementById('global-orders-modal').style.display = 'flex';
+            await renderGlobalOrders();
         }
 
-        window.switchOrderType = function (type) {
+        function switchOrderType(type) {
             currentOrderType = type;
-            const buysBtn = document.getElementById('toggle-buys');
-            const sellsBtn = document.getElementById('toggle-sells');
-            if (type === 'buys') {
-                buysBtn.className = 'order-toggle-btn active-buys';
-                sellsBtn.className = 'order-toggle-btn';
-            } else {
-                buysBtn.className = 'order-toggle-btn';
-                sellsBtn.className = 'order-toggle-btn active-sells';
-            }
-            renderGlobalOrdersTable();
-        };
+            renderGlobalOrders();
+        }
 
-        window.handleOrderSearch = function (val) {
-            orderSearchQuery = val.trim().toLowerCase();
-            renderGlobalOrdersTable();
-        };
+        function handleOrderSearch(val) {
+            orderSearchQuery = val.toLowerCase();
+            renderGlobalOrders();
+        }
 
-        window.toggleOrderAccountFilter = function (accName) {
-            const chk = document.getElementById(`ord-acc-chk-${accName}`);
-            const label = document.getElementById(`ord-lbl-${accName}`);
-            if (chk.checked) {
-                selectedOrderAccounts.add(accName);
-                label.classList.remove('unchecked');
-            } else {
-                selectedOrderAccounts.delete(accName);
-                label.classList.add('unchecked');
-            }
-            renderGlobalOrdersTable();
-        };
-
-        window.sortOrders = function (col) {
+        function handleOrderSort(col) {
             if (currentOrderSort.col === col) {
                 currentOrderSort.dir = currentOrderSort.dir === 'asc' ? 'desc' : 'asc';
             } else {
                 currentOrderSort.col = col;
-                currentOrderSort.dir = 'desc';
+                currentOrderSort.dir = 'desc'; // Default to desc usually better for price/date
             }
-            renderGlobalOrdersTable();
-        };
-
-        function buildOrderFiltersBar() {
-            const container = document.getElementById('order-account-filters');
-            container.innerHTML = '';
-            for (const [key] of accountOrdersMap) {
-                const label = document.createElement('label');
-                label.id = `ord-lbl-${key}`;
-                label.className = 'order-acc-chk';
-                label.innerHTML = `
-                    <input type="checkbox" id="ord-acc-chk-${key}" checked onchange="toggleOrderAccountFilter('${key}')">
-                    <span>${key}</span>
-                `;
-                container.appendChild(label);
-            }
+            renderGlobalOrders();
         }
 
-        function renderGlobalOrdersTable() {
+        async function renderGlobalOrders() {
+            // UI Toggle States
+            document.getElementById('toggle-buys').className = `order-toggle-btn ${currentOrderType === 'buys' ? 'active-buys' : ''}`;
+            document.getElementById('toggle-sells').className = `order-toggle-btn ${currentOrderType === 'sells' ? 'active-sells' : ''}`;
+
             const content = document.getElementById('global-orders-content');
-            let orders = currentOrderType === 'buys' ? [...allAccountOrders.buys] : [...allAccountOrders.sells];
+            let orders = allAccountOrders[currentOrderType];
 
-            orders = orders.filter(o => selectedOrderAccounts.has(o.account));
-
-            if (orderSearchQuery) {
-                orders = orders.filter(o => {
-                    const detail = globalItemData.get(o.item_id);
-                    const name = detail ? detail.name.toLowerCase() : `item ${o.item_id}`;
-                    return name.includes(orderSearchQuery);
-                });
-            }
-
-            if (orders.length === 0) {
-                content.innerHTML = '<div style="color:#95a5a6; font-style:italic; padding:15px; text-align:center;">No matching pending orders or listings.</div>';
+            if (!orders || orders.length === 0) {
+                content.innerHTML = `<div style="text-align:center; padding:30px; color:#bdc3c7;">No ${currentOrderType === 'buys' ? 'Buy Orders' : 'Sell Listings'} found.</div>`;
                 return;
             }
 
-            orders.sort((a, b) => {
+            // 1. Enrich data with Names/Icons (from Cache)
+            const uniqueIds = [...new Set(orders.map(o => o.item_id))];
+            const itemDetails = new Map();
+            const cachedDetails = await getStaticItemDetails(uniqueIds);
+            cachedDetails.forEach(d => itemDetails.set(d.id, d));
+
+            let enrichedOrders = orders.map(o => {
+                const details = itemDetails.get(o.item_id) || { name: `Item ${o.item_id}`, icon: '' };
+                return {
+                    ...o,
+                    itemName: details.name,
+                    itemIcon: details.icon,
+                    totalValue: o.quantity * o.price,
+                    createdDate: new Date(o.created)
+                };
+            });
+
+            // 2. Filter (Account & Search)
+            enrichedOrders = enrichedOrders.filter(o => {
+                const accountMatch = selectedOrderAccounts.has(o.accountName);
+                const searchMatch = !orderSearchQuery || o.itemName.toLowerCase().includes(orderSearchQuery);
+                return accountMatch && searchMatch;
+            });
+
+            // 3. Sort
+            enrichedOrders.sort((a, b) => {
                 let valA, valB;
-                if (currentOrderSort.col === 'account') {
-                    valA = a.account.toLowerCase();
-                    valB = b.account.toLowerCase();
-                } else if (currentOrderSort.col === 'name') {
-                    const d1 = globalItemData.get(a.item_id);
-                    const d2 = globalItemData.get(b.item_id);
-                    valA = d1 ? d1.name.toLowerCase() : '';
-                    valB = d2 ? d2.name.toLowerCase() : '';
-                } else if (currentOrderSort.col === 'qty') {
-                    valA = a.quantity;
-                    valB = b.quantity;
-                } else if (currentOrderSort.col === 'price') {
-                    valA = a.price;
-                    valB = b.price;
-                } else {
-                    valA = new Date(a.created).getTime();
-                    valB = new Date(b.created).getTime();
+                switch (currentOrderSort.col) {
+                    case 'account': valA = a.accountName; valB = b.accountName; break;
+                    case 'item': valA = a.itemName; valB = b.itemName; break;
+                    case 'qty': valA = a.quantity; valB = b.quantity; break;
+                    case 'price': valA = a.price; valB = b.price; break;
+                    case 'total': valA = a.totalValue; valB = b.totalValue; break;
+                    case 'date': valA = a.createdDate; valB = b.createdDate; break;
+                    default: valA = a.createdDate; valB = b.createdDate;
                 }
 
                 if (valA < valB) return currentOrderSort.dir === 'asc' ? -1 : 1;
@@ -2477,361 +2501,288 @@
                 return 0;
             });
 
-            let html = '<table class="data-table">';
-            html += '<thead><tr>';
-            html += `<th class="sortable-th ${getSortClass('account')}" onclick="sortOrders('account')">Account</th>`;
-            html += '<th>Icon</th>';
-            html += `<th class="sortable-th ${getSortClass('name')}" onclick="sortOrders('name')">Item Name</th>`;
-            html += `<th class="sortable-th ${getSortClass('qty')}" onclick="sortOrders('qty')">Qty</th>`;
-            html += `<th class="sortable-th ${getSortClass('price')}" onclick="sortOrders('price')">Unit Price</th>`;
-            html += `<th class="sortable-th ${getSortClass('date')}" onclick="sortOrders('date')">Created Placed</th>`;
-            html += '</tr></thead><tbody>';
+            // 4. Render Table (Constructed via DOM to support button events)
+            const getSortClass = (col) => currentOrderSort.col === col ? `sorted-${currentOrderSort.dir}` : '';
 
-            orders.forEach(o => {
-                const detail = globalItemData.get(o.item_id);
-                const icon = detail ? detail.icon : 'https://wiki.guildwars2.com/images/a/af/Unknown_Item.png';
-                const name = detail ? detail.name : `Item ID: ${o.item_id}`;
-                const date = new Date(o.created).toLocaleString();
+            const table = document.createElement('table');
+            table.className = 'data-table';
 
-                html += `
+            // Header
+            table.innerHTML = `
+                <thead>
                     <tr>
-                        <td class="col-account">${o.account}</td>
-                        <td><img src="${icon}" style="width:24px; height:24px; border-radius:3px;"></td>
-                        <td>${name}</td>
-                        <td class="col-qty">${o.quantity}</td>
-                        <td>${formatPrice(o.price)}</td>
-                        <td class="col-date">${date}</td>
+                        <th style="width: 40px;">Watch</th>
+                        <th class="sortable-th ${getSortClass('account')}" onclick="handleOrderSort('account')">Account</th>
+                        <th class="sortable-th ${getSortClass('item')}" onclick="handleOrderSort('item')">Item</th>
+                        <th class="sortable-th ${getSortClass('qty')}" onclick="handleOrderSort('qty')">Qty</th>
+                        <th class="sortable-th ${getSortClass('price')}" onclick="handleOrderSort('price')">Unit Price</th>
+                        <th class="sortable-th ${getSortClass('total')}" onclick="handleOrderSort('total')">Total Value</th>
+                        <th class="sortable-th ${getSortClass('date')}" onclick="handleOrderSort('date')">Date</th>
                     </tr>
-                `;
-            });
+                </thead>
+            `;
 
-            html += '</tbody></table>';
-            content.innerHTML = html;
+            const tbody = document.createElement('tbody');
+
+            if (enrichedOrders.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="7" style="text-align:center; padding:20px; color:#95a5a6;">No orders match your filters.</td>`;
+                tbody.appendChild(tr);
+            } else {
+                enrichedOrders.forEach(o => {
+                    const tr = document.createElement('tr');
+                    const isWatched = watchedOrders.has(o.id);
+
+                    // Create Watch Button
+                    const btn = document.createElement('button');
+                    btn.className = `watch-btn ${isWatched ? 'watching' : ''}`;
+                    btn.innerHTML = '🔔';
+                    btn.title = isWatched ? "Click to stop watching" : "Alarm when this order finishes";
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        if (watchedOrders.has(o.id)) {
+                            watchedOrders.delete(o.id);
+                            btn.classList.remove('watching');
+                            btn.title = "Alarm when this order finishes";
+                        } else {
+                            watchedOrders.set(o.id, {
+                                id: o.id,
+                                itemId: o.item_id,
+                                itemName: o.itemName,
+                                accountName: o.accountName,
+                                type: currentOrderType,
+                                price: o.price,
+                                quantity: o.quantity,
+                                missingCount: 0
+                            });
+                            btn.classList.add('watching');
+                            btn.title = "Click to stop watching";
+                        }
+                        saveWatchedOrders();
+                    };
+
+                    const tdWatch = document.createElement('td');
+                    tdWatch.appendChild(btn);
+                    tr.appendChild(tdWatch);
+
+                    const iconHtml = o.itemIcon ? `<img src="${o.itemIcon}" class="delivery-icon">` : '';
+
+                    // Append rest of the cells
+                    const restOfRow = `
+                        <td class="col-account">${o.accountName}</td>
+                        <td><div style="display:flex; align-items:center;">${iconHtml} ${o.itemName}</div></td>
+                        <td class="col-qty">${o.quantity}</td>
+                        <td>${createCurrencyElement(o.price).outerHTML}</td>
+                        <td>${createCurrencyElement(o.totalValue).outerHTML}</td>
+                        <td class="col-date">${o.createdDate.toLocaleDateString()} ${o.createdDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
+                    `;
+                    // We must use insertAdjacentHTML or innerHTML for the remaining cells
+                    const tempDiv = document.createElement('tr'); // temp container
+                    tempDiv.innerHTML = restOfRow;
+                    while (tempDiv.firstChild) {
+                        tr.appendChild(tempDiv.firstChild);
+                    }
+
+                    tbody.appendChild(tr);
+                });
+            }
+
+            table.appendChild(tbody);
+            content.innerHTML = '';
+            content.appendChild(table);
         }
 
-        function getSortClass(col) {
-            if (currentOrderSort.col !== col) return '';
-            return currentOrderSort.dir === 'asc' ? 'sorted-asc' : 'sorted-desc';
+        function openNotificationModal() {
+            document.getElementById('notification-modal').style.display = 'flex';
+            renderNotificationModalList();
         }
 
         function renderNotificationModalList() {
-            const container = document.getElementById('notification-content');
-            container.innerHTML = '';
+            const content = document.getElementById('notification-content');
+            content.innerHTML = '';
+
             if (activeNotifications.length === 0) {
-                container.innerHTML = '<div style="color:#95a5a6; font-style:italic;">No active notifications or alerts.</div>';
+                content.innerHTML = '<div style="text-align:center; padding:30px; color:#bdc3c7;">No new alerts.</div>';
                 return;
             }
 
-            activeNotifications.forEach(n => {
+            activeNotifications.forEach(notif => {
                 const item = document.createElement('div');
-                item.className = `notif-item type-${n.type}`;
-                const date = new Date(n.timestamp).toLocaleTimeString();
+                item.className = `notif-item type-${notif.type}`;
+
+                // RENDER ACCOUNT NAME BADGE IF AVAILABLE
+                const accountBadge = notif.accountName
+                    ? `<span class="notif-account">${notif.accountName}</span>`
+                    : '';
 
                 item.innerHTML = `
                     <div class="notif-text-col">
-                        ${n.accountName ? `<div class="notif-account">${n.accountName}</div>` : ''}
-                        <span class="notif-title">${n.title}</span>
-                        <span class="notif-msg">${n.message}</span>
-                        <div class="notif-time">Alerted at: ${date}</div>
+                        ${accountBadge}
+                        <span class="notif-title">${notif.title}</span>
+                        <div class="notif-msg">${notif.message}</div>
+                        <div class="notif-time">${new Date(notif.timestamp).toLocaleString()}</div>
                     </div>
-                    <button class="notif-close" onclick="removeNotification('${n.id}')">×</button>
+                    <button class="notif-close" title="Dismiss">×</button>
                 `;
-                container.appendChild(item);
+                item.querySelector('.notif-close').onclick = () => removeNotification(notif.id);
+                content.appendChild(item);
             });
         }
 
-        // --- POLLING & BACKGROUND DATA PROCESS ---
-        async function pollApiData() {
-            if (apiKeys.length === 0) {
-                accountOrdersMap.clear();
-                allAccountOrders = { buys: [], sells: [] };
-                globalInventoryMap.clear();
-                deliveryData = [];
-                updateNotificationBtnState();
-                renderItems();
-                return;
-            }
+        function openContainerModal(itemId) {
+            const itemData = globalItemData.get(itemId);
+            if (!itemData || !itemData.isContainer) return;
+            document.getElementById('container-modal-title').textContent = `Container: ${itemData.name}`;
+            document.getElementById('container-modal').style.display = 'flex';
+            let html = `<table class="data-table"><thead><tr><th>Item Name</th><th>Chance / Qty</th><th>Expected Value</th></tr></thead><tbody>`;
+            itemData.containerContents.forEach(c => html += `<tr><td>${c.name}</td><td>${c.avgQty}x (${(c.prob * 100).toFixed(0)}%)</td><td>${c.expectedCopper !== null ? createCurrencyElement(c.expectedCopper).outerHTML : '<span style="color:#7f8c8d;">N/A</span>'}</td></tr>`);
+            document.getElementById('container-content').innerHTML = html + `</tbody></table>`;
+        }
 
-            const incomingOrdersMap = new Map();
-            const incomingInventoryMap = new Map();
-            const incomingDeliveryData = [];
-            const accessibleGuilds = {};
-
-            await pMap(apiKeys, async (keyObj) => {
-                const token = keyObj.key;
-                const nickname = keyObj.name;
-
-                const accName = await fetchAccountName(token);
-                if (!accName) return;
-
-                const delObj = await fetchAccountDelivery(token);
-                if (delObj) {
-                    incomingDeliveryData.push({
-                        account: nickname,
-                        coins: delObj.coins,
-                        items: delObj.items
-                    });
-                }
-
-                const leaders = await fetchAccountGuilds(token);
-                for (const gid of leaders) {
-                    if (!knownGuilds[gid]) {
-                        try {
-                            const gres = await fetch(`https://api.guildwars2.com/v2/guild/${gid}`);
-                            if (gres.ok) {
-                                const gdata = await gres.json();
-                                knownGuilds[gid] = { name: gdata.name, tag: gdata.tag };
-                            }
-                        } catch { }
-                    }
-                    if (knownGuilds[gid]) { accessibleGuilds[gid] = knownGuilds[gid]; }
-                }
-
-                if (enableInventory) {
-                    for (const gid of leaders) {
-                        if (disabledGuilds.has(gid)) continue;
-                        try {
-                            const stUrl = `https://api.guildwars2.com/v2/guild/${gid}/stash?access_token=${token}`;
-                            const stashRes = await fetch(stUrl);
-                            if (stashRes.ok) {
-                                const sData = await stashRes.json();
-                                sData.forEach((vault) => {
-                                    if (vault && vault.inventory) {
-                                        vault.inventory.forEach(item => {
-                                            if (item) {
-                                                const guildDetail = knownGuilds[gid];
-                                                const guildLabel = guildDetail ? `${guildDetail.name} [${guildDetail.tag}]` : 'Guild Vault';
-                                                const entry = { id: item.id, count: item.count, loc: `Guild Stash: ${guildLabel}`, owner: nickname };
-
-                                                if (!incomingInventoryMap.has(item.id)) incomingInventoryMap.set(item.id, []);
-                                                incomingInventoryMap.get(item.id).push(entry);
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-                        } catch { }
-                    }
-                }
-
-                const orders = await fetchAccountOrders(token);
-                if (orders) {
-                    orders.buys.forEach(x => { x.account = nickname; });
-                    orders.sells.forEach(x => { x.account = nickname; });
-                    incomingOrdersMap.set(nickname, orders);
-                }
-
-                if (enableInventory) {
-                    const items = await fetchInventoryData(token, nickname);
-                    items.forEach(item => {
-                        const entry = { id: item.id, count: item.count, loc: item.loc, owner: item.owner };
-                        if (!incomingInventoryMap.has(item.id)) incomingInventoryMap.set(item.id, []);
-                        incomingInventoryMap.get(item.id).push(entry);
-                    });
-                }
-            }, 2);
-
-            saveSettings();
-            updateGuildList(accessibleGuilds);
-
-            const newBuys = [];
-            const newSells = [];
-            for (const [key, details] of incomingOrdersMap) {
-                newBuys.push(...details.buys);
-                newSells.push(...details.sells);
-            }
-
-            for (const [watchKey, watch] of watchedOrders) {
-                const targetOrders = watch.type === 'Buy' ? newBuys : newSells;
-                const match = targetOrders.find(o => o.created === watch.created && o.price === watch.price && o.account === watch.accountName);
-
-                if (!match) {
-                    const detail = globalItemData.get(watch.itemId);
-                    const name = detail ? detail.name : `Item ${watch.itemId}`;
-                    addNotification(
-                        watch.type === 'Buy' ? 'buys' : 'sells',
-                        `Order Completed Filled!`,
-                        `Your ${watch.type.toLowerCase()} order for "${name}" at ${formatPriceText(watch.price)} on account ${watch.accountName} is no longer active.`,
-                        watch.accountName
-                    );
-                    watchedOrders.delete(watchKey);
-                }
-            }
-            saveWatchedOrders();
-
-            accountOrdersMap = incomingOrdersMap;
-            allAccountOrders = { buys: newBuys, sells: newSells };
-            globalInventoryMap = incomingInventoryMap;
-            deliveryData = incomingDeliveryData;
-
-            let packageCount = 0;
-            deliveryData.forEach(x => {
-                if (x.coins > 0) packageCount++;
-                if (x.items.length > 0) packageCount += x.items.length;
+        function openDeliveryModal() {
+            document.getElementById('delivery-modal').style.display = 'flex';
+            const content = document.getElementById('delivery-content');
+            if (deliveryData.length === 0) { content.innerHTML = '<div style="text-align:center; padding:20px;">No items or coins waiting for pickup.</div>'; return; }
+            let html = `<table class="data-table"><thead><tr><th>Account</th><th>Coins</th><th>Items</th></tr></thead><tbody>`;
+            deliveryData.forEach(d => {
+                let itemsHtml = d.items.length > 0 ? d.items.map(i => `<div style="margin-bottom:4px;">${i.icon ? `<img src="${i.icon}" class="delivery-icon">` : ''}<span class="delivery-item-name">${i.name}</span> <span class="col-qty">x${i.count}</span></div>`).join('') : '<span style="color:#7f8c8d;">None</span>';
+                html += `<tr><td class="col-account">${d.accountName}</td><td>${d.coins > 0 ? createCurrencyElement(d.coins).outerHTML : '<span style="color:#7f8c8d;">-</span>'}</td><td>${itemsHtml}</td></tr>`;
             });
-
-            if (packageCount > 0) {
-                deliveryBtn.classList.add('has-content');
-                deliveryBtn.title = `Check Delivery Box: ${packageCount} Packages Waiting`;
-            } else {
-                deliveryBtn.classList.remove('has-content');
-                deliveryBtn.title = 'Check Delivery Box';
-            }
-
-            renderItems();
+            content.innerHTML = html + `</tbody></table>`;
         }
 
-        function formatPriceText(copperCount) {
-            const gold = Math.floor(copperCount / 10000);
-            const silver = Math.floor((copperCount % 10000) / 100);
-            const copper = copperCount % 100;
-            return `${gold}g ${silver}s ${copper}c`;
-        }
-
-        async function refreshAll() {
-            try {
-                await fetchActiveTabData();
-            } catch (e) {
-                errorContainer.innerHTML = `<div class="error">An error occurred trying to parse: ${e.message}</div>`;
-            }
-        }
-
-        // --- Config Import & Export ---
-        function exportConfig() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({
-                tabs: itemTabs,
-                keys: apiKeys,
-                watched: [...watchedOrders],
-                notifications: activeNotifications,
-                enableInventory,
-                disabledGuilds: [...disabledGuilds],
-                knownGuilds
-            }));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "gw2_tracker_config.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-        }
-
-        function importConfig(event) {
-            const input = event.target;
-            const file = input.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = async function () {
-                try {
-                    const parsed = JSON.parse(reader.result);
-                    if (parsed.tabs) {
-                        itemTabs = parsed.tabs;
-                        saveTabs();
-                    }
-                    if (parsed.keys) {
-                        apiKeys = parsed.keys;
-                        saveApiKeys();
-                    }
-                    if (parsed.watched) {
-                        watchedOrders = new Map(parsed.watched);
-                        saveWatchedOrders();
-                    }
-                    if (parsed.notifications) {
-                        activeNotifications = parsed.notifications;
-                        saveActiveNotifications();
-                    }
-                    if (parsed.enableInventory !== undefined) {
-                        enableInventory = parsed.enableInventory;
-                        localStorage.setItem('gw2_enable_inventory', enableInventory);
-                    }
-                    if (parsed.disabledGuilds) {
-                        disabledGuilds = new Set(parsed.disabledGuilds);
-                    }
-                    if (parsed.knownGuilds) {
-                        knownGuilds = parsed.knownGuilds;
-                    }
-
-                    saveSettings();
-                    loadTabs();
-                    loadApiKeys();
-                    loadActiveNotifications();
-
-                    alert('Configuration imported successfully!');
-                    await pollApiData();
-                    await refreshAll();
-                } catch (e) {
-                    alert('Failed to parse file: ' + e.message);
+        // --- DRAG AND DROP & UTILS ---
+        function handleDragStart(e) { draggedCard = this; this.style.opacity = '0.5'; }
+        function handleDragOver(e) { e.preventDefault(); }
+        function handleDragEnd() { this.style.opacity = '1'; draggedCard = null; }
+        function handleDrop(e) {
+            e.preventDefault();
+            if (draggedCard && draggedCard !== this) {
+                const from = Number(draggedCard.dataset.itemId);
+                const to = Number(this.dataset.itemId);
+                const currentItems = itemTabs[activeTabIndex].items;
+                const i1 = currentItems.indexOf(from);
+                const i2 = currentItems.indexOf(to);
+                if (i1 > -1 && i2 > -1) {
+                    currentItems.splice(i1, 1);
+                    currentItems.splice(i2, 0, from);
+                    saveTabs();
+                    if (i1 < i2) this.after(draggedCard); else this.before(draggedCard);
                 }
-            };
-            reader.readAsText(file);
+            }
         }
 
-        // --- INIT SETUP ---
-        async function init() {
-            loadWatchedOrders();
-            loadActiveNotifications();
-            loadTabs();
+        async function searchItemsByName(q) {
+            const lowerQ = q.toLowerCase();
+            const customMatches = CUSTOM_SEARCHABLE_ITEMS.filter(i => i.name.toLowerCase().includes(lowerQ));
+            const items = await getCachedSearchFile();
+            const staticMatches = items
+                .filter(i => i[1] && i[1].toLowerCase().includes(lowerQ))
+                .slice(0, 15)
+                .map(i => ({ id: i[0], name: i[1] }));
+            return [...customMatches, ...staticMatches];
+        }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function showError(m) { errorContainer.innerHTML = `<div class="error">${m}</div>`; setTimeout(() => errorContainer.innerHTML = '', 4000); }
+
+        document.addEventListener('DOMContentLoaded', () => {
             loadApiKeys();
             loadSettings();
+            loadWatchedOrders(); // Load alarms
+            loadActiveNotifications();
+            loadTabs();
+            refreshAllData();
 
-            addItemBtn.onclick = () => {
-                const id = Number(itemInput.value.trim());
-                if (!isNaN(id) && id > 0) {
-                    addToActiveTab(id);
-                    itemInput.value = '';
-                }
+            apiSettingsLink.onclick = () => document.getElementById('api-modal').style.display = 'flex';
+            deliveryBtn.onclick = () => openDeliveryModal();
+            notificationBtn.onclick = () => openNotificationModal();
+            ordersBtn.onclick = () => openGlobalOrdersModal();
+            document.getElementById('enable-inventory-chk').onchange = (e) => { enableInventory = e.target.checked; saveSettings(); refreshAllData(); };
+
+            async function triggerAddItem() {
+                const v = itemInput.value.trim();
+                if (!v) return;
+                const id = parseInt(v);
+                if (!isNaN(id)) { await addToActiveTab(id); itemInput.value = ''; }
+                else showSearchResults(await searchItemsByName(v));
+            }
+            addItemBtn.onclick = triggerAddItem;
+            itemInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') triggerAddItem(); });
+
+            refreshItemsBtn.onclick = async () => {
+                refreshItemsBtn.disabled = true;
+                try {
+                    const db = await getDb();
+                    const tx = db.transaction('files', 'readwrite');
+                    tx.objectStore('files').delete('gw2_items_v2');
+                } catch (e) { }
+                await getCachedSearchFile();
+                await refreshAllData();
+                refreshItemsBtn.disabled = false;
+                showError('Refreshed.');
             };
 
-            apiSettingsLink.onclick = () => openModal('api-modal');
-            deliveryBtn.onclick = () => showDeliveryBox();
-            notificationBtn.onclick = () => {
-                renderNotificationModalList();
-                openModal('notification-modal');
+            function showSearchResults(res) {
+                searchResultsContainer.innerHTML = '';
+                res.forEach(i => {
+                    const d = document.createElement('div');
+                    d.className = 'search-result-item';
+                    d.innerHTML = `<div>${i.name}</div><div style="font-size:0.8em;color:#aaa">ID: ${i.id}</div>`;
+                    d.onclick = async () => { await addToActiveTab(i.id); searchResultsContainer.style.display = 'none'; itemInput.value = ''; };
+                    searchResultsContainer.appendChild(d);
+                });
+                searchResultsContainer.style.display = 'block';
+            }
+
+            window.onclick = (e) => {
+                if (!e.target.closest('.controls')) searchResultsContainer.style.display = 'none';
+                if (e.target.classList.contains('modal-overlay')) e.target.style.display = 'none';
             };
-            ordersBtn.onclick = () => showGlobalOrders();
-
-            document.getElementById('export-btn').onclick = exportConfig;
-            document.getElementById('import-btn').onclick = () => document.getElementById('import-file-input').click();
-            document.getElementById('import-file-input').onchange = importConfig;
-
-            itemInput.oninput = () => {
+            itemInput.oninput = (e) => {
                 clearTimeout(debounceTimer);
                 debounceTimer = setTimeout(async () => {
-                    const val = itemInput.value.trim();
-                    if (val.length >= 2) {
-                        const results = searchItems(val);
-                        displaySearchResults(results);
-                    } else {
-                        searchResultsContainer.style.display = 'none';
-                    }
-                }, DEBOUNCE_DELAY);
-            };
-            itemInput.onblur = closeSearchResults;
-
-            itemInput.onkeydown = (e) => {
-                if (e.key === 'Enter') {
-                    const val = itemInput.value.trim();
-                    const num = Number(val);
-                    if (!isNaN(num) && num > 0) {
-                        addToActiveTab(num);
-                        itemInput.value = '';
-                        searchResultsContainer.style.display = 'none';
-                    }
-                }
+                    const v = e.target.value.trim();
+                    if (v.length > 2 && isNaN(parseInt(v))) showSearchResults(await searchItemsByName(v));
+                }, 300);
             };
 
-            await loadStaticItemData();
+            document.getElementById('export-btn').onclick = () => {
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(new Blob([JSON.stringify(itemTabs, null, 2)], { type: "application/json" }));
+                a.download = "gw2-tracker-config.json";
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            };
 
-            await pollApiData();
-            await refreshAll();
-
-            refreshItemsBtn.onclick = refreshAll;
-            setInterval(refreshAll, 120000);
-            setInterval(pollApiData, 300000);
-        }
-
-        init();
+            const fileInput = document.getElementById('import-file-input');
+            document.getElementById('import-btn').onclick = () => fileInput.click();
+            fileInput.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = async (event) => {
+                    try {
+                        const imported = JSON.parse(event.target.result);
+                        if (Array.isArray(imported) && imported.length > 0 && imported[0].items) {
+                            if (confirm('Importing will overwrite your current tabs. Continue?')) {
+                                itemTabs = imported;
+                                activeTabIndex = 0;
+                                saveTabs();
+                                renderTabs();
+                                await refreshAllData();
+                                alert("Imported successfully.");
+                            }
+                        } else alert("Invalid file.");
+                    } catch (err) { alert("Error parsing file."); }
+                    fileInput.value = '';
+                };
+                reader.readAsText(file);
+            };
+        });
     </script>
+    <p></p>
+    <a href="https://gartkb.github.io/Garts-Great-Tools/" style="color: yellow; text-decoration: underline;">Gart's
+        Great Tools</a>
 </body>
 
 </html>
