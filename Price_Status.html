@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Guild Wars 2 Trading Post Tracker</title>
     <style>
-        /* --- KEEPING ALL CSS AS IS --- */
         * {
             margin: 0;
             padding: 0;
@@ -388,7 +387,8 @@
             text-overflow: ellipsis;
         }
 
-        .item-name a,\n        .item-name span {
+        .item-name a,
+        .item-name span {
             vertical-align: middle;
             display: inline-block;
         }
@@ -851,7 +851,6 @@
             color: #e74c3c;
         }
 
-        /* --- STYLES FOR ORDER FILTERS & SORTING --- */
         .order-controls-bar {
             display: flex;
             flex-wrap: wrap;
@@ -906,7 +905,6 @@
             display: none;
         }
 
-        /* Sortable Headers */
         .sortable-th {
             cursor: pointer;
             user-select: none;
@@ -988,7 +986,6 @@
             margin-top: 5px;
         }
 
-        /* NEW: Account Badge Style */
         .notif-account {
             display: inline-block;
             background: rgba(0, 0, 0, 0.3);
@@ -1172,7 +1169,6 @@
                     <button id="toggle-sells" class="order-toggle-btn" onclick="switchOrderType('sells')">Sell
                         Listings</button>
                 </div>
-                <!-- Filter Controls -->
                 <div class="order-controls-bar">
                     <input type="text" id="order-search-input" class="order-search-input"
                         placeholder="Filter items by name..." oninput="handleOrderSearch(this.value)">
@@ -1416,7 +1412,6 @@
                 const totalPages = parseInt(res.headers.get('x-page-total') || 1);
                 let results = await res.json();
 
-                // If active orders exceed 200, fetch the rest in parallel
                 if (totalPages > 1) {
                     const promises = [];
                     for (let i = 1; i < totalPages; i++) {
@@ -1667,7 +1662,6 @@
             const known = localStorage.getItem('gw2_known_guilds');
             if (known) { try { knownGuilds = JSON.parse(known); } catch { } }
 
-            // Apply listener
             document.getElementById('enable-inventory-chk').onchange = (e) => {
                 enableInventory = e.target.checked;
                 localStorage.setItem('gw2_enable_inventory', enableInventory);
@@ -1812,21 +1806,18 @@
         async function fetchInventoryData(token, accountName) {
             const inv = [];
             try {
-                // Shared Inventory
                 const sharedRes = await fetch('https://api.guildwars2.com/v2/account/inventory', { headers: getHeaders(token) });
                 if (sharedRes.ok) {
                     const shared = await sharedRes.json();
                     shared.forEach(x => { if (x) inv.push({ ...x, loc: 'Shared Slot', owner: accountName }); });
                 }
 
-                // Bank
                 const bankRes = await fetch('https://api.guildwars2.com/v2/account/bank', { headers: getHeaders(token) });
                 if (bankRes.ok) {
                     const bank = await bankRes.json();
                     bank.forEach(x => { if (x) inv.push({ ...x, loc: 'Bank Slot', owner: accountName }); });
                 }
 
-                // Characters
                 const charRes = await fetch('https://api.guildwars2.com/v2/characters', { headers: getHeaders(token) });
                 if (charRes.ok) {
                     const chars = await charRes.json();
@@ -1835,7 +1826,6 @@
                         const cRes = await fetch(cUrl, { headers: getHeaders(token) });
                         if (cRes.ok) {
                             const cData = await cRes.json();
-                            // Bags
                             if (cData.bags) {
                                 cData.bags.forEach((bag) => {
                                     if (bag && bag.inventory) {
@@ -1845,7 +1835,6 @@
                                     }
                                 });
                             }
-                            // Equipment
                             if (cData.equipment) {
                                 cData.equipment.forEach((eq) => {
                                     if (eq) inv.push({ id: eq.id, count: 1, loc: `Equipped: ${charName}`, owner: accountName });
@@ -1879,7 +1868,6 @@
             if (!query) return [];
             query = query.toLowerCase();
 
-            // Custom searchable items first
             const matchedCustom = CUSTOM_SEARCHABLE_ITEMS.filter(x => x.name.toLowerCase().includes(query) || x.id.toString() === query);
 
             if (!staticItemData) {
@@ -1946,7 +1934,6 @@
                 return;
             }
 
-            // Collect all IDs to fetch
             const idsToFetch = [...items];
             items.forEach(id => {
                 if (isContainer(id)) {
@@ -1958,7 +1945,6 @@
 
             const uniqueIds = [...new Set(idsToFetch)].filter(id => id < 9900000);
 
-            // Fetch details
             const detailChunks = [];
             const size = 150;
             for (let i = 0; i < uniqueIds.length; i += size) { detailChunks.push(uniqueIds.slice(i, i + size)); }
@@ -1974,10 +1960,8 @@
                 } catch { }
             }, 3);
 
-            // Fetch Prices
             const fetchedPrices = await fetchPriceChunks(uniqueIds);
 
-            // Fetch Gems
             let gemPriceData = null;
             if (items.includes(GOLD_TO_GEMS_ID) || items.includes(GEMS_TO_GOLD_ID)) {
                 try {
@@ -1986,7 +1970,6 @@
                 } catch { }
             }
 
-            // Populate global state
             globalItemData.clear();
             uniqueIds.forEach(id => {
                 const detail = fetchedDetails[id];
@@ -2002,7 +1985,6 @@
                 }
             });
 
-            // Set up special items
             if (items.includes(GOLD_TO_GEMS_ID)) {
                 const rate = gemPriceData ? getGoldToGems(gemPriceData) : 0;
                 globalItemData.set(GOLD_TO_GEMS_ID, {
@@ -2024,7 +2006,6 @@
                 });
             }
 
-            // Set up containers
             items.forEach(id => {
                 if (isContainer(id)) {
                     let totalSellPrice = 0;
@@ -2066,7 +2047,6 @@
                 card.draggable = true;
                 card.dataset.itemId = id;
 
-                // Drag and Drop card placement
                 card.addEventListener('dragstart', () => { draggedCard = card; card.style.opacity = '0.4'; });
                 card.addEventListener('dragend', () => { draggedCard = null; card.style.opacity = '1'; });
                 card.addEventListener('dragover', (e) => { e.preventDefault(); });
@@ -2086,39 +2066,38 @@
                     }
                 });
 
-                // Pending order badges
                 let buyOrdersQty = 0;
                 let sellOrdersQty = 0;
                 let isBuyWatched = false;
                 let isSellWatched = false;
-
-                // Inventory badge
                 let inventoryQty = 0;
 
-                // Gather TP Transaction and Watch statistics
-                for (const [key, details] of accountOrdersMap) {
-                    details.buys.forEach(o => {
-                        if (o.item_id === id) {
-                            buyOrdersQty += o.quantity;
-                            if (watchedOrders.has(o.created + '-' + o.price)) isBuyWatched = true;
-                        }
-                    });
-                    details.sells.forEach(o => {
-                        if (o.item_id === id) {
-                            sellOrdersQty += o.quantity;
-                            if (watchedOrders.has(o.created + '-' + o.price)) isSellWatched = true;
-                        }
-                    });
-                }
+                // Restored safeguard checking mock/custom items
+                if (id < 9900000) {
+                    for (const [key, details] of accountOrdersMap) {
+                        details.buys.forEach(o => {
+                            if (o.item_id === id) {
+                                buyOrdersQty += o.quantity;
+                                if (watchedOrders.has(o.created + '-' + o.price)) isBuyWatched = true;
+                            }
+                        });
+                        details.sells.forEach(o => {
+                            if (o.item_id === id) {
+                                sellOrdersQty += o.quantity;
+                                if (watchedOrders.has(o.created + '-' + o.price)) isSellWatched = true;
+                            }
+                        });
+                    }
 
-                // Inventory amounts
-                const itemInvEntries = globalInventoryMap.get(id) || [];
-                itemInvEntries.forEach(entry => { inventoryQty += entry.count; });
+                    const itemInvEntries = globalInventoryMap.get(id) || [];
+                    itemInvEntries.forEach(entry => { inventoryQty += entry.count; });
+                }
 
                 const buyBadgeClass = buyOrdersQty > 0 ? `icon-buy ${isBuyWatched ? 'icon-warn' : ''}` : '';
                 const sellBadgeClass = sellOrdersQty > 0 ? `icon-sell ${isSellWatched ? 'icon-warn' : ''}` : '';
                 const invBadgeClass = inventoryQty > 0 ? 'icon-inv' : '';
 
+                // Restored special conditional formatting for headers, ids, and pricing rows
                 card.innerHTML = `
                     <div class="card-actions">
                         <button class="card-btn remove-btn" onclick="removeFromActiveTab(${id})" title="Remove">×</button>
@@ -2130,10 +2109,10 @@
                         <div class="item-info">
                             <span class="item-name">
                                 <span>${item.name}</span>
-                                <a href="${GRAPH_URL_TEMPLATE.replace('{id}', id)}" target="_blank" class="graph-link" title="GW2Treasures Graph">📈</a>
+                                ${id < 9900000 ? `<a href="${GRAPH_URL_TEMPLATE.replace('{id}', id)}" target="_blank" class="graph-link" title="GW2Treasures Graph">📈</a>` : ''}
                             </span>
                             <div class="item-id">
-                                <span style="font-size:0.8rem;">ID: ${id}</span>
+                                <span style="font-size:0.8rem;">ID: ${id < 9900000 ? id : 'Special'}</span>
                                 ${buyOrdersQty > 0 ? `<span class="order-icon ${buyBadgeClass}" onclick="showOrderViewer(${id})" title="Active Buy Orders: ${buyOrdersQty}">📥 ${buyOrdersQty}</span>` : ''}
                                 ${sellOrdersQty > 0 ? `<span class="order-icon ${sellBadgeClass}" onclick="showOrderViewer(${id})" title="Active Sell Listings: ${sellOrdersQty}">📤 ${sellOrdersQty}</span>` : ''}
                                 ${inventoryQty > 0 ? `<span class="order-icon ${invBadgeClass}" onclick="showInventoryLocations(${id})" title="Inventory Units: ${inventoryQty}">🎒 ${inventoryQty}</span>` : ''}
@@ -2142,12 +2121,12 @@
                     </div>
                     <div class="item-prices">
                         <div class="price-row" ${isContainer(id) ? `style="cursor:pointer" onclick="showContainerContents(${id})"` : ''}>
-                            <span class="price-label">Sell Order Average:</span>
-                            <span class="price-value">${formatPrice(item.buyPrice)}</span>
+                            <span class="price-label">${id === GOLD_TO_GEMS_ID ? 'Cost in Gold:' : (id === GEMS_TO_GOLD_ID ? 'Receive in Gold:' : 'Sell Order Price:')}</span>
+                            <span class="price-value">${formatPrice(id === GOLD_TO_GEMS_ID || id === GEMS_TO_GOLD_ID ? item.sellPrice : item.buyPrice)}</span>
                         </div>
                         <div class="price-row" ${isContainer(id) ? `style="cursor:pointer" onclick="showContainerContents(${id})"` : ''}>
-                            <span class="price-label">Buy Order Average:</span>
-                            <span class="price-value">${formatPrice(item.sellPrice)}</span>
+                            <span class="price-label">${id === GOLD_TO_GEMS_ID || id === GEMS_TO_GOLD_ID ? '' : 'Buy Order Price:'}</span>
+                            <span class="price-value">${id === GOLD_TO_GEMS_ID || id === GEMS_TO_GOLD_ID ? '' : formatPrice(item.sellPrice)}</span>
                         </div>
                     </div>
                 `;
@@ -2174,10 +2153,7 @@
         }
 
         function getGoldToGems(gemPriceData) {
-            // Gem calculation uses reciprocal logic or similar conversion rate modeling
-            const rawRate = gemPriceData.coins_per_gem;
-            const output = Math.round((400000000 / rawRate) * 100);
-            return output;
+            return (4000000 / gemPriceData.coins_per_gem) * 10000;
         }
 
         // --- Modals Render Helpers ---
@@ -2238,7 +2214,6 @@
             openModal('order-modal');
         }
 
-        // Specific Item watch toggle
         window.toggleWatch = function (created, price, accountName, itemId, type) {
             const key = created + '-' + price;
             if (watchedOrders.has(key)) {
@@ -2389,9 +2364,7 @@
             openModal('delivery-modal');
         }
 
-        // --- GLOBAL PENDING ORDERS (VIEW & SYSTEM) ---
         function showGlobalOrders() {
-            // Setup account filter selections on initial build
             selectedOrderAccounts.clear();
             for (const [key] of accountOrdersMap) { selectedOrderAccounts.add(key); }
             orderSearchQuery = '';
@@ -2463,10 +2436,8 @@
             const content = document.getElementById('global-orders-content');
             let orders = currentOrderType === 'buys' ? [...allAccountOrders.buys] : [...allAccountOrders.sells];
 
-            // Filter by Account Nicknames
             orders = orders.filter(o => selectedOrderAccounts.has(o.account));
 
-            // Filter by Item Name Query
             if (orderSearchQuery) {
                 orders = orders.filter(o => {
                     const detail = globalItemData.get(o.item_id);
@@ -2480,7 +2451,6 @@
                 return;
             }
 
-            // Sorting logic
             orders.sort((a, b) => {
                 let valA, valB;
                 if (currentOrderSort.col === 'account') {
@@ -2498,7 +2468,6 @@
                     valA = a.price;
                     valB = b.price;
                 } else {
-                    // Date
                     valA = new Date(a.created).getTime();
                     valB = new Date(b.created).getTime();
                 }
@@ -2592,11 +2561,9 @@
                 const token = keyObj.key;
                 const nickname = keyObj.name;
 
-                // Acc name for fallback or validation
                 const accName = await fetchAccountName(token);
                 if (!accName) return;
 
-                // Deliveries
                 const delObj = await fetchAccountDelivery(token);
                 if (delObj) {
                     incomingDeliveryData.push({
@@ -2606,7 +2573,6 @@
                     });
                 }
 
-                // Guilds Check
                 const leaders = await fetchAccountGuilds(token);
                 for (const gid of leaders) {
                     if (!knownGuilds[gid]) {
@@ -2621,7 +2587,6 @@
                     if (knownGuilds[gid]) { accessibleGuilds[gid] = knownGuilds[gid]; }
                 }
 
-                // Guild stash inventory pull
                 if (enableInventory) {
                     for (const gid of leaders) {
                         if (disabledGuilds.has(gid)) continue;
@@ -2649,16 +2614,13 @@
                     }
                 }
 
-                // Commerce orders (Buys / Sells)
                 const orders = await fetchAccountOrders(token);
                 if (orders) {
-                    // Inject nickname into listings
                     orders.buys.forEach(x => { x.account = nickname; });
                     orders.sells.forEach(x => { x.account = nickname; });
                     incomingOrdersMap.set(nickname, orders);
                 }
 
-                // Inventory collection
                 if (enableInventory) {
                     const items = await fetchInventoryData(token, nickname);
                     items.forEach(item => {
@@ -2669,11 +2631,9 @@
                 }
             }, 2);
 
-            // Save checked known guilds
             saveSettings();
             updateGuildList(accessibleGuilds);
 
-            // Reconstruct active list of orders for global filters
             const newBuys = [];
             const newSells = [];
             for (const [key, details] of incomingOrdersMap) {
@@ -2681,13 +2641,11 @@
                 newSells.push(...details.sells);
             }
 
-            // Notification Engine - compare incoming changes to state
             for (const [watchKey, watch] of watchedOrders) {
                 const targetOrders = watch.type === 'Buy' ? newBuys : newSells;
                 const match = targetOrders.find(o => o.created === watch.created && o.price === watch.price && o.account === watch.accountName);
 
                 if (!match) {
-                    // Alert!
                     const detail = globalItemData.get(watch.itemId);
                     const name = detail ? detail.name : `Item ${watch.itemId}`;
                     addNotification(
@@ -2701,13 +2659,11 @@
             }
             saveWatchedOrders();
 
-            // Swap working state
             accountOrdersMap = incomingOrdersMap;
             allAccountOrders = { buys: newBuys, sells: newSells };
             globalInventoryMap = incomingInventoryMap;
             deliveryData = incomingDeliveryData;
 
-            // Delivery button badge animation checker
             let packageCount = 0;
             deliveryData.forEach(x => {
                 if (x.coins > 0) packageCount++;
@@ -2818,7 +2774,6 @@
             loadApiKeys();
             loadSettings();
 
-            // UI Listeners
             addItemBtn.onclick = () => {
                 const id = Number(itemInput.value.trim());
                 if (!isNaN(id) && id > 0) {
@@ -2839,7 +2794,6 @@
             document.getElementById('import-btn').onclick = () => document.getElementById('import-file-input').click();
             document.getElementById('import-file-input').onchange = importConfig;
 
-            // Search Auto-complete input handler
             itemInput.oninput = () => {
                 clearTimeout(debounceTimer);
                 debounceTimer = setTimeout(async () => {
@@ -2854,7 +2808,6 @@
             };
             itemInput.onblur = closeSearchResults;
 
-            // Handle hitting enter
             itemInput.onkeydown = (e) => {
                 if (e.key === 'Enter') {
                     const val = itemInput.value.trim();
@@ -2867,20 +2820,16 @@
                 }
             };
 
-            // Loading system resources (Search Indexes)
             await loadStaticItemData();
 
-            // First polling
             await pollApiData();
             await refreshAll();
 
-            // Set up background timers
             refreshItemsBtn.onclick = refreshAll;
-            setInterval(refreshAll, 120000); // Poll prices every 2 mins
-            setInterval(pollApiData, 300000); // Poll API and Account Data every 5 mins
+            setInterval(refreshAll, 120000);
+            setInterval(pollApiData, 300000);
         }
 
-        // Execution Start
         init();
     </script>
 </body>
