@@ -1,7 +1,7 @@
 {
   "source_type": "event",
   "id": "1455685769325711463",
-  "last_updated": "2026-07-04T20:35:02.529125+00:00",
+  "last_updated": "2026-07-04T20:47:08.733931+00:00",
   "text_representation": "**Interest List:**\n\n```\n1.<1018319454939127909> KellyLSB (KellyLSB.3076) 🚺,📧\n2.<247139970630942730> Maginoo1 (Vincent.9124) 🚹, 📧\n3.<164157490496274432> Star2Wars (Kayle.1586) 🔱 🌠,📧\n4.<265647872618397706> holtchef (holtchef.7801) 🔱,📧\n5.<1434616501620703314> monster.8671,             📧\n```",
   "roster": [
     {
@@ -275,6 +275,46 @@
     },
     {
       "timestamp": "2026-07-04T20:34:56.785651+00:00",
+      "discord_id": "1434616501620703314",
+      "nickname": "monster.8671",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-04T20:47:03.112792+00:00",
+      "discord_id": "164157490496274432",
+      "nickname": "Star2Wars (Kayle.1586) 🔱 🌠",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-04T20:47:03.135364+00:00",
+      "discord_id": "247139970630942730",
+      "nickname": "Maginoo1 (Vincent.9124) 🚹",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-04T20:47:03.164720+00:00",
+      "discord_id": "265647872618397706",
+      "nickname": "holtchef (holtchef.7801) 🔱",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-04T20:47:03.193210+00:00",
+      "discord_id": "1018319454939127909",
+      "nickname": "KellyLSB (KellyLSB.3076) 🚺",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-04T20:47:03.222591+00:00",
       "discord_id": "1434616501620703314",
       "nickname": "monster.8671",
       "action": "interested",
