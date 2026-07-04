@@ -1,7 +1,7 @@
 {
   "source_type": "event",
   "id": "1273434314457092208",
-  "last_updated": "2026-07-04T20:34:38.195646+00:00",
+  "last_updated": "2026-07-04T20:46:44.208666+00:00",
   "text_representation": "**Interest List:**\n\n```\n1.<463074612343734282> MysticSmoke.4689,          📧\n2.<810264372130873354> Viral.4560,                📧\n3.<265647872618397706> holtchef (holtchef.7801) 🔱,📧\n4.<341004882393956355> 💫VeraVee.2978 🚺,           📧\n5.<797945111794810930> 📐💫SkielaHun.7015,          📧\n```",
   "roster": [
     {
@@ -275,6 +275,46 @@
     },
     {
       "timestamp": "2026-07-04T20:34:32.553760+00:00",
+      "discord_id": "810264372130873354",
+      "nickname": "Viral.4560",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-04T20:46:38.430654+00:00",
+      "discord_id": "265647872618397706",
+      "nickname": "holtchef (holtchef.7801) 🔱",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-04T20:46:38.479778+00:00",
+      "discord_id": "341004882393956355",
+      "nickname": "💫VeraVee.2978 🚺",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-04T20:46:38.518239+00:00",
+      "discord_id": "463074612343734282",
+      "nickname": "MysticSmoke.4689",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-04T20:46:38.557030+00:00",
+      "discord_id": "797945111794810930",
+      "nickname": "📐💫SkielaHun.7015",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-04T20:46:38.589402+00:00",
       "discord_id": "810264372130873354",
       "nickname": "Viral.4560",
       "action": "interested",
