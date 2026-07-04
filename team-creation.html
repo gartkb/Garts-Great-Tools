@@ -169,6 +169,111 @@
       border-radius: 10px; border: 1px solid var(--border-color);
     }
     #finalOutput { height: 150px; font-family: monospace; }
+
+    /* --- HISTORY MODAL --- */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+    }
+    .modal-content {
+      background-color: var(--card-bg);
+      margin: 8% auto;
+      padding: 20px;
+      border: 1px solid var(--border-color);
+      width: 90%;
+      max-width: 750px;
+      border-radius: 10px;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      max-height: 75vh;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+      margin-bottom: 15px;
+      flex-shrink: 0;
+    }
+    .modal-header h2 {
+      font-size: 1.5rem;
+      color: var(--accent-blue);
+    }
+    .close-modal {
+      color: var(--text-muted);
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .close-modal:hover {
+      color: #fff;
+    }
+    .history-list {
+      overflow-y: auto;
+      flex-grow: 1;
+      padding-right: 8px;
+    }
+    .history-list::-webkit-scrollbar { width: 8px; }
+    .history-list::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
+    .history-list::-webkit-scrollbar-thumb { background: var(--accent-blue); border-radius: 4px; }
+    
+    .history-item {
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      font-size: 0.95rem;
+    }
+    .history-item:last-child {
+      border-bottom: none;
+    }
+    .history-item-top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+    .history-timestamp {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-family: monospace;
+    }
+    .history-details {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .history-action-text {
+      font-weight: bold;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+    
+    /* Action Status Colors */
+    .action-add {
+      background: rgba(46, 204, 113, 0.15);
+      color: #2ecc71;
+      border: 1px solid rgba(46, 204, 113, 0.3);
+    }
+    .action-remove {
+      background: rgba(231, 76, 60, 0.15);
+      color: var(--accent-red);
+      border: 1px solid rgba(231, 76, 60, 0.3);
+    }
   </style>
 </head>
 <body>
@@ -186,6 +291,7 @@
         <option value="">-- Load Roster --</option>
       </select>
       <button class="btn-danger" onclick="deleteRoster()">🗑️</button>
+      <button id="viewHistoryBtn" onclick="openHistoryModal()" style="display: none; background-color: #8e44ad;">📜 Show History</button>
     </div>
 
     <p style="color:#aaa; font-size:0.9em; margin-bottom:5px;">Paste your player list below. (Drag & Drop sorting below)</p>
@@ -224,6 +330,19 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
   </div>
 </div>
 
+<!-- --- HISTORY MODAL HTML --- -->
+<div id="historyModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>📜 Roster Sign-up & React History</h2>
+      <span class="close-modal" onclick="closeHistoryModal()">&times;</span>
+    </div>
+    <div id="historyList" class="history-list">
+      <!-- Generated rows appear here -->
+    </div>
+  </div>
+</div>
+
 <script>
   /* =========================================
      DATA & CONFIG
@@ -244,6 +363,7 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
   const ignoredEmojis = ['📧', '🚹', '🚺', '👥', '👤', '💫', '🔍', '🔰', '🆔', '🔱', '🌠' ];
 
   let allPlayers = []; 
+  let loadedHistory = [];
 
   /* =========================================
      INIT
@@ -254,6 +374,16 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
     const bench = document.getElementById('bench-zone');
     bench.ondragover = handleDragOver;
     bench.ondrop = handleDrop;
+
+    // Check for "roster" URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const rosterFile = urlParams.get('roster');
+    if (rosterFile) {
+      const safeFileName = rosterFile.replace(/[^a-zA-Z0-9_\-\.]/g, '');
+      if (safeFileName.endsWith('.json')) {
+        fetchRoster(safeFileName);
+      }
+    }
   };
 
   function initSquadGrid() {
@@ -579,6 +709,166 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
   }
 
   /* =========================================
+     REMOTE ROSTER FETCHING & HISTORY
+     ========================================= */
+  function fetchRoster(fileName) {
+    const url = `./teams/${fileName}`;
+    fetch(url)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Failed to load roster file: ${response.statusText}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        let rawText = '';
+        
+        // Load history data if present
+        loadedHistory = data.history || [];
+        updateHistoryButtonState();
+        
+        // 1. Prefer using the raw text representation if available
+        if (data.text_representation) {
+          rawText = data.text_representation;
+          // Extract the portion inside the markdown code block (```) if it exists
+          const codeBlockMatch = rawText.match(/```(?:[a-zA-Z]*\n)?([\s\S]*?)```/);
+          if (codeBlockMatch) {
+            rawText = codeBlockMatch[1].trim();
+          }
+          // Remove backslash escaping for Discord custom emojis (e.g., \<:AlacHeal:...)
+          rawText = rawText.replace(/\\</g, '<');
+        } 
+        // 2. Fall back to manual reconstruction if the structured list exists
+        else if (data.roster && Array.isArray(data.roster)) {
+          rawText = data.roster.map((player, idx) => {
+            const idPart = player.discord_id ? `<${player.discord_id}> ` : '';
+            const nickname = player.nickname || '';
+            const emojis = player.emojis ? player.emojis.join(' ') : '';
+            return `${idx + 1}. ${idPart}${nickname}, ${emojis}`;
+          }).join('\n');
+        }
+
+        if (rawText) {
+          document.getElementById('inputPlayers').value = rawText;
+          
+          // Pre-populate Roster Name field with the filename (without extension)
+          const nameWithoutExt = fileName.replace('.json', '');
+          document.getElementById('rosterName').value = nameWithoutExt;
+          
+          // Parse and build the board cards automatically
+          parseAndGenerate();
+        }
+      })
+      .catch(err => {
+        console.error('Error fetching roster:', err);
+        alert('Could not load the specified roster. Please check the file name and try again.');
+      });
+  }
+
+  function updateHistoryButtonState() {
+    const btn = document.getElementById('viewHistoryBtn');
+    if (loadedHistory && loadedHistory.length > 0) {
+      btn.style.display = 'inline-flex';
+    } else {
+      btn.style.display = 'none';
+    }
+  }
+
+  /* =========================================
+     HISTORY MODAL LOGIC
+     ========================================= */
+  function openHistoryModal() {
+    const list = document.getElementById('historyList');
+    list.innerHTML = '';
+
+    if (!loadedHistory || loadedHistory.length === 0) {
+      list.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px;">No history details found.</div>';
+    } else {
+      // Sort newest entries first
+      const sorted = [...loadedHistory].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+      sorted.forEach(item => {
+        const itemEl = document.createElement('div');
+        itemEl.className = 'history-item';
+
+        const rawAction = item.action || '';
+        const lowerAction = rawAction.toLowerCase();
+        
+        // Categorize actions to flag them as green (joining/positive) or red (leaving/undoing)
+        const isNegative = lowerAction.includes('unreact') || 
+                           lowerAction.includes('uninterest') || 
+                           lowerAction.includes('remove') || 
+                           lowerAction.includes('leave') || 
+                           lowerAction.includes('unregistered') ||
+                           lowerAction.includes('delete');
+                           
+        const actionClass = isNegative ? 'action-remove' : 'action-add';
+        const formattedTime = formatHistoryTimestamp(item.timestamp);
+        const formattedEmoji = formatHistoryEmoji(item.emoji);
+
+        itemEl.innerHTML = `
+          <div class="history-item-top">
+            <span style="font-weight: 700; color: #fff;">${escapeHtml(item.nickname || 'Unknown Player')}</span>
+            <span class="history-timestamp">${formattedTime}</span>
+          </div>
+          <div class="history-details">
+            <span class="history-action-text ${actionClass}">${escapeHtml(rawAction)}</span>
+            ${formattedEmoji ? `<span style="display:inline-flex; align-items:center;">${formattedEmoji}</span>` : ''}
+          </div>
+        `;
+        list.appendChild(itemEl);
+      });
+    }
+
+    document.getElementById('historyModal').style.display = 'block';
+  }
+
+  function closeHistoryModal() {
+    document.getElementById('historyModal').style.display = 'none';
+  }
+
+  // Close modal when clicking on background
+  window.addEventListener('click', function(e) {
+    const modal = document.getElementById('historyModal');
+    if (e.target === modal) {
+      closeHistoryModal();
+    }
+  });
+
+  function formatHistoryTimestamp(ts) {
+    try {
+      const date = new Date(ts);
+      if (isNaN(date.getTime())) return ts;
+      return date.toLocaleString(undefined, { 
+        year: 'numeric', month: 'short', day: '2-digit', 
+        hour: '2-digit', minute: '2-digit', second: '2-digit' 
+      });
+    } catch {
+      return ts;
+    }
+  }
+
+  function formatHistoryEmoji(emojiStr) {
+    if (!emojiStr) return '';
+    const customIdMatch = emojiStr.match(/<a?:.+:(\d+)>/);
+    if (customIdMatch) {
+      const emojiId = customIdMatch[1];
+      return `<img src="https://cdn.discordapp.com/emojis/${emojiId}.png" style="height: 20px; width: auto; vertical-align: middle;">`;
+    }
+    return `<span style="font-size: 1.1rem; line-height: 1;">${emojiStr}</span>`;
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  /* =========================================
      STORAGE
      ========================================= */
   function getSaved() { return JSON.parse(localStorage.getItem('gw2_rosters_v7') || '{}'); }
@@ -598,7 +888,11 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
   function saveRoster() {
     const n = document.getElementById('rosterName').value.trim();
     if(!n) return alert('Name required');
-    const data = { players: allPlayers, rawText: document.getElementById('inputPlayers').value };
+    const data = { 
+      players: allPlayers, 
+      rawText: document.getElementById('inputPlayers').value,
+      history: loadedHistory 
+    };
     const store = getSaved();
     store[n] = data;
     saveStore(store);
@@ -612,6 +906,8 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
       const data = store[n];
       if(typeof data === 'string') {
         document.getElementById('inputPlayers').value = data;
+        loadedHistory = [];
+        updateHistoryButtonState();
         parseAndGenerate();
       } else {
         document.getElementById('inputPlayers').value = data.rawText || '';
@@ -620,6 +916,8 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
             ...p,
             activeRoles: new Set(p.activeRoles),
         }));
+        loadedHistory = data.history || [];
+        updateHistoryButtonState();
         renderAllCards();
         generateOutput();
       }
@@ -635,6 +933,8 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
     saveStore(s);
     populateRosterList();
     document.getElementById('rosterName').value = '';
+    loadedHistory = [];
+    updateHistoryButtonState();
   }
 
 </script>
