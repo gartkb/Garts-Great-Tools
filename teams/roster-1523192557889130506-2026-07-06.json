@@ -1,0 +1,25 @@
+{
+  "source_type": "event",
+  "id": "1523192557889130506",
+  "last_updated": "2026-07-05T05:09:19.866436+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<204388117254242305> 📐Isbad (iBad.9826),        📧\n```",
+  "roster": [
+    {
+      "discord_id": "204388117254242305",
+      "nickname": "📐Isbad (iBad.9826)",
+      "emojis": [
+        "📧"
+      ]
+    }
+  ],
+  "history": [
+    {
+      "timestamp": "2026-07-05T05:09:14.367630+00:00",
+      "discord_id": "204388117254242305",
+      "nickname": "📐Isbad (iBad.9826)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    }
+  ]
+}
