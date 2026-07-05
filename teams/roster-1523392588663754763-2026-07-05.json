@@ -1,9 +1,16 @@
 {
   "source_type": "event",
   "id": "1523392588663754763",
-  "last_updated": "2026-07-05T18:56:28.803955+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<863577047951736894> Invious (Zoomzi.1658) 🚹,   📧  \\<:QuickDPS:1038159940164014090>  ⚔️  🐥\n2.<798211339365384212> Livingldly (Kavish.8593),  🕵️\n3.<421006121503948800> nyx (Not Nyx.1764) 🌠,      🕵️\n4.<355929832925822986> pey (Fictoid.8196),        📧  \\<:QuickHeal:1038159941472620655>  \\<:AlacHeal:1038159938335277140>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  🟢  🐥\n5.<797945111794810930> 📐💫SkielaHun.7015,          📧  \\<:QuickHeal:1038159941472620655>  \\<:AlacHeal:1038159938335277140>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  ⚔️  🛡️  🪁  🟢  🐣  🐥  🐉  🕺  🕵️\n```",
+  "last_updated": "2026-07-05T19:00:24.269595+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<863577047951736894> Invious (Zoomzi.1658) 🚹,       📧  \\<:QuickDPS:1038159940164014090>  ⚔️  🐥\n2.<798211339365384212> Livingldly (Kavish.8593),      🕵️\n3.<421006121503948800> nyx (Not Nyx.1764) 🌠,          🕵️\n4.<355929832925822986> pey (Fictoid.8196),            📧  \\<:QuickHeal:1038159941472620655>  \\<:AlacHeal:1038159938335277140>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  🟢  🐥\n5.<231518357440954368> shaqsalazar (shaqsalazar.2906) 🚹,📧\n6.<797945111794810930> 📐💫SkielaHun.7015,              📧  \\<:QuickHeal:1038159941472620655>  \\<:AlacHeal:1038159938335277140>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  ⚔️  🛡️  🪁  🟢  🐣  🐥  🐉  🕺  🕵️\n```",
   "roster": [
+    {
+      "discord_id": "231518357440954368",
+      "nickname": "shaqsalazar (shaqsalazar.2906) 🚹",
+      "emojis": [
+        "📧"
+      ]
+    },
     {
       "discord_id": "355929832925822986",
       "nickname": "pey (Fictoid.8196)",
@@ -286,6 +293,14 @@
       "action": "reacted",
       "source": "post_reaction",
       "emoji": "🕵️"
+    },
+    {
+      "timestamp": "2026-07-05T18:59:07.360358+00:00",
+      "discord_id": "231518357440954368",
+      "nickname": "shaqsalazar (shaqsalazar.2906) 🚹",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
     }
   ]
 }
