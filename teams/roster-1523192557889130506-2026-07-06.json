@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1523192557889130506",
-  "last_updated": "2026-07-05T06:21:03.350187+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<798211339365384212> Livingldly (Kavish.8593),      📧\n2.<231518357440954368> shaqsalazar (shaqsalazar.2906) 🚹,📧\n3.<204388117254242305> 📐Isbad (iBad.9826),            📧\n4.<177613403584462848> 📐SoLucky (Lucky.6148) 🔱,       📧\n```",
+  "last_updated": "2026-07-05T16:44:02.594532+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,         📧\n2.<798211339365384212> Livingldly (Kavish.8593),      📧\n3.<231518357440954368> shaqsalazar (shaqsalazar.2906) 🚹,📧\n4.<204388117254242305> 📐Isbad (iBad.9826),            📧\n5.<177613403584462848> 📐SoLucky (Lucky.6148) 🔱,       📧\n```",
   "roster": [
     {
       "discord_id": "177613403584462848",
@@ -14,6 +14,13 @@
     {
       "discord_id": "204388117254242305",
       "nickname": "📐Isbad (iBad.9826)",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "219437617219895297",
+      "nickname": "BeastfromtheEast.2946",
       "emojis": [
         "📧"
       ]
@@ -78,6 +85,14 @@
       "timestamp": "2026-07-05T06:19:57.673869+00:00",
       "discord_id": "177613403584462848",
       "nickname": "📐SoLucky (Lucky.6148) 🔱",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-05T16:42:51.757570+00:00",
+      "discord_id": "219437617219895297",
+      "nickname": "BeastfromtheEast.2946",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
