@@ -1,0 +1,25 @@
+{
+  "source_type": "event",
+  "id": "1523397725901820036",
+  "last_updated": "2026-07-05T18:46:10.019970+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<797945111794810930> 📐💫SkielaHun.7015,          📧\n```",
+  "roster": [
+    {
+      "discord_id": "797945111794810930",
+      "nickname": "📐💫SkielaHun.7015",
+      "emojis": [
+        "📧"
+      ]
+    }
+  ],
+  "history": [
+    {
+      "timestamp": "2026-07-05T18:46:04.575137+00:00",
+      "discord_id": "797945111794810930",
+      "nickname": "📐💫SkielaHun.7015",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    }
+  ]
+}
