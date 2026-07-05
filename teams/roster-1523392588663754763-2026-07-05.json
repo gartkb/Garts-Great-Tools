@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1523392588663754763",
-  "last_updated": "2026-07-05T19:04:31.217951+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<863577047951736894> Invious (Zoomzi.1658) 🚹,       📧  \\<:QuickDPS:1038159940164014090>  ⚔️  🐥\n2.<798211339365384212> Livingldly (Kavish.8593),      🕵️\n3.<421006121503948800> nyx (Not Nyx.1764) 🌠,          🕵️\n4.<355929832925822986> pey (Fictoid.8196),            📧  \\<:QuickHeal:1038159941472620655>  \\<:AlacHeal:1038159938335277140>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  🟢  🐥\n5.<231518357440954368> shaqsalazar (shaqsalazar.2906) 🚹,📧\n6.<734971332089085984> 𓄋Visceral.2796 🚺,              📧  ⚔️  🟢  🐥\n7.<797945111794810930> 📐💫SkielaHun.7015,              📧  \\<:QuickHeal:1038159941472620655>  \\<:AlacHeal:1038159938335277140>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  ⚔️  🛡️  🪁  🟢  🐣  🐥  🐉  🕺  🕵️\n```",
+  "last_updated": "2026-07-05T19:05:20.621373+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<946627586635731046> Clappin Em (ClappinEm.8625) 🚹, 📧\n2.<863577047951736894> Invious (Zoomzi.1658) 🚹,       📧  \\<:QuickDPS:1038159940164014090>  ⚔️  🐥\n3.<798211339365384212> Livingldly (Kavish.8593),      🕵️\n4.<421006121503948800> nyx (Not Nyx.1764) 🌠,          🕵️\n5.<355929832925822986> pey (Fictoid.8196),            📧  \\<:QuickHeal:1038159941472620655>  \\<:AlacHeal:1038159938335277140>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  🟢  🐥\n6.<231518357440954368> shaqsalazar (shaqsalazar.2906) 🚹,📧\n7.<734971332089085984> 𓄋Visceral.2796 🚺,              📧  ⚔️  🟢  🐥\n8.<797945111794810930> 📐💫SkielaHun.7015,              📧  \\<:QuickHeal:1038159941472620655>  \\<:AlacHeal:1038159938335277140>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  ⚔️  🛡️  🪁  🟢  🐣  🐥  🐉  🕺  🕵️\n```",
   "roster": [
     {
       "discord_id": "231518357440954368",
@@ -62,6 +62,13 @@
         "<:QuickDPS:1038159940164014090>",
         "⚔️",
         "🐥"
+      ]
+    },
+    {
+      "discord_id": "946627586635731046",
+      "nickname": "Clappin Em (ClappinEm.8625) 🚹",
+      "emojis": [
+        "📧"
       ]
     },
     {
@@ -343,6 +350,14 @@
       "action": "reacted",
       "source": "post_reaction",
       "emoji": "🟢"
+    },
+    {
+      "timestamp": "2026-07-05T19:04:59.116556+00:00",
+      "discord_id": "946627586635731046",
+      "nickname": "Clappin Em (ClappinEm.8625) 🚹",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
     }
   ]
 }
