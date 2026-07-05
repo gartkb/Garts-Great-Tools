@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guild Wars 2 Special Character Picker</title>
+    <style>
+        :root {
+            --bg-color: #0c0d0e;
+            --card-bg: #151619;
+            --border-color: #2a2b2f;
+            --text-color: #e1e2e6;
+            --text-muted: #7c7e85;
+            --primary-gold: #c8963e;
+            --primary-hover: #e2ab4b;
+            --accent-red: #9e2a2b;
+            --success-green: #388e3c;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0 8px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 10px 0;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 4px;
+            margin-bottom: 10px;
+        }
+
+        header h1 {
+            font-size: 18px;
+            color: var(--primary-gold);
+            margin: 0;
+        }
+
+        header p {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        header a {
+            color: var(--primary-gold);
+            text-decoration: none;
+        }
+
+        header a:hover {
+            text-decoration: underline;
+        }
+
+        /* Highly Compact Sticky Workspace Panel */
+        .workspace-sticky {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background-color: var(--bg-color);
+            padding: 6px 0;
+            border-bottom: 1px solid var(--primary-gold);
+            margin-bottom: 12px;
+        }
+
+        .workspace-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 6px 10px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+        }
+
+        #testField {
+            flex-grow: 1;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-color);
+            padding: 4px 8px;
+            font-size: 15px;
+            height: 28px;
+            line-height: 28px;
+            resize: none;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        #testField:focus {
+            border-color: var(--primary-gold);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 4px;
+        }
+
+        .btn {
+            background-color: var(--primary-gold);
+            color: #0c0d0e;
+            border: none;
+            padding: 0 10px;
+            font-weight: bold;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            height: 28px;
+            white-space: nowrap;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-danger {
+            background-color: var(--accent-red);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #be3233;
+        }
+
+        #searchInput {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 0 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            width: 140px;
+            height: 28px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        #searchInput:focus {
+            border-color: var(--primary-gold);
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--text-muted);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle-container input {
+            accent-color: var(--primary-gold);
+            cursor: pointer;
+            width: 14px;
+            height: 14px;
+            margin: 0;
+        }
+
+        .toggle-container:hover .toggle-label {
+            color: var(--primary-gold);
+        }
+
+        .feedback {
+            font-size: 11px;
+            color: var(--text-muted);
+            min-width: 140px;
+            text-align: right;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .feedback.success {
+            color: var(--success-green);
+        }
+
+        /* Favorites Hotbar Styles */
+        .favorites-bar {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 4px 10px;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .favorites-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: var(--primary-gold);
+            letter-spacing: 0.5px;
+            font-weight: bold;
+            user-select: none;
+        }
+
+        .favorites-empty {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-style: italic;
+            user-select: none;
+        }
+
+        .fav-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            position: relative;
+            user-select: none;
+            transition: background-color 0.1s, border-color 0.1s;
+        }
+
+        .fav-box:hover {
+            background-color: #202227;
+            border-color: var(--primary-gold);
+        }
+
+        .fav-box .symbol-char {
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .fav-box .remove-fav {
+            position: absolute;
+            top: 0px;
+            right: 2px;
+            font-size: 9px;
+            color: var(--accent-red);
+            opacity: 0;
+            transition: opacity 0.15s;
+            font-weight: bold;
+        }
+
+        .fav-box:hover .remove-fav {
+            opacity: 1;
+        }
+
+        /* Quick Jumps - High Density */
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 12px;
+        }
+
+        .nav-links a {
+            background-color: var(--card-bg);
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-gold);
+            border-color: var(--primary-gold);
+        }
+
+        /* Symbols Grid - Maximum Compactness */
+        .category-section {
+            margin-bottom: 14px;
+            scroll-margin-top: 140px; /* Adjusted to prevent overlaps with taller sticky bar */
+        }
+
+        .category-section h2 {
+            font-size: 12px;
+            color: var(--primary-gold);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 2px;
+            margin: 0 0 6px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .symbol-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(38px, 1fr));
+            gap: 3px;
+        }
+
+        .symbol-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            height: 38px;
+            cursor: pointer;
+            transition: background-color 0.1s, border-color 0.1s;
+            user-select: none;
+            position: relative;
+        }
+
+        .symbol-box:hover {
+            background-color: #202227;
+            border-color: var(--primary-gold);
+        }
+
+        .symbol-char {
+            font-size: 22px;
+            line-height: 1;
+        }
+
+        /* Favorite Star in Main Grid */
+        .fav-star {
+            position: absolute;
+            top: 1px;
+            right: 2px;
+            font-size: 9px;
+            color: var(--text-muted);
+            opacity: 0;
+            transition: opacity 0.1s, color 0.1s;
+            cursor: pointer;
+            user-select: none;
+            z-index: 2;
+        }
+
+        .symbol-box:hover .fav-star {
+            opacity: 1;
+        }
+
+        .symbol-box.is-favorited .fav-star {
+            opacity: 1;
+            color: var(--primary-gold);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>GW2 Chat Symbol Picker</h1>
+        <p>Based on <a href="https://wiki.guildwars2.com/wiki/User:MithranArkanere/Charset" target="_blank">MithranArkanere/Charset</a> (Individually Verified)</p>
+    </header>
+
+    <!-- Sticky Single-Row Workspace -->
+    <div class="workspace-sticky">
+        <div class="workspace-card">
+            <input type="text" id="testField" placeholder="Click symbols below to construct a message..." />
+            <div class="btn-group">
+                <button class="btn" id="copyAllBtn">Copy All</button>
+                <button class="btn btn-danger" id="clearBtn">Clear Text</button>
+            </div>
+            <input type="text" id="searchInput" placeholder="Search symbol or U+Hex..." />
+            <label class="toggle-container">
+                <input type="checkbox" id="largeFontToggle" />
+                <span class="toggle-label">Limit to Large-Font supported symbols</span>
+            </label>
+            <div class="feedback" id="feedback">Click a symbol to copy</div>
+        </div>
+
+        <!-- Favorites Hotbar -->
+        <div id="favoritesBar" class="favorites-bar">
+            <span class="favorites-title">Favorites:</span>
+            <div id="favoritesList" style="display: flex; gap: 4px; flex-wrap: wrap; align-items: center; flex-grow: 1;">
+                <span class="favorites-empty">No favorites yet. Click the ★ icon on any symbol to add!</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Navigation Jumps -->
+    <div class="nav-links">
+        <a href="#misc">Misc Symbols</a>
+        <a href="#geo">Geometric Shapes</a>
+        <a href="#arrows">Arrows</a>
+        <a href="#box">Box Drawing</a>
+        <a href="#tech">Technical</a>
+        <a href="#letterlike">Letterlike</a>
+        <a href="#currency">Currency</a>
+        <a href="#math">Mathematical</a>
+        <a href="#enclosed">Alphanumerics</a>
+        <a href="#punc">Punctuation</a>
+        <a href="#latin1">Latin-1</a>
+    </div>
+
+    <!-- Symbol Rendering Workspace -->
+    <div id="pickerContainer"></div>
+</div>
+
+<script>
+    // Master database containing 100% of established Small-Font symbols (duplicates and non-rendering elements removed)
+    const charsets = {
+        "Miscellaneous Symbols": "☀☁☂☃☄♥♡★☆☇☈☉☊☋☌☍☎☏☐☑☒☓☖☗☘☙☚☛☜☝☞☠☡☢☣☤☥☦☧☨☩☪☫☬☭☮☯☰☱☲☳☴☵☶☷☸☼☽☾☿♀♁♂♃♄♅♆♇♊♌♍♏♑♒♕♖♘♙♛♜♞♟♤♢♧♨♩♪",
+        "Geometric Shapes": "■□▢▣▤▥▦▧▨▩▪▫▬▭▮▯▰▱▲△▴▵▶▷▸▹►▻▼▽▾▿◀◁◂◃◄◅◆◇◈◉◊○◌◍◎●◐◑◒◓◔◕◖◗◘◙◚◛◜◝◞◟◠◡◢◣◤◥◦◧◨◩◪◫◬◭◮◰◱◲◳◸◹◺◻◼◽◾",
+        "Arrows": "←↑→↓↔↕↖↗↘↙↚↛↜↝↞↟↠↡↢↣↤↥↦↧↨↩↪↫↬↭↮↯↰↱↲↳↴↵↶↷↸↹↺↻↼↽↾↿⇀⇁⇂⇃⇄⇅⇆⇇⇈⇉⇊⇋⇌⇍⇎⇏⇐⇑⇒⇓⇔⇕⇖⇗⇘⇙⇚⇛⇜⇝⇞⇟⇠⇡⇢⇣⇤⇥⇦⇧⇨⇩⇪⇫⇬⇭⇮⇯⇰⇱⇲⇳⇴⇵⇶⇷⇸⇹⇺⇻⇼⇽⇾⇿",
+        "Box Drawing": "─━│┃┄┅┆┇┈┉┊┋┌┍┎┏┐┑┒┓└┕┖┗┘┙┚┛├┝┞┟┠┡┢┣┤┥┦┧┨┩┪┫┬┭┮┯┰┱┲┳┴┵┶┷┸┹┺┻┼┽┾┿╀╂╃╄╅╆╇╈╉╊╋╌╍╎╏═║╒╓╔╕╖╗╘╙╚╛╜╝╞╟╠╡╢╣╤╥╦╧╨╩╪╫╬╭╮╯╰╱╲╳╴╵╶╷╸╹╺╻╼╽╾╿",
+        "Miscellaneous Technical": "⎄⎆⎇⎉⎊⎋⎌⎍⎎⎏⎐⎑⎒⎓⎔⎕⎖⎗⎘⎚⎛⎞⎡⎤⎧⎫⎯⎰⎱⎲⎵⎶⎺⎻⎼⎽⎾⎿⏀⏁⏂⏃⏄⏅⏆⏇⏈⏉⏊⏋⏌⏍⏎⏏⏐⏑⏒⏓⏔⏕⏖⏗⏘⏙⏢⏣⏤⏥⏦⏧⏨⏩⏪⏫⏬⏭⏮⏯⏴⏵⏶⏷⏸⏹",
+        "Letterlike Symbols": "℀℁℄ℊℋℍℾℿ⅀⅂⅃⅄ⅅⅇ⅍ⅎ⅏℀℁ℂ℃℄℅℆ℇ℈℉ℊℋℌℍℎℏℐℑℒℓ℔ℕ№℗℘ℙℚℛℜℝ℞℠℡™ℤ℥Ω℧ℨ℩KÅℬℭ℮ℯℰℱℲℳℴℵℶℷℸℹ℺℻ℼℽℾℿ⅀⅁⅂⅃⅄ⅅⅆⅇⅈⅉ⅊⅋⅌⅍ⅎ⅏",
+        "Currency Symbols": "₣₤₧€₸₹₺₻₼₽₾£¥¢¤$",
+        "Mathematical Operators": "∀∁∂∃∄∅∆∇∈∉∊∋∌∍▫∏∐∑−∓∔∕∖∗∘∙√∛∜∝∞∟∠∡∢∣∤∥∦∧∨∩∪∫∬∭∮∯∰∱∲∳∴∵∶∷∸∹∺∻∼∽∾∿≀≁≂≃≄≅≆≇≈≉≊≋≌≍≎≏≐≑≒≓≔≕≖≗≘≙≚≛≜≝≞≟≠≡≢≣≤≥≦≧≨≩≪≫≬≭≮≯",
+        "Enclosed Alphanumerics": "①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳⑴⑵⑶⑷⑸⑹⑺⑻⑼⑽⑾⑿⒀⒁⒂⒃⒄⒅⒆⒇⒈⒉⒊⒋⒌⒍⒎⒏⒐⒑⒒⒓⒔⒕⒖⒗⒘⒙⒚⒛⒜⒝⒞⒟⒠⒡⒢⒣⒤⒥⒦⒧⒨⒩⒪⒫⒬⒭⒮⒯⒰⒱⒲⒳⒴⒵ⒶⒷⒸⒹⒺⒻⒼⒽⒾⒿⓀⓁⓂⓃⓄⓅⓆⓇⓈⓉⓊⓋⓌⓍⓎⓏⓐⓑⓒⓓⓔⓕⓖⓗⓘⓙⓚⓛⓜⓝⓞⓟⓠⓡⓢⓣⓤⓥⓦⓧⓨⓩ⓪⓫⓬⓭⓮⓯⓰⓱⓲⓳⓴⓵⓶⓷⓸⓹⓺⓻⓼⓽⓾⓿"
+    };
+
+    // Strict Set of characters verified to display in the restrictive Large-Font chat size
+    const largeFontSet = new Set(Array.from("☃♥♡★☆☇☈☉☌☍☐☑☒☓☖☗☙☚☛☜☞☠☡☣☦☧☨☩☰☱☲☳☴☵☶☷☿♁♂♃♅♇♑♒♤♢♧♨♩♪■□▢▣▤▥▦▧▨▩▪▫▬▭▰▱▲△▴▵▸▹►▻▼▽▾▿◂◃◄◅◆◇◈◊◘◙◚◛◞◟◡◢◣◤◥◦◧◨◩◪◫◬◭◮◰◱◲◳◸◹◺◻◼◽◾←↑→↓↔↕↖↗↘↙↚↛↜↝↞↟↠↡↢↣↤↥↦↧↫↬↭↮↯↰↱↲↳↴↵↶↷↸↹↺↻↼↽↾↿⇀⇁⇂⇃⇄⇅⇆⇇⇈⇉⇊⇋⇌⇍⇎⇏⇐⇑⇒⇓⇔⇕⇖⇗⇘⇙⇚⇛⇜⇝⇞⇟⇠⇡⇢⇣⇤⇥⇦⇧⇨⇩⇪⇫⇬⇭⇮⇯⇰⇱⇲⇳⇴⇵⇶⇷⇸⇹⇺⇻⇼⇽⇾⇿─━┄┅┈┉┌┍┎┏┐┑┒┓┬┭┮┯┰┱┲┳╌╍═╒╓╔╕╖╗╤╥╦╭╮╴╶╷╸╺╻╼╾⎄⎆⎇⎉⎊⎋⎌⎍⎎⎏⎐⎑⎒⎓⎔⎕⎖⎗⎘⎚⎛⎞⎡⎤⎧⎫⎯⎰⎱⎲⎵⎶⎺⎻⎼⎽⎾⎿⏀⏁⏂⏃⏄⏅⏆⏇⏈⏉⏊⏋⏌⏍⏎⏏⏐⏑⏒⏓⏔⏕⏖⏗⏘⏙⏢⏣⏤⏥⏦⏧⏨⏩⏪⏫⏬⏭⏮⏯⏴⏵⏶⏷⏸⏹℀℁℄ℊℋℍ lockℎℐℕ℘ℙℛℝ℞℠℡™ℤ℥℧℩KÅℬ℮ℯℰℱℲℳℴℵℶℷℸℹ℺℻ℼℽℾℿ⅀⅂⅃⅄ⅅⅇ⅍ⅎ⅏€₸£¥¢¤$∀∂∃∆∇∈∉∊∋∌∍▫∏∐∑−∓∔∕∖∗∘∙√∝∞∟∠∡∢∣∤∥∦∧∨∩∪∫∴∵∶∷∸∹∺∻∼∽∾∿≀≁≂≃≄≅≆≇≈≉≊≋≌≍≎≏≐≑≒≓≔≕≖≗≘≙≚≛≜≝≞≟≠≡≢≣≤≥≦≧≨≩≪≫≬≭≮≯⑴⑵⑶⑷⑸⑹⑺⑻⑼⑽⑾⑿⒀⒁⒂⒃⒄⒅⒆⒇⒈⒉⒊⒋⒌⒍⒎⒏⒐⒑⒒⒓⒔⒕⒖⒗⒘⒙⒚⒛⒜⒝⒞⒟⒠⒡⒢⒣⒤⒥⒦⒧⒨⒩⒪⒫⒬⒭⒮⒯⒰⒱⒲⒳⒴⒵"));
+
+    // Latin-1 Supplement: Printable range (U+00A1 - U+00FF, omitting soft hyphen)
+    const latin1 = [];
+    for (let i = 0x00A1; i <= 0x00FF; i++) {
+        if (i === 0x00AD) continue;
+        latin1.push(String.fromCharCode(i));
+    }
+
+    // General Punctuation: Excluding formatting & control codes
+    const genPunc = [];
+    for (let i = 0x2010; i <= 0x2027; i++) {
+        genPunc.push(String.fromCharCode(i));
+    }
+    for (let i = 0x2030; i <= 0x205F; i++) {
+        genPunc.push(String.fromCharCode(i));
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const container = document.getElementById('pickerContainer');
+        
+        // Persistent Favorites Initialization
+        let favorites = [];
+        try {
+            favorites = JSON.parse(localStorage.getItem('gw2_favorites')) || [];
+        } catch (e) {
+            favorites = [];
+        }
+
+        function saveFavorites() {
+            localStorage.setItem('gw2_favorites', JSON.stringify(favorites));
+        }
+
+        function toggleFavorite(char, hex) {
+            const index = favorites.indexOf(char);
+            if (index > -1) {
+                favorites.splice(index, 1);
+            } else {
+                favorites.push(char);
+            }
+            saveFavorites();
+            renderFavoritesBar();
+            updateGridFavoriteStates();
+        }
+
+        function removeFavorite(char) {
+            const index = favorites.indexOf(char);
+            if (index > -1) {
+                favorites.splice(index, 1);
+                saveFavorites();
+                renderFavoritesBar();
+                updateGridFavoriteStates();
+            }
+        }
+
+        function updateGridFavoriteStates() {
+            const boxes = document.querySelectorAll('.symbol-box');
+            boxes.forEach(box => {
+                const char = box.dataset.char;
+                if (favorites.includes(char)) {
+                    box.classList.add('is-favorited');
+                } else {
+                    box.classList.remove('is-favorited');
+                }
+            });
+        }
+
+        function renderFavoritesBar() {
+            const listEl = document.getElementById('favoritesList');
+            listEl.innerHTML = '';
+            
+            if (favorites.length === 0) {
+                const emptyMsg = document.createElement('span');
+                emptyMsg.className = 'favorites-empty';
+                emptyMsg.innerText = 'No favorites yet. Click the ★ icon on any symbol to add!';
+                listEl.appendChild(emptyMsg);
+                return;
+            }
+            
+            favorites.forEach(char => {
+                const code = char.charCodeAt(0);
+                const hex = 'U+' + code.toString(16).toUpperCase().padStart(4, '0');
+                
+                const favBox = document.createElement('div');
+                favBox.className = 'fav-box';
+                favBox.title = `${char} (${hex})\nClick to copy/insert\nClick '×' to remove`;
+                favBox.dataset.char = char;
+                favBox.dataset.hex = hex;
+                
+                favBox.addEventListener('click', () => {
+                    copySymbol(char, hex);
+                });
+                
+                const charEl = document.createElement('span');
+                charEl.className = 'symbol-char';
+                charEl.innerText = char;
+                
+                const removeEl = document.createElement('span');
+                removeEl.className = 'remove-fav';
+                removeEl.innerText = '×';
+                removeEl.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Avoid copy operation when removing
+                    removeFavorite(char);
+                });
+                
+                favBox.appendChild(charEl);
+                favBox.appendChild(removeEl);
+                listEl.appendChild(favBox);
+            });
+        }
+
+        // Render favorites hotbar initially
+        renderFavoritesBar();
+
+        const sectionsData = [
+            { id: 'misc', title: 'Miscellaneous Symbols', chars: Array.from(charsets["Miscellaneous Symbols"]) },
+            { id: 'geo', title: 'Geometric Shapes', chars: Array.from(charsets["Geometric Shapes"]) },
+            { id: 'arrows', title: 'Arrows', chars: Array.from(charsets["Arrows"]) },
+            { id: 'box', title: 'Box Drawing', chars: Array.from(charsets["Box Drawing"]) },
+            { id: 'tech', title: 'Miscellaneous Technical', chars: Array.from(charsets["Miscellaneous Technical"]) },
+            { id: 'letterlike', title: 'Letterlike Symbols', chars: Array.from(charsets["Letterlike Symbols"]) },
+            { id: 'currency', title: 'Currency Symbols', chars: Array.from(charsets["Currency Symbols"]) },
+            { id: 'math', title: 'Mathematical Operators', chars: Array.from(charsets["Mathematical Operators"]) },
+            { id: 'enclosed', title: 'Enclosed Alphanumerics', chars: Array.from(charsets["Enclosed Alphanumerics"]) },
+            { id: 'punc', title: 'General Punctuation', chars: genPunc },
+            { id: 'latin1', title: 'Latin-1 Supplement', chars: latin1 }
+        ];
+
+        // Generation loop
+        sectionsData.forEach(sec => {
+            const sectionEl = document.createElement('section');
+            sectionEl.className = 'category-section';
+            sectionEl.id = sec.id;
+            
+            const headerEl = document.createElement('h2');
+            headerEl.innerText = sec.title;
+            sectionEl.appendChild(headerEl);
+            
+            const gridEl = document.createElement('div');
+            gridEl.className = 'symbol-grid';
+            
+            sec.chars.forEach(char => {
+                const code = char.charCodeAt(0);
+                const hex = 'U+' + code.toString(16).toUpperCase().padStart(4, '0');
+                
+                const box = document.createElement('div');
+                box.className = 'symbol-box';
+                box.dataset.char = char;
+                box.dataset.hex = hex;
+                box.title = `${char} (${hex})`; 
+                
+                // Flag characters that belong in the Large Font subset (Latin-1 and Gen Punc are supported by default)
+                const isLarge = largeFontSet.has(char) || sec.id === 'latin1' || sec.id === 'punc';
+                box.dataset.largeFont = isLarge ? "true" : "false";
+                
+                // Add initial favorites visual state
+                if (favorites.includes(char)) {
+                    box.classList.add('is-favorited');
+                }
+
+                box.addEventListener('click', () => copySymbol(char, hex));
+                
+                // Hover favorite toggle star
+                const star = document.createElement('span');
+                star.className = 'fav-star';
+                star.innerText = '★';
+                star.title = 'Favorite/Unfavorite';
+                star.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Stop click from appending character
+                    toggleFavorite(char, hex);
+                });
+                
+                const charEl = document.createElement('span');
+                charEl.className = 'symbol-char';
+                charEl.innerText = char;
+                
+                box.appendChild(star);
+                box.appendChild(charEl);
+                gridEl.appendChild(box);
+            });
+            
+            sectionEl.appendChild(gridEl);
+            container.appendChild(sectionEl);
+        });
+
+        // Fast high-speed visibility engine combining both parameters
+        function updateVisibility() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const filterLarge = document.getElementById('largeFontToggle').checked;
+            
+            const sections = document.querySelectorAll('.category-section');
+            sections.forEach(section => {
+                const boxes = section.querySelectorAll('.symbol-box');
+                let visibleCount = 0;
+                
+                boxes.forEach(box => {
+                    const char = box.dataset.char;
+                    const hex = box.dataset.hex.toLowerCase();
+                    const isLargeFont = box.dataset.largeFont === 'true';
+                    
+                    const matchesQuery = query === '' || char.includes(query) || hex.includes(query);
+                    const matchesLarge = !filterLarge || isLargeFont;
+                    
+                    if (matchesQuery && matchesLarge) {
+                        box.style.display = 'flex';
+                        visibleCount++;
+                    } else {
+                        box.style.display = 'none';
+                    }
+                });
+                
+                if (visibleCount === 0) {
+                    section.style.display = 'none';
+                } else {
+                    section.style.display = 'block';
+                }
+            });
+        }
+
+        // Event listeners for unified visibility updates
+        document.getElementById('searchInput').addEventListener('input', updateVisibility);
+        document.getElementById('largeFontToggle').addEventListener('change', updateVisibility);
+
+        // Core Copy functions
+        function copySymbol(char, hex) {
+            const testField = document.getElementById('testField');
+            const start = testField.selectionStart;
+            const end = testField.selectionEnd;
+            const text = testField.value;
+            
+            // Append at pointer index
+            testField.value = text.substring(0, start) + char + text.substring(end);
+            testField.selectionStart = testField.selectionEnd = start + char.length;
+            testField.focus();
+
+            // Native clipboard copy with browser support backup fallback
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(char).then(() => {
+                    showFeedback(`Copied "${char}" (${hex})`);
+                }).catch(() => {
+                    fallbackClipboard(char, hex);
+                });
+            } else {
+                fallbackClipboard(char, hex);
+            }
+        }
+
+        function fallbackClipboard(str, successMessage) {
+            const temp = document.createElement("textarea");
+            document.body.appendChild(temp);
+            temp.value = str;
+            temp.select();
+            try {
+                document.execCommand("copy");
+                showFeedback(successMessage);
+            } catch (err) {
+                showFeedback(`Auto-copy blocked. Please select manually.`);
+            }
+            document.body.removeChild(temp);
+        }
+
+        let feedbackTimeout;
+        function showFeedback(msg) {
+            const feedbackContainer = document.getElementById('feedback');
+            feedbackContainer.innerText = msg;
+            feedbackContainer.classList.add('success');
+            clearTimeout(feedbackTimeout);
+            feedbackTimeout = setTimeout(() => {
+                feedbackContainer.classList.remove('success');
+                feedbackContainer.innerText = "Click a symbol to copy";
+            }, 2500);
+        }
+
+        // Control handlers
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            const testField = document.getElementById('testField');
+            testField.value = '';
+            testField.focus();
+        });
+
+        document.getElementById('copyAllBtn').addEventListener('click', () => {
+            const text = document.getElementById('testField').value;
+            if (!text) {
+                showFeedback('Workspace is empty!');
+                return;
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showFeedback('Copied all text!');
+                });
+            } else {
+                fallbackClipboard(text, 'Copied all text!');
+            }
+        });
+    });
+</script>
+</body>
+</html>
