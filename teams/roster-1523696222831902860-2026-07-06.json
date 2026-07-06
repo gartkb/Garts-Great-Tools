@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1523696222831902860",
-  "last_updated": "2026-07-06T15:08:51.756818+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<134835880488599553> Fin (FinIRL.8716),         📧  \\<:QuickDPS:1038159940164014090>  ⚔️  🐣\n2.<172515643801731072> Toni (Orewatowi.1603) 🚺,   📧  \\<:AlacHeal:1038159938335277140>  🐣\n3.<421006121503948800> nyx (Not Nyx.1764) 🌠,      📧  🛡️  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  \\<:AlacDPS:1038159937391562843>  \\<:QuickDPS:1038159940164014090>  ⚔️  🥚  🐣  🐦\n4.<1338535612340240429> 𓄋lorelai.7051,            📧  🛡️  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🥚\n```",
+  "last_updated": "2026-07-06T15:35:08.487688+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<134835880488599553> Fin (FinIRL.8716),         📧  \\<:QuickDPS:1038159940164014090>  ⚔️  🐣\n2.<798211339365384212> Livingldly (Kavish.8593),  📧  \\<:QuickDPS:1038159940164014090>  ⚔️  🥚\n3.<172515643801731072> Toni (Orewatowi.1603) 🚺,   📧  \\<:AlacHeal:1038159938335277140>  🐣\n4.<421006121503948800> nyx (Not Nyx.1764) 🌠,      📧  🛡️  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  \\<:AlacDPS:1038159937391562843>  \\<:QuickDPS:1038159940164014090>  ⚔️  🥚  🐣  🐦\n5.<1338535612340240429> 𓄋lorelai.7051,            📧  🛡️  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🥚\n```",
   "roster": [
     {
       "discord_id": "134835880488599553",
@@ -37,6 +37,16 @@
         "🥚",
         "🐣",
         "🐦"
+      ]
+    },
+    {
+      "discord_id": "798211339365384212",
+      "nickname": "Livingldly (Kavish.8593)",
+      "emojis": [
+        "📧",
+        "<:QuickDPS:1038159940164014090>",
+        "⚔️",
+        "🥚"
       ]
     },
     {
@@ -227,6 +237,38 @@
       "action": "interested",
       "source": "event_interest",
       "emoji": null
+    },
+    {
+      "timestamp": "2026-07-06T15:33:43.156866+00:00",
+      "discord_id": "798211339365384212",
+      "nickname": "Livingldly (Kavish.8593)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-06T15:33:52.043907+00:00",
+      "discord_id": "798211339365384212",
+      "nickname": "Livingldly (Kavish.8593)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickDPS:1038159940164014090>"
+    },
+    {
+      "timestamp": "2026-07-06T15:33:52.736229+00:00",
+      "discord_id": "798211339365384212",
+      "nickname": "Livingldly (Kavish.8593)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-07-06T15:33:57.287618+00:00",
+      "discord_id": "798211339365384212",
+      "nickname": "Livingldly (Kavish.8593)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🥚"
     }
   ]
 }
