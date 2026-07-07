@@ -1,12 +1,19 @@
 {
   "source_type": "event",
   "id": "1523800176173649960",
-  "last_updated": "2026-07-06T21:22:55.094227+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<134835880488599553> Fin (FinIRL.8716),             📧\n2.<421006121503948800> nyx (Not Nyx.1764) 🌠,          📧\n3.<231518357440954368> shaqsalazar (shaqsalazar.2906) 🚹,📧\n```",
+  "last_updated": "2026-07-07T01:19:16.873880+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<134835880488599553> Fin (FinIRL.8716),             📧\n2.<180509787555889152> Mimori (Mimori.2051) 🚺,        📧\n3.<421006121503948800> nyx (Not Nyx.1764) 🌠,          📧\n4.<231518357440954368> shaqsalazar (shaqsalazar.2906) 🚹,📧\n```",
   "roster": [
     {
       "discord_id": "134835880488599553",
       "nickname": "Fin (FinIRL.8716)",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "180509787555889152",
+      "nickname": "Mimori (Mimori.2051) 🚺",
       "emojis": [
         "📧"
       ]
@@ -47,6 +54,14 @@
       "timestamp": "2026-07-06T21:21:49.458924+00:00",
       "discord_id": "134835880488599553",
       "nickname": "Fin (FinIRL.8716)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-07T01:18:11.348423+00:00",
+      "discord_id": "180509787555889152",
+      "nickname": "Mimori (Mimori.2051) 🚺",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
