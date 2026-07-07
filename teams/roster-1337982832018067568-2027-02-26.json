@@ -1,7 +1,7 @@
 {
   "source_type": "event",
   "id": "1337982832018067568",
-  "last_updated": "2026-07-04T21:02:05.490113+00:00",
+  "last_updated": "2026-07-07T07:45:33.941742+00:00",
   "text_representation": "**Interest List:**\n\n```\n1.<810264372130873354> Viral.4560,                📧\n2.<265647872618397706> holtchef (holtchef.7801) 🔱,📧\n3.<653498144432062489> 🎂Limtac.6293,              📧\n```",
   "roster": [
     {
@@ -28,7 +28,7 @@
   ],
   "history": [
     {
-      "timestamp": "2026-07-04T21:01:59.987705+00:00",
+      "timestamp": "2026-07-07T07:45:28.411467+00:00",
       "discord_id": "265647872618397706",
       "nickname": "holtchef (holtchef.7801) 🔱",
       "action": "interested",
@@ -36,7 +36,7 @@
       "emoji": null
     },
     {
-      "timestamp": "2026-07-04T21:01:59.997466+00:00",
+      "timestamp": "2026-07-07T07:45:28.436331+00:00",
       "discord_id": "653498144432062489",
       "nickname": "🎂Limtac.6293",
       "action": "interested",
@@ -44,7 +44,7 @@
       "emoji": null
     },
     {
-      "timestamp": "2026-07-04T21:02:00.008927+00:00",
+      "timestamp": "2026-07-07T07:45:28.456163+00:00",
       "discord_id": "810264372130873354",
       "nickname": "Viral.4560",
       "action": "interested",
