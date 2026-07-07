@@ -1,7 +1,7 @@
 {
   "source_type": "event",
   "id": "1523800176173649960",
-  "last_updated": "2026-07-07T03:45:53.780894+00:00",
+  "last_updated": "2026-07-07T07:45:58.704372+00:00",
   "text_representation": "**Interest List:**\n\n```\n1.<134835880488599553> Fin (FinIRL.8716),             📧\n2.<180509787555889152> Mimori (Mimori.2051) 🚺,        📧\n3.<421006121503948800> nyx (Not Nyx.1764) 🌠,          📧\n4.<231518357440954368> shaqsalazar (shaqsalazar.2906) 🚹,📧\n5.<204388117254242305> 📐Isbad (iBad.9826),            📧\n```",
   "roster": [
     {
@@ -42,23 +42,7 @@
   ],
   "history": [
     {
-      "timestamp": "2026-07-06T21:21:26.356065+00:00",
-      "discord_id": "231518357440954368",
-      "nickname": "shaqsalazar (shaqsalazar.2906) 🚹",
-      "action": "interested",
-      "source": "event_interest",
-      "emoji": null
-    },
-    {
-      "timestamp": "2026-07-06T21:21:26.362371+00:00",
-      "discord_id": "421006121503948800",
-      "nickname": "nyx (Not Nyx.1764) 🌠",
-      "action": "interested",
-      "source": "event_interest",
-      "emoji": null
-    },
-    {
-      "timestamp": "2026-07-06T21:21:49.458924+00:00",
+      "timestamp": "2026-07-07T07:45:53.079154+00:00",
       "discord_id": "134835880488599553",
       "nickname": "Fin (FinIRL.8716)",
       "action": "interested",
@@ -66,7 +50,7 @@
       "emoji": null
     },
     {
-      "timestamp": "2026-07-07T01:18:11.348423+00:00",
+      "timestamp": "2026-07-07T07:45:53.105472+00:00",
       "discord_id": "180509787555889152",
       "nickname": "Mimori (Mimori.2051) 🚺",
       "action": "interested",
@@ -74,7 +58,7 @@
       "emoji": null
     },
     {
-      "timestamp": "2026-07-07T03:44:48.271482+00:00",
+      "timestamp": "2026-07-07T07:45:53.127502+00:00",
       "discord_id": "204388117254242305",
       "nickname": "📐Isbad (iBad.9826)",
       "action": "interested",
@@ -82,9 +66,17 @@
       "emoji": null
     },
     {
-      "timestamp": "2026-07-07T03:45:14.462824+00:00",
-      "discord_id": "204388117254242305",
-      "nickname": "📐Isbad (iBad.9826)",
+      "timestamp": "2026-07-07T07:45:53.152190+00:00",
+      "discord_id": "231518357440954368",
+      "nickname": "shaqsalazar (shaqsalazar.2906) 🚹",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-07T07:45:53.176958+00:00",
+      "discord_id": "421006121503948800",
+      "nickname": "nyx (Not Nyx.1764) 🌠",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
