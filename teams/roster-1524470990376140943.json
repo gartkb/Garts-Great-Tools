@@ -1,0 +1,85 @@
+{
+  "source_type": "static_post",
+  "id": "1524470990376140943",
+  "last_updated": "2026-07-08T22:02:59.186436+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<184883262735253504> DrinkHolder (koramar.4961),  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  \\<:QuickDPS:1038159940164014090>  ⚔️\n2.<134835880488599553> Fin (FinIRL.8716),           \\<:QuickDPS:1038159940164014090>  ⚔️  🐥\n3.<249903515751677952> NanoAffect (NanoAffect.7395) 🚹,⚔️  🐥\n4.<211728204690489344> PandaFanta (redpandoop.9370) 🚹,\\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  \\<:QuickDPS:1038159940164014090>  ⚔️  🐥\n5.<198877291856527360> Ven (Larquin.5237),          \\<:AlacDPS:1038159937391562843>  ⚔️\n6.<421006121503948800> nyx (Not Nyx.1764) 🌠,        \\<:AlacHeal:1038159938335277140>  \\<:AlacDPS:1038159937391562843>  \\<:QuickHeal:1038159941472620655>  \\<:QuickDPS:1038159940164014090>  ⚔️  🐥\n7.<245272021041283072> 📐Nyxis (nyxisnt.4280),       ⚔️\n8.<177613403584462848> 📐SoLucky (Lucky.6148) 🔱,     \\<:AlacHeal:1038159938335277140>  \\<:AlacDPS:1038159937391562843>  \\<:QuickHeal:1038159941472620655>  \\<:QuickDPS:1038159940164014090>  ⚔️\n```",
+  "roster": [
+    {
+      "discord_id": "421006121503948800",
+      "nickname": "nyx (Not Nyx.1764) 🌠",
+      "emojis": [
+        "<:AlacHeal:1038159938335277140>",
+        "<:AlacDPS:1038159937391562843>",
+        "<:QuickHeal:1038159941472620655>",
+        "<:QuickDPS:1038159940164014090>",
+        "⚔️",
+        "🐥"
+      ]
+    },
+    {
+      "discord_id": "211728204690489344",
+      "nickname": "PandaFanta (redpandoop.9370) 🚹",
+      "emojis": [
+        "<:AlacHeal:1038159938335277140>",
+        "<:QuickHeal:1038159941472620655>",
+        "<:QuickDPS:1038159940164014090>",
+        "⚔️",
+        "🐥"
+      ]
+    },
+    {
+      "discord_id": "184883262735253504",
+      "nickname": "DrinkHolder (koramar.4961)",
+      "emojis": [
+        "<:AlacHeal:1038159938335277140>",
+        "<:QuickHeal:1038159941472620655>",
+        "<:QuickDPS:1038159940164014090>",
+        "⚔️"
+      ]
+    },
+    {
+      "discord_id": "177613403584462848",
+      "nickname": "📐SoLucky (Lucky.6148) 🔱",
+      "emojis": [
+        "<:AlacHeal:1038159938335277140>",
+        "<:AlacDPS:1038159937391562843>",
+        "<:QuickHeal:1038159941472620655>",
+        "<:QuickDPS:1038159940164014090>",
+        "⚔️"
+      ]
+    },
+    {
+      "discord_id": "198877291856527360",
+      "nickname": "Ven (Larquin.5237)",
+      "emojis": [
+        "<:AlacDPS:1038159937391562843>",
+        "⚔️"
+      ]
+    },
+    {
+      "discord_id": "134835880488599553",
+      "nickname": "Fin (FinIRL.8716)",
+      "emojis": [
+        "<:QuickDPS:1038159940164014090>",
+        "⚔️",
+        "🐥"
+      ]
+    },
+    {
+      "discord_id": "249903515751677952",
+      "nickname": "NanoAffect (NanoAffect.7395) 🚹",
+      "emojis": [
+        "⚔️",
+        "🐥"
+      ]
+    },
+    {
+      "discord_id": "245272021041283072",
+      "nickname": "📐Nyxis (nyxisnt.4280)",
+      "emojis": [
+        "⚔️"
+      ]
+    }
+  ],
+  "history": []
+}
