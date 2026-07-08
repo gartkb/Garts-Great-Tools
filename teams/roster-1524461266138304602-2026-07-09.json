@@ -1,7 +1,7 @@
 {
   "source_type": "event",
   "id": "1524461266138304602",
-  "last_updated": "2026-07-08T18:28:48.575774+00:00",
+  "last_updated": "2026-07-08T19:32:39.210514+00:00",
   "text_representation": "**Interest List:**\n\n```\n1.<798211339365384212> Livingldly (Kavish.8593),  📧\n2.<619970339233071134> 📐gijo(Candid Flames.6279)🌠🌀🚹,📧\n```",
   "roster": [
     {
@@ -32,6 +32,14 @@
       "timestamp": "2026-07-08T18:27:42.962071+00:00",
       "discord_id": "798211339365384212",
       "nickname": "Livingldly (Kavish.8593)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-08T19:31:33.634356+00:00",
+      "discord_id": "734971332089085984",
+      "nickname": "𓄋Visceral.2796 🚺",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
