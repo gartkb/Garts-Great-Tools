@@ -1,12 +1,19 @@
 {
   "source_type": "event",
   "id": "1525252132406562836",
-  "last_updated": "2026-07-10T21:38:16.980804+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<421006121503948800> nyx (Not Nyx.1764) 🌠,      📧\n```",
+  "last_updated": "2026-07-10T21:47:42.644424+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<798211339365384212> Livingldly (Kavish.8593),  📧\n2.<421006121503948800> nyx (Not Nyx.1764) 🌠,      📧\n```",
   "roster": [
     {
       "discord_id": "421006121503948800",
       "nickname": "nyx (Not Nyx.1764) 🌠",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "798211339365384212",
+      "nickname": "Livingldly (Kavish.8593)",
       "emojis": [
         "📧"
       ]
@@ -17,6 +24,14 @@
       "timestamp": "2026-07-10T21:38:09.761655+00:00",
       "discord_id": "421006121503948800",
       "nickname": "nyx (Not Nyx.1764) 🌠",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-10T21:46:37.064264+00:00",
+      "discord_id": "798211339365384212",
+      "nickname": "Livingldly (Kavish.8593)",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
