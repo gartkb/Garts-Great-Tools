@@ -1,9 +1,16 @@
 {
   "source_type": "event",
   "id": "1525596862738862111",
-  "last_updated": "2026-07-11T20:26:04.856572+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<231518357440954368> shaqsalazar (shaqsalazar.2906) 🚹,📧\n2.<619970339233071134> 📐gijo(Candid Flames.6279)🌠🌀🚹,  📧\n```",
+  "last_updated": "2026-07-11T20:30:29.992289+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<134835880488599553> Fin (FinIRL.8716),             📧\n2.<231518357440954368> shaqsalazar (shaqsalazar.2906) 🚹,📧\n3.<619970339233071134> 📐gijo(Candid Flames.6279)🌠🌀🚹,  📧\n```",
   "roster": [
+    {
+      "discord_id": "134835880488599553",
+      "nickname": "Fin (FinIRL.8716)",
+      "emojis": [
+        "📧"
+      ]
+    },
     {
       "discord_id": "231518357440954368",
       "nickname": "shaqsalazar (shaqsalazar.2906) 🚹",
@@ -32,6 +39,14 @@
       "timestamp": "2026-07-11T20:25:59.254415+00:00",
       "discord_id": "619970339233071134",
       "nickname": "📐gijo(Candid Flames.6279)🌠🌀🚹",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-11T20:29:24.388138+00:00",
+      "discord_id": "134835880488599553",
+      "nickname": "Fin (FinIRL.8716)",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
