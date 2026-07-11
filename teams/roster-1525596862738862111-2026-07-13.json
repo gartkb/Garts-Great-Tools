@@ -1,0 +1,40 @@
+{
+  "source_type": "event",
+  "id": "1525596862738862111",
+  "last_updated": "2026-07-11T20:26:04.856572+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<231518357440954368> shaqsalazar (shaqsalazar.2906) 🚹,📧\n2.<619970339233071134> 📐gijo(Candid Flames.6279)🌠🌀🚹,  📧\n```",
+  "roster": [
+    {
+      "discord_id": "231518357440954368",
+      "nickname": "shaqsalazar (shaqsalazar.2906) 🚹",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "619970339233071134",
+      "nickname": "📐gijo(Candid Flames.6279)🌠🌀🚹",
+      "emojis": [
+        "📧"
+      ]
+    }
+  ],
+  "history": [
+    {
+      "timestamp": "2026-07-11T20:25:59.222748+00:00",
+      "discord_id": "231518357440954368",
+      "nickname": "shaqsalazar (shaqsalazar.2906) 🚹",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-11T20:25:59.254415+00:00",
+      "discord_id": "619970339233071134",
+      "nickname": "📐gijo(Candid Flames.6279)🌠🌀🚹",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    }
+  ]
+}
