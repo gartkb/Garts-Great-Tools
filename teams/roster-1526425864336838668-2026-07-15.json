@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1526425864336838668",
-  "last_updated": "2026-07-14T03:16:13.985182+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,     📧\n2.<189555164502425600> 💫 theorces.3816 🚹,         📧\n3.<177613403584462848> 📐SoLucky (Lucky.6148) 🔱,   📧\n```",
+  "last_updated": "2026-07-14T03:21:23.870102+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,     📧\n2.<355929832925822986> pey (Fictoid.8196),        📧\n3.<189555164502425600> 💫 theorces.3816 🚹,         📧\n4.<177613403584462848> 📐SoLucky (Lucky.6148) 🔱,   📧\n```",
   "roster": [
     {
       "discord_id": "177613403584462848",
@@ -21,6 +21,13 @@
     {
       "discord_id": "219437617219895297",
       "nickname": "BeastfromtheEast.2946",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "355929832925822986",
+      "nickname": "pey (Fictoid.8196)",
       "emojis": [
         "📧"
       ]
@@ -55,6 +62,14 @@
       "timestamp": "2026-07-14T03:15:06.674545+00:00",
       "discord_id": "189555164502425600",
       "nickname": "💫 theorces.3816 🚹",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-14T03:20:18.328861+00:00",
+      "discord_id": "355929832925822986",
+      "nickname": "pey (Fictoid.8196)",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
