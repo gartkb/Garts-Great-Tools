@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1526713568815354029",
-  "last_updated": "2026-07-14T22:30:24.530517+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<563917910129508371> brendon6185 (zyroo.7318) 🚹,📧\n2.<596875174700122122> 💫Gartner Kinderboom.5019,  📧\n```",
+  "last_updated": "2026-07-14T23:04:26.267962+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<563917910129508371> brendon6185 (zyroo.7318) 🚹,📧\n2.<596875174700122122> 💫Gartner Kinderboom.5019,  📧\n3.<797945111794810930> 📐💫SkielaHun.7015,          📧\n```",
   "roster": [
     {
       "discord_id": "563917910129508371",
@@ -14,6 +14,13 @@
     {
       "discord_id": "596875174700122122",
       "nickname": "💫Gartner Kinderboom.5019",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "797945111794810930",
+      "nickname": "📐💫SkielaHun.7015",
       "emojis": [
         "📧"
       ]
@@ -49,6 +56,14 @@
       "discord_id": "798211339365384212",
       "nickname": "Livingldly (Kavish.8593)",
       "action": "uninterested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-14T23:03:10.657427+00:00",
+      "discord_id": "797945111794810930",
+      "nickname": "📐💫SkielaHun.7015",
+      "action": "interested",
       "source": "event_interest",
       "emoji": null
     }
