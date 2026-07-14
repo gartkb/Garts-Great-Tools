@@ -1,7 +1,7 @@
 {
   "source_type": "event",
   "id": "1526713568815354029",
-  "last_updated": "2026-07-14T22:26:00.529131+00:00",
+  "last_updated": "2026-07-14T22:30:24.530517+00:00",
   "text_representation": "**Interest List:**\n\n```\n1.<563917910129508371> brendon6185 (zyroo.7318) 🚹,📧\n2.<596875174700122122> 💫Gartner Kinderboom.5019,  📧\n```",
   "roster": [
     {
@@ -33,6 +33,22 @@
       "discord_id": "596875174700122122",
       "nickname": "💫Gartner Kinderboom.5019",
       "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-14T22:29:02.047800+00:00",
+      "discord_id": "798211339365384212",
+      "nickname": "Livingldly (Kavish.8593)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-14T22:29:18.965535+00:00",
+      "discord_id": "798211339365384212",
+      "nickname": "Livingldly (Kavish.8593)",
+      "action": "uninterested",
       "source": "event_interest",
       "emoji": null
     }
