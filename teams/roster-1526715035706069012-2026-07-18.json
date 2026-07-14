@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1526715035706069012",
-  "last_updated": "2026-07-14T22:32:45.367180+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<798211339365384212> Livingldly (Kavish.8593),      📧\n2.<231518357440954368> shaqsalazar (shaqsalazar.2906) 🚹,📧\n3.<297875840748748810> 💫 🕵 morganah.8214 🔰 👥,         📧\n4.<596875174700122122> 💫Gartner Kinderboom.5019,      📧\n```",
+  "last_updated": "2026-07-14T22:38:07.304532+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<1476257809908895775> Alex(Lexdachosen.3560) 🚹,     🐤\n2.<798211339365384212> Livingldly (Kavish.8593),      📧  🍄\n3.<231518357440954368> shaqsalazar (shaqsalazar.2906) 🚹,📧\n4.<297875840748748810> 💫 🕵 morganah.8214 🔰 👥,         📧  🔥\n5.<596875174700122122> 💫Gartner Kinderboom.5019,      📧  🔥  🍄  🐤\n```",
   "roster": [
     {
       "discord_id": "231518357440954368",
@@ -15,21 +15,33 @@
       "discord_id": "297875840748748810",
       "nickname": "💫 🕵 morganah.8214 🔰 👥",
       "emojis": [
-        "📧"
+        "📧",
+        "🔥"
       ]
     },
     {
       "discord_id": "596875174700122122",
       "nickname": "💫Gartner Kinderboom.5019",
       "emojis": [
-        "📧"
+        "📧",
+        "🔥",
+        "🍄",
+        "🐤"
       ]
     },
     {
       "discord_id": "798211339365384212",
       "nickname": "Livingldly (Kavish.8593)",
       "emojis": [
-        "📧"
+        "📧",
+        "🍄"
+      ]
+    },
+    {
+      "discord_id": "1476257809908895775",
+      "nickname": "Alex(Lexdachosen.3560) 🚹",
+      "emojis": [
+        "🐤"
       ]
     }
   ],
@@ -65,6 +77,62 @@
       "action": "interested",
       "source": "event_interest",
       "emoji": null
+    },
+    {
+      "timestamp": "2026-07-14T22:38:00.927478+00:00",
+      "discord_id": "297875840748748810",
+      "nickname": "💫 🕵 morganah.8214 🔰 👥",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🔥"
+    },
+    {
+      "timestamp": "2026-07-14T22:38:00.964825+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫Gartner Kinderboom.5019",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🔥"
+    },
+    {
+      "timestamp": "2026-07-14T22:38:00.995652+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫Gartner Kinderboom.5019",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🍄"
+    },
+    {
+      "timestamp": "2026-07-14T22:38:01.017541+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫Gartner Kinderboom.5019",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🐤"
+    },
+    {
+      "timestamp": "2026-07-14T22:38:01.039359+00:00",
+      "discord_id": "798211339365384212",
+      "nickname": "Livingldly (Kavish.8593)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🍄"
+    },
+    {
+      "timestamp": "2026-07-14T22:38:01.061246+00:00",
+      "discord_id": "1476257809908895775",
+      "nickname": "Alex(Lexdachosen.3560) 🚹",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-14T22:38:01.082676+00:00",
+      "discord_id": "1476257809908895775",
+      "nickname": "Alex(Lexdachosen.3560) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🐤"
     }
   ]
 }
