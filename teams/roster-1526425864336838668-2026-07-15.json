@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1526425864336838668",
-  "last_updated": "2026-07-14T22:32:22.572935+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<1476257809908895775> Alex(Lexdachosen.3560) 🚹, 📧\n2.<219437617219895297> BeastfromtheEast.2946,     📧\n3.<180509787555889152> Mimori (Mimori.2051) 🚺,    📧\n4.<355929832925822986> pey (Fictoid.8196),        📧\n5.<189555164502425600> 💫 theorces.3816 🚹,         📧\n6.<200423784589688832> 📐KelsTheBard (kelso.2354), 📧\n7.<177613403584462848> 📐SoLucky (Lucky.6148) 🔱,   📧\n8.<619970339233071134> 📐gijo(Candid Flames.6279)🌠🌀,📧\n```",
+  "last_updated": "2026-07-14T22:56:44.085130+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<1476257809908895775> Alex(Lexdachosen.3560) 🚹, 📧\n2.<180509787555889152> Mimori (Mimori.2051) 🚺,    📧\n3.<355929832925822986> pey (Fictoid.8196),        📧\n4.<189555164502425600> 💫 theorces.3816 🚹,         📧\n5.<200423784589688832> 📐KelsTheBard (kelso.2354), 📧\n6.<177613403584462848> 📐SoLucky (Lucky.6148) 🔱,   📧\n7.<619970339233071134> 📐gijo(Candid Flames.6279)🌠🌀,📧\n```",
   "roster": [
     {
       "discord_id": "177613403584462848",
@@ -28,13 +28,6 @@
     {
       "discord_id": "200423784589688832",
       "nickname": "📐KelsTheBard (kelso.2354)",
-      "emojis": [
-        "📧"
-      ]
-    },
-    {
-      "discord_id": "219437617219895297",
-      "nickname": "BeastfromtheEast.2946",
       "emojis": [
         "📧"
       ]
@@ -146,6 +139,14 @@
       "timestamp": "2026-07-14T22:31:16.981511+00:00",
       "discord_id": "231518357440954368",
       "nickname": "shaqsalazar (shaqsalazar.2906) 🚹",
+      "action": "uninterested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-14T22:55:38.488674+00:00",
+      "discord_id": "219437617219895297",
+      "nickname": "BeastfromtheEast.2946",
       "action": "uninterested",
       "source": "event_interest",
       "emoji": null
