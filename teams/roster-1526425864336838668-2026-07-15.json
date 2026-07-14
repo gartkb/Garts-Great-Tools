@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1526425864336838668",
-  "last_updated": "2026-07-14T04:03:37.596256+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,     📧\n2.<180509787555889152> Mimori (Mimori.2051) 🚺,    📧\n3.<355929832925822986> pey (Fictoid.8196),        📧\n4.<189555164502425600> 💫 theorces.3816 🚹,         📧\n5.<177613403584462848> 📐SoLucky (Lucky.6148) 🔱,   📧\n```",
+  "last_updated": "2026-07-14T04:22:50.086082+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<1476257809908895775> Alex(Lexdachosen.3560) 🚹, 📧\n2.<219437617219895297> BeastfromtheEast.2946,     📧\n3.<180509787555889152> Mimori (Mimori.2051) 🚺,    📧\n4.<355929832925822986> pey (Fictoid.8196),        📧\n5.<189555164502425600> 💫 theorces.3816 🚹,         📧\n6.<177613403584462848> 📐SoLucky (Lucky.6148) 🔱,   📧\n```",
   "roster": [
     {
       "discord_id": "177613403584462848",
@@ -35,6 +35,13 @@
     {
       "discord_id": "355929832925822986",
       "nickname": "pey (Fictoid.8196)",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "1476257809908895775",
+      "nickname": "Alex(Lexdachosen.3560) 🚹",
       "emojis": [
         "📧"
       ]
@@ -85,6 +92,14 @@
       "timestamp": "2026-07-14T04:02:32.078330+00:00",
       "discord_id": "180509787555889152",
       "nickname": "Mimori (Mimori.2051) 🚺",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-14T04:21:44.480815+00:00",
+      "discord_id": "1476257809908895775",
+      "nickname": "Alex(Lexdachosen.3560) 🚹",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
