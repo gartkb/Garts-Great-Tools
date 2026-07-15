@@ -1,7 +1,7 @@
 {
   "source_type": "event",
   "id": "1526715035706069012",
-  "last_updated": "2026-07-15T04:07:50.071522+00:00",
+  "last_updated": "2026-07-15T05:24:46.163209+00:00",
   "text_representation": "**Interest List:**\n\n```\n1.<231518357440954368> shaqsalazar (shaqsalazar.2906) 🚹,📧\n2.<734971332089085984> 𓄋Visceral.2796 🚺,              📧  🍄\n3.<66069926552547328> 🍄Zeph (Zephyr.6045),            📧  🐇  🦀  \\<:minion:1421952040581595287>  \\<:downed4Bandage:1408564017215307856>\n4.<297875840748748810> 💫 🕵 morganah.8214 🔰 👥,         📧  🔥  🐇\n5.<596875174700122122> 💫Gartner Kinderboom.5019,      📧  🔥  🍄  🐤\n6.<797945111794810930> 📐💫SkielaHun.7015,              📧\n```",
   "roster": [
     {
@@ -254,6 +254,38 @@
       "timestamp": "2026-07-15T04:06:38.576872+00:00",
       "discord_id": "798211339365384212",
       "nickname": "Livingldly (Kavish.8593)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🍄"
+    },
+    {
+      "timestamp": "2026-07-15T05:23:33.887871+00:00",
+      "discord_id": "147564168357216257",
+      "nickname": "Locke Trufeld.7851",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-15T05:23:34.797346+00:00",
+      "discord_id": "147564168357216257",
+      "nickname": "Locke Trufeld.7851",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🍄"
+    },
+    {
+      "timestamp": "2026-07-15T05:24:02.029732+00:00",
+      "discord_id": "147564168357216257",
+      "nickname": "Locke Trufeld.7851",
+      "action": "uninterested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-15T05:24:12.917325+00:00",
+      "discord_id": "147564168357216257",
+      "nickname": "Locke Trufeld.7851",
       "action": "unreacted",
       "source": "post_reaction",
       "emoji": "🍄"
