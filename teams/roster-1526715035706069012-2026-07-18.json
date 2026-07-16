@@ -1,7 +1,7 @@
 {
   "source_type": "event",
   "id": "1526715035706069012",
-  "last_updated": "2026-07-16T22:39:14.506199+00:00",
+  "last_updated": "2026-07-16T22:40:06.284252+00:00",
   "text_representation": "**Interest List:**\n\n```\n1.<1476257809908895775> Alex(Lexdachosen.3560) 🚹,     🐤\n2.<410262150590890009> Draythyr (kelathor.7430),      📧  🍄\n3.<231518357440954368> shaqsalazar (shaqsalazar.2906) 🚹,📧\n4.<734971332089085984> 𓄋Visceral.2796 🚺,              🍄\n5.<66069926552547328> 🍄Zeph (Zephyr.6045),            📧  🐇  🦀  \\<:minion:1421952040581595287>  \\<:downed4Bandage:1408564017215307856>\n6.<297875840748748810> 💫 🕵 morganah.8214 🔰 👥,         📧  🔥  🐇\n7.<596875174700122122> 💫Gartner Kinderboom.5019,      📧  🔥  🍄  🐤\n8.<797945111794810930> 📐💫SkielaHun.7015,              📧\n```",
   "roster": [
     {
@@ -634,6 +634,38 @@
     },
     {
       "timestamp": "2026-07-16T22:38:55.297825+00:00",
+      "discord_id": "66069926552547328",
+      "nickname": "🍄Zeph (Zephyr.6045)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-16T22:39:56.729288+00:00",
+      "discord_id": "66069926552547328",
+      "nickname": "🍄Zeph (Zephyr.6045)",
+      "action": "uninterested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-16T22:39:56.933553+00:00",
+      "discord_id": "66069926552547328",
+      "nickname": "🍄Zeph (Zephyr.6045)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-16T22:39:57.122156+00:00",
+      "discord_id": "66069926552547328",
+      "nickname": "🍄Zeph (Zephyr.6045)",
+      "action": "uninterested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-16T22:39:57.299963+00:00",
       "discord_id": "66069926552547328",
       "nickname": "🍄Zeph (Zephyr.6045)",
       "action": "interested",
