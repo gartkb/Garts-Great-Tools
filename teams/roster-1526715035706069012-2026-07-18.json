@@ -1,7 +1,7 @@
 {
   "source_type": "event",
   "id": "1526715035706069012",
-  "last_updated": "2026-07-16T22:54:29.769536+00:00",
+  "last_updated": "2026-07-16T22:55:26.251000+00:00",
   "text_representation": "**Interest List:**\n\n```\n1.<1476257809908895775> Alex(Lexdachosen.3560) 🚹,     🐤\n2.<410262150590890009> Draythyr (kelathor.7430),      📧  🍄\n3.<231518357440954368> shaqsalazar (shaqsalazar.2906) 🚹,📧\n4.<66069926552547328> 🍄Zeph (Zephyr.6045),            📧  🐇\n5.<297875840748748810> 💫 🕵 morganah.8214 🔰 👥,         📧  🔥  🐇\n6.<596875174700122122> 💫Gartner Kinderboom.5019,      📧  🔥  🍄  🐤\n7.<797945111794810930> 📐💫SkielaHun.7015,              📧\n```",
   "roster": [
     {
@@ -1184,6 +1184,54 @@
     },
     {
       "timestamp": "2026-07-16T22:54:20.443683+00:00",
+      "discord_id": "66069926552547328",
+      "nickname": "🍄Zeph (Zephyr.6045)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-16T22:55:22.222880+00:00",
+      "discord_id": "66069926552547328",
+      "nickname": "🍄Zeph (Zephyr.6045)",
+      "action": "uninterested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-16T22:55:22.424923+00:00",
+      "discord_id": "66069926552547328",
+      "nickname": "🍄Zeph (Zephyr.6045)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-16T22:55:22.656435+00:00",
+      "discord_id": "66069926552547328",
+      "nickname": "🍄Zeph (Zephyr.6045)",
+      "action": "uninterested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-16T22:55:22.824912+00:00",
+      "discord_id": "66069926552547328",
+      "nickname": "🍄Zeph (Zephyr.6045)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-16T22:55:23.113829+00:00",
+      "discord_id": "66069926552547328",
+      "nickname": "🍄Zeph (Zephyr.6045)",
+      "action": "uninterested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-16T22:55:23.387552+00:00",
       "discord_id": "66069926552547328",
       "nickname": "🍄Zeph (Zephyr.6045)",
       "action": "interested",
