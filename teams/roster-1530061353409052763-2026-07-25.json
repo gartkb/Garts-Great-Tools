@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1530061353409052763",
-  "last_updated": "2026-07-24T19:00:28.972746+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1. <410262150590890009> Draythyr (kelathor.7430),      📧  ⚔️\n2. <348471219034521604> Lim Korvey (James.4701) 🚹,     📧\n3. <1337734013489516546> godeshka (Don Cab.3562) 🚹,    \\<:ZGW2LegendaryInsight:992230821891158097>  ⚔️  \\<:QuickDPS:1038159940164014090>\n4. <231518357440954368> shaqsalazar (shaqsalazar.2906) 🚹,📧  \\<:carmensandiego:1452088226818031748>  ⚔️\n5. <617181650190598155> whycantifly (Fei.7308) 🚺,      \\<:ZGW2LegendaryInsight:992230821891158097>  ⚔️  \\<:AlacHeal:1038159938335277140>  \\<:AlacDPS:1038159937391562843>  🔶\n6. <897353561216802896> woozbekistan.6251 🚹,           📧  ⚔️  \\<:QuickDPS:1038159940164014090>\n7. <197888702163320832> 𓄋Mrs Bunnicorn (Ezzy.5264),    📧  \\<:carmensandiego:1452088226818031748>\n8. <399079501776027648> 𓄋Xulie (Xulie.2424),           \\<:ZGW2LegendaryInsight:992230821891158097>  ⚔️  \\<:AlacDPS:1038159937391562843>  \\<:QuickDPS:1038159940164014090>  🔶\n9. <1184189909737681019> 𓄋Zoli (zoli.5129) 🔱,          📧  \\<:carmensandiego:1452088226818031748>  \\<:ZGW2LegendaryInsight:992230821891158097>  🕵️  ⚔️  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  \\<:AlacDPS:1038159937391562843>  \\<:QuickDPS:1038159940164014090>  🔶\n10.<1338535612340240429> 𓄋lorelai.7051,                📧  \\<:ZGW2LegendaryInsight:992230821891158097>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  \\<:AlacDPS:1038159937391562843>  \\<:QuickDPS:1038159940164014090>  🔶\n11.<482727284609122309> 𓄋mooshi (mooshi.4021),         📧  \\<:carmensandiego:1452088226818031748>  ⚔️\n```",
+  "last_updated": "2026-07-24T19:02:25.065992+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1. <410262150590890009> Draythyr (kelathor.7430),      📧  ⚔️\n2. <348471219034521604> Lim Korvey (James.4701) 🚹,     📧\n3. <1337734013489516546> godeshka (Don Cab.3562) 🚹,    \\<:ZGW2LegendaryInsight:992230821891158097>  ⚔️  \\<:QuickDPS:1038159940164014090>\n4. <231518357440954368> shaqsalazar (shaqsalazar.2906) 🚹,📧  \\<:carmensandiego:1452088226818031748>  ⚔️\n5. <617181650190598155> whycantifly (Fei.7308) 🚺,      \\<:ZGW2LegendaryInsight:992230821891158097>  ⚔️  \\<:AlacHeal:1038159938335277140>  \\<:AlacDPS:1038159937391562843>  🔶\n6. <897353561216802896> woozbekistan.6251 🚹,           📧  ⚔️  \\<:QuickDPS:1038159940164014090>\n7. <197888702163320832> 𓄋Mrs Bunnicorn (Ezzy.5264),    📧  \\<:carmensandiego:1452088226818031748>\n8. <399079501776027648> 𓄋Xulie (Xulie.2424),           \\<:carmensandiego:1452088226818031748>  \\<:ZGW2LegendaryInsight:992230821891158097>  ⚔️  \\<:AlacDPS:1038159937391562843>  \\<:QuickDPS:1038159940164014090>  🔶\n9. <1184189909737681019> 𓄋Zoli (zoli.5129) 🔱,          📧  \\<:carmensandiego:1452088226818031748>  \\<:ZGW2LegendaryInsight:992230821891158097>  🕵️  ⚔️  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  \\<:AlacDPS:1038159937391562843>  \\<:QuickDPS:1038159940164014090>  🔶\n10.<1338535612340240429> 𓄋lorelai.7051,                📧  \\<:ZGW2LegendaryInsight:992230821891158097>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  \\<:AlacDPS:1038159937391562843>  \\<:QuickDPS:1038159940164014090>  🔶\n11.<482727284609122309> 𓄋mooshi (mooshi.4021),         📧  \\<:carmensandiego:1452088226818031748>  ⚔️\n```",
   "roster": [
     {
       "discord_id": "197888702163320832",
@@ -84,6 +84,18 @@
       ]
     },
     {
+      "discord_id": "399079501776027648",
+      "nickname": "𓄋Xulie (Xulie.2424)",
+      "emojis": [
+        "<:carmensandiego:1452088226818031748>",
+        "<:ZGW2LegendaryInsight:992230821891158097>",
+        "⚔️",
+        "<:AlacDPS:1038159937391562843>",
+        "<:QuickDPS:1038159940164014090>",
+        "🔶"
+      ]
+    },
+    {
       "discord_id": "1337734013489516546",
       "nickname": "godeshka (Don Cab.3562) 🚹",
       "emojis": [
@@ -100,17 +112,6 @@
         "⚔️",
         "<:AlacHeal:1038159938335277140>",
         "<:AlacDPS:1038159937391562843>",
-        "🔶"
-      ]
-    },
-    {
-      "discord_id": "399079501776027648",
-      "nickname": "𓄋Xulie (Xulie.2424)",
-      "emojis": [
-        "<:ZGW2LegendaryInsight:992230821891158097>",
-        "⚔️",
-        "<:AlacDPS:1038159937391562843>",
-        "<:QuickDPS:1038159940164014090>",
         "🔶"
       ]
     }
@@ -699,6 +700,30 @@
       "action": "reacted",
       "source": "post_reaction",
       "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-07-24T19:01:07.128967+00:00",
+      "discord_id": "399079501776027648",
+      "nickname": "𓄋Xulie (Xulie.2424)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:carmensandiego:1452088226818031748>"
+    },
+    {
+      "timestamp": "2026-07-24T19:01:08.450804+00:00",
+      "discord_id": "399079501776027648",
+      "nickname": "𓄋Xulie (Xulie.2424)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:ZGW2LegendaryInsight:992230821891158097>"
+    },
+    {
+      "timestamp": "2026-07-24T19:01:12.806758+00:00",
+      "discord_id": "399079501776027648",
+      "nickname": "𓄋Xulie (Xulie.2424)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:ZGW2LegendaryInsight:992230821891158097>"
     }
   ]
 }
