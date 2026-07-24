@@ -1,0 +1,257 @@
+{
+  "source_type": "event",
+  "id": "1530061353409052763",
+  "last_updated": "2026-07-24T04:09:03.840487+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<897353561216802896> woozbekistan.6251 🚹,       📧  ⚔️  \\<:QuickDPS:1038159940164014090>\n2.<1184189909737681019> 𓄋Zoli (zoli.5129) 🔱,      📧  \\<:carmensandiego:1452088226818031748>  \\<:ZGW2LegendaryInsight:992230821891158097>  🕵️  ⚔️  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  \\<:AlacDPS:1038159937391562843>  \\<:QuickDPS:1038159940164014090>  🔶\n3.<1338535612340240429> 𓄋lorelai.7051,            📧  \\<:ZGW2LegendaryInsight:992230821891158097>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  \\<:AlacDPS:1038159937391562843>  \\<:QuickDPS:1038159940164014090>  🔶\n4.<482727284609122309> 𓄋mooshi (mooshi.4021),     📧  \\<:carmensandiego:1452088226818031748>  ⚔️\n```",
+  "roster": [
+    {
+      "discord_id": "482727284609122309",
+      "nickname": "𓄋mooshi (mooshi.4021)",
+      "emojis": [
+        "📧",
+        "<:carmensandiego:1452088226818031748>",
+        "⚔️"
+      ]
+    },
+    {
+      "discord_id": "897353561216802896",
+      "nickname": "woozbekistan.6251 🚹",
+      "emojis": [
+        "📧",
+        "⚔️",
+        "<:QuickDPS:1038159940164014090>"
+      ]
+    },
+    {
+      "discord_id": "1184189909737681019",
+      "nickname": "𓄋Zoli (zoli.5129) 🔱",
+      "emojis": [
+        "📧",
+        "<:carmensandiego:1452088226818031748>",
+        "<:ZGW2LegendaryInsight:992230821891158097>",
+        "🕵️",
+        "⚔️",
+        "<:AlacHeal:1038159938335277140>",
+        "<:QuickHeal:1038159941472620655>",
+        "<:AlacDPS:1038159937391562843>",
+        "<:QuickDPS:1038159940164014090>",
+        "🔶"
+      ]
+    },
+    {
+      "discord_id": "1338535612340240429",
+      "nickname": "𓄋lorelai.7051",
+      "emojis": [
+        "📧",
+        "<:ZGW2LegendaryInsight:992230821891158097>",
+        "<:AlacHeal:1038159938335277140>",
+        "<:QuickHeal:1038159941472620655>",
+        "<:AlacDPS:1038159937391562843>",
+        "<:QuickDPS:1038159940164014090>",
+        "🔶"
+      ]
+    }
+  ],
+  "history": [
+    {
+      "timestamp": "2026-07-24T04:08:40.156342+00:00",
+      "discord_id": "1476257809908895775",
+      "nickname": "Alex(Lexdachosen.3560) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-07-24T04:08:41.362633+00:00",
+      "discord_id": "1476257809908895775",
+      "nickname": "Alex(Lexdachosen.3560) 🚹",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-07-24T04:08:51.432422+00:00",
+      "discord_id": "482727284609122309",
+      "nickname": "𓄋mooshi (mooshi.4021)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-24T04:08:51.474739+00:00",
+      "discord_id": "482727284609122309",
+      "nickname": "𓄋mooshi (mooshi.4021)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:carmensandiego:1452088226818031748>"
+    },
+    {
+      "timestamp": "2026-07-24T04:08:51.513596+00:00",
+      "discord_id": "482727284609122309",
+      "nickname": "𓄋mooshi (mooshi.4021)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-07-24T04:08:51.552274+00:00",
+      "discord_id": "897353561216802896",
+      "nickname": "woozbekistan.6251 🚹",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-24T04:08:51.579504+00:00",
+      "discord_id": "897353561216802896",
+      "nickname": "woozbekistan.6251 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-07-24T04:08:51.605821+00:00",
+      "discord_id": "897353561216802896",
+      "nickname": "woozbekistan.6251 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickDPS:1038159940164014090>"
+    },
+    {
+      "timestamp": "2026-07-24T04:08:51.632482+00:00",
+      "discord_id": "1184189909737681019",
+      "nickname": "𓄋Zoli (zoli.5129) 🔱",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-24T04:08:51.658936+00:00",
+      "discord_id": "1184189909737681019",
+      "nickname": "𓄋Zoli (zoli.5129) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:carmensandiego:1452088226818031748>"
+    },
+    {
+      "timestamp": "2026-07-24T04:08:51.685629+00:00",
+      "discord_id": "1184189909737681019",
+      "nickname": "𓄋Zoli (zoli.5129) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:ZGW2LegendaryInsight:992230821891158097>"
+    },
+    {
+      "timestamp": "2026-07-24T04:08:51.712707+00:00",
+      "discord_id": "1184189909737681019",
+      "nickname": "𓄋Zoli (zoli.5129) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🕵️"
+    },
+    {
+      "timestamp": "2026-07-24T04:08:51.739054+00:00",
+      "discord_id": "1184189909737681019",
+      "nickname": "𓄋Zoli (zoli.5129) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-07-24T04:08:51.765640+00:00",
+      "discord_id": "1184189909737681019",
+      "nickname": "𓄋Zoli (zoli.5129) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacHeal:1038159938335277140>"
+    },
+    {
+      "timestamp": "2026-07-24T04:08:51.792810+00:00",
+      "discord_id": "1184189909737681019",
+      "nickname": "𓄋Zoli (zoli.5129) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickHeal:1038159941472620655>"
+    },
+    {
+      "timestamp": "2026-07-24T04:08:51.820142+00:00",
+      "discord_id": "1184189909737681019",
+      "nickname": "𓄋Zoli (zoli.5129) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacDPS:1038159937391562843>"
+    },
+    {
+      "timestamp": "2026-07-24T04:08:51.847864+00:00",
+      "discord_id": "1184189909737681019",
+      "nickname": "𓄋Zoli (zoli.5129) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickDPS:1038159940164014090>"
+    },
+    {
+      "timestamp": "2026-07-24T04:08:51.875044+00:00",
+      "discord_id": "1184189909737681019",
+      "nickname": "𓄋Zoli (zoli.5129) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🔶"
+    },
+    {
+      "timestamp": "2026-07-24T04:08:51.902611+00:00",
+      "discord_id": "1338535612340240429",
+      "nickname": "𓄋lorelai.7051",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-24T04:08:51.929783+00:00",
+      "discord_id": "1338535612340240429",
+      "nickname": "𓄋lorelai.7051",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:ZGW2LegendaryInsight:992230821891158097>"
+    },
+    {
+      "timestamp": "2026-07-24T04:08:51.957045+00:00",
+      "discord_id": "1338535612340240429",
+      "nickname": "𓄋lorelai.7051",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacHeal:1038159938335277140>"
+    },
+    {
+      "timestamp": "2026-07-24T04:08:51.987069+00:00",
+      "discord_id": "1338535612340240429",
+      "nickname": "𓄋lorelai.7051",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickHeal:1038159941472620655>"
+    },
+    {
+      "timestamp": "2026-07-24T04:08:52.014797+00:00",
+      "discord_id": "1338535612340240429",
+      "nickname": "𓄋lorelai.7051",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacDPS:1038159937391562843>"
+    },
+    {
+      "timestamp": "2026-07-24T04:08:52.042489+00:00",
+      "discord_id": "1338535612340240429",
+      "nickname": "𓄋lorelai.7051",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickDPS:1038159940164014090>"
+    },
+    {
+      "timestamp": "2026-07-24T04:08:52.070317+00:00",
+      "discord_id": "1338535612340240429",
+      "nickname": "𓄋lorelai.7051",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🔶"
+    }
+  ]
+}
