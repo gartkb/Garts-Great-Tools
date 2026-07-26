@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1530811202027130880",
-  "last_updated": "2026-07-26T05:46:06.314375+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<798211339365384212> Livingldly (Kavish.8593),  ⚔️\n2.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,📧  ⚔️\n3.<177613403584462848> 💫 SoLucky (Lucky.6148) 🔱,  📧  ⚔️  \\<:ZGW2LegendaryInsight:992230821891158097>\n```",
+  "last_updated": "2026-07-26T06:50:59.314358+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<798211339365384212> Livingldly (Kavish.8593),  ⚔️\n2.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,📧  ⚔️\n3.<617181650190598155> whycantifly (Fei.7308) 🚺,  📧  ⚔️\n4.<177613403584462848> 💫 SoLucky (Lucky.6148) 🔱,  📧  ⚔️  \\<:ZGW2LegendaryInsight:992230821891158097>\n```",
   "roster": [
     {
       "discord_id": "177613403584462848",
@@ -11,6 +11,14 @@
         "📧",
         "⚔️",
         "<:ZGW2LegendaryInsight:992230821891158097>"
+      ]
+    },
+    {
+      "discord_id": "617181650190598155",
+      "nickname": "whycantifly (Fei.7308) 🚺",
+      "emojis": [
+        "📧",
+        "⚔️"
       ]
     },
     {
@@ -74,6 +82,22 @@
       "timestamp": "2026-07-26T05:45:00.208047+00:00",
       "discord_id": "798211339365384212",
       "nickname": "Livingldly (Kavish.8593)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-07-26T06:49:35.207638+00:00",
+      "discord_id": "617181650190598155",
+      "nickname": "whycantifly (Fei.7308) 🚺",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-26T06:49:52.908257+00:00",
+      "discord_id": "617181650190598155",
+      "nickname": "whycantifly (Fei.7308) 🚺",
       "action": "reacted",
       "source": "post_reaction",
       "emoji": "⚔️"
