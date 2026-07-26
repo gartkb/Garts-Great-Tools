@@ -1,0 +1,67 @@
+{
+  "source_type": "event",
+  "id": "1530811202027130880",
+  "last_updated": "2026-07-26T05:44:57.482858+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,📧  ⚔️\n2.<177613403584462848> 💫 SoLucky (Lucky.6148) 🔱,  📧  ⚔️  \\<:ZGW2LegendaryInsight:992230821891158097>\n```",
+  "roster": [
+    {
+      "discord_id": "177613403584462848",
+      "nickname": "💫 SoLucky (Lucky.6148) 🔱",
+      "emojis": [
+        "📧",
+        "⚔️",
+        "<:ZGW2LegendaryInsight:992230821891158097>"
+      ]
+    },
+    {
+      "discord_id": "619970339233071134",
+      "nickname": "gijo(Candid Flames.6279)🌠🌀",
+      "emojis": [
+        "📧",
+        "⚔️"
+      ]
+    }
+  ],
+  "history": [
+    {
+      "timestamp": "2026-07-26T05:44:51.340544+00:00",
+      "discord_id": "177613403584462848",
+      "nickname": "💫 SoLucky (Lucky.6148) 🔱",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-26T05:44:51.360741+00:00",
+      "discord_id": "177613403584462848",
+      "nickname": "💫 SoLucky (Lucky.6148) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-07-26T05:44:51.384511+00:00",
+      "discord_id": "177613403584462848",
+      "nickname": "💫 SoLucky (Lucky.6148) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:ZGW2LegendaryInsight:992230821891158097>"
+    },
+    {
+      "timestamp": "2026-07-26T05:44:51.410815+00:00",
+      "discord_id": "619970339233071134",
+      "nickname": "gijo(Candid Flames.6279)🌠🌀",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-26T05:44:51.436996+00:00",
+      "discord_id": "619970339233071134",
+      "nickname": "gijo(Candid Flames.6279)🌠🌀",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    }
+  ]
+}
