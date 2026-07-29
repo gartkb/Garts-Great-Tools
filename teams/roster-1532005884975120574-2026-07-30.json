@@ -1,9 +1,16 @@
 {
   "source_type": "event",
   "id": "1532005884975120574",
-  "last_updated": "2026-07-29T22:58:45.996962+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<487114471651672065> WarriorPooch (WPooch.6084),📧\n2.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,📧\n```",
+  "last_updated": "2026-07-29T23:03:54.173886+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,     📧\n2.<487114471651672065> WarriorPooch (WPooch.6084),📧\n3.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,📧\n```",
   "roster": [
+    {
+      "discord_id": "219437617219895297",
+      "nickname": "BeastfromtheEast.2946",
+      "emojis": [
+        "📧"
+      ]
+    },
     {
       "discord_id": "487114471651672065",
       "nickname": "WarriorPooch (WPooch.6084)",
@@ -32,6 +39,14 @@
       "timestamp": "2026-07-29T22:57:40.309360+00:00",
       "discord_id": "487114471651672065",
       "nickname": "WarriorPooch (WPooch.6084)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-29T23:02:48.532435+00:00",
+      "discord_id": "219437617219895297",
+      "nickname": "BeastfromtheEast.2946",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
