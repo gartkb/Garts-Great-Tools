@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1530811202027130880",
-  "last_updated": "2026-07-29T00:46:03.400213+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,         📧\n2.<621837484975718400> Tenth Tenet (tenet.8160) 🚹,    ⚔️\n3.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,    📧  ⚔️\n4.<231518357440954368> shaqsalazar (shaqsalazar.2906) 🚹,📧\n5.<617181650190598155> whycantifly (Fei.7308) 🚺,      📧  ⚔️\n6.<177613403584462848> 💫 SoLucky (Lucky.6148) 🔱,      📧  ⚔️  \\<:ZGW2LegendaryInsight:992230821891158097>\n7.<596875174700122122> 💫Gartner Kinderboom.5019,      👍\n```",
+  "last_updated": "2026-07-29T00:51:35.378449+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<621837484975718400> Tenth Tenet (tenet.8160) 🚹,    ⚔️\n2.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,    📧  ⚔️\n3.<231518357440954368> shaqsalazar (shaqsalazar.2906) 🚹,📧\n4.<617181650190598155> whycantifly (Fei.7308) 🚺,      📧  ⚔️\n5.<177613403584462848> 💫 SoLucky (Lucky.6148) 🔱,      📧  ⚔️  \\<:ZGW2LegendaryInsight:992230821891158097>\n6.<596875174700122122> 💫Gartner Kinderboom.5019,      👍\n```",
   "roster": [
     {
       "discord_id": "177613403584462848",
@@ -11,13 +11,6 @@
         "📧",
         "⚔️",
         "<:ZGW2LegendaryInsight:992230821891158097>"
-      ]
-    },
-    {
-      "discord_id": "219437617219895297",
-      "nickname": "BeastfromtheEast.2946",
-      "emojis": [
-        "📧"
       ]
     },
     {
@@ -178,6 +171,14 @@
       "action": "reacted",
       "source": "post_reaction",
       "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-07-29T00:50:28.987089+00:00",
+      "discord_id": "219437617219895297",
+      "nickname": "BeastfromtheEast.2946",
+      "action": "uninterested",
+      "source": "event_interest",
+      "emoji": null
     }
   ]
 }
