@@ -1,12 +1,19 @@
 {
   "source_type": "event",
   "id": "1532301615627894845",
-  "last_updated": "2026-07-30T12:51:54.177315+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<204388117254242305> Isbad (iBad.9826),         📧\n2.<421006121503948800> nyx (Not Nyx.1764) 🌠,      📧\n3.<245272021041283072> 💫 Nyxis (nyxisnt.4280),    📧\n```",
+  "last_updated": "2026-07-30T20:49:03.716646+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,     📧\n2.<204388117254242305> Isbad (iBad.9826),         📧\n3.<421006121503948800> nyx (Not Nyx.1764) 🌠,      📧\n4.<245272021041283072> 💫 Nyxis (nyxisnt.4280),    📧\n```",
   "roster": [
     {
       "discord_id": "204388117254242305",
       "nickname": "Isbad (iBad.9826)",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "219437617219895297",
+      "nickname": "BeastfromtheEast.2946",
       "emojis": [
         "📧"
       ]
@@ -47,6 +54,14 @@
       "timestamp": "2026-07-30T12:50:48.543037+00:00",
       "discord_id": "245272021041283072",
       "nickname": "💫 Nyxis (nyxisnt.4280)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-30T20:47:58.021088+00:00",
+      "discord_id": "219437617219895297",
+      "nickname": "BeastfromtheEast.2946",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
