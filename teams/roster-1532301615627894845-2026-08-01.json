@@ -1,12 +1,19 @@
 {
   "source_type": "event",
   "id": "1532301615627894845",
-  "last_updated": "2026-07-30T10:52:46.898101+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<204388117254242305> Isbad (iBad.9826),         📧\n2.<421006121503948800> nyx (Not Nyx.1764) 🌠,      📧\n```",
+  "last_updated": "2026-07-30T12:51:54.177315+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<204388117254242305> Isbad (iBad.9826),         📧\n2.<421006121503948800> nyx (Not Nyx.1764) 🌠,      📧\n3.<245272021041283072> 💫 Nyxis (nyxisnt.4280),    📧\n```",
   "roster": [
     {
       "discord_id": "204388117254242305",
       "nickname": "Isbad (iBad.9826)",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "245272021041283072",
+      "nickname": "💫 Nyxis (nyxisnt.4280)",
       "emojis": [
         "📧"
       ]
@@ -32,6 +39,14 @@
       "timestamp": "2026-07-30T10:51:41.258074+00:00",
       "discord_id": "204388117254242305",
       "nickname": "Isbad (iBad.9826)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-07-30T12:50:48.543037+00:00",
+      "discord_id": "245272021041283072",
+      "nickname": "💫 Nyxis (nyxisnt.4280)",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
