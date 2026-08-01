@@ -1,49 +1,102 @@
 {
   "source_type": "event",
   "id": "1532301615627894845",
-  "last_updated": "2026-08-01T12:41:53.235625+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,     📧\n2.<204388117254242305> Isbad (iBad.9826),         📧\n3.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,📧\n4.<421006121503948800> nyx (Not Nyx.1764) 🌠,      📧\n5.<245272021041283072> 💫 Nyxis (nyxisnt.4280),    📧\n6.<177613403584462848> 💫 SoLucky (Lucky.6148) 🔱,  📧\n```",
+  "last_updated": "2026-08-01T12:45:25.635749+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<274431726082850817> Amano (Based Weeb.8291),   🐣\n2.<219437617219895297> BeastfromtheEast.2946,     📧  \\<:AlacDPS:1038159937391562843>  ⚔️  🐣\n3.<204388117254242305> Isbad (iBad.9826),         📧  \\<:AlacDPS:1038159937391562843>  ⚔️  🐣  🐤\n4.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,📧  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  ⚔️  🏹  🐣\n5.<421006121503948800> nyx (Not Nyx.1764) 🌠,      📧  \\<:2MesmerChronomancer:837890878583996437>  \\<:troubadour:1505655404452118668>  \\<:2GuardianFirebrand:833051124784824420>  \\<:QuickDPS:1038159940164014090>  \\<:2RevenantHerald:833051125174501396>  \\<:AlacDPS:1038159937391562843>  ⚔️  🏹  🥚  🐣  🐤  🐦  🍿  🐸\n6.<245272021041283072> 💫 Nyxis (nyxisnt.4280),    📧  \\<:2MesmerChronomancer:837890878583996437>  \\<:troubadour:1505655404452118668>  \\<:QuickDPS:1038159940164014090>  \\<:2RevenantHerald:833051125174501396>  \\<:AlacDPS:1038159937391562843>  ⚔️  🏹  🐦\n7.<177613403584462848> 💫 SoLucky (Lucky.6148) 🔱,  📧  \\<:2MesmerChronomancer:837890878583996437>  \\<:troubadour:1505655404452118668>  \\<:2GuardianFirebrand:833051124784824420>  \\<:QuickDPS:1038159940164014090>  \\<:2RevenantHerald:833051125174501396>  \\<:AlacDPS:1038159937391562843>  ⚔️  🏹  🐦  🐸  \\<:2RevenantVindicator:953372475482333204>  \\<:2ThiefSpectre:953372475838828614>\n```",
   "roster": [
     {
       "discord_id": "177613403584462848",
       "nickname": "💫 SoLucky (Lucky.6148) 🔱",
       "emojis": [
-        "📧"
+        "📧",
+        "<:2MesmerChronomancer:837890878583996437>",
+        "<:troubadour:1505655404452118668>",
+        "<:2GuardianFirebrand:833051124784824420>",
+        "<:QuickDPS:1038159940164014090>",
+        "<:2RevenantHerald:833051125174501396>",
+        "<:AlacDPS:1038159937391562843>",
+        "⚔️",
+        "🏹",
+        "🐦",
+        "🐸",
+        "<:2RevenantVindicator:953372475482333204>",
+        "<:2ThiefSpectre:953372475838828614>"
       ]
     },
     {
       "discord_id": "204388117254242305",
       "nickname": "Isbad (iBad.9826)",
       "emojis": [
-        "📧"
+        "📧",
+        "<:AlacDPS:1038159937391562843>",
+        "⚔️",
+        "🐣",
+        "🐤"
       ]
     },
     {
       "discord_id": "219437617219895297",
       "nickname": "BeastfromtheEast.2946",
       "emojis": [
-        "📧"
+        "📧",
+        "<:AlacDPS:1038159937391562843>",
+        "⚔️",
+        "🐣"
       ]
     },
     {
       "discord_id": "245272021041283072",
       "nickname": "💫 Nyxis (nyxisnt.4280)",
       "emojis": [
-        "📧"
+        "📧",
+        "<:2MesmerChronomancer:837890878583996437>",
+        "<:troubadour:1505655404452118668>",
+        "<:QuickDPS:1038159940164014090>",
+        "<:2RevenantHerald:833051125174501396>",
+        "<:AlacDPS:1038159937391562843>",
+        "⚔️",
+        "🏹",
+        "🐦"
       ]
     },
     {
       "discord_id": "421006121503948800",
       "nickname": "nyx (Not Nyx.1764) 🌠",
       "emojis": [
-        "📧"
+        "📧",
+        "<:2MesmerChronomancer:837890878583996437>",
+        "<:troubadour:1505655404452118668>",
+        "<:2GuardianFirebrand:833051124784824420>",
+        "<:QuickDPS:1038159940164014090>",
+        "<:2RevenantHerald:833051125174501396>",
+        "<:AlacDPS:1038159937391562843>",
+        "⚔️",
+        "🏹",
+        "🥚",
+        "🐣",
+        "🐤",
+        "🐦",
+        "🍿",
+        "🐸"
       ]
     },
     {
       "discord_id": "619970339233071134",
       "nickname": "gijo(Candid Flames.6279)🌠🌀",
       "emojis": [
-        "📧"
+        "📧",
+        "<:QuickDPS:1038159940164014090>",
+        "<:AlacDPS:1038159937391562843>",
+        "⚔️",
+        "🏹",
+        "🐣"
+      ]
+    },
+    {
+      "discord_id": "274431726082850817",
+      "nickname": "Amano (Based Weeb.8291)",
+      "emojis": [
+        "🐣"
       ]
     }
   ],
@@ -95,6 +148,390 @@
       "action": "interested",
       "source": "event_interest",
       "emoji": null
+    },
+    {
+      "timestamp": "2026-08-01T12:45:01.578656+00:00",
+      "discord_id": "177613403584462848",
+      "nickname": "💫 SoLucky (Lucky.6148) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:2MesmerChronomancer:837890878583996437>"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:01.621787+00:00",
+      "discord_id": "177613403584462848",
+      "nickname": "💫 SoLucky (Lucky.6148) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:troubadour:1505655404452118668>"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:01.668888+00:00",
+      "discord_id": "177613403584462848",
+      "nickname": "💫 SoLucky (Lucky.6148) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:2GuardianFirebrand:833051124784824420>"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:01.705115+00:00",
+      "discord_id": "177613403584462848",
+      "nickname": "💫 SoLucky (Lucky.6148) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickDPS:1038159940164014090>"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:01.731363+00:00",
+      "discord_id": "177613403584462848",
+      "nickname": "💫 SoLucky (Lucky.6148) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:2RevenantHerald:833051125174501396>"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:01.757363+00:00",
+      "discord_id": "177613403584462848",
+      "nickname": "💫 SoLucky (Lucky.6148) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacDPS:1038159937391562843>"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:01.783814+00:00",
+      "discord_id": "177613403584462848",
+      "nickname": "💫 SoLucky (Lucky.6148) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:01.810373+00:00",
+      "discord_id": "177613403584462848",
+      "nickname": "💫 SoLucky (Lucky.6148) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🏹"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:01.844277+00:00",
+      "discord_id": "177613403584462848",
+      "nickname": "💫 SoLucky (Lucky.6148) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🐦"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:01.875138+00:00",
+      "discord_id": "177613403584462848",
+      "nickname": "💫 SoLucky (Lucky.6148) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🐸"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:01.908852+00:00",
+      "discord_id": "177613403584462848",
+      "nickname": "💫 SoLucky (Lucky.6148) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:2RevenantVindicator:953372475482333204>"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:01.939873+00:00",
+      "discord_id": "177613403584462848",
+      "nickname": "💫 SoLucky (Lucky.6148) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:2ThiefSpectre:953372475838828614>"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:01.972450+00:00",
+      "discord_id": "204388117254242305",
+      "nickname": "Isbad (iBad.9826)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacDPS:1038159937391562843>"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.005346+00:00",
+      "discord_id": "204388117254242305",
+      "nickname": "Isbad (iBad.9826)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.037701+00:00",
+      "discord_id": "204388117254242305",
+      "nickname": "Isbad (iBad.9826)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🐣"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.068703+00:00",
+      "discord_id": "204388117254242305",
+      "nickname": "Isbad (iBad.9826)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🐤"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.097156+00:00",
+      "discord_id": "219437617219895297",
+      "nickname": "BeastfromtheEast.2946",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacDPS:1038159937391562843>"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.129931+00:00",
+      "discord_id": "219437617219895297",
+      "nickname": "BeastfromtheEast.2946",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.162558+00:00",
+      "discord_id": "219437617219895297",
+      "nickname": "BeastfromtheEast.2946",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🐣"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.194916+00:00",
+      "discord_id": "245272021041283072",
+      "nickname": "💫 Nyxis (nyxisnt.4280)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:2MesmerChronomancer:837890878583996437>"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.225254+00:00",
+      "discord_id": "245272021041283072",
+      "nickname": "💫 Nyxis (nyxisnt.4280)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:troubadour:1505655404452118668>"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.257032+00:00",
+      "discord_id": "245272021041283072",
+      "nickname": "💫 Nyxis (nyxisnt.4280)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickDPS:1038159940164014090>"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.288568+00:00",
+      "discord_id": "245272021041283072",
+      "nickname": "💫 Nyxis (nyxisnt.4280)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:2RevenantHerald:833051125174501396>"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.324706+00:00",
+      "discord_id": "245272021041283072",
+      "nickname": "💫 Nyxis (nyxisnt.4280)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacDPS:1038159937391562843>"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.358800+00:00",
+      "discord_id": "245272021041283072",
+      "nickname": "💫 Nyxis (nyxisnt.4280)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.392239+00:00",
+      "discord_id": "245272021041283072",
+      "nickname": "💫 Nyxis (nyxisnt.4280)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🏹"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.436716+00:00",
+      "discord_id": "245272021041283072",
+      "nickname": "💫 Nyxis (nyxisnt.4280)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🐦"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.468765+00:00",
+      "discord_id": "421006121503948800",
+      "nickname": "nyx (Not Nyx.1764) 🌠",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:2MesmerChronomancer:837890878583996437>"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.499899+00:00",
+      "discord_id": "421006121503948800",
+      "nickname": "nyx (Not Nyx.1764) 🌠",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:troubadour:1505655404452118668>"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.649653+00:00",
+      "discord_id": "421006121503948800",
+      "nickname": "nyx (Not Nyx.1764) 🌠",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:2GuardianFirebrand:833051124784824420>"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.679325+00:00",
+      "discord_id": "421006121503948800",
+      "nickname": "nyx (Not Nyx.1764) 🌠",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickDPS:1038159940164014090>"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.708529+00:00",
+      "discord_id": "421006121503948800",
+      "nickname": "nyx (Not Nyx.1764) 🌠",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:2RevenantHerald:833051125174501396>"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.738264+00:00",
+      "discord_id": "421006121503948800",
+      "nickname": "nyx (Not Nyx.1764) 🌠",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacDPS:1038159937391562843>"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.768425+00:00",
+      "discord_id": "421006121503948800",
+      "nickname": "nyx (Not Nyx.1764) 🌠",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.797718+00:00",
+      "discord_id": "421006121503948800",
+      "nickname": "nyx (Not Nyx.1764) 🌠",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🏹"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.828021+00:00",
+      "discord_id": "421006121503948800",
+      "nickname": "nyx (Not Nyx.1764) 🌠",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🥚"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.858280+00:00",
+      "discord_id": "421006121503948800",
+      "nickname": "nyx (Not Nyx.1764) 🌠",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🐣"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.886579+00:00",
+      "discord_id": "421006121503948800",
+      "nickname": "nyx (Not Nyx.1764) 🌠",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🐤"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.914880+00:00",
+      "discord_id": "421006121503948800",
+      "nickname": "nyx (Not Nyx.1764) 🌠",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🐦"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.943832+00:00",
+      "discord_id": "421006121503948800",
+      "nickname": "nyx (Not Nyx.1764) 🌠",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🍿"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:02.972740+00:00",
+      "discord_id": "421006121503948800",
+      "nickname": "nyx (Not Nyx.1764) 🌠",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🐸"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:03.001065+00:00",
+      "discord_id": "619970339233071134",
+      "nickname": "gijo(Candid Flames.6279)🌠🌀",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickDPS:1038159940164014090>"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:03.029865+00:00",
+      "discord_id": "619970339233071134",
+      "nickname": "gijo(Candid Flames.6279)🌠🌀",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacDPS:1038159937391562843>"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:03.058931+00:00",
+      "discord_id": "619970339233071134",
+      "nickname": "gijo(Candid Flames.6279)🌠🌀",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:03.087240+00:00",
+      "discord_id": "619970339233071134",
+      "nickname": "gijo(Candid Flames.6279)🌠🌀",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🏹"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:03.115621+00:00",
+      "discord_id": "619970339233071134",
+      "nickname": "gijo(Candid Flames.6279)🌠🌀",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🐣"
+    },
+    {
+      "timestamp": "2026-08-01T12:45:03.143769+00:00",
+      "discord_id": "274431726082850817",
+      "nickname": "Amano (Based Weeb.8291)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-08-01T12:45:03.172276+00:00",
+      "discord_id": "274431726082850817",
+      "nickname": "Amano (Based Weeb.8291)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🐣"
     }
   ]
 }
