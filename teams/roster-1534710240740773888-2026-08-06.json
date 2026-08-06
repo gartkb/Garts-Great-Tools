@@ -1,0 +1,40 @@
+{
+  "source_type": "event",
+  "id": "1534710240740773888",
+  "last_updated": "2026-08-06T00:01:22.252145+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,📧\n2.<177613403584462848> 💫 SoLucky (Lucky.6148) 🔱,  📧\n```",
+  "roster": [
+    {
+      "discord_id": "177613403584462848",
+      "nickname": "💫 SoLucky (Lucky.6148) 🔱",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "619970339233071134",
+      "nickname": "gijo(Candid Flames.6279)🌠🌀",
+      "emojis": [
+        "📧"
+      ]
+    }
+  ],
+  "history": [
+    {
+      "timestamp": "2026-08-06T00:01:15.070297+00:00",
+      "discord_id": "177613403584462848",
+      "nickname": "💫 SoLucky (Lucky.6148) 🔱",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-08-06T00:01:15.115348+00:00",
+      "discord_id": "619970339233071134",
+      "nickname": "gijo(Candid Flames.6279)🌠🌀",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    }
+  ]
+}
