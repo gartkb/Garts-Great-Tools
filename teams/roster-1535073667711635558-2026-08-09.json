@@ -1,7 +1,7 @@
 {
   "source_type": "event",
   "id": "1535073667711635558",
-  "last_updated": "2026-08-07T00:02:32.692185+00:00",
+  "last_updated": "2026-08-07T00:03:21.180016+00:00",
   "text_representation": "**Interest List:**\n\n```\n1.<204388117254242305> Isbad (iBad.9826),         📧  🐛\n2.<798211339365384212> Livingldly (Kavish.8593),  📧  🐛\n3.<1184189909737681019> 𓄋Zoli (zoli.5129) 🔱,      📧  \\<:carmensandiego:1452088226818031748>  \\<:ZGW2LegendaryInsight:992230821891158097>  ⚔️  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  \\<:AlacDPS:1038159937391562843>  \\<:QuickDPS:1038159940164014090>  🐛  🟢  🛡️  🌬️\n4.<1338535612340240429> 𓄋lorelai.7051,            📧  \\<:ZGW2LegendaryInsight:992230821891158097>  🐛  🟢\n5.<482727284609122309> 𓄋mooshi (mooshi.4021),     📧  \\<:carmensandiego:1452088226818031748>  ⚔️\n```",
   "roster": [
     {
@@ -274,6 +274,22 @@
       "action": "reacted",
       "source": "post_reaction",
       "emoji": "🐛"
+    },
+    {
+      "timestamp": "2026-08-07T00:03:14.901049+00:00",
+      "discord_id": "1338535612340240429",
+      "nickname": "𓄋lorelai.7051",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickDPS:1038159940164014090>"
+    },
+    {
+      "timestamp": "2026-08-07T00:03:18.125903+00:00",
+      "discord_id": "1338535612340240429",
+      "nickname": "𓄋lorelai.7051",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickDPS:1038159940164014090>"
     }
   ]
 }
