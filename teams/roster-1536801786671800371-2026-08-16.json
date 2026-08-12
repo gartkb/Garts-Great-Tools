@@ -1,12 +1,19 @@
 {
   "source_type": "event",
   "id": "1536801786671800371",
-  "last_updated": "2026-08-12T00:06:08.273728+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,     📧\n2.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,📧\n```",
+  "last_updated": "2026-08-12T02:11:43.720623+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,       📧\n2.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,  📧\n3.<231518357440954368> shaqsalazar (shaqsalazar.2906),📧\n```",
   "roster": [
     {
       "discord_id": "219437617219895297",
       "nickname": "BeastfromtheEast.2946",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "231518357440954368",
+      "nickname": "shaqsalazar (shaqsalazar.2906)",
       "emojis": [
         "📧"
       ]
@@ -48,6 +55,14 @@
       "timestamp": "2026-08-12T00:04:57.336928+00:00",
       "discord_id": "219437617219895297",
       "nickname": "BeastfromtheEast.2946",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-08-12T02:10:38.020817+00:00",
+      "discord_id": "231518357440954368",
+      "nickname": "shaqsalazar (shaqsalazar.2906)",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
