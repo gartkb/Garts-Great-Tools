@@ -1,0 +1,25 @@
+{
+  "source_type": "event",
+  "id": "1537836768731340961",
+  "last_updated": "2026-08-14T15:00:38.650806+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<211297647963799552> phaseeee (phase.6410),     📧\n```",
+  "roster": [
+    {
+      "discord_id": "211297647963799552",
+      "nickname": "phaseeee (phase.6410)",
+      "emojis": [
+        "📧"
+      ]
+    }
+  ],
+  "history": [
+    {
+      "timestamp": "2026-08-14T15:00:33.015676+00:00",
+      "discord_id": "211297647963799552",
+      "nickname": "phaseeee (phase.6410)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    }
+  ]
+}
