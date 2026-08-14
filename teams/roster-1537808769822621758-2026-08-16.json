@@ -1,9 +1,16 @@
 {
   "source_type": "event",
   "id": "1537808769822621758",
-  "last_updated": "2026-08-14T13:12:32.624155+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<262907490172141569> Everless (Not Everless.9137),📧\n2.<269455660847071232> Sangyi (Murcielago.3570),  📧\n3.<421006121503948800> nyx (Not Nyx.1764) 🌠,      📧\n4.<245272021041283072> 💫 Nyxis (nyxisnt.4280),    📧\n```",
+  "last_updated": "2026-08-14T13:24:32.624334+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<262907490172141569> Everless (Not Everless.9137),📧\n2.<269455660847071232> Sangyi (Murcielago.3570),    📧\n3.<421006121503948800> nyx (Not Nyx.1764) 🌠,        📧\n4.<231518357440954368> shaqsalazar (shaqsalazar.2906),📧\n5.<245272021041283072> 💫 Nyxis (nyxisnt.4280),      📧\n```",
   "roster": [
+    {
+      "discord_id": "231518357440954368",
+      "nickname": "shaqsalazar (shaqsalazar.2906)",
+      "emojis": [
+        "📧"
+      ]
+    },
     {
       "discord_id": "245272021041283072",
       "nickname": "💫 Nyxis (nyxisnt.4280)",
@@ -62,6 +69,22 @@
       "timestamp": "2026-08-14T13:12:27.056510+00:00",
       "discord_id": "421006121503948800",
       "nickname": "nyx (Not Nyx.1764) 🌠",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-08-14T13:23:25.517547+00:00",
+      "discord_id": "231518357440954368",
+      "nickname": "shaqsalazar (shaqsalazar.2906)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-08-14T13:24:27.331896+00:00",
+      "discord_id": "231518357440954368",
+      "nickname": "shaqsalazar (shaqsalazar.2906)",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
