@@ -1,7 +1,7 @@
 {
   "source_type": "event",
   "id": "1537836768731340961",
-  "last_updated": "2026-08-14T15:14:58.016542+00:00",
+  "last_updated": "2026-08-15T17:17:24.267889+00:00",
   "text_representation": "**Interest List:**\n\n```\n1.<269455660847071232> Sangyi (Murcielago.3570),  📧\n2.<211297647963799552> phaseeee (phase.6410),     📧\n```",
   "roster": [
     {
@@ -33,6 +33,22 @@
       "discord_id": "269455660847071232",
       "nickname": "Sangyi (Murcielago.3570)",
       "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-08-15T17:16:14.548031+00:00",
+      "discord_id": "617181650190598155",
+      "nickname": "whycantifly (Fei.7308) 🚺",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-08-15T17:16:18.451666+00:00",
+      "discord_id": "617181650190598155",
+      "nickname": "whycantifly (Fei.7308) 🚺",
+      "action": "uninterested",
       "source": "event_interest",
       "emoji": null
     }
