@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1537808769822621758",
-  "last_updated": "2026-08-15T13:44:27.669234+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<262907490172141569> Everless (Not Everless.9137),📧  🪁  🪔  \\<:QuickHeal:1038159941472620655>  \\<:AlacHeal:1038159938335277140>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  ⚔️  🐦\n2.<798211339365384212> Livingldly (Kavish.8593),    📧  🪁\n3.<269455660847071232> Sangyi (Murcielago.3570),    📧  ⚔️\n4.<421006121503948800> nyx (Not Nyx.1764) 🌠,        📧  🪁  🪔  \\<:QuickHeal:1038159941472620655>  \\<:AlacHeal:1038159938335277140>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  ⚔️  \\<:2WarriorSpellbreaker:833051125157986324>  🥚  🐣  🐤  🐦  🍿\n5.<231518357440954368> shaqsalazar (shaqsalazar.2906),📧\n6.<245272021041283072> 💫 Nyxis (nyxisnt.4280),      📧  🪔  \\<:QuickHeal:1038159941472620655>  \\<:AlacHeal:1038159938335277140>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  ⚔️  🐦\n```",
+  "last_updated": "2026-08-15T19:28:36.969942+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<262907490172141569> Everless (Not Everless.9137),📧  🪁  🪔  \\<:QuickHeal:1038159941472620655>  \\<:AlacHeal:1038159938335277140>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  ⚔️  🐦\n2.<798211339365384212> Livingldly (Kavish.8593),    📧  🪁\n3.<269455660847071232> Sangyi (Murcielago.3570),    📧  ⚔️\n4.<421006121503948800> nyx (Not Nyx.1764) 🌠,        📧  🪁  🪔  \\<:QuickHeal:1038159941472620655>  \\<:AlacHeal:1038159938335277140>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  ⚔️  \\<:2WarriorSpellbreaker:833051125157986324>  🥚  🐣  🐤  🐦  🍿\n5.<231518357440954368> shaqsalazar (shaqsalazar.2906),📧\n6.<897353561216802896> woozbekistan.6251 🚹,         📧  \\<:QuickDPS:1038159940164014090>  ⚔️  🥚\n7.<245272021041283072> 💫 Nyxis (nyxisnt.4280),      📧  🪔  \\<:QuickHeal:1038159941472620655>  \\<:AlacHeal:1038159938335277140>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  ⚔️  🐦\n```",
   "roster": [
     {
       "discord_id": "231518357440954368",
@@ -74,6 +74,16 @@
       "emojis": [
         "📧",
         "🪁"
+      ]
+    },
+    {
+      "discord_id": "897353561216802896",
+      "nickname": "woozbekistan.6251 🚹",
+      "emojis": [
+        "📧",
+        "<:QuickDPS:1038159940164014090>",
+        "⚔️",
+        "🥚"
       ]
     }
   ],
@@ -389,6 +399,38 @@
       "action": "reacted",
       "source": "post_reaction",
       "emoji": "🪁"
+    },
+    {
+      "timestamp": "2026-08-15T19:27:10.843639+00:00",
+      "discord_id": "897353561216802896",
+      "nickname": "woozbekistan.6251 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-08-15T19:27:15.077532+00:00",
+      "discord_id": "897353561216802896",
+      "nickname": "woozbekistan.6251 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickDPS:1038159940164014090>"
+    },
+    {
+      "timestamp": "2026-08-15T19:27:15.889385+00:00",
+      "discord_id": "897353561216802896",
+      "nickname": "woozbekistan.6251 🚹",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-08-15T19:27:24.552623+00:00",
+      "discord_id": "897353561216802896",
+      "nickname": "woozbekistan.6251 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🥚"
     }
   ]
 }
