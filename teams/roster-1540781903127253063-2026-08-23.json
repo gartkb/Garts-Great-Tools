@@ -1,12 +1,19 @@
 {
   "source_type": "event",
   "id": "1540781903127253063",
-  "last_updated": "2026-08-22T18:20:50.997130+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<117897822329765892> 💫 Mandy Ember (Amanda.5871) 🔱 🚺,📧\n2.<177613403584462848> 💫 SoLucky (Lucky.6148) 🔱,     📧\n3.<596875174700122122> 💫☄️Gartner Kinderboom.5019,   📧\n```",
+  "last_updated": "2026-08-22T18:43:33.793315+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<174334457501843456> Rubyburrito (Rubyburrito.8027) 🔱,📧\n2.<117897822329765892> 💫 Mandy Ember (Amanda.5871) 🔱 🚺,📧\n3.<177613403584462848> 💫 SoLucky (Lucky.6148) 🔱,      📧\n4.<596875174700122122> 💫☄️Gartner Kinderboom.5019,    📧\n```",
   "roster": [
     {
       "discord_id": "117897822329765892",
       "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "174334457501843456",
+      "nickname": "Rubyburrito (Rubyburrito.8027) 🔱",
       "emojis": [
         "📧"
       ]
@@ -47,6 +54,14 @@
       "timestamp": "2026-08-22T18:19:45.107073+00:00",
       "discord_id": "177613403584462848",
       "nickname": "💫 SoLucky (Lucky.6148) 🔱",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-08-22T18:42:28.140879+00:00",
+      "discord_id": "174334457501843456",
+      "nickname": "Rubyburrito (Rubyburrito.8027) 🔱",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
