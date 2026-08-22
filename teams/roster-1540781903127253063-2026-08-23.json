@@ -1,0 +1,25 @@
+{
+  "source_type": "event",
+  "id": "1540781903127253063",
+  "last_updated": "2026-08-22T18:00:28.604581+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<596875174700122122> 💫☄️Gartner Kinderboom.5019,📧\n```",
+  "roster": [
+    {
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "emojis": [
+        "📧"
+      ]
+    }
+  ],
+  "history": [
+    {
+      "timestamp": "2026-08-22T18:00:23.018651+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    }
+  ]
+}
