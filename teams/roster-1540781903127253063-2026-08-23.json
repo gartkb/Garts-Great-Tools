@@ -1,12 +1,19 @@
 {
   "source_type": "event",
   "id": "1540781903127253063",
-  "last_updated": "2026-08-22T18:15:38.570404+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<117897822329765892> 💫 Mandy Ember (Amanda.5871) 🔱 🚺,📧\n2.<596875174700122122> 💫☄️Gartner Kinderboom.5019,   📧\n```",
+  "last_updated": "2026-08-22T18:20:50.997130+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<117897822329765892> 💫 Mandy Ember (Amanda.5871) 🔱 🚺,📧\n2.<177613403584462848> 💫 SoLucky (Lucky.6148) 🔱,     📧\n3.<596875174700122122> 💫☄️Gartner Kinderboom.5019,   📧\n```",
   "roster": [
     {
       "discord_id": "117897822329765892",
       "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "177613403584462848",
+      "nickname": "💫 SoLucky (Lucky.6148) 🔱",
       "emojis": [
         "📧"
       ]
@@ -32,6 +39,14 @@
       "timestamp": "2026-08-22T18:14:32.874435+00:00",
       "discord_id": "117897822329765892",
       "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-08-22T18:19:45.107073+00:00",
+      "discord_id": "177613403584462848",
+      "nickname": "💫 SoLucky (Lucky.6148) 🔱",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
