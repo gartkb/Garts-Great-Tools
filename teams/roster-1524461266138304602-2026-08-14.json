@@ -1,7 +1,7 @@
 {
   "source_type": "event",
   "id": "1524461266138304602",
-  "last_updated": "2026-08-13T08:49:00.805715+00:00",
+  "last_updated": "2026-08-23T23:57:12.156271+00:00",
   "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,       📧\n2.<798211339365384212> Livingldly (Kavish.8593),    📧\n3.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,  📧\n4.<231518357440954368> shaqsalazar (shaqsalazar.2906),📧\n```",
   "roster": [
     {
@@ -62,6 +62,14 @@
       "timestamp": "2026-08-13T08:48:55.136013+00:00",
       "discord_id": "798211339365384212",
       "nickname": "Livingldly (Kavish.8593)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-08-23T23:56:06.513813+00:00",
+      "discord_id": "316685427392380939",
+      "nickname": "Sleepy (Sleepy.5912)",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
