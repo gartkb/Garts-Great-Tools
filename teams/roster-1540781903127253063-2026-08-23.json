@@ -1,7 +1,7 @@
 {
   "source_type": "event",
   "id": "1540781903127253063",
-  "last_updated": "2026-08-22T22:11:25.934627+00:00",
+  "last_updated": "2026-08-23T00:53:35.995013+00:00",
   "text_representation": "**Interest List:**\n\n```\n1.<174334457501843456> Rubyburrito (Rubyburrito.8027) 🔱,📧\n2.<1184189909737681019> Zoli (zoli.5129) 🔱,           📧\n3.<117897822329765892> 💫 Mandy Ember (Amanda.5871) 🔱 🚺,📧\n4.<177613403584462848> 💫 SoLucky (Lucky.6148) 🔱,      📧\n5.<797945111794810930> 💫SkielaHun.7015,               📧\n6.<596875174700122122> 💫☄️Gartner Kinderboom.5019,    📧\n```",
   "roster": [
     {
@@ -92,6 +92,22 @@
       "timestamp": "2026-08-22T22:10:20.262200+00:00",
       "discord_id": "797945111794810930",
       "nickname": "💫SkielaHun.7015",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-08-23T00:52:21.391775+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "uninterested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-08-23T00:52:30.267988+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
