@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1540781903127253063",
-  "last_updated": "2026-08-23T03:44:25.101345+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,         📧  \\<:QuickHeal:1038159941472620655>  \\<:AlacHeal:1038159938335277140>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  ⚔️\n2.<174334457501843456> Rubyburrito (Rubyburrito.8027) 🔱,📧\n3.<1184189909737681019> Zoli (zoli.5129) 🔱,           📧\n4.<220312528784195584> aniigyaall_ (MagicCatt.9068) 🚺,\\<:AlacHeal:1038159938335277140>  ⚔️\n5.<1338535612340240429> lorelai.7051,                 📧  \\<:QuickHeal:1038159941472620655>  \\<:AlacHeal:1038159938335277140>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  ⚔️\n6.<117897822329765892> 💫 Mandy Ember (Amanda.5871) 🔱 🚺,📧  \\<:QuickHeal:1038159941472620655>  \\<:AlacHeal:1038159938335277140>  \\<:AlacDPS:1038159937391562843>  ⚔️\n7.<177613403584462848> 💫 SoLucky (Lucky.6148) 🔱,      📧\n8.<797945111794810930> 💫SkielaHun.7015,               📧\n9.<596875174700122122> 💫☄️Gartner Kinderboom.5019,    📧  \\<:QuickHeal:1038159941472620655>  \\<:AlacHeal:1038159938335277140>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  ⚔️\n```",
+  "last_updated": "2026-08-23T03:48:21.742978+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1. <219437617219895297> BeastfromtheEast.2946,         📧  \\<:QuickHeal:1038159941472620655>  \\<:AlacHeal:1038159938335277140>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  ⚔️\n2. <174334457501843456> Rubyburrito (Rubyburrito.8027) 🔱,📧\n3. <1184189909737681019> Zoli (zoli.5129) 🔱,           📧\n4. <220312528784195584> aniigyaall_ (MagicCatt.9068) 🚺,\\<:AlacHeal:1038159938335277140>  ⚔️\n5. <1338535612340240429> lorelai.7051,                 📧  \\<:QuickHeal:1038159941472620655>  \\<:AlacHeal:1038159938335277140>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  ⚔️\n6. <617181650190598155> whycantifly (Fei.7308) 🚺,      📧\n7. <117897822329765892> 💫 Mandy Ember (Amanda.5871) 🔱 🚺,📧  \\<:QuickHeal:1038159941472620655>  \\<:AlacHeal:1038159938335277140>  \\<:AlacDPS:1038159937391562843>  ⚔️\n8. <177613403584462848> 💫 SoLucky (Lucky.6148) 🔱,      📧\n9. <797945111794810930> 💫SkielaHun.7015,               📧\n10.<596875174700122122> 💫☄️Gartner Kinderboom.5019,    📧  \\<:QuickHeal:1038159941472620655>  \\<:AlacHeal:1038159938335277140>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  ⚔️\n```",
   "roster": [
     {
       "discord_id": "117897822329765892",
@@ -51,6 +51,13 @@
         "<:QuickDPS:1038159940164014090>",
         "<:AlacDPS:1038159937391562843>",
         "⚔️"
+      ]
+    },
+    {
+      "discord_id": "617181650190598155",
+      "nickname": "whycantifly (Fei.7308) 🚺",
+      "emojis": [
+        "📧"
       ]
     },
     {
@@ -213,6 +220,14 @@
       "timestamp": "2026-08-23T03:43:13.794630+00:00",
       "discord_id": "219437617219895297",
       "nickname": "BeastfromtheEast.2946",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-08-23T03:47:06.546783+00:00",
+      "discord_id": "617181650190598155",
+      "nickname": "whycantifly (Fei.7308) 🚺",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
