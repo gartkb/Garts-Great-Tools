@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1540781903127253063",
-  "last_updated": "2026-08-23T00:53:35.995013+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<174334457501843456> Rubyburrito (Rubyburrito.8027) 🔱,📧\n2.<1184189909737681019> Zoli (zoli.5129) 🔱,           📧\n3.<117897822329765892> 💫 Mandy Ember (Amanda.5871) 🔱 🚺,📧\n4.<177613403584462848> 💫 SoLucky (Lucky.6148) 🔱,      📧\n5.<797945111794810930> 💫SkielaHun.7015,               📧\n6.<596875174700122122> 💫☄️Gartner Kinderboom.5019,    📧\n```",
+  "last_updated": "2026-08-23T03:24:27.938769+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<174334457501843456> Rubyburrito (Rubyburrito.8027) 🔱,📧\n2.<1184189909737681019> Zoli (zoli.5129) 🔱,           📧\n3.<1338535612340240429> lorelai.7051,                 📧\n4.<117897822329765892> 💫 Mandy Ember (Amanda.5871) 🔱 🚺,📧\n5.<177613403584462848> 💫 SoLucky (Lucky.6148) 🔱,      📧\n6.<797945111794810930> 💫SkielaHun.7015,               📧\n7.<596875174700122122> 💫☄️Gartner Kinderboom.5019,    📧\n```",
   "roster": [
     {
       "discord_id": "117897822329765892",
@@ -42,6 +42,13 @@
     {
       "discord_id": "1184189909737681019",
       "nickname": "Zoli (zoli.5129) 🔱",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "1338535612340240429",
+      "nickname": "lorelai.7051",
       "emojis": [
         "📧"
       ]
@@ -108,6 +115,22 @@
       "timestamp": "2026-08-23T00:52:30.267988+00:00",
       "discord_id": "596875174700122122",
       "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-08-23T03:24:04.708737+00:00",
+      "discord_id": "1338535612340240429",
+      "nickname": "lorelai.7051",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-08-23T03:24:22.130463+00:00",
+      "discord_id": "1338535612340240429",
+      "nickname": "lorelai.7051",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
