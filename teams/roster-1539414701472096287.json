@@ -1,17 +1,9 @@
 {
   "source_type": "static_post",
   "id": "1539414701472096287",
-  "last_updated": "2026-08-28T17:20:30.235150+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1. <859961201206231063> Gigabyte Me (Velturius.5908),⚔️  \\<:AlacHeal:1038159938335277140>\n2. <185163027430113280> SGT_Hades (Zephyr.2174),     ⚔️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  💥  ☣️\n3. <267011520997752833> TheSaltyOreo.1936 🚹,         ⚔️  \\<:AlacDPS:1038159937391562843>  💥  🍄\n4. <198877291856527360> Ven (Larquin.5237),          ⚔️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>\n5. <113154745291509760> Yeetloaf (omfgitsbanana.1408),⚔️  \\<:QuickDPS:1038159940164014090>  \\<:AlacHeal:1038159938335277140>  💥  🍄  🚀  ☣️\n6. <220312528784195584> aniigyaall_ (MagicCatt.9068) 🚺,⚔️  \\<:AlacHeal:1038159938335277140>  💥  🍄  🪁  🗽  👊  ☣️\n7. <291008963183509506> epicdrill.1820 🚺,            ⚔️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  🍄  ☣️\n8. <226178189163102208> meowmeowbuns.1658 🚹,         ⚔️  \\<:QuickDPS:1038159940164014090>  💥  ☣️\n9. <617181650190598155> whycantifly (Fei.7308) 🚺,    ⚔️  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  🛡️  🖐️  💥  🍄  🪁  ☠️  👊  ☣️\n10.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  ⚔️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️  🖐️  🏢  💥  🍄  🚀  🪁  🪞  🎀  ☠️  🫗  🗽  👊  ☣️\n```",
+  "last_updated": "2026-08-29T21:27:19.101158+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<185163027430113280> SGT_Hades (Zephyr.2174),     ⚔️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  💥  ☣️\n2.<267011520997752833> TheSaltyOreo.1936 🚹,         ⚔️  \\<:AlacDPS:1038159937391562843>  💥  🍄\n3.<198877291856527360> Ven (Larquin.5237),          ⚔️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>\n4.<113154745291509760> Yeetloaf (omfgitsbanana.1408),⚔️  \\<:QuickDPS:1038159940164014090>  \\<:AlacHeal:1038159938335277140>  💥  🍄  🚀  ☣️\n5.<220312528784195584> aniigyaall_ (MagicCatt.9068) 🚺,⚔️  \\<:AlacHeal:1038159938335277140>  💥  🍄  🪁  🗽  👊  ☣️\n6.<291008963183509506> epicdrill.1820 🚺,            ⚔️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  🍄  ☣️\n7.<226178189163102208> meowmeowbuns.1658 🚹,         ⚔️  \\<:QuickDPS:1038159940164014090>  💥  ☣️\n8.<617181650190598155> whycantifly (Fei.7308) 🚺,    ⚔️  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  🛡️  🖐️  💥  🍄  🪁  ☠️  👊  ☣️\n9.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  ⚔️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️  🖐️  🏢  💥  🍄  🚀  🪁  🪞  🎀  ☠️  🫗  🗽  👊  ☣️\n```",
   "roster": [
-    {
-      "discord_id": "859961201206231063",
-      "nickname": "Gigabyte Me (Velturius.5908)",
-      "emojis": [
-        "⚔️",
-        "<:AlacHeal:1038159938335277140>"
-      ]
-    },
     {
       "discord_id": "617181650190598155",
       "nickname": "whycantifly (Fei.7308) 🚺",
@@ -686,6 +678,22 @@
       "action": "reacted",
       "source": "post_reaction",
       "emoji": "☣️"
+    },
+    {
+      "timestamp": "2026-08-29T21:25:58.374447+00:00",
+      "discord_id": "859961201206231063",
+      "nickname": "Gigabyte Me (Velturius.5908)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-08-29T21:26:02.331749+00:00",
+      "discord_id": "859961201206231063",
+      "nickname": "Gigabyte Me (Velturius.5908)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacHeal:1038159938335277140>"
     }
   ]
 }
