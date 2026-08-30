@@ -1,0 +1,55 @@
+{
+  "source_type": "event",
+  "id": "1543421443369603112",
+  "last_updated": "2026-08-30T00:58:09.556893+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,📧\n2.<204388117254242305> 💫 Isbad (iBad.9826),       📧\n3.<200423784589688832> 📐KelsTheBard (kelso.2354), 📧\n```",
+  "roster": [
+    {
+      "discord_id": "200423784589688832",
+      "nickname": "📐KelsTheBard (kelso.2354)",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "204388117254242305",
+      "nickname": "💫 Isbad (iBad.9826)",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "619970339233071134",
+      "nickname": "gijo(Candid Flames.6279)🌠🌀",
+      "emojis": [
+        "📧"
+      ]
+    }
+  ],
+  "history": [
+    {
+      "timestamp": "2026-08-30T00:58:03.774087+00:00",
+      "discord_id": "200423784589688832",
+      "nickname": "📐KelsTheBard (kelso.2354)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-08-30T00:58:03.805531+00:00",
+      "discord_id": "204388117254242305",
+      "nickname": "💫 Isbad (iBad.9826)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-08-30T00:58:03.857561+00:00",
+      "discord_id": "619970339233071134",
+      "nickname": "gijo(Candid Flames.6279)🌠🌀",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    }
+  ]
+}
