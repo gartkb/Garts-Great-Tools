@@ -39,8 +39,8 @@
 // ==UserScript==
 // @name         TM Value Sorter Core
 // @namespace    http://tampermonkey.net/
-// @version      1.3
-// @description  Shared logic for Walmart, Costco, and Superstore Value Sorters. Handles parsing, math, and unit normalization. v1.3: decimal sizes, multipack total weight (70g 2-Pack -> 140g), backwards compatible.
+// @version      1.3.1
+// @description  Shared logic for Walmart, Costco, and Superstore Value Sorters. Handles parsing, math, and unit normalization. v1.3.1: fix pack×weight overriding pac force-count (Lady Speed Stick 70g 2-Pack -> 140g), backwards compatible.
 // @grant        none
 // ==/UserScript==
 
@@ -120,20 +120,17 @@
             const weight = this.extractWeight(cleanTitle); 
             const count = this.extractCount(cleanTitle);   
 
-            // 2.5 MULTIPACK TOTAL WEIGHT (v1.3 - backwards compatible)
-            // For "70 g (2 Pack)" or "2 Pack 70g" where weight=70 and count=2,
-            // use total weight (140g) for value calc. Only when weight is present
-            // and count came from a "pack" keyword - not for pure count items.
-            // This fixes Lady Speed Stick 2-Pack, Dove 2x76g is already handled by extractMath.
+            // 2.5 MULTIPACK TOTAL WEIGHT (v1.3.1 - fix pac override)
+            // For "70 g (2 Pack)" where weight=70 and count=2, use total weight (140g).
+            // Must win over FORCE_COUNT "pac" in "pack", so check before hierarchy.
             let effectiveWeight = weight;
+            let isPackWeight = false;
             if (weight && count && /pack/i.test(cleanTitle) && weight.type !== 'each') {
-                // Ensure math didn't already handle it (e.g. "2x 76 g" -> math=152g)
-                // If math exists and is weight/vol, it already includes multiplier - skip
                 const mathIsWeight = math && (math.type === 'weight' || math.type === 'vol');
                 if (!mathIsWeight) {
-                    // Sanity: pack 2-12, single weight 5-500g/ml
                     if (count.qty >= 2 && count.qty <= 12 && weight.qty >= 5 && weight.qty <= 500) {
                         effectiveWeight = { qty: weight.qty * count.qty, unit: weight.unit, type: weight.type };
+                        isPackWeight = true;
                     }
                 }
             }
@@ -141,22 +138,27 @@
             // 3. Determine Priority (The Hierarchy)
             let selectedMeasure = null;
 
-            const isForceCount = FORCE_COUNT_KEYWORDS.some(kw => cleanTitle.includes(kw));
-
-            if (isForceCount) {
-                // FORCE COUNT HIERARCHY
-                if (count) selectedMeasure = { ...count, type: 'each' };
-                else if (math && math.type === 'count') selectedMeasure = { ...math, type: 'each' };
-                else if (effectiveWeight) selectedMeasure = effectiveWeight;
+            // v1.3.1: pack×weight overrides FORCE_COUNT "pac"
+            if (isPackWeight && effectiveWeight) {
+                selectedMeasure = effectiveWeight;
             } else {
-                // STANDARD HIERARCHY
-                if (math) {
-                    if (math.type !== 'count') selectedMeasure = math;
-                    else if (!effectiveWeight) selectedMeasure = { ...math, type: 'each' };
+                const isForceCount = FORCE_COUNT_KEYWORDS.some(kw => cleanTitle.includes(kw));
+
+                if (isForceCount) {
+                    // FORCE COUNT HIERARCHY
+                    if (count) selectedMeasure = { ...count, type: 'each' };
+                    else if (math && math.type === 'count') selectedMeasure = { ...math, type: 'each' };
+                    else if (effectiveWeight) selectedMeasure = effectiveWeight;
+                } else {
+                    // STANDARD HIERARCHY
+                    if (math) {
+                        if (math.type !== 'count') selectedMeasure = math;
+                        else if (!effectiveWeight) selectedMeasure = { ...math, type: 'each' };
+                    }
+                    
+                    if (!selectedMeasure && effectiveWeight) selectedMeasure = effectiveWeight;
+                    if (!selectedMeasure && count) selectedMeasure = { ...count, type: 'each' };
                 }
-                
-                if (!selectedMeasure && effectiveWeight) selectedMeasure = effectiveWeight;
-                if (!selectedMeasure && count) selectedMeasure = { ...count, type: 'each' };
             }
 
             // 4. Calculate
