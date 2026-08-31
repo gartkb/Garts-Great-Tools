@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Walmart.ca Value Sorter (v11.2 - Antiperspirant Fix)
+// @name         Walmart.ca Value Sorter (v11.2.1 - $638 Dot Fix)
 // @namespace    http://tampermonkey.net/
-// @version      11.2
-// @description  Sorts by value. Fixes: robust price/shelf selectors, decimal sizes, sale price handling, multipack (2 Pack) weight, sanity check on shelf fallback.
+// @version      11.2.1
+// @description  Sorts by value. Fixes: robust price/shelf selectors, decimal sizes, sale price handling, multipack (2 Pack) weight, sanity check on shelf fallback. v11.2.1: fix $638 (no dot) -> $6.38 price parse.
 // @match        https://www.walmart.ca/*
 // @require      https://gartkb.github.io/Garts-Great-Tools/userscript/tm-value-sorter-core.js
 // @grant        none
@@ -34,26 +34,65 @@
         }
 
         // Fallback to standard price - try multiple selectors (Walmart DOM has shifted)
+        // v11.2.1: Walmart now renders "$638" (no dot) in aria-hidden div, dot is separate CSS
         if (!price) {
-            // Try 1: original selector
-            let priceElement = card.querySelector('[data-automation-id="product-price"] div[aria-hidden="true"]');
-            // Try 2: new data-testid container
-            if (!priceElement) priceElement = card.querySelector('[data-testid="product-price"] [aria-hidden="true"]');
-            // Try 3: any bold price in card (SSR uses .b.black)
-            if (!priceElement) priceElement = card.querySelector('.b.black[aria-hidden="true"]');
-            // Try 4: fallback - first $X.XX in the price area
-            if (priceElement) {
-                const pMatch = priceElement.innerText.match(/\$([0-9,.]+)/);
-                if (pMatch) price = parseFloat(pMatch[1].replace(/,/g, ''));
-            } else {
-                // Last resort: scan card text for "current price $X" or first $ price
-                // Prefer "Now $X" / "current price $X" over "Was $X"
+            const priceContainer = card.querySelector('[data-automation-id="product-price"]');
+            let rawPriceText = null;
+            if (priceContainer) {
+                // Prefer accessible text "current price $6.38" which has correct dot
+                const accessible = priceContainer.querySelector('span.ld_Ec, span[class*="ld_"]');
+                rawPriceText = accessible ? accessible.innerText : null;
+                if (!rawPriceText || !/\$/.test(rawPriceText)) {
+                    const hidden = priceContainer.querySelector('div[aria-hidden="true"]');
+                    rawPriceText = hidden ? hidden.innerText : priceContainer.innerText;
+                }
+                // Try $X.XX first
+                let pMatch = rawPriceText.match(/\$([0-9,]+\.[0-9]{2})/);
+                if (pMatch) {
+                    price = parseFloat(pMatch[1].replace(/,/g, ''));
+                } else {
+                    // Fallback: $638 (no dot) -> insert dot before last 2 digits: 638 -> 6.38
+                    pMatch = rawPriceText.match(/\$([0-9,]+)/);
+                    if (pMatch) {
+                        let raw = pMatch[1].replace(/,/g, '');
+                        if (!raw.includes('.') && raw.length >= 3) {
+                            price = parseFloat(raw.slice(0, -2) + '.' + raw.slice(-2));
+                        } else {
+                            price = parseFloat(raw);
+                        }
+                    }
+                }
+            }
+            // Legacy fallback: direct selectors if container not found
+            if (!price) {
+                let priceElement = card.querySelector('[data-automation-id="product-price"] div[aria-hidden="true"]');
+                if (!priceElement) priceElement = card.querySelector('[data-testid="product-price"] [aria-hidden="true"]');
+                if (!priceElement) priceElement = card.querySelector('.b.black[aria-hidden="true"]');
+                if (priceElement) {
+                    const pMatch = priceElement.innerText.match(/\$([0-9,.]+)/);
+                    if (pMatch) {
+                        let raw = pMatch[1].replace(/,/g, '');
+                        if (!raw.includes('.') && raw.length >= 3) {
+                            price = parseFloat(raw.slice(0, -2) + '.' + raw.slice(-2));
+                        } else {
+                            price = parseFloat(raw);
+                        }
+                    }
+                }
+            }
+            if (!price) {
                 let nowMatch = cardText.match(/now\s*\$([0-9,.]+)/);
                 if (nowMatch) {
-                    price = parseFloat(nowMatch[1].replace(/,/g, ''));
+                    let raw = nowMatch[1].replace(/,/g, '');
+                    if (!raw.includes('.') && raw.length >= 3) price = parseFloat(raw.slice(0, -2) + '.' + raw.slice(-2));
+                    else price = parseFloat(raw);
                 } else {
                     let curMatch = cardText.match(/current price\s*\$([0-9,.]+)/);
-                    if (curMatch) price = parseFloat(curMatch[1].replace(/,/g, ''));
+                    if (curMatch) {
+                        let raw = curMatch[1].replace(/,/g, '');
+                        if (!raw.includes('.') && raw.length >= 3) price = parseFloat(raw.slice(0, -2) + '.' + raw.slice(-2));
+                        else price = parseFloat(raw);
+                    }
                 }
             }
         }
