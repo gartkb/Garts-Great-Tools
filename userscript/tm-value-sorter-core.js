@@ -39,8 +39,8 @@
 // ==UserScript==
 // @name         TM Value Sorter Core
 // @namespace    http://tampermonkey.net/
-// @version      1.2
-// @description  Shared logic for Walmart, Costco, and Superstore Value Sorters. Handles parsing, math, and unit normalization.
+// @version      1.3
+// @description  Shared logic for Walmart, Costco, and Superstore Value Sorters. Handles parsing, math, and unit normalization. v1.3: decimal sizes, multipack total weight (70g 2-Pack -> 140g), backwards compatible.
 // @grant        none
 // ==/UserScript==
 
@@ -120,6 +120,24 @@
             const weight = this.extractWeight(cleanTitle); 
             const count = this.extractCount(cleanTitle);   
 
+            // 2.5 MULTIPACK TOTAL WEIGHT (v1.3 - backwards compatible)
+            // For "70 g (2 Pack)" or "2 Pack 70g" where weight=70 and count=2,
+            // use total weight (140g) for value calc. Only when weight is present
+            // and count came from a "pack" keyword - not for pure count items.
+            // This fixes Lady Speed Stick 2-Pack, Dove 2x76g is already handled by extractMath.
+            let effectiveWeight = weight;
+            if (weight && count && /pack/i.test(cleanTitle) && weight.type !== 'each') {
+                // Ensure math didn't already handle it (e.g. "2x 76 g" -> math=152g)
+                // If math exists and is weight/vol, it already includes multiplier - skip
+                const mathIsWeight = math && (math.type === 'weight' || math.type === 'vol');
+                if (!mathIsWeight) {
+                    // Sanity: pack 2-12, single weight 5-500g/ml
+                    if (count.qty >= 2 && count.qty <= 12 && weight.qty >= 5 && weight.qty <= 500) {
+                        effectiveWeight = { qty: weight.qty * count.qty, unit: weight.unit, type: weight.type };
+                    }
+                }
+            }
+
             // 3. Determine Priority (The Hierarchy)
             let selectedMeasure = null;
 
@@ -129,15 +147,15 @@
                 // FORCE COUNT HIERARCHY
                 if (count) selectedMeasure = { ...count, type: 'each' };
                 else if (math && math.type === 'count') selectedMeasure = { ...math, type: 'each' };
-                else if (weight) selectedMeasure = weight;
+                else if (effectiveWeight) selectedMeasure = effectiveWeight;
             } else {
                 // STANDARD HIERARCHY
                 if (math) {
                     if (math.type !== 'count') selectedMeasure = math;
-                    else if (!weight) selectedMeasure = { ...math, type: 'each' };
+                    else if (!effectiveWeight) selectedMeasure = { ...math, type: 'each' };
                 }
                 
-                if (!selectedMeasure && weight) selectedMeasure = weight;
+                if (!selectedMeasure && effectiveWeight) selectedMeasure = effectiveWeight;
                 if (!selectedMeasure && count) selectedMeasure = { ...count, type: 'each' };
             }
 
@@ -152,8 +170,8 @@
         // --- EXTRACTORS ---
 
         extractMath: function(str) {
-            // Regex: Number x Number Unit
-            const regex = new RegExp(`(\\d+)\\s*[x×]\\s*([0-9,.]+)\\s*(${UNITS.WEIGHT}|${UNITS.VOL}|${UNITS.COUNT})\\b`);
+            // Regex: Number x Number Unit - handles "2x 76 g", "2 x 76g", "3×50ml"
+            const regex = new RegExp(`(\\d+)\\s*[x×]\\s*([0-9,.]+)\\s*(${UNITS.WEIGHT}|${UNITS.VOL}|${UNITS.COUNT})\\b`, 'i');
             const match = str.match(regex);
             
             if (match) {
@@ -167,14 +185,16 @@
         },
 
         extractWeight: function(str) {
-            // Regex: Number Unit
-            const regex = new RegExp(`(?:\\b|^)([0-9,.]+)\\s*(${UNITS.WEIGHT}|${UNITS.VOL})\\b`);
+            // Regex: Number Unit - v1.3 allows decimals: "73g", "73 g", "50mL", "1.5kg", "107 g"
+            const regex = new RegExp(`(?:\\b|^)([0-9]*\\.?[0-9,]+)\\s*(${UNITS.WEIGHT}|${UNITS.VOL})\\b`, 'i');
             const match = str.match(regex);
             
             if (match) {
                 const qty = parseFloat(match[1].replace(/,/g, ''));
-                const unitStr = match[2];
-                return { qty: qty, unit: unitStr, type: this.getUnitType(unitStr) };
+                const unitStr = match[2].toLowerCase();
+                // Normalize "liq" -> treat as vol (ml-ish) - keep as is for type detection
+                const normalizedUnit = unitStr === 'liq' ? 'ml' : unitStr;
+                return { qty: qty, unit: normalizedUnit, type: this.getUnitType(normalizedUnit) };
             }
             return null;
         },
@@ -182,7 +202,7 @@
         extractCount: function(str) {
             // STRATEGY 1: Gap Matching (e.g. "2 Razor Blade Refills")
             // Looks for Number + (up to 3 words) + Refills/Cartridges
-            const gapRegex = /\b(\d+)\s+(?:[a-z-]+\s+){0,3}(refills?|cartridges?)\b/;
+            const gapRegex = /\b(\d+)\s+(?:[a-z-]+\s+){0,3}(refills?|cartridges?)\b/i;
             const gapMatch = str.match(gapRegex);
             if (gapMatch) {
                 return { qty: parseFloat(gapMatch[1]), unit: 'ea', type: 'each' };
@@ -190,7 +210,7 @@
 
             // STRATEGY 2: Standard Count Matching
             // Regex: Number Keywords
-            const regex = new RegExp(`(\\d+)\\s*[-]?\\s*(${UNITS.COUNT})\\b`);
+            const regex = new RegExp(`(\\d+)\\s*[-]?\\s*(${UNITS.COUNT})\\b`, 'i');
             const match = str.match(regex);
 
             if (match) {
@@ -198,7 +218,7 @@
                 return { qty: qty, unit: 'ea', type: 'each' };
             }
             // STRATEGY 3: "Pack of X" Fallback
-            const packOfRegex = str.match(/pack\s+of\s+([0-9]+)/);
+            const packOfRegex = str.match(/pack\s+of\s+([0-9]+)/i);
             if (packOfRegex) {
                  return { qty: parseFloat(packOfRegex[1]), unit: 'ea', type: 'each' };
             }
@@ -209,8 +229,9 @@
         // --- UTILS ---
 
         getUnitType: function(unit) {
-            if (new RegExp(`^(${UNITS.WEIGHT})$`).test(unit)) return 'weight';
-            if (new RegExp(`^(${UNITS.VOL})$`).test(unit)) return 'vol';
+            const u = unit.toLowerCase();
+            if (new RegExp(`^(${UNITS.WEIGHT})$`, 'i').test(u)) return 'weight';
+            if (new RegExp(`^(${UNITS.VOL})$`, 'i').test(u)) return 'vol';
             return 'count';
         },
 
@@ -218,7 +239,7 @@
             let val = 0;
             let type = measure.type;
             const q = measure.qty;
-            const u = measure.unit;
+            const u = measure.unit.toLowerCase();
 
             if (type === 'count' || type === 'each') {
                 val = price / q;
@@ -230,6 +251,7 @@
                 else if (u === 'oz') val = (price / (q * 28.3495)) * 100;
                 else if (u === 'ml') { val = (price / q) * 100; type = 'vol'; }
                 else if (u === 'l') { val = (price / (q * 1000)) * 100; type = 'vol'; }
+                else if (u === 'liq') { val = (price / q) * 100; type = 'vol'; }
             }
 
             let isDeal = false;
