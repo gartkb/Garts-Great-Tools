@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Walmart.ca Value Sorter (v11.1 - Click-to-Edit & Missing Size Fix)
+// @name         Walmart.ca Value Sorter (v11.2 - Antiperspirant Fix)
 // @namespace    http://tampermonkey.net/
-// @version      11.1
-// @description  Sorts by value. Includes Click-to-Edit for manual quantity overrides and Smart Tooltips. Fixed parsing for missing title sizes & cent values.
+// @version      11.2
+// @description  Sorts by value. Fixes: robust price/shelf selectors, decimal sizes, sale price handling, multipack (2 Pack) weight, sanity check on shelf fallback.
 // @match        https://www.walmart.ca/*
 // @require      https://gartkb.github.io/Garts-Great-Tools/userscript/tm-value-sorter-core.js
 // @grant        none
@@ -16,7 +16,7 @@
     // =========================================================
 
     function parseCardData(card) {
-        // --- STEP 1: GET PRICE (Handle Multi-buys) ---
+        // --- STEP 1: GET PRICE (Handle Multi-buys + Sale) ---
         let price = null;
         let isDealPrice = false;
 
@@ -33,12 +33,28 @@
             }
         }
 
-        // Fallback to standard price
+        // Fallback to standard price - try multiple selectors (Walmart DOM has shifted)
         if (!price) {
-            const priceElement = card.querySelector('[data-automation-id="product-price"] div[aria-hidden="true"]');
+            // Try 1: original selector
+            let priceElement = card.querySelector('[data-automation-id="product-price"] div[aria-hidden="true"]');
+            // Try 2: new data-testid container
+            if (!priceElement) priceElement = card.querySelector('[data-testid="product-price"] [aria-hidden="true"]');
+            // Try 3: any bold price in card (SSR uses .b.black)
+            if (!priceElement) priceElement = card.querySelector('.b.black[aria-hidden="true"]');
+            // Try 4: fallback - first $X.XX in the price area
             if (priceElement) {
-                 const pMatch = priceElement.innerText.match(/\$([0-9,.]+)/);
-                 if (pMatch) price = parseFloat(pMatch[1].replace(/,/g, ''));
+                const pMatch = priceElement.innerText.match(/\$([0-9,.]+)/);
+                if (pMatch) price = parseFloat(pMatch[1].replace(/,/g, ''));
+            } else {
+                // Last resort: scan card text for "current price $X" or first $ price
+                // Prefer "Now $X" / "current price $X" over "Was $X"
+                let nowMatch = cardText.match(/now\s*\$([0-9,.]+)/);
+                if (nowMatch) {
+                    price = parseFloat(nowMatch[1].replace(/,/g, ''));
+                } else {
+                    let curMatch = cardText.match(/current price\s*\$([0-9,.]+)/);
+                    if (curMatch) price = parseFloat(curMatch[1].replace(/,/g, ''));
+                }
             }
         }
 
@@ -47,30 +63,68 @@
         // --- STEP 2: GET TITLE ---
         const titleElement = card.querySelector('[data-automation-id="product-title"]');
         if (!titleElement) return null;
-        let title = titleElement.innerText; // Changed to 'let' so we can append missing sizes below
+        let title = titleElement.innerText;
 
-        // --- STEP 3: OPTIONAL - GET SHELF UNIT PRICE (For Deal Detection) ---
+        // --- STEP 3: GET SHELF UNIT PRICE (For Deal Detection + Fallback) ---
         let shelfUnitVal = null;
         let shelfUnitQty = null;
         let shelfUnitType = null;
-        
-        const unitPriceDiv = card.querySelector('[data-testid="product-price-per-unit"]');
-        if (unitPriceDiv && !isDealPrice) {
-            const text = unitPriceDiv.innerText.toLowerCase().trim();
-            // Looks for: $0.50 / 100ml, 79c/100ml, 79 c / 100 ml
-            const match = text.match(/([0-9,.]+)\s*([$¢c]?)\s*\/\s*([0-9]*)\s*(g|ml|lb|ea|kg|l)/i);
+
+        // Try multiple selectors - data-testid is flaky in SSR, class .gray is more stable
+        let unitPriceDiv = card.querySelector('[data-testid="product-price-per-unit"]');
+        if (!unitPriceDiv) {
+            // SSR fallback: the gray unit price div
+            const candidates = card.querySelectorAll('div.gray, span.gray, div.f6');
+            for (const c of candidates) {
+                if (c.innerText && /\/\s*100?\s*(g|ml|ea|kg|l)/i.test(c.innerText)) {
+                    unitPriceDiv = c;
+                    break;
+                }
+            }
+        }
+        // Final fallback: scan all text for pattern like "$10.23/100g" or "5¢/100g" near price
+        let unitText = unitPriceDiv ? unitPriceDiv.innerText.toLowerCase().trim() : "";
+
+        // If we still have no unitText but cardText contains a shelf-like pattern, try to extract it
+        // This catches cases where data-testid is missing
+        if (!unitText) {
+            // Look for something like "$8.84/100g" or "5¢/100g" that is NOT the main price
+            const shelfScan = cardText.match(/([0-9.]+\s*(?:¢|c)?\s*\/\s*[0-9]*\s*(?:g|ml|ea|kg|l|100g|100ml))/i);
+            if (shelfScan) unitText = shelfScan[0];
+        }
+
+        if (unitText && !isDealPrice) {
+            // Robust: handles "$10.23/100g", "10.23/100g", "5¢/100g", "$5.21/100g", "6.56/100ml"
+            // Group1: number, Group2: ¢/c suffix, Group3: denominator (100), Group4: unit
+            const match = unitText.match(/([0-9,.]+)\s*([$¢c]?)\s*\/\s*([0-9]*)\s*(g|ml|lb|ea|kg|l)/i);
             if (match) {
                 let rawVal = parseFloat(match[1].replace(/,/g, ''));
                 let currencySuffix = match[2];
-                
-                // Fix #1: Correctly catch 'c' as cents even if there is no space
-                if (currencySuffix === '¢' || currencySuffix === 'c' || text.includes('¢')) {
+
+                if (currencySuffix === '¢' || currencySuffix === 'c' || unitText.includes('¢')) {
                     rawVal = rawVal / 100;
                 }
-                
+                // If the text had a leading "$" but suffix is empty, rawVal is already dollars - keep as is
+                // Guard against "5¢" mis-parsed as $5: already divided above
+
                 shelfUnitVal = rawVal;
-                shelfUnitQty = parseFloat(match[3]) || 1; // Default to 1 if blank (e.g. "/ea")
-                shelfUnitType = match[4];
+                shelfUnitQty = parseFloat(match[3]) || 1;
+                // Special: if denominator is empty like "/ea" => qty 1
+                // If denominator is 100 => qty 100 (meaning $X per 100g)
+                if (shelfUnitQty === 0) shelfUnitQty = 1;
+                shelfUnitType = match[4].toLowerCase();
+
+                // Sanity: reject absurd shelf prices that would imply insane package size
+                // e.g. 5¢/100g with $3.97 => 7940g is absurd for antiperspirant
+                if (shelfUnitVal > 0 && shelfUnitVal < 0.10) {
+                    // Likely a Walmart data bug (5¢ instead of $5.36) - invalidate to avoid bad estimate
+                    // Only keep if price is also tiny (< $1)
+                    if (price > 1.5) {
+                        shelfUnitVal = null;
+                        shelfUnitQty = null;
+                        shelfUnitType = null;
+                    }
+                }
             }
         }
 
@@ -78,18 +132,37 @@
         // If the title doesn't contain a size, but we have total price & shelf unit price,
         // calculate the exact package size and artificially append it to the title string.
         // This ensures the Core Module (ValueSorter.analyze) can successfully process it!
-        const hasSize = /[0-9]+\s*(ml|g|kg|lb|l|oz)/i.test(title);
+        const hasSize = /[0-9]*\.?[0-9]+\s*(ml|g|kg|lb|l|oz)\b/i.test(title);
         if (!hasSize && price > 0 && shelfUnitVal > 0 && shelfUnitQty > 0 && shelfUnitType) {
             const estimatedSize = Math.round((price / shelfUnitVal) * shelfUnitQty);
-            title += ` - ${estimatedSize}${shelfUnitType}`;
+            // Sanity: antiperspirants are 14g - 200g / 50ml - 150ml. Reject 7940g nonsense.
+            if (estimatedSize >= 5 && estimatedSize <= 2000) {
+                title += ` - ${estimatedSize}${shelfUnitType}`;
+            }
+        }
+
+        // --- STEP 3.6: MULTIPACK FIX for "70 g (2 Pack)" where title HAS size but count is separate ---
+        // ValueSorter core handles "2x 76 g" but not "70 g (2 Pack)". Inject total weight.
+        // If title has weight AND a pack count, prefer total weight for sorting.
+        // We do this by appending a math expression the core understands.
+        const packMatch = title.match(/\(?\s*(\d+)\s*pack\s*\)?/i);
+        const weightMatch = title.match(/([0-9]*\.?[0-9]+)\s*(g|ml)\b/i);
+        if (hasSize && packMatch && weightMatch && !/x\s*[0-9]/i.test(title)) {
+            const packCount = parseFloat(packMatch[1]);
+            const singleWeight = parseFloat(weightMatch[1]);
+            const unit = weightMatch[2];
+            if (packCount > 1 && packCount <= 12 && singleWeight > 0) {
+                // Append total that core's extractMath will prefer: "2x70g"
+                title += ` (${packMatch[1]}x${singleWeight}${unit})`;
+            }
         }
 
         // --- STEP 4: CALL THE CORE MODULE ---
         if (window.ValueSorter) {
             const result = window.ValueSorter.analyze(title, price, shelfUnitVal);
             if (result) {
-                result.isDeal = result.isDeal || isDealPrice; // Combine multi-buy deal flag
-                result.priceUsed = price; // Store for manual override logic
+                result.isDeal = result.isDeal || isDealPrice;
+                result.priceUsed = price;
                 return result;
             }
         }
@@ -109,7 +182,6 @@
     // =========================================================
 
     function badgeItem(card) {
-        // Prevent overwriting manual edits or re-badging
         if(card.dataset.tmManual) return;
         if(card.dataset.tmBadged) return;
 
@@ -119,14 +191,12 @@
         const badge = document.createElement("div");
         badge.innerText = data.label;
 
-        // --- TOOLTIP LOGIC ---
         let tooltip = "Click to set manual quantity";
         if (data.priceUsed && data.val > 0 && data.val < 99999) {
             let qty = 0;
             if (data.type === 'each') {
                 qty = data.priceUsed / data.val;
             } else {
-                // Weight/Vol is normalized to 100g/100ml in the core
                 qty = (data.priceUsed / data.val) * 100;
             }
             qty = Math.round(qty * 100) / 100;
@@ -144,10 +214,9 @@
             borderTopLeftRadius: "6px", borderBottomLeftRadius: "6px",
             boxShadow: "-1px 2px 4px rgba(0,0,0,0.2)",
             fontFamily: "sans-serif",
-            cursor: "pointer" // Make it clickable
+            cursor: "pointer"
         });
 
-        // Color Logic
         if (data.type === 'unknown') {
              badge.style.background = "#eee"; badge.style.color = "#555";
         } else if (data.isDeal) {
@@ -163,11 +232,9 @@
             badge.style.background = "#F0FFF4"; badge.style.color = "#22543D";
         }
 
-        // --- MANUAL OVERRIDE HANDLER ---
         badge.onclick = (e) => {
             e.preventDefault();
             e.stopPropagation();
-
             const currentQty = (data.priceUsed && data.val > 0 && data.type === 'each') ? Math.round(data.priceUsed / data.val) : "";
             const userQty = prompt(
                 `Manual Override for ${data.priceUsed ? '$'+data.priceUsed.toFixed(2) : 'Item'}\n` +
@@ -175,9 +242,7 @@
                 `\nEnter Item Count (e.g. 4 for 4 cartridges):`, 
                 currentQty
             );
-            
             const qty = parseFloat(userQty);
-
             if (qty > 0 && data.priceUsed) {
                 const newVal = data.priceUsed / qty;
                 badge.innerText = `$${newVal.toFixed(2)}/ea (Manual)`;
@@ -185,14 +250,11 @@
                 badge.style.background = "#ffffcc"; 
                 badge.style.color = "#000";
                 badge.style.border = "1px dashed #999";
-                
-                // Update sorting values
                 card.dataset.tmVal = newVal;
                 card.dataset.tmManual = "true";
             }
         };
 
-        // Attach to image container
         let target = card.querySelector('[data-testid="item-stack-product-image-flag-container"]');
         if (target) {
             target.appendChild(badge);
@@ -222,18 +284,14 @@
         processBatch();
         const grid = document.querySelector('[data-testid="item-stack"]');
         if (!grid) { console.log("TM: Grid not found"); return; }
-
         let items = Array.from(grid.children);
-
         items.sort((a, b) => {
             const cardA = a.querySelector('[data-tm-val]');
             const cardB = b.querySelector('[data-tm-val]');
-            // Push items without value to the bottom
             const valA = cardA ? parseFloat(cardA.dataset.tmVal) : 999999;
             const valB = cardB ? parseFloat(cardB.dataset.tmVal) : 999999;
             return valA - valB;
         });
-
         const frag = document.createDocumentFragment();
         items.forEach(item => frag.appendChild(item));
         grid.appendChild(frag);
@@ -245,7 +303,6 @@
 
     function initUI() {
         if(document.getElementById('tm-sort-btn')) return;
-
         const btn = document.createElement("button");
         btn.id = "tm-sort-btn";
         btn.innerHTML = "Sort by Value";
@@ -256,7 +313,6 @@
             cursor: "pointer", boxShadow: "0 4px 6px rgba(0,0,0,0.3)",
             fontSize: "14px"
         });
-
         btn.onclick = () => {
             const originalText = btn.innerHTML;
             btn.innerHTML = "Sorting...";
@@ -270,7 +326,6 @@
         document.body.appendChild(btn);
     }
 
-    // Wait for dynamic content
     setTimeout(() => {
         initUI();
         processBatch();
