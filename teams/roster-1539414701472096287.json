@@ -1,7 +1,7 @@
 {
   "source_type": "static_post",
   "id": "1539414701472096287",
-  "last_updated": "2026-09-03T17:30:14.503616+00:00",
+  "last_updated": "2026-09-03T23:32:42.107343+00:00",
   "text_representation": "**Interest List:**\n\n```\n1. <166023618440986624> Ara (Aranisium.1498),        ⚔️  \\<:AlacDPS:1038159937391562843>  \\<:QuickHeal:1038159941472620655>  ☣️\n2. <185163027430113280> SGT_Hades (Zephyr.2174),     ⚔️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  💥  ☣️\n3. <267011520997752833> TheSaltyOreo.1936 🚹,         ⚔️  \\<:AlacDPS:1038159937391562843>  💥  🍄\n4. <198877291856527360> Ven (Larquin.5237),          ⚔️  \\<:AlacDPS:1038159937391562843>\n5. <113154745291509760> Yeetloaf (omfgitsbanana.1408),⚔️  \\<:QuickDPS:1038159940164014090>  \\<:AlacHeal:1038159938335277140>  💥  🍄  🚀  ☣️\n6. <220312528784195584> aniigyaall_ (MagicCatt.9068) 🚺,⚔️  \\<:AlacHeal:1038159938335277140>  💥  🍄  🪁  🗽  👊  ☣️\n7. <291008963183509506> epicdrill.1820 🚺,            ⚔️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  🍄  ☣️\n8. <226178189163102208> meowmeowbuns.1658 🚹,         ⚔️  \\<:QuickDPS:1038159940164014090>  💥  ☣️\n9. <617181650190598155> whycantifly (Fei.7308) 🚺,    ⚔️  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  🛡️  🖐️  💥  🍄  🪁  ☠️  👊  ☣️\n10.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  ⚔️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️  🖐️  🏢  💥  🍄  🚀  🪁  🪞  🎀  ☠️  🫗  🗽  👊  ☣️\n```",
   "roster": [
     {
@@ -1061,6 +1061,294 @@
       "discord_id": "166023618440986624",
       "nickname": "Ara (Aranisium.1498)",
       "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "☣️"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:21.514567+00:00",
+      "discord_id": "617181650190598155",
+      "nickname": "whycantifly (Fei.7308) 🚺",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "💥"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:21.572140+00:00",
+      "discord_id": "617181650190598155",
+      "nickname": "whycantifly (Fei.7308) 🚺",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🍄"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:21.614047+00:00",
+      "discord_id": "617181650190598155",
+      "nickname": "whycantifly (Fei.7308) 🚺",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🪁"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:21.645260+00:00",
+      "discord_id": "617181650190598155",
+      "nickname": "whycantifly (Fei.7308) 🚺",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "☠️"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:21.676626+00:00",
+      "discord_id": "617181650190598155",
+      "nickname": "whycantifly (Fei.7308) 🚺",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "👊"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:21.708035+00:00",
+      "discord_id": "617181650190598155",
+      "nickname": "whycantifly (Fei.7308) 🚺",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "☣️"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:21.739664+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "💥"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:21.771306+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🍄"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:21.802826+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🚀"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:21.834209+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🪁"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:21.867017+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🪞"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:21.898045+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🎀"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:21.929263+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "☠️"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:21.960610+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🫗"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:21.991649+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🗽"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:22.022678+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "👊"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:22.054111+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "☣️"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:22.085011+00:00",
+      "discord_id": "291008963183509506",
+      "nickname": "epicdrill.1820 🚺",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🍄"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:22.116238+00:00",
+      "discord_id": "291008963183509506",
+      "nickname": "epicdrill.1820 🚺",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "☣️"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:22.148094+00:00",
+      "discord_id": "267011520997752833",
+      "nickname": "TheSaltyOreo.1936 🚹",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "💥"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:22.179425+00:00",
+      "discord_id": "267011520997752833",
+      "nickname": "TheSaltyOreo.1936 🚹",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🍄"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:22.210200+00:00",
+      "discord_id": "226178189163102208",
+      "nickname": "meowmeowbuns.1658 🚹",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "💥"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:22.242430+00:00",
+      "discord_id": "226178189163102208",
+      "nickname": "meowmeowbuns.1658 🚹",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "☣️"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:22.273224+00:00",
+      "discord_id": "220312528784195584",
+      "nickname": "aniigyaall_ (MagicCatt.9068) 🚺",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "💥"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:22.304417+00:00",
+      "discord_id": "220312528784195584",
+      "nickname": "aniigyaall_ (MagicCatt.9068) 🚺",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🍄"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:22.335635+00:00",
+      "discord_id": "220312528784195584",
+      "nickname": "aniigyaall_ (MagicCatt.9068) 🚺",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🪁"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:22.367936+00:00",
+      "discord_id": "220312528784195584",
+      "nickname": "aniigyaall_ (MagicCatt.9068) 🚺",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🗽"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:22.399823+00:00",
+      "discord_id": "220312528784195584",
+      "nickname": "aniigyaall_ (MagicCatt.9068) 🚺",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "👊"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:22.432414+00:00",
+      "discord_id": "220312528784195584",
+      "nickname": "aniigyaall_ (MagicCatt.9068) 🚺",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "☣️"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:22.465034+00:00",
+      "discord_id": "185163027430113280",
+      "nickname": "SGT_Hades (Zephyr.2174)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "💥"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:22.496906+00:00",
+      "discord_id": "185163027430113280",
+      "nickname": "SGT_Hades (Zephyr.2174)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "☣️"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:22.529442+00:00",
+      "discord_id": "166023618440986624",
+      "nickname": "Ara (Aranisium.1498)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "☣️"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:22.562702+00:00",
+      "discord_id": "113154745291509760",
+      "nickname": "Yeetloaf (omfgitsbanana.1408)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "💥"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:22.595206+00:00",
+      "discord_id": "113154745291509760",
+      "nickname": "Yeetloaf (omfgitsbanana.1408)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🍄"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:22.628395+00:00",
+      "discord_id": "113154745291509760",
+      "nickname": "Yeetloaf (omfgitsbanana.1408)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🚀"
+    },
+    {
+      "timestamp": "2026-09-03T23:32:22.660881+00:00",
+      "discord_id": "113154745291509760",
+      "nickname": "Yeetloaf (omfgitsbanana.1408)",
+      "action": "unreacted",
       "source": "post_reaction",
       "emoji": "☣️"
     }
