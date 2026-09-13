@@ -1,9 +1,16 @@
 {
   "source_type": "event",
   "id": "1548759540021858395",
-  "last_updated": "2026-09-13T20:06:17.902000+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,     📧\n2.<798211339365384212> Livingldly (Kavish.8593),  📧\n3.<319619147451465728> Raine (Deviant Raine.5178),📧\n4.<269455660847071232> Sangyi (Murcielago.3570) 🚹,📧\n5.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,📧\n6.<617181650190598155> 💫 whycantifly (Fei.7308) 🚺,📧\n```",
+  "last_updated": "2026-09-13T23:19:38.121094+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<171126671301148672> Avianx1 (avian.8054),      📧\n2.<219437617219895297> BeastfromtheEast.2946,     📧\n3.<798211339365384212> Livingldly (Kavish.8593),  📧\n4.<319619147451465728> Raine (Deviant Raine.5178),📧\n5.<269455660847071232> Sangyi (Murcielago.3570) 🚹,📧\n6.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,📧\n7.<617181650190598155> 💫 whycantifly (Fei.7308) 🚺,📧\n```",
   "roster": [
+    {
+      "discord_id": "171126671301148672",
+      "nickname": "Avianx1 (avian.8054)",
+      "emojis": [
+        "📧"
+      ]
+    },
     {
       "discord_id": "219437617219895297",
       "nickname": "BeastfromtheEast.2946",
@@ -92,6 +99,14 @@
       "timestamp": "2026-09-13T20:05:12.010469+00:00",
       "discord_id": "319619147451465728",
       "nickname": "Raine (Deviant Raine.5178)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-09-13T23:18:32.392914+00:00",
+      "discord_id": "171126671301148672",
+      "nickname": "Avianx1 (avian.8054) 🚹",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
