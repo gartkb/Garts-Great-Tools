@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1548759540021858395",
-  "last_updated": "2026-09-14T00:42:08.452006+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<171126671301148672> Avianx1 (avian.8054),      📧\n2.<219437617219895297> BeastfromtheEast.2946,     📧\n3.<798211339365384212> Livingldly (Kavish.8593),  📧\n4.<319619147451465728> Raine (Deviant Raine.5178),📧\n5.<269455660847071232> Sangyi (Murcielago.3570) 🚹,📧\n6.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,📧\n7.<204388117254242305> 💫 Isbad (iBad.9826),       📧\n8.<177613403584462848> 💫 SoLucky (Lucky.6148) 🔱,  📧\n9.<617181650190598155> 💫 whycantifly (Fei.7308) 🚺,📧\n```",
+  "last_updated": "2026-09-14T00:44:13.032150+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1. <171126671301148672> Avianx1 (avian.8054),     📧\n2. <343457487120236555> Axis (Axis.6817),         📧\n3. <219437617219895297> BeastfromtheEast.2946,    📧\n4. <798211339365384212> Livingldly (Kavish.8593), 📧\n5. <319619147451465728> Raine (Deviant Raine.5178),📧\n6. <269455660847071232> Sangyi (Murcielago.3570) 🚹,📧\n7. <619970339233071134> gijo(Candid Flames.6279)🌠🌀,📧\n8. <204388117254242305> 💫 Isbad (iBad.9826),      📧\n9. <177613403584462848> 💫 SoLucky (Lucky.6148) 🔱, 📧\n10.<617181650190598155> 💫 whycantifly (Fei.7308) 🚺,📧\n```",
   "roster": [
     {
       "discord_id": "171126671301148672",
@@ -42,6 +42,13 @@
     {
       "discord_id": "319619147451465728",
       "nickname": "Raine (Deviant Raine.5178)",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "343457487120236555",
+      "nickname": "Axis (Axis.6817)",
       "emojis": [
         "📧"
       ]
@@ -145,6 +152,14 @@
       "timestamp": "2026-09-14T00:41:02.586965+00:00",
       "discord_id": "177613403584462848",
       "nickname": "💫 SoLucky (Lucky.6148) 🔱",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-09-14T00:43:07.099234+00:00",
+      "discord_id": "343457487120236555",
+      "nickname": "Axis (Axis.6817)",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
