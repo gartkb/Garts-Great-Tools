@@ -1,666 +1,180 @@
 {
   "source_type": "static_post",
   "id": "1532061520694083594",
-  "last_updated": "2026-09-15T14:54:53.356368+00:00",
-  "text_representation": "No interested users found.",
-  "roster": [],
+  "last_updated": "2026-09-15T15:05:16.618252+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1. <217725428633305089> Eduardo (ejrb.6541) 🚹,        ⚔️  ☣️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  ✋  💣  🍄  🪞  ☠️  🫗  🗽  🧪\n2. <318097946975404042> Elouan (Ivora.8739) 👥,        ⚔️  ☣️  \\<:QuickDPS:1038159940164014090>  \\<:QuickHeal:1038159941472620655>  💣  🍄  🚀  🧪\n3. <133398327176855553> Konfedy (Konfedy.4180),       ⚔️  ☣️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  ✋  💣  🍄  🪞\n4. <384950583125082137> Kru (Krumungus.2367) 🚹,       ⚔️  \\<:QuickDPS:1038159940164014090>  💣  🍄  🚀  🫗  👊  🧪\n5. <437022285434454016> PerplexDD (Synux.5634),       ⚔️  ☣️\n6. <416784349623615498> Stouts (Stouts.4253),         ⚔️  \\<:QuickDPS:1038159940164014090>  🍄\n7. <734971332089085984> Visceral.2796 🚺,              ⚔️  ☣️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️  ✋  \\<:2MesmerChronomancer:837890878583996437>  💣  🍄  🪞  🎀  ☠️  🫗  👊  🧪\n8. <265647872618397706> holtchef (holtchef.7801) 🔱,   ⚔️  ☣️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️  ✋  💣  🍄  🚀  🪞  🎀  ☠️  👊  🧪\n9. <117897822329765892> 💫 Mandy Ember (Amanda.5871) 🔱 🚺,⚔️  ☣️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️  ✋  \\<:2MesmerChronomancer:837890878583996437>  💣  🍄  🚀  🪞  🎀  ☠️  🫗  🗽  👊  🧪\n10.<718665407522799637> 💫 Pol (Pol.2146) 🚺,           ⚔️  ☣️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  ✋  💣  🍄  🚀  🫗  🗽  👊  🧪\n```",
+  "roster": [
+    {
+      "discord_id": "734971332089085984",
+      "nickname": "Visceral.2796 🚺",
+      "emojis": [
+        "⚔️",
+        "☣️",
+        "<:QuickDPS:1038159940164014090>",
+        "<:AlacDPS:1038159937391562843>",
+        "<:AlacHeal:1038159938335277140>",
+        "<:QuickHeal:1038159941472620655>",
+        "🛡️",
+        "✋",
+        "<:2MesmerChronomancer:837890878583996437>",
+        "💣",
+        "🍄",
+        "🪞",
+        "🎀",
+        "☠️",
+        "🫗",
+        "👊",
+        "🧪"
+      ]
+    },
+    {
+      "discord_id": "718665407522799637",
+      "nickname": "💫 Pol (Pol.2146) 🚺",
+      "emojis": [
+        "⚔️",
+        "☣️",
+        "<:QuickDPS:1038159940164014090>",
+        "<:AlacDPS:1038159937391562843>",
+        "✋",
+        "💣",
+        "🍄",
+        "🚀",
+        "🫗",
+        "🗽",
+        "👊",
+        "🧪"
+      ]
+    },
+    {
+      "discord_id": "437022285434454016",
+      "nickname": "PerplexDD (Synux.5634)",
+      "emojis": [
+        "⚔️",
+        "☣️"
+      ]
+    },
+    {
+      "discord_id": "416784349623615498",
+      "nickname": "Stouts (Stouts.4253)",
+      "emojis": [
+        "⚔️",
+        "<:QuickDPS:1038159940164014090>",
+        "🍄"
+      ]
+    },
+    {
+      "discord_id": "384950583125082137",
+      "nickname": "Kru (Krumungus.2367) 🚹",
+      "emojis": [
+        "⚔️",
+        "<:QuickDPS:1038159940164014090>",
+        "💣",
+        "🍄",
+        "🚀",
+        "🫗",
+        "👊",
+        "🧪"
+      ]
+    },
+    {
+      "discord_id": "318097946975404042",
+      "nickname": "Elouan (Ivora.8739) 👥",
+      "emojis": [
+        "⚔️",
+        "☣️",
+        "<:QuickDPS:1038159940164014090>",
+        "<:QuickHeal:1038159941472620655>",
+        "💣",
+        "🍄",
+        "🚀",
+        "🧪"
+      ]
+    },
+    {
+      "discord_id": "265647872618397706",
+      "nickname": "holtchef (holtchef.7801) 🔱",
+      "emojis": [
+        "⚔️",
+        "☣️",
+        "<:QuickDPS:1038159940164014090>",
+        "<:AlacDPS:1038159937391562843>",
+        "<:AlacHeal:1038159938335277140>",
+        "<:QuickHeal:1038159941472620655>",
+        "🛡️",
+        "✋",
+        "💣",
+        "🍄",
+        "🚀",
+        "🪞",
+        "🎀",
+        "☠️",
+        "👊",
+        "🧪"
+      ]
+    },
+    {
+      "discord_id": "217725428633305089",
+      "nickname": "Eduardo (ejrb.6541) 🚹",
+      "emojis": [
+        "⚔️",
+        "☣️",
+        "<:QuickDPS:1038159940164014090>",
+        "<:AlacDPS:1038159937391562843>",
+        "<:AlacHeal:1038159938335277140>",
+        "<:QuickHeal:1038159941472620655>",
+        "✋",
+        "💣",
+        "🍄",
+        "🪞",
+        "☠️",
+        "🫗",
+        "🗽",
+        "🧪"
+      ]
+    },
+    {
+      "discord_id": "133398327176855553",
+      "nickname": "Konfedy (Konfedy.4180)",
+      "emojis": [
+        "⚔️",
+        "☣️",
+        "<:QuickDPS:1038159940164014090>",
+        "<:AlacDPS:1038159937391562843>",
+        "<:AlacHeal:1038159938335277140>",
+        "<:QuickHeal:1038159941472620655>",
+        "✋",
+        "💣",
+        "🍄",
+        "🪞"
+      ]
+    },
+    {
+      "discord_id": "117897822329765892",
+      "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "emojis": [
+        "⚔️",
+        "☣️",
+        "<:QuickDPS:1038159940164014090>",
+        "<:AlacDPS:1038159937391562843>",
+        "<:AlacHeal:1038159938335277140>",
+        "<:QuickHeal:1038159941472620655>",
+        "🛡️",
+        "✋",
+        "<:2MesmerChronomancer:837890878583996437>",
+        "💣",
+        "🍄",
+        "🚀",
+        "🪞",
+        "🎀",
+        "☠️",
+        "🫗",
+        "🗽",
+        "👊",
+        "🧪"
+      ]
+    }
+  ],
   "history": [
-    {
-      "timestamp": "2026-09-08T20:27:26.247542+00:00",
-      "discord_id": "653498144432062489",
-      "nickname": "Limtac.6293",
-      "action": "unreacted",
-      "source": "post_reaction",
-      "emoji": "⚔️"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:26.759446+00:00",
-      "discord_id": "653498144432062489",
-      "nickname": "Limtac.6293",
-      "action": "unreacted",
-      "source": "post_reaction",
-      "emoji": "💣"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:27.215113+00:00",
-      "discord_id": "653498144432062489",
-      "nickname": "Limtac.6293",
-      "action": "unreacted",
-      "source": "post_reaction",
-      "emoji": "🍄"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:27.660750+00:00",
-      "discord_id": "653498144432062489",
-      "nickname": "Limtac.6293",
-      "action": "unreacted",
-      "source": "post_reaction",
-      "emoji": "🚀"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:28.131058+00:00",
-      "discord_id": "653498144432062489",
-      "nickname": "Limtac.6293",
-      "action": "unreacted",
-      "source": "post_reaction",
-      "emoji": "🗽"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:28.758727+00:00",
-      "discord_id": "653498144432062489",
-      "nickname": "Limtac.6293",
-      "action": "unreacted",
-      "source": "post_reaction",
-      "emoji": "🧪"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:29.433566+00:00",
-      "discord_id": "188671923159433216",
-      "nickname": "rinn.4296",
-      "action": "unreacted",
-      "source": "post_reaction",
-      "emoji": "⚔️"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:29.959254+00:00",
-      "discord_id": "188671923159433216",
-      "nickname": "rinn.4296",
-      "action": "unreacted",
-      "source": "post_reaction",
-      "emoji": "☣️"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:30.473583+00:00",
-      "discord_id": "188671923159433216",
-      "nickname": "rinn.4296",
-      "action": "unreacted",
-      "source": "post_reaction",
-      "emoji": "<:AlacDPS:1038159937391562843>"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:31.533498+00:00",
-      "discord_id": "188671923159433216",
-      "nickname": "rinn.4296",
-      "action": "unreacted",
-      "source": "post_reaction",
-      "emoji": "🍄"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:32.088525+00:00",
-      "discord_id": "188671923159433216",
-      "nickname": "rinn.4296",
-      "action": "unreacted",
-      "source": "post_reaction",
-      "emoji": "🧪"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:40.932994+00:00",
-      "discord_id": "734971332089085984",
-      "nickname": "Visceral.2796 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "⚔️"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:41.000119+00:00",
-      "discord_id": "734971332089085984",
-      "nickname": "Visceral.2796 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "☣️"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:41.051204+00:00",
-      "discord_id": "734971332089085984",
-      "nickname": "Visceral.2796 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "<:QuickDPS:1038159940164014090>"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:41.086086+00:00",
-      "discord_id": "734971332089085984",
-      "nickname": "Visceral.2796 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "<:AlacDPS:1038159937391562843>"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:41.120966+00:00",
-      "discord_id": "734971332089085984",
-      "nickname": "Visceral.2796 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "<:AlacHeal:1038159938335277140>"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:41.155933+00:00",
-      "discord_id": "734971332089085984",
-      "nickname": "Visceral.2796 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "<:QuickHeal:1038159941472620655>"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:41.191372+00:00",
-      "discord_id": "734971332089085984",
-      "nickname": "Visceral.2796 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🛡️"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:41.226209+00:00",
-      "discord_id": "734971332089085984",
-      "nickname": "Visceral.2796 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "✋"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:41.262409+00:00",
-      "discord_id": "734971332089085984",
-      "nickname": "Visceral.2796 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "<:2MesmerChronomancer:837890878583996437>"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:41.297361+00:00",
-      "discord_id": "734971332089085984",
-      "nickname": "Visceral.2796 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "💣"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:41.331997+00:00",
-      "discord_id": "734971332089085984",
-      "nickname": "Visceral.2796 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🍄"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:41.366383+00:00",
-      "discord_id": "734971332089085984",
-      "nickname": "Visceral.2796 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🪞"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:41.401251+00:00",
-      "discord_id": "734971332089085984",
-      "nickname": "Visceral.2796 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🎀"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:41.436119+00:00",
-      "discord_id": "734971332089085984",
-      "nickname": "Visceral.2796 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "☠️"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:41.471623+00:00",
-      "discord_id": "734971332089085984",
-      "nickname": "Visceral.2796 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🫗"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:41.507167+00:00",
-      "discord_id": "734971332089085984",
-      "nickname": "Visceral.2796 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "👊"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:41.542474+00:00",
-      "discord_id": "734971332089085984",
-      "nickname": "Visceral.2796 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🧪"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:41.577586+00:00",
-      "discord_id": "718665407522799637",
-      "nickname": "💫 Pol (Pol.2146) 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "⚔️"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:41.612755+00:00",
-      "discord_id": "718665407522799637",
-      "nickname": "💫 Pol (Pol.2146) 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "☣️"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:41.648141+00:00",
-      "discord_id": "718665407522799637",
-      "nickname": "💫 Pol (Pol.2146) 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "<:QuickDPS:1038159940164014090>"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:41.683451+00:00",
-      "discord_id": "718665407522799637",
-      "nickname": "💫 Pol (Pol.2146) 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "<:AlacDPS:1038159937391562843>"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:41.717980+00:00",
-      "discord_id": "718665407522799637",
-      "nickname": "💫 Pol (Pol.2146) 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "✋"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:41.753746+00:00",
-      "discord_id": "718665407522799637",
-      "nickname": "💫 Pol (Pol.2146) 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "💣"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:41.788766+00:00",
-      "discord_id": "718665407522799637",
-      "nickname": "💫 Pol (Pol.2146) 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🍄"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:41.824391+00:00",
-      "discord_id": "718665407522799637",
-      "nickname": "💫 Pol (Pol.2146) 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🚀"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:41.860058+00:00",
-      "discord_id": "718665407522799637",
-      "nickname": "💫 Pol (Pol.2146) 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🫗"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:42.062444+00:00",
-      "discord_id": "718665407522799637",
-      "nickname": "💫 Pol (Pol.2146) 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🗽"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:42.100206+00:00",
-      "discord_id": "718665407522799637",
-      "nickname": "💫 Pol (Pol.2146) 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "👊"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:42.135899+00:00",
-      "discord_id": "718665407522799637",
-      "nickname": "💫 Pol (Pol.2146) 🚺",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🧪"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:42.172197+00:00",
-      "discord_id": "653498144432062489",
-      "nickname": "Limtac.6293",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "⚔️"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:42.209218+00:00",
-      "discord_id": "653498144432062489",
-      "nickname": "Limtac.6293",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "💣"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:42.249399+00:00",
-      "discord_id": "437022285434454016",
-      "nickname": "PerplexDD (Synux.5634)",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "⚔️"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:42.286244+00:00",
-      "discord_id": "437022285434454016",
-      "nickname": "PerplexDD (Synux.5634)",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "☣️"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:42.322483+00:00",
-      "discord_id": "416784349623615498",
-      "nickname": "Stouts (Stouts.4253)",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "⚔️"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:42.359487+00:00",
-      "discord_id": "416784349623615498",
-      "nickname": "Stouts (Stouts.4253)",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "<:QuickDPS:1038159940164014090>"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:42.399570+00:00",
-      "discord_id": "416784349623615498",
-      "nickname": "Stouts (Stouts.4253)",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🍄"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:42.436017+00:00",
-      "discord_id": "384950583125082137",
-      "nickname": "Kru (Krumungus.2367) 🚹",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "⚔️"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:42.472816+00:00",
-      "discord_id": "384950583125082137",
-      "nickname": "Kru (Krumungus.2367) 🚹",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "<:QuickDPS:1038159940164014090>"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:42.509107+00:00",
-      "discord_id": "384950583125082137",
-      "nickname": "Kru (Krumungus.2367) 🚹",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "💣"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:42.549029+00:00",
-      "discord_id": "384950583125082137",
-      "nickname": "Kru (Krumungus.2367) 🚹",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🍄"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:42.584963+00:00",
-      "discord_id": "384950583125082137",
-      "nickname": "Kru (Krumungus.2367) 🚹",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🚀"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:42.621091+00:00",
-      "discord_id": "384950583125082137",
-      "nickname": "Kru (Krumungus.2367) 🚹",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🫗"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:42.657807+00:00",
-      "discord_id": "384950583125082137",
-      "nickname": "Kru (Krumungus.2367) 🚹",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "👊"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:42.697353+00:00",
-      "discord_id": "384950583125082137",
-      "nickname": "Kru (Krumungus.2367) 🚹",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🧪"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:42.732663+00:00",
-      "discord_id": "318097946975404042",
-      "nickname": "Elouan (Ivora.8739) 👥",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "⚔️"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:42.769106+00:00",
-      "discord_id": "318097946975404042",
-      "nickname": "Elouan (Ivora.8739) 👥",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "☣️"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:42.805512+00:00",
-      "discord_id": "318097946975404042",
-      "nickname": "Elouan (Ivora.8739) 👥",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "<:QuickDPS:1038159940164014090>"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:42.845387+00:00",
-      "discord_id": "318097946975404042",
-      "nickname": "Elouan (Ivora.8739) 👥",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "<:QuickHeal:1038159941472620655>"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:42.881668+00:00",
-      "discord_id": "318097946975404042",
-      "nickname": "Elouan (Ivora.8739) 👥",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "💣"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:42.917232+00:00",
-      "discord_id": "318097946975404042",
-      "nickname": "Elouan (Ivora.8739) 👥",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🍄"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:42.954711+00:00",
-      "discord_id": "318097946975404042",
-      "nickname": "Elouan (Ivora.8739) 👥",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🚀"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:43.000739+00:00",
-      "discord_id": "318097946975404042",
-      "nickname": "Elouan (Ivora.8739) 👥",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🧪"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:43.041022+00:00",
-      "discord_id": "265647872618397706",
-      "nickname": "holtchef (holtchef.7801) 🔱",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "⚔️"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:43.076655+00:00",
-      "discord_id": "265647872618397706",
-      "nickname": "holtchef (holtchef.7801) 🔱",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "☣️"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:43.113361+00:00",
-      "discord_id": "265647872618397706",
-      "nickname": "holtchef (holtchef.7801) 🔱",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "<:QuickDPS:1038159940164014090>"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:43.153213+00:00",
-      "discord_id": "265647872618397706",
-      "nickname": "holtchef (holtchef.7801) 🔱",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "<:AlacDPS:1038159937391562843>"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:43.190168+00:00",
-      "discord_id": "265647872618397706",
-      "nickname": "holtchef (holtchef.7801) 🔱",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "<:AlacHeal:1038159938335277140>"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:43.226942+00:00",
-      "discord_id": "265647872618397706",
-      "nickname": "holtchef (holtchef.7801) 🔱",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "<:QuickHeal:1038159941472620655>"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:43.263746+00:00",
-      "discord_id": "265647872618397706",
-      "nickname": "holtchef (holtchef.7801) 🔱",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🛡️"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:43.300373+00:00",
-      "discord_id": "265647872618397706",
-      "nickname": "holtchef (holtchef.7801) 🔱",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "✋"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:43.337259+00:00",
-      "discord_id": "265647872618397706",
-      "nickname": "holtchef (holtchef.7801) 🔱",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "💣"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:43.374374+00:00",
-      "discord_id": "265647872618397706",
-      "nickname": "holtchef (holtchef.7801) 🔱",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🍄"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:43.411470+00:00",
-      "discord_id": "265647872618397706",
-      "nickname": "holtchef (holtchef.7801) 🔱",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🚀"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:43.447920+00:00",
-      "discord_id": "265647872618397706",
-      "nickname": "holtchef (holtchef.7801) 🔱",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🪞"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:43.484594+00:00",
-      "discord_id": "265647872618397706",
-      "nickname": "holtchef (holtchef.7801) 🔱",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🎀"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:43.521152+00:00",
-      "discord_id": "265647872618397706",
-      "nickname": "holtchef (holtchef.7801) 🔱",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "☠️"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:43.557976+00:00",
-      "discord_id": "265647872618397706",
-      "nickname": "holtchef (holtchef.7801) 🔱",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "👊"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:43.595212+00:00",
-      "discord_id": "265647872618397706",
-      "nickname": "holtchef (holtchef.7801) 🔱",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🧪"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:43.632413+00:00",
-      "discord_id": "217725428633305089",
-      "nickname": "Eduardo (ejrb.6541) 🚹",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "⚔️"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:43.668591+00:00",
-      "discord_id": "217725428633305089",
-      "nickname": "Eduardo (ejrb.6541) 🚹",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "☣️"
-    },
-    {
-      "timestamp": "2026-09-08T20:27:43.705158+00:00",
-      "discord_id": "217725428633305089",
-      "nickname": "Eduardo (ejrb.6541) 🚹",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "<:QuickDPS:1038159940164014090>"
-    },
     {
       "timestamp": "2026-09-08T20:27:43.741120+00:00",
       "discord_id": "217725428633305089",
@@ -3786,6 +3300,878 @@
       "discord_id": "117897822329765892",
       "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
       "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🧪"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:47.692814+00:00",
+      "discord_id": "734971332089085984",
+      "nickname": "Visceral.2796 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:47.803202+00:00",
+      "discord_id": "734971332089085984",
+      "nickname": "Visceral.2796 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "☣️"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:47.868306+00:00",
+      "discord_id": "734971332089085984",
+      "nickname": "Visceral.2796 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickDPS:1038159940164014090>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:47.936525+00:00",
+      "discord_id": "734971332089085984",
+      "nickname": "Visceral.2796 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacDPS:1038159937391562843>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:48.005387+00:00",
+      "discord_id": "734971332089085984",
+      "nickname": "Visceral.2796 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacHeal:1038159938335277140>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:48.072800+00:00",
+      "discord_id": "734971332089085984",
+      "nickname": "Visceral.2796 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickHeal:1038159941472620655>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:48.140884+00:00",
+      "discord_id": "734971332089085984",
+      "nickname": "Visceral.2796 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🛡️"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:48.208571+00:00",
+      "discord_id": "734971332089085984",
+      "nickname": "Visceral.2796 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "✋"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:48.276520+00:00",
+      "discord_id": "734971332089085984",
+      "nickname": "Visceral.2796 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:2MesmerChronomancer:837890878583996437>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:48.344428+00:00",
+      "discord_id": "734971332089085984",
+      "nickname": "Visceral.2796 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "💣"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:48.412401+00:00",
+      "discord_id": "734971332089085984",
+      "nickname": "Visceral.2796 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🍄"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:48.480333+00:00",
+      "discord_id": "734971332089085984",
+      "nickname": "Visceral.2796 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🪞"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:48.548986+00:00",
+      "discord_id": "734971332089085984",
+      "nickname": "Visceral.2796 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🎀"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:48.616894+00:00",
+      "discord_id": "734971332089085984",
+      "nickname": "Visceral.2796 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "☠️"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:48.882036+00:00",
+      "discord_id": "734971332089085984",
+      "nickname": "Visceral.2796 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🫗"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:48.950305+00:00",
+      "discord_id": "734971332089085984",
+      "nickname": "Visceral.2796 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "👊"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:49.019531+00:00",
+      "discord_id": "734971332089085984",
+      "nickname": "Visceral.2796 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🧪"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:49.087653+00:00",
+      "discord_id": "718665407522799637",
+      "nickname": "💫 Pol (Pol.2146) 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:49.156713+00:00",
+      "discord_id": "718665407522799637",
+      "nickname": "💫 Pol (Pol.2146) 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "☣️"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:49.223668+00:00",
+      "discord_id": "718665407522799637",
+      "nickname": "💫 Pol (Pol.2146) 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickDPS:1038159940164014090>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:49.290895+00:00",
+      "discord_id": "718665407522799637",
+      "nickname": "💫 Pol (Pol.2146) 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacDPS:1038159937391562843>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:49.356963+00:00",
+      "discord_id": "718665407522799637",
+      "nickname": "💫 Pol (Pol.2146) 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "✋"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:49.423776+00:00",
+      "discord_id": "718665407522799637",
+      "nickname": "💫 Pol (Pol.2146) 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "💣"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:49.489903+00:00",
+      "discord_id": "718665407522799637",
+      "nickname": "💫 Pol (Pol.2146) 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🍄"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:49.556463+00:00",
+      "discord_id": "718665407522799637",
+      "nickname": "💫 Pol (Pol.2146) 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🚀"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:49.623142+00:00",
+      "discord_id": "718665407522799637",
+      "nickname": "💫 Pol (Pol.2146) 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🫗"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:49.689794+00:00",
+      "discord_id": "718665407522799637",
+      "nickname": "💫 Pol (Pol.2146) 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🗽"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:49.756352+00:00",
+      "discord_id": "718665407522799637",
+      "nickname": "💫 Pol (Pol.2146) 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "👊"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:49.822919+00:00",
+      "discord_id": "718665407522799637",
+      "nickname": "💫 Pol (Pol.2146) 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🧪"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:49.889604+00:00",
+      "discord_id": "437022285434454016",
+      "nickname": "PerplexDD (Synux.5634)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:49.957166+00:00",
+      "discord_id": "437022285434454016",
+      "nickname": "PerplexDD (Synux.5634)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "☣️"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:50.023930+00:00",
+      "discord_id": "416784349623615498",
+      "nickname": "Stouts (Stouts.4253)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:50.092321+00:00",
+      "discord_id": "416784349623615498",
+      "nickname": "Stouts (Stouts.4253)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickDPS:1038159940164014090>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:50.160251+00:00",
+      "discord_id": "416784349623615498",
+      "nickname": "Stouts (Stouts.4253)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🍄"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:50.228562+00:00",
+      "discord_id": "384950583125082137",
+      "nickname": "Kru (Krumungus.2367) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:50.295330+00:00",
+      "discord_id": "384950583125082137",
+      "nickname": "Kru (Krumungus.2367) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickDPS:1038159940164014090>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:50.362595+00:00",
+      "discord_id": "384950583125082137",
+      "nickname": "Kru (Krumungus.2367) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "💣"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:50.429403+00:00",
+      "discord_id": "384950583125082137",
+      "nickname": "Kru (Krumungus.2367) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🍄"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:50.496358+00:00",
+      "discord_id": "384950583125082137",
+      "nickname": "Kru (Krumungus.2367) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🚀"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:50.562526+00:00",
+      "discord_id": "384950583125082137",
+      "nickname": "Kru (Krumungus.2367) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🫗"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:50.628933+00:00",
+      "discord_id": "384950583125082137",
+      "nickname": "Kru (Krumungus.2367) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "👊"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:50.695092+00:00",
+      "discord_id": "384950583125082137",
+      "nickname": "Kru (Krumungus.2367) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🧪"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:50.762200+00:00",
+      "discord_id": "318097946975404042",
+      "nickname": "Elouan (Ivora.8739) 👥",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:50.829094+00:00",
+      "discord_id": "318097946975404042",
+      "nickname": "Elouan (Ivora.8739) 👥",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "☣️"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:50.896897+00:00",
+      "discord_id": "318097946975404042",
+      "nickname": "Elouan (Ivora.8739) 👥",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickDPS:1038159940164014090>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:50.963286+00:00",
+      "discord_id": "318097946975404042",
+      "nickname": "Elouan (Ivora.8739) 👥",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickHeal:1038159941472620655>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:51.041746+00:00",
+      "discord_id": "318097946975404042",
+      "nickname": "Elouan (Ivora.8739) 👥",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "💣"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:51.108938+00:00",
+      "discord_id": "318097946975404042",
+      "nickname": "Elouan (Ivora.8739) 👥",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🍄"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:51.175666+00:00",
+      "discord_id": "318097946975404042",
+      "nickname": "Elouan (Ivora.8739) 👥",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🚀"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:51.242799+00:00",
+      "discord_id": "318097946975404042",
+      "nickname": "Elouan (Ivora.8739) 👥",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🧪"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:51.309806+00:00",
+      "discord_id": "265647872618397706",
+      "nickname": "holtchef (holtchef.7801) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:51.377595+00:00",
+      "discord_id": "265647872618397706",
+      "nickname": "holtchef (holtchef.7801) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "☣️"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:51.446071+00:00",
+      "discord_id": "265647872618397706",
+      "nickname": "holtchef (holtchef.7801) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickDPS:1038159940164014090>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:51.513606+00:00",
+      "discord_id": "265647872618397706",
+      "nickname": "holtchef (holtchef.7801) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacDPS:1038159937391562843>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:51.581524+00:00",
+      "discord_id": "265647872618397706",
+      "nickname": "holtchef (holtchef.7801) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacHeal:1038159938335277140>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:51.649427+00:00",
+      "discord_id": "265647872618397706",
+      "nickname": "holtchef (holtchef.7801) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickHeal:1038159941472620655>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:51.716877+00:00",
+      "discord_id": "265647872618397706",
+      "nickname": "holtchef (holtchef.7801) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🛡️"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:51.784528+00:00",
+      "discord_id": "265647872618397706",
+      "nickname": "holtchef (holtchef.7801) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "✋"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:51.853804+00:00",
+      "discord_id": "265647872618397706",
+      "nickname": "holtchef (holtchef.7801) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "💣"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:51.926016+00:00",
+      "discord_id": "265647872618397706",
+      "nickname": "holtchef (holtchef.7801) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🍄"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:51.995120+00:00",
+      "discord_id": "265647872618397706",
+      "nickname": "holtchef (holtchef.7801) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🚀"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:52.064903+00:00",
+      "discord_id": "265647872618397706",
+      "nickname": "holtchef (holtchef.7801) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🪞"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:52.133486+00:00",
+      "discord_id": "265647872618397706",
+      "nickname": "holtchef (holtchef.7801) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🎀"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:52.201907+00:00",
+      "discord_id": "265647872618397706",
+      "nickname": "holtchef (holtchef.7801) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "☠️"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:52.270647+00:00",
+      "discord_id": "265647872618397706",
+      "nickname": "holtchef (holtchef.7801) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "👊"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:52.339162+00:00",
+      "discord_id": "265647872618397706",
+      "nickname": "holtchef (holtchef.7801) 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🧪"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:52.408238+00:00",
+      "discord_id": "217725428633305089",
+      "nickname": "Eduardo (ejrb.6541) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:52.476209+00:00",
+      "discord_id": "217725428633305089",
+      "nickname": "Eduardo (ejrb.6541) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "☣️"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:52.544122+00:00",
+      "discord_id": "217725428633305089",
+      "nickname": "Eduardo (ejrb.6541) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickDPS:1038159940164014090>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:52.611788+00:00",
+      "discord_id": "217725428633305089",
+      "nickname": "Eduardo (ejrb.6541) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacDPS:1038159937391562843>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:52.679495+00:00",
+      "discord_id": "217725428633305089",
+      "nickname": "Eduardo (ejrb.6541) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacHeal:1038159938335277140>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:52.753198+00:00",
+      "discord_id": "217725428633305089",
+      "nickname": "Eduardo (ejrb.6541) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickHeal:1038159941472620655>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:52.838238+00:00",
+      "discord_id": "217725428633305089",
+      "nickname": "Eduardo (ejrb.6541) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "✋"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:52.915583+00:00",
+      "discord_id": "217725428633305089",
+      "nickname": "Eduardo (ejrb.6541) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "💣"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:52.983416+00:00",
+      "discord_id": "217725428633305089",
+      "nickname": "Eduardo (ejrb.6541) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🍄"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:53.050837+00:00",
+      "discord_id": "217725428633305089",
+      "nickname": "Eduardo (ejrb.6541) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🪞"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:53.118388+00:00",
+      "discord_id": "217725428633305089",
+      "nickname": "Eduardo (ejrb.6541) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "☠️"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:53.186086+00:00",
+      "discord_id": "217725428633305089",
+      "nickname": "Eduardo (ejrb.6541) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🫗"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:53.262937+00:00",
+      "discord_id": "217725428633305089",
+      "nickname": "Eduardo (ejrb.6541) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🗽"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:53.330503+00:00",
+      "discord_id": "217725428633305089",
+      "nickname": "Eduardo (ejrb.6541) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🧪"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:53.398291+00:00",
+      "discord_id": "133398327176855553",
+      "nickname": "Konfedy (Konfedy.4180)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:53.465854+00:00",
+      "discord_id": "133398327176855553",
+      "nickname": "Konfedy (Konfedy.4180)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "☣️"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:53.534325+00:00",
+      "discord_id": "133398327176855553",
+      "nickname": "Konfedy (Konfedy.4180)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickDPS:1038159940164014090>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:53.602108+00:00",
+      "discord_id": "133398327176855553",
+      "nickname": "Konfedy (Konfedy.4180)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacDPS:1038159937391562843>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:53.670446+00:00",
+      "discord_id": "133398327176855553",
+      "nickname": "Konfedy (Konfedy.4180)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacHeal:1038159938335277140>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:53.737768+00:00",
+      "discord_id": "133398327176855553",
+      "nickname": "Konfedy (Konfedy.4180)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickHeal:1038159941472620655>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:53.805360+00:00",
+      "discord_id": "133398327176855553",
+      "nickname": "Konfedy (Konfedy.4180)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "✋"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:53.872703+00:00",
+      "discord_id": "133398327176855553",
+      "nickname": "Konfedy (Konfedy.4180)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "💣"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:53.940300+00:00",
+      "discord_id": "133398327176855553",
+      "nickname": "Konfedy (Konfedy.4180)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🍄"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:54.007571+00:00",
+      "discord_id": "133398327176855553",
+      "nickname": "Konfedy (Konfedy.4180)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🪞"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:54.076286+00:00",
+      "discord_id": "117897822329765892",
+      "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:54.144991+00:00",
+      "discord_id": "117897822329765892",
+      "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "☣️"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:54.213207+00:00",
+      "discord_id": "117897822329765892",
+      "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickDPS:1038159940164014090>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:54.281599+00:00",
+      "discord_id": "117897822329765892",
+      "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacDPS:1038159937391562843>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:54.350068+00:00",
+      "discord_id": "117897822329765892",
+      "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacHeal:1038159938335277140>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:54.418804+00:00",
+      "discord_id": "117897822329765892",
+      "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickHeal:1038159941472620655>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:54.487327+00:00",
+      "discord_id": "117897822329765892",
+      "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🛡️"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:54.555870+00:00",
+      "discord_id": "117897822329765892",
+      "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "✋"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:54.624190+00:00",
+      "discord_id": "117897822329765892",
+      "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:2MesmerChronomancer:837890878583996437>"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:54.692319+00:00",
+      "discord_id": "117897822329765892",
+      "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "💣"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:54.761042+00:00",
+      "discord_id": "117897822329765892",
+      "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🍄"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:54.830272+00:00",
+      "discord_id": "117897822329765892",
+      "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🚀"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:54.904999+00:00",
+      "discord_id": "117897822329765892",
+      "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🪞"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:54.960885+00:00",
+      "discord_id": "117897822329765892",
+      "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🎀"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:55.028529+00:00",
+      "discord_id": "117897822329765892",
+      "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "☠️"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:55.097330+00:00",
+      "discord_id": "117897822329765892",
+      "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🫗"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:55.165635+00:00",
+      "discord_id": "117897822329765892",
+      "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🗽"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:55.233724+00:00",
+      "discord_id": "117897822329765892",
+      "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "👊"
+    },
+    {
+      "timestamp": "2026-09-15T15:04:55.301979+00:00",
+      "discord_id": "117897822329765892",
+      "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "action": "reacted",
       "source": "post_reaction",
       "emoji": "🧪"
     }
