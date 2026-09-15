@@ -1,7 +1,7 @@
 {
   "source_type": "event",
   "id": "1548972859236286484",
-  "last_updated": "2026-09-14T20:58:40.638629+00:00",
+  "last_updated": "2026-09-15T15:06:22.846009+00:00",
   "text_representation": "**Interest List:**\n\n```\n1.<668023351050240003> B3cfist (bcfist.6274) 🔱 🚹,   📧\n2.<798211339365384212> Livingldly (Kavish.8593),    📧\n3.<198877291856527360> Ven (Larquin.5237),          📧\n4.<231518357440954368> shaqsalazar (shaqsalazar.2906),📧\n5.<297875840748748810> 💫☄️🕵 morganah.8214 🔰 👥,      📧\n```",
   "roster": [
     {
@@ -42,23 +42,7 @@
   ],
   "history": [
     {
-      "timestamp": "2026-09-14T08:28:11.203710+00:00",
-      "discord_id": "798211339365384212",
-      "nickname": "Livingldly (Kavish.8593)",
-      "action": "interested",
-      "source": "event_interest",
-      "emoji": null
-    },
-    {
-      "timestamp": "2026-09-14T15:22:10.230417+00:00",
-      "discord_id": "231518357440954368",
-      "nickname": "shaqsalazar (shaqsalazar.2906)",
-      "action": "interested",
-      "source": "event_interest",
-      "emoji": null
-    },
-    {
-      "timestamp": "2026-09-14T15:33:26.677476+00:00",
+      "timestamp": "2026-09-15T15:06:16.690438+00:00",
       "discord_id": "198877291856527360",
       "nickname": "Ven (Larquin.5237)",
       "action": "interested",
@@ -66,15 +50,15 @@
       "emoji": null
     },
     {
-      "timestamp": "2026-09-14T15:45:28.705405+00:00",
-      "discord_id": "233684047442870272",
-      "nickname": "Wakazu (Wakazu.5980)",
+      "timestamp": "2026-09-15T15:06:16.801835+00:00",
+      "discord_id": "231518357440954368",
+      "nickname": "shaqsalazar (shaqsalazar.2906)",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
     },
     {
-      "timestamp": "2026-09-14T16:31:38.876217+00:00",
+      "timestamp": "2026-09-15T15:06:16.868930+00:00",
       "discord_id": "297875840748748810",
       "nickname": "💫☄️🕵 morganah.8214 🔰 👥",
       "action": "interested",
@@ -82,7 +66,7 @@
       "emoji": null
     },
     {
-      "timestamp": "2026-09-14T16:52:41.202513+00:00",
+      "timestamp": "2026-09-15T15:06:16.938243+00:00",
       "discord_id": "668023351050240003",
       "nickname": "B3cfist (bcfist.6274) 🔱 🚹",
       "action": "interested",
@@ -90,10 +74,10 @@
       "emoji": null
     },
     {
-      "timestamp": "2026-09-14T20:57:34.118442+00:00",
-      "discord_id": "233684047442870272",
-      "nickname": "Wakazu (Wakazu.5980)",
-      "action": "uninterested",
+      "timestamp": "2026-09-15T15:06:17.007578+00:00",
+      "discord_id": "798211339365384212",
+      "nickname": "Livingldly (Kavish.8593)",
+      "action": "interested",
       "source": "event_interest",
       "emoji": null
     }
