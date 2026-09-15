@@ -1,0 +1,93 @@
+{
+  "source_type": "event",
+  "id": "1549218882814869544",
+  "last_updated": "2026-09-15T00:52:33.760861+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,        📧\n2.<225952830631051264> morguese (Turretfriend.2850)👥,📧\n3.<200423784589688832> 💫 KelsTheBard (kelso.2354),   📧\n4.<117897822329765892> 💫 Mandy Ember (Amanda.5871) 🔱 🚺,📧\n5.<617181650190598155> 💫 whycantifly (Fei.7308) 🚺,   📧\n```",
+  "roster": [
+    {
+      "discord_id": "117897822329765892",
+      "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "200423784589688832",
+      "nickname": "💫 KelsTheBard (kelso.2354)",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "219437617219895297",
+      "nickname": "BeastfromtheEast.2946",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "225952830631051264",
+      "nickname": "morguese (Turretfriend.2850)👥",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "617181650190598155",
+      "nickname": "💫 whycantifly (Fei.7308) 🚺",
+      "emojis": [
+        "📧"
+      ]
+    }
+  ],
+  "history": [
+    {
+      "timestamp": "2026-09-15T00:51:13.859336+00:00",
+      "discord_id": "117897822329765892",
+      "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-09-15T00:52:18.025107+00:00",
+      "discord_id": "117897822329765892",
+      "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-09-15T00:52:18.115371+00:00",
+      "discord_id": "200423784589688832",
+      "nickname": "💫 KelsTheBard (kelso.2354)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-09-15T00:52:18.177978+00:00",
+      "discord_id": "219437617219895297",
+      "nickname": "BeastfromtheEast.2946",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-09-15T00:52:18.237869+00:00",
+      "discord_id": "225952830631051264",
+      "nickname": "morguese (Turretfriend.2850)👥",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-09-15T00:52:22.329048+00:00",
+      "discord_id": "617181650190598155",
+      "nickname": "💫 whycantifly (Fei.7308) 🚺",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    }
+  ]
+}
