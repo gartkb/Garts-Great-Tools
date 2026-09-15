@@ -1,7 +1,7 @@
 {
   "source_type": "event",
   "id": "1549218882814869544",
-  "last_updated": "2026-09-15T15:06:38.046499+00:00",
+  "last_updated": "2026-09-15T20:12:35.008624+00:00",
   "text_representation": "**Interest List:**\n\n```\n1. <171126671301148672> Avianx1 (avian.8054),         📧\n2. <219437617219895297> BeastfromtheEast.2946,        📧\n3. <200060947501547520> Begonia.9536 🔰 🔱 🚺,           📧\n4. <172515643801731072> Toni (Orewatowi.1603) 🚺,      📧\n5. <734971332089085984> Visceral.2796 🚺,              📧\n6. <231518357440954368> shaqsalazar (shaqsalazar.2906),📧\n7. <200423784589688832> 💫 KelsTheBard (kelso.2354),   📧\n8. <117897822329765892> 💫 Mandy Ember (Amanda.5871) 🔱 🚺,📧\n9. <617181650190598155> 💫 whycantifly (Fei.7308) 🚺,   📧\n10.<130559857823711232> 💫MegaGamer.4786 🚹,            📧\n```",
   "roster": [
     {
@@ -153,6 +153,22 @@
       "discord_id": "734971332089085984",
       "nickname": "Visceral.2796 🚺",
       "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-09-15T20:11:27.850024+00:00",
+      "discord_id": "668023351050240003",
+      "nickname": "B3cfist (bcfist.6274) 🔱 🚹",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-09-15T20:11:29.034219+00:00",
+      "discord_id": "668023351050240003",
+      "nickname": "B3cfist (bcfist.6274) 🔱 🚹",
+      "action": "uninterested",
       "source": "event_interest",
       "emoji": null
     }
