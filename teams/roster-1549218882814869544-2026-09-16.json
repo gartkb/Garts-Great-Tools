@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1549218882814869544",
-  "last_updated": "2026-09-15T02:10:09.345847+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<171126671301148672> Avianx1 (avian.8054),         📧\n2.<219437617219895297> BeastfromtheEast.2946,        📧\n3.<172515643801731072> Toni (Orewatowi.1603) 🚺,      📧\n4.<734971332089085984> Visceral.2796 🚺,              📧\n5.<225952830631051264> morguese (Turretfriend.2850)👥,📧\n6.<200423784589688832> 💫 KelsTheBard (kelso.2354),   📧\n7.<117897822329765892> 💫 Mandy Ember (Amanda.5871) 🔱 🚺,📧\n8.<617181650190598155> 💫 whycantifly (Fei.7308) 🚺,   📧\n9.<130559857823711232> 💫MegaGamer.4786 🚹,            📧\n```",
+  "last_updated": "2026-09-15T04:38:32.841275+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<171126671301148672> Avianx1 (avian.8054),         📧\n2.<219437617219895297> BeastfromtheEast.2946,        📧\n3.<172515643801731072> Toni (Orewatowi.1603) 🚺,      📧\n4.<734971332089085984> Visceral.2796 🚺,              📧\n5.<200423784589688832> 💫 KelsTheBard (kelso.2354),   📧\n6.<117897822329765892> 💫 Mandy Ember (Amanda.5871) 🔱 🚺,📧\n7.<617181650190598155> 💫 whycantifly (Fei.7308) 🚺,   📧\n8.<130559857823711232> 💫MegaGamer.4786 🚹,            📧\n```",
   "roster": [
     {
       "discord_id": "117897822329765892",
@@ -42,13 +42,6 @@
     {
       "discord_id": "219437617219895297",
       "nickname": "BeastfromtheEast.2946",
-      "emojis": [
-        "📧"
-      ]
-    },
-    {
-      "discord_id": "225952830631051264",
-      "nickname": "morguese (Turretfriend.2850)👥",
       "emojis": [
         "📧"
       ]
@@ -146,6 +139,14 @@
       "discord_id": "130559857823711232",
       "nickname": "💫MegaGamer.4786 🚹",
       "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-09-15T04:37:27.088768+00:00",
+      "discord_id": "225952830631051264",
+      "nickname": "morguese (Turretfriend.2850)👥",
+      "action": "uninterested",
       "source": "event_interest",
       "emoji": null
     }
