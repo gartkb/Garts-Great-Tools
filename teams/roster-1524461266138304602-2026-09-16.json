@@ -1,9 +1,16 @@
 {
   "source_type": "event",
   "id": "1524461266138304602",
-  "last_updated": "2026-09-15T15:06:09.775200+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,       📧\n2.<798211339365384212> Livingldly (Kavish.8593),    📧\n3.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,  📧\n4.<231518357440954368> shaqsalazar (shaqsalazar.2906),📧\n```",
+  "last_updated": "2026-09-15T23:57:14.140976+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,       📧\n2.<798211339365384212> Livingldly (Kavish.8593),    📧\n3.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,  📧\n4.<231518357440954368> shaqsalazar (shaqsalazar.2906),📧\n5.<200423784589688832> 💫 KelsTheBard (kelso.2354),  📧\n```",
   "roster": [
+    {
+      "discord_id": "200423784589688832",
+      "nickname": "💫 KelsTheBard (kelso.2354)",
+      "emojis": [
+        "📧"
+      ]
+    },
     {
       "discord_id": "219437617219895297",
       "nickname": "BeastfromtheEast.2946",
@@ -62,6 +69,14 @@
       "timestamp": "2026-09-15T15:06:03.768714+00:00",
       "discord_id": "798211339365384212",
       "nickname": "Livingldly (Kavish.8593)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-09-15T23:56:08.252278+00:00",
+      "discord_id": "200423784589688832",
+      "nickname": "💫 KelsTheBard (kelso.2354)",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
