@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1550352634060345344",
-  "last_updated": "2026-09-18T14:16:28.184361+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1. <274431726082850817> Amano (Based Weeb.8291),     🐥\n2. <166023618440986624> Ara (Aranisium.1498),        📧  🔥  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:QuickHeal:1038159941472620655>\n3. <493633584528097281> CrimsonPenalty (Crimson. 3186),📧  🐥\n4. <1073391600266395678> DeadRoses (Kimba.8260),     📧  🐥\n5. <220434735464185856> Dinophysis (Ellie.6938) 🚺,   📧  🐥\n6. <111224903272775680> FaceEater.3741,              📧  🐣\n7. <356311257592102923> Langley (SilverShark.8274) 🚹,🔥\n8. <1538051951248539648> Seiba34 (Null.9367),        🐣\n9. <193583025630478339> Vem (UncreativeGreen.2019) 🚹,🕵️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️\n10.<395062862210531330> XxbluexX (XxbluexX.1385) 🚹,  📧  🐣\n11.<239171418460389386> veritius_of_dawn,            📧\n12.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  📧\n13.<297875840748748810> 💫☄️🕵 morganah.8214 🔰 👥,      📧  🕵️  \\<:QuickDPS:1038159940164014090>\n```",
+  "last_updated": "2026-09-18T14:36:17.340612+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1. <274431726082850817> Amano (Based Weeb.8291),     🐥\n2. <166023618440986624> Ara (Aranisium.1498),        📧  🔥  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:QuickHeal:1038159941472620655>\n3. <493633584528097281> CrimsonPenalty (Crimson. 3186),📧  🐥\n4. <1073391600266395678> DeadRoses (Kimba.8260),     📧  🐥\n5. <220434735464185856> Dinophysis (Ellie.6938) 🚺,   📧  🐥\n6. <111224903272775680> FaceEater.3741,              📧  🐣\n7. <356311257592102923> Langley (SilverShark.8274) 🚹,🔥\n8. <153993501124722689> Logan (Echo.9506),           📧\n9. <1538051951248539648> Seiba34 (Null.9367),        🐣\n10.<193583025630478339> Vem (UncreativeGreen.2019) 🚹,🕵️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️\n11.<395062862210531330> XxbluexX (XxbluexX.1385) 🚹,  📧  🐣\n12.<239171418460389386> veritius_of_dawn,            📧\n13.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  📧\n14.<297875840748748810> 💫☄️🕵 morganah.8214 🔰 👥,      📧  🕵️  \\<:QuickDPS:1038159940164014090>\n```",
   "roster": [
     {
       "discord_id": "111224903272775680",
@@ -10,6 +10,13 @@
       "emojis": [
         "📧",
         "🐣"
+      ]
+    },
+    {
+      "discord_id": "153993501124722689",
+      "nickname": "Logan (Echo.9506)",
+      "emojis": [
+        "📧"
       ]
     },
     {
@@ -421,6 +428,14 @@
       "timestamp": "2026-09-18T14:15:15.780159+00:00",
       "discord_id": "395062862210531330",
       "nickname": "XxbluexX (XxbluexX.1385) 🚹",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-09-18T14:35:05.135140+00:00",
+      "discord_id": "153993501124722689",
+      "nickname": "Logan (Echo.9506)",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
