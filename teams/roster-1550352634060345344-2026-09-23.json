@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1550352634060345344",
-  "last_updated": "2026-09-18T06:39:47.461184+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<274431726082850817> Amano (Based Weeb.8291),     🐥\n2.<493633584528097281> CrimsonPenalty (Crimson. 3186),📧  🐥\n3.<220434735464185856> Dinophysis (Ellie.6938) 🚺,   📧  🐥\n4.<1538051951248539648> Seiba34 (Null.9367),        🐣\n5.<193583025630478339> Vem (UncreativeGreen.2019) 🚹,🕵️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️\n6.<395062862210531330> XxbluexX (XxbluexX.1385) 🚹,  🐣\n7.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  📧\n8.<297875840748748810> 💫☄️🕵 morganah.8214 🔰 👥,      📧  🕵️  \\<:QuickDPS:1038159940164014090>\n```",
+  "last_updated": "2026-09-18T07:12:28.654843+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<274431726082850817> Amano (Based Weeb.8291),     🐥\n2.<493633584528097281> CrimsonPenalty (Crimson. 3186),📧  🐥\n3.<220434735464185856> Dinophysis (Ellie.6938) 🚺,   📧  🐥\n4.<1538051951248539648> Seiba34 (Null.9367),        🐣\n5.<193583025630478339> Vem (UncreativeGreen.2019) 🚹,🕵️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️\n6.<395062862210531330> XxbluexX (XxbluexX.1385) 🚹,  🐣\n7.<239171418460389386> veritius_of_dawn,            📧\n8.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  📧\n9.<297875840748748810> 💫☄️🕵 morganah.8214 🔰 👥,      📧  🕵️  \\<:QuickDPS:1038159940164014090>\n```",
   "roster": [
     {
       "discord_id": "220434735464185856",
@@ -10,6 +10,13 @@
       "emojis": [
         "📧",
         "🐥"
+      ]
+    },
+    {
+      "discord_id": "239171418460389386",
+      "nickname": "veritius_of_dawn",
+      "emojis": [
+        "📧"
       ]
     },
     {
@@ -72,7 +79,7 @@
   ],
   "history": [
     {
-      "timestamp": "2026-09-18T03:58:57.103134+00:00",
+      "timestamp": "2026-09-18T07:12:14.725679+00:00",
       "discord_id": "220434735464185856",
       "nickname": "Dinophysis (Ellie.6938) 🚺",
       "action": "interested",
@@ -80,7 +87,7 @@
       "emoji": null
     },
     {
-      "timestamp": "2026-09-18T03:58:57.195410+00:00",
+      "timestamp": "2026-09-18T07:12:14.831489+00:00",
       "discord_id": "220434735464185856",
       "nickname": "Dinophysis (Ellie.6938) 🚺",
       "action": "reacted",
@@ -88,7 +95,55 @@
       "emoji": "🐥"
     },
     {
-      "timestamp": "2026-09-18T03:58:57.270915+00:00",
+      "timestamp": "2026-09-18T07:12:14.907539+00:00",
+      "discord_id": "239171418460389386",
+      "nickname": "veritius_of_dawn",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-09-18T07:12:14.985269+00:00",
+      "discord_id": "297875840748748810",
+      "nickname": "💫☄️🕵 morganah.8214 🔰 👥",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-09-18T07:12:15.063601+00:00",
+      "discord_id": "297875840748748810",
+      "nickname": "💫☄️🕵 morganah.8214 🔰 👥",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🕵️"
+    },
+    {
+      "timestamp": "2026-09-18T07:12:15.143232+00:00",
+      "discord_id": "297875840748748810",
+      "nickname": "💫☄️🕵 morganah.8214 🔰 👥",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickDPS:1038159940164014090>"
+    },
+    {
+      "timestamp": "2026-09-18T07:12:15.222324+00:00",
+      "discord_id": "493633584528097281",
+      "nickname": "CrimsonPenalty (Crimson. 3186)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-09-18T07:12:15.300984+00:00",
+      "discord_id": "493633584528097281",
+      "nickname": "CrimsonPenalty (Crimson. 3186)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🐥"
+    },
+    {
+      "timestamp": "2026-09-18T07:12:15.379064+00:00",
       "discord_id": "596875174700122122",
       "nickname": "💫☄️Gartner Kinderboom.5019",
       "action": "interested",
@@ -96,95 +151,15 @@
       "emoji": null
     },
     {
-      "timestamp": "2026-09-18T03:58:57.348676+00:00",
-      "discord_id": "274431726082850817",
-      "nickname": "Amano (Based Weeb.8291)",
+      "timestamp": "2026-09-18T07:12:15.457981+00:00",
+      "discord_id": "1538051951248539648",
+      "nickname": "Seiba34 (Null.9367)",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
     },
     {
-      "timestamp": "2026-09-18T03:58:57.425703+00:00",
-      "discord_id": "274431726082850817",
-      "nickname": "Amano (Based Weeb.8291)",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🐥"
-    },
-    {
-      "timestamp": "2026-09-18T04:22:32.696451+00:00",
-      "discord_id": "395062862210531330",
-      "nickname": "XxbluexX (XxbluexX.1385) 🚹",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🐣"
-    },
-    {
-      "timestamp": "2026-09-18T04:22:53.783827+00:00",
-      "discord_id": "395062862210531330",
-      "nickname": "XxbluexX (XxbluexX.1385) 🚹",
-      "action": "interested",
-      "source": "event_interest",
-      "emoji": null
-    },
-    {
-      "timestamp": "2026-09-18T04:22:53.895505+00:00",
-      "discord_id": "395062862210531330",
-      "nickname": "XxbluexX (XxbluexX.1385) 🚹",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🐣"
-    },
-    {
-      "timestamp": "2026-09-18T04:26:04.494357+00:00",
-      "discord_id": "193583025630478339",
-      "nickname": "Vem (UncreativeGreen.2019) 🚹",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🕵️"
-    },
-    {
-      "timestamp": "2026-09-18T04:26:56.260749+00:00",
-      "discord_id": "193583025630478339",
-      "nickname": "Vem (UncreativeGreen.2019) 🚹",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "<:QuickDPS:1038159940164014090>"
-    },
-    {
-      "timestamp": "2026-09-18T04:26:56.728687+00:00",
-      "discord_id": "193583025630478339",
-      "nickname": "Vem (UncreativeGreen.2019) 🚹",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "<:AlacDPS:1038159937391562843>"
-    },
-    {
-      "timestamp": "2026-09-18T04:26:57.386973+00:00",
-      "discord_id": "193583025630478339",
-      "nickname": "Vem (UncreativeGreen.2019) 🚹",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "<:AlacHeal:1038159938335277140>"
-    },
-    {
-      "timestamp": "2026-09-18T04:26:58.343102+00:00",
-      "discord_id": "193583025630478339",
-      "nickname": "Vem (UncreativeGreen.2019) 🚹",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🛡️"
-    },
-    {
-      "timestamp": "2026-09-18T04:26:59.511551+00:00",
-      "discord_id": "193583025630478339",
-      "nickname": "Vem (UncreativeGreen.2019) 🚹",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "<:QuickHeal:1038159941472620655>"
-    },
-    {
-      "timestamp": "2026-09-18T04:28:07.536577+00:00",
+      "timestamp": "2026-09-18T07:12:15.535622+00:00",
       "discord_id": "1538051951248539648",
       "nickname": "Seiba34 (Null.9367)",
       "action": "reacted",
@@ -192,172 +167,92 @@
       "emoji": "🐣"
     },
     {
-      "timestamp": "2026-09-18T05:59:17.867105+00:00",
-      "discord_id": "297875840748748810",
-      "nickname": "💫☄️🕵 morganah.8214 🔰 👥",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🕵️"
-    },
-    {
-      "timestamp": "2026-09-18T05:59:18.357584+00:00",
-      "discord_id": "297875840748748810",
-      "nickname": "💫☄️🕵 morganah.8214 🔰 👥",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "<:QuickDPS:1038159940164014090>"
-    },
-    {
-      "timestamp": "2026-09-18T06:02:02.663727+00:00",
-      "discord_id": "297875840748748810",
-      "nickname": "💫☄️🕵 morganah.8214 🔰 👥",
+      "timestamp": "2026-09-18T07:12:15.613486+00:00",
+      "discord_id": "395062862210531330",
+      "nickname": "XxbluexX (XxbluexX.1385) 🚹",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
     },
     {
-      "timestamp": "2026-09-18T06:02:29.821562+00:00",
-      "discord_id": "184883262735253504",
-      "nickname": "☄️DrinkHolder (koramar.4961)",
+      "timestamp": "2026-09-18T07:12:15.692997+00:00",
+      "discord_id": "395062862210531330",
+      "nickname": "XxbluexX (XxbluexX.1385) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🐣"
+    },
+    {
+      "timestamp": "2026-09-18T07:12:15.771433+00:00",
+      "discord_id": "274431726082850817",
+      "nickname": "Amano (Based Weeb.8291)",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
     },
     {
-      "timestamp": "2026-09-18T06:02:40.795773+00:00",
-      "discord_id": "184883262735253504",
-      "nickname": "☄️DrinkHolder (koramar.4961)",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🕵️"
-    },
-    {
-      "timestamp": "2026-09-18T06:02:41.317849+00:00",
-      "discord_id": "184883262735253504",
-      "nickname": "☄️DrinkHolder (koramar.4961)",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "<:QuickDPS:1038159940164014090>"
-    },
-    {
-      "timestamp": "2026-09-18T06:02:41.888905+00:00",
-      "discord_id": "184883262735253504",
-      "nickname": "☄️DrinkHolder (koramar.4961)",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "<:AlacDPS:1038159937391562843>"
-    },
-    {
-      "timestamp": "2026-09-18T06:02:42.381085+00:00",
-      "discord_id": "184883262735253504",
-      "nickname": "☄️DrinkHolder (koramar.4961)",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "<:AlacHeal:1038159938335277140>"
-    },
-    {
-      "timestamp": "2026-09-18T06:02:43.110056+00:00",
-      "discord_id": "184883262735253504",
-      "nickname": "☄️DrinkHolder (koramar.4961)",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "<:QuickHeal:1038159941472620655>"
-    },
-    {
-      "timestamp": "2026-09-18T06:02:43.450844+00:00",
-      "discord_id": "184883262735253504",
-      "nickname": "☄️DrinkHolder (koramar.4961)",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🛡️"
-    },
-    {
-      "timestamp": "2026-09-18T06:02:49.710673+00:00",
-      "discord_id": "184883262735253504",
-      "nickname": "☄️DrinkHolder (koramar.4961)",
-      "action": "reacted",
-      "source": "post_reaction",
-      "emoji": "🔥"
-    },
-    {
-      "timestamp": "2026-09-18T06:02:49.824875+00:00",
-      "discord_id": "184883262735253504",
-      "nickname": "☄️DrinkHolder (koramar.4961)",
-      "action": "unreacted",
-      "source": "post_reaction",
-      "emoji": "🕵️"
-    },
-    {
-      "timestamp": "2026-09-18T06:02:54.137505+00:00",
-      "discord_id": "184883262735253504",
-      "nickname": "☄️DrinkHolder (koramar.4961)",
-      "action": "uninterested",
-      "source": "event_interest",
-      "emoji": null
-    },
-    {
-      "timestamp": "2026-09-18T06:02:56.193711+00:00",
-      "discord_id": "184883262735253504",
-      "nickname": "☄️DrinkHolder (koramar.4961)",
-      "action": "unreacted",
-      "source": "post_reaction",
-      "emoji": "🔥"
-    },
-    {
-      "timestamp": "2026-09-18T06:02:56.820312+00:00",
-      "discord_id": "184883262735253504",
-      "nickname": "☄️DrinkHolder (koramar.4961)",
-      "action": "unreacted",
-      "source": "post_reaction",
-      "emoji": "<:QuickDPS:1038159940164014090>"
-    },
-    {
-      "timestamp": "2026-09-18T06:02:56.968616+00:00",
-      "discord_id": "184883262735253504",
-      "nickname": "☄️DrinkHolder (koramar.4961)",
-      "action": "unreacted",
-      "source": "post_reaction",
-      "emoji": "<:AlacDPS:1038159937391562843>"
-    },
-    {
-      "timestamp": "2026-09-18T06:02:57.561178+00:00",
-      "discord_id": "184883262735253504",
-      "nickname": "☄️DrinkHolder (koramar.4961)",
-      "action": "unreacted",
-      "source": "post_reaction",
-      "emoji": "<:AlacHeal:1038159938335277140>"
-    },
-    {
-      "timestamp": "2026-09-18T06:02:57.866529+00:00",
-      "discord_id": "184883262735253504",
-      "nickname": "☄️DrinkHolder (koramar.4961)",
-      "action": "unreacted",
-      "source": "post_reaction",
-      "emoji": "🛡️"
-    },
-    {
-      "timestamp": "2026-09-18T06:02:59.708086+00:00",
-      "discord_id": "184883262735253504",
-      "nickname": "☄️DrinkHolder (koramar.4961)",
-      "action": "unreacted",
-      "source": "post_reaction",
-      "emoji": "<:QuickHeal:1038159941472620655>"
-    },
-    {
-      "timestamp": "2026-09-18T06:37:09.225188+00:00",
-      "discord_id": "493633584528097281",
-      "nickname": "CrimsonPenalty (Crimson. 3186)",
-      "action": "interested",
-      "source": "event_interest",
-      "emoji": null
-    },
-    {
-      "timestamp": "2026-09-18T06:38:35.319759+00:00",
-      "discord_id": "493633584528097281",
-      "nickname": "CrimsonPenalty (Crimson. 3186)",
+      "timestamp": "2026-09-18T07:12:15.849758+00:00",
+      "discord_id": "274431726082850817",
+      "nickname": "Amano (Based Weeb.8291)",
       "action": "reacted",
       "source": "post_reaction",
       "emoji": "🐥"
+    },
+    {
+      "timestamp": "2026-09-18T07:12:15.927475+00:00",
+      "discord_id": "193583025630478339",
+      "nickname": "Vem (UncreativeGreen.2019) 🚹",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-09-18T07:12:16.006289+00:00",
+      "discord_id": "193583025630478339",
+      "nickname": "Vem (UncreativeGreen.2019) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🕵️"
+    },
+    {
+      "timestamp": "2026-09-18T07:12:16.084558+00:00",
+      "discord_id": "193583025630478339",
+      "nickname": "Vem (UncreativeGreen.2019) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickDPS:1038159940164014090>"
+    },
+    {
+      "timestamp": "2026-09-18T07:12:16.164080+00:00",
+      "discord_id": "193583025630478339",
+      "nickname": "Vem (UncreativeGreen.2019) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacDPS:1038159937391562843>"
+    },
+    {
+      "timestamp": "2026-09-18T07:12:16.243058+00:00",
+      "discord_id": "193583025630478339",
+      "nickname": "Vem (UncreativeGreen.2019) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacHeal:1038159938335277140>"
+    },
+    {
+      "timestamp": "2026-09-18T07:12:16.321859+00:00",
+      "discord_id": "193583025630478339",
+      "nickname": "Vem (UncreativeGreen.2019) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickHeal:1038159941472620655>"
+    },
+    {
+      "timestamp": "2026-09-18T07:12:16.413695+00:00",
+      "discord_id": "193583025630478339",
+      "nickname": "Vem (UncreativeGreen.2019) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🛡️"
     }
   ]
 }
