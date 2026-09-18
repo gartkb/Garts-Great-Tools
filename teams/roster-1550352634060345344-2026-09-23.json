@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1550352634060345344",
-  "last_updated": "2026-09-18T11:03:07.903713+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1. <274431726082850817> Amano (Based Weeb.8291),     🐥\n2. <166023618440986624> Ara (Aranisium.1498),        📧  🔥  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:QuickHeal:1038159941472620655>\n3. <493633584528097281> CrimsonPenalty (Crimson. 3186),📧  🐥\n4. <220434735464185856> Dinophysis (Ellie.6938) 🚺,   📧  🐥\n5. <111224903272775680> FaceEater.3741,              📧  🐣\n6. <1538051951248539648> Seiba34 (Null.9367),        🐣\n7. <193583025630478339> Vem (UncreativeGreen.2019) 🚹,🕵️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️\n8. <395062862210531330> XxbluexX (XxbluexX.1385) 🚹,  🐣\n9. <239171418460389386> veritius_of_dawn,            📧\n10.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  📧\n11.<297875840748748810> 💫☄️🕵 morganah.8214 🔰 👥,      📧  🕵️  \\<:QuickDPS:1038159940164014090>\n```",
+  "last_updated": "2026-09-18T12:39:03.824593+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1. <274431726082850817> Amano (Based Weeb.8291),     🐥\n2. <166023618440986624> Ara (Aranisium.1498),        📧  🔥  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:QuickHeal:1038159941472620655>\n3. <493633584528097281> CrimsonPenalty (Crimson. 3186),📧  🐥\n4. <220434735464185856> Dinophysis (Ellie.6938) 🚺,   📧  🐥\n5. <111224903272775680> FaceEater.3741,              📧  🐣\n6. <356311257592102923> Langley (SilverShark.8274) 🚹,🔥\n7. <1538051951248539648> Seiba34 (Null.9367),        🐣\n8. <193583025630478339> Vem (UncreativeGreen.2019) 🚹,🕵️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️\n9. <395062862210531330> XxbluexX (XxbluexX.1385) 🚹,  🐣\n10.<239171418460389386> veritius_of_dawn,            📧\n11.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  📧\n12.<297875840748748810> 💫☄️🕵 morganah.8214 🔰 👥,      📧  🕵️  \\<:QuickDPS:1038159940164014090>\n```",
   "roster": [
     {
       "discord_id": "111224903272775680",
@@ -81,6 +81,13 @@
       "nickname": "Amano (Based Weeb.8291)",
       "emojis": [
         "🐥"
+      ]
+    },
+    {
+      "discord_id": "356311257592102923",
+      "nickname": "Langley (SilverShark.8274) 🚹",
+      "emojis": [
+        "🔥"
       ]
     },
     {
@@ -376,6 +383,14 @@
       "action": "unreacted",
       "source": "post_reaction",
       "emoji": "🐥"
+    },
+    {
+      "timestamp": "2026-09-18T12:37:51.437953+00:00",
+      "discord_id": "356311257592102923",
+      "nickname": "Langley (SilverShark.8274) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🔥"
     }
   ]
 }
