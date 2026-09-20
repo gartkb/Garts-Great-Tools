@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1550352634060345344",
-  "last_updated": "2026-09-20T18:26:13.845033+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1. <274431726082850817> Amano (Based Weeb.8291),       🐥\n2. <166023618440986624> Ara (Aranisium.1498),          📧  🔥  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:QuickHeal:1038159941472620655>\n3. <686299516886057092> Corey/Arrow Elite (CoreyMG.2458),📧  \\<:2WarriorBerserker:833051125191934012>\n4. <493633584528097281> CrimsonPenalty (Crimson. 3186),📧  🐥  \\<:QuickHeal:1038159941472620655>\n5. <1073391600266395678> DeadRoses (Kimba.8260),       📧  🐥\n6. <220434735464185856> Dinophysis (Ellie.6938) 🚺,     📧  🐥\n7. <356311257592102923> Langley (SilverShark.8274) 🚹,  🔥\n8. <153993501124722689> Logan (Echo.9506),             📧\n9. <269455660847071232> Sangyi (Murcielago.3570) 🚹,    📧\n10.<1538051951248539648> Seiba34 (Null.9367),          📧  🐣\n11.<193583025630478339> Vem (UncreativeGreen.2019) 🚹,  🕵️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️\n12.<395062862210531330> XxbluexX (XxbluexX.1385) 🚹,    📧  🐣\n13.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,    🔥  🕵️\n14.<239171418460389386> veritius_of_dawn,              📧  🐥\n15.<617181650190598155> 💫 whycantifly (Fei.7308) 🚺,    🕵️  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️\n16.<596875174700122122> 💫☄️Gartner Kinderboom.5019,    📧\n17.<297875840748748810> 💫☄️🕵 morganah.8214 🔰 👥,        📧  🕵️  \\<:QuickDPS:1038159940164014090>\n```",
+  "last_updated": "2026-09-20T20:12:09.890588+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1. <274431726082850817> Amano (Based Weeb.8291),       🐥\n2. <166023618440986624> Ara (Aranisium.1498),          📧  🔥  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:QuickHeal:1038159941472620655>\n3. <171126671301148672> Avianx1 (avian.8054),          🕵️\n4. <686299516886057092> Corey/Arrow Elite (CoreyMG.2458),📧  \\<:2WarriorBerserker:833051125191934012>\n5. <493633584528097281> CrimsonPenalty (Crimson. 3186),📧  🐥  \\<:QuickHeal:1038159941472620655>\n6. <1073391600266395678> DeadRoses (Kimba.8260),       📧  🐥\n7. <220434735464185856> Dinophysis (Ellie.6938) 🚺,     📧  🐥\n8. <356311257592102923> Langley (SilverShark.8274) 🚹,  🔥\n9. <153993501124722689> Logan (Echo.9506),             📧\n10.<269455660847071232> Sangyi (Murcielago.3570) 🚹,    📧\n11.<1538051951248539648> Seiba34 (Null.9367),          📧  🐣\n12.<193583025630478339> Vem (UncreativeGreen.2019) 🚹,  🕵️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️\n13.<395062862210531330> XxbluexX (XxbluexX.1385) 🚹,    📧  🐣\n14.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,    🔥  🕵️\n15.<239171418460389386> veritius_of_dawn,              📧  🐥\n16.<617181650190598155> 💫 whycantifly (Fei.7308) 🚺,    🕵️  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️\n17.<596875174700122122> 💫☄️Gartner Kinderboom.5019,    📧\n18.<297875840748748810> 💫☄️🕵 morganah.8214 🔰 👥,        📧  🕵️  \\<:QuickDPS:1038159940164014090>\n```",
   "roster": [
     {
       "discord_id": "153993501124722689",
@@ -145,6 +145,13 @@
         "<:AlacHeal:1038159938335277140>",
         "<:QuickHeal:1038159941472620655>",
         "🛡️"
+      ]
+    },
+    {
+      "discord_id": "171126671301148672",
+      "nickname": "Avianx1 (avian.8054)",
+      "emojis": [
+        "🕵️"
       ]
     }
   ],
@@ -684,6 +691,14 @@
       "action": "reacted",
       "source": "post_reaction",
       "emoji": "<:QuickHeal:1038159941472620655>"
+    },
+    {
+      "timestamp": "2026-09-20T20:10:53.591372+00:00",
+      "discord_id": "171126671301148672",
+      "nickname": "Avianx1 (avian.8054)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🕵️"
     }
   ]
 }
