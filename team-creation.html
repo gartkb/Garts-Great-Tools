@@ -152,6 +152,8 @@
       background: rgba(155, 89, 182, 0.25); border: 1px solid rgba(155, 89, 182, 0.7); color: #e8d5f5;
       white-space: nowrap;
     }
+    .li-icon { height: 16px; width: 16px; }
+    .li-badge.none .li-icon { opacity: 0.5; }
     .li-badge.loading { opacity: 0.6; }
     .li-badge.none { background: rgba(255,255,255,0.05); border-color: #666; color: var(--text-muted); font-weight: 400; }
     .name-main { display: flex; align-items: center; flex-wrap: wrap; min-width: 0; }
@@ -509,13 +511,15 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
     return m ? m[1].trim() + '.' + m[2] : null;
   }
 
+  const LI_ICON = '<img class="li-icon" src="https://render.guildwars2.com/file/6D33B7387BAF2E2CC9B5D37D1D1B01246AB6FA22/1302744.png" alt="LI">';
+
   function liBadgeHtml(player) {
     if (!player.account) return '';
-    if (player.li === 'loading') return `<span class="li-badge loading" title="Looking up ${escapeHtml(player.account)}…">💎 …</span>`;
+    if (player.li === 'loading') return `<span class="li-badge loading" title="Looking up ${escapeHtml(player.account)}…">${LI_ICON} …</span>`;
     if (typeof player.li === 'number') {
-      return `<span class="li-badge" title="${escapeHtml(player.account)}${player.liTitle ? '\n' + escapeHtml(player.liTitle) : ''}">💎 ${player.li} LI</span>`;
+      return `<span class="li-badge" title="${escapeHtml(player.account)}${player.liTitle ? '\n' + escapeHtml(player.liTitle) : ''}">${LI_ICON} ${player.li}</span>`;
     }
-    if (player.li === null) return `<span class="li-badge none" title="${escapeHtml(player.account)} not found on killproof.me (or API is private)">💎 ?</span>`;
+    if (player.li === null) return `<span class="li-badge none" title="${escapeHtml(player.account)} not found on killproof.me (or API is private)">${LI_ICON} ?</span>`;
     return '';
   }
 
@@ -527,15 +531,24 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
       const res = await fetch(`https://killproof.me/api/kp/${encodeURIComponent(account)}?lang=en`);
       if (res.ok) {
         const data = await res.json();
-        const items = [...(data.killproofs || []), ...(data.tokens || [])];
-        const find = (id, name) => items.find(i => i.id === id || i.name === name);
-        const li = find(77302, 'Legendary Insight');
-        const ld = find(88485, 'Legendary Divination');
-        const ufe = find(94020, 'Unstable Fractal Essence');
-        result = {
-          li: li ? li.amount : 0,
-          title: `LI ${li ? li.amount : 0} · LD ${ld ? ld.amount : 0} · UFE ${ufe ? ufe.amount : 0}`
+        const amountOf = (list, id, name) => {
+          const it = (list || []).find(i => i.id === id || i.name === name);
+          return it ? it.amount : 0;
         };
+        const LI = [77302, 'Legendary Insight'], LD = [88485, 'Legendary Divination'], UFE = [94020, 'Unstable Fractal Essence'];
+        const own = data.killproofs || [];
+        const linked = Array.isArray(data.linked) ? data.linked : [];
+        // linked_totals is killproof's own sum across this account and all linked accounts
+        // (present only when accounts are linked); fall back to the account's own numbers.
+        const totals = (data.linked_totals && data.linked_totals.killproofs) || own;
+
+        let title = `LI ${amountOf(totals, ...LI)} · LD ${amountOf(totals, ...LD)} · UFE ${amountOf(totals, ...UFE)}`;
+        if (linked.length) {
+          title += '\nLinked accounts:\n' +
+            [data.account_name || account, ...linked.map(l => l.account_name)].map((n, i) =>
+              `  ${n}: ${amountOf(i === 0 ? own : linked[i - 1].killproofs, ...LI)} LI`).join('\n');
+        }
+        result = { li: amountOf(totals, ...LI), title };
       } else if (res.status !== 404) {
         return { li: null, transient: true };   // don't cache rate-limits / server errors
       }
