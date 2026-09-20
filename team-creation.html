@@ -146,6 +146,15 @@
     .card-row.name-row { font-weight: 700; font-size: 1rem; color: white; display:flex; justify-content:space-between; align-items: center;}
     .card-row.label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 4px; }
     
+    .li-badge {
+      display: inline-flex; align-items: center; gap: 3px; margin-left: 8px;
+      padding: 1px 7px; border-radius: 10px; font-size: 0.75rem; font-weight: 700;
+      background: rgba(155, 89, 182, 0.25); border: 1px solid rgba(155, 89, 182, 0.7); color: #e8d5f5;
+      white-space: nowrap;
+    }
+    .li-badge.loading { opacity: 0.6; }
+    .li-badge.none { background: rgba(255,255,255,0.05); border-color: #666; color: var(--text-muted); font-weight: 400; }
+    .name-main { display: flex; align-items: center; flex-wrap: wrap; min-width: 0; }
     .remove-btn { color: #e74c3c; font-size: 1.2rem; cursor: pointer; padding: 0 5px; opacity: 0.6; }
     .remove-btn:hover { opacity: 1; }
 
@@ -303,6 +312,8 @@
 Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
     <div>
       <button onclick="parseAndGenerate()">⚡ Parse Players</button>
+      <button id="lookupLiBtn" onclick="lookupLegendaryInsights()" style="background:#8e44ad;">💎 Look Up LI</button>
+      <span id="lookupStatus" style="color:#aaa; font-size:0.85em; margin-left:8px;"></span>
     </div>
   </div>
 
@@ -475,6 +486,99 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
   });
 
   /* =========================================
+     KILLPROOF.ME LEGENDARY INSIGHT LOOKUP
+     ========================================= */
+  const kpCache = {};   // lowercase account -> { li, title } (li = number, or null if not found)
+
+  // Pulls a GW2 account name ("Name.1234") out of the name portion of a roster line.
+  // 1. "(Acct.1234)" in brackets is definitely the account.
+  // 2. Otherwise the whole name may be the account, e.g. "💫☄️Gartner Kinderboom.5019".
+  // Returns null when no "Name.1234" pattern is present (e.g. "veritius_of_dawn").
+  function extractAccountName(namePart) {
+    const acctRegex = /([\p{L}\p{N}_'’][\p{L}\p{N}_'’ -]*?)\s*\.\s*(\d{4})(?!\d)/u;
+    const strip = s => s.replace(/[\p{Extended_Pictographic}️‍]/gu, '').replace(/\s+/g, ' ').trim();
+
+    const bracketed = [...namePart.matchAll(/\(([^()]*)\)/g)];
+    for (let i = bracketed.length - 1; i >= 0; i--) {
+      const m = strip(bracketed[i][1]).match(new RegExp('^' + acctRegex.source + '$', 'u'));
+      if (m) return m[1].trim() + '.' + m[2];
+    }
+
+    const whole = strip(namePart.replace(/<[^>]*>/g, '').replace(/\b\d{17,20}\b/g, ''));
+    const m = whole.match(new RegExp('^' + acctRegex.source + '$', 'u'));
+    return m ? m[1].trim() + '.' + m[2] : null;
+  }
+
+  function liBadgeHtml(player) {
+    if (!player.account) return '';
+    if (player.li === 'loading') return `<span class="li-badge loading" title="Looking up ${escapeHtml(player.account)}…">💎 …</span>`;
+    if (typeof player.li === 'number') {
+      return `<span class="li-badge" title="${escapeHtml(player.account)}${player.liTitle ? '\n' + escapeHtml(player.liTitle) : ''}">💎 ${player.li} LI</span>`;
+    }
+    if (player.li === null) return `<span class="li-badge none" title="${escapeHtml(player.account)} not found on killproof.me (or API is private)">💎 ?</span>`;
+    return '';
+  }
+
+  async function fetchLi(account) {
+    const key = account.toLowerCase();
+    if (kpCache[key] !== undefined) return kpCache[key];
+    let result = { li: null };
+    try {
+      const res = await fetch(`https://killproof.me/api/kp/${encodeURIComponent(account)}?lang=en`);
+      if (res.ok) {
+        const data = await res.json();
+        const items = [...(data.killproofs || []), ...(data.tokens || [])];
+        const find = (id, name) => items.find(i => i.id === id || i.name === name);
+        const li = find(77302, 'Legendary Insight');
+        const ld = find(88485, 'Legendary Divination');
+        const ufe = find(94020, 'Unstable Fractal Essence');
+        result = {
+          li: li ? li.amount : 0,
+          title: `LI ${li ? li.amount : 0} · LD ${ld ? ld.amount : 0} · UFE ${ufe ? ufe.amount : 0}`
+        };
+      } else if (res.status !== 404) {
+        return { li: null, transient: true };   // don't cache rate-limits / server errors
+      }
+    } catch (e) {
+      return { li: null, transient: true };
+    }
+    kpCache[key] = result;
+    return result;
+  }
+
+  async function lookupLegendaryInsights() {
+    const targets = allPlayers.filter(p => p.account);
+    const status = document.getElementById('lookupStatus');
+    const btn = document.getElementById('lookupLiBtn');
+    if (!targets.length) { status.textContent = 'No players with a Name.1234 account found. Parse players first.'; return; }
+
+    btn.disabled = true;
+    targets.forEach(p => { p.li = 'loading'; });
+    renderAllCards();
+
+    let done = 0, failed = 0;
+    const queue = [...targets];
+    const worker = async () => {
+      while (queue.length) {
+        const p = queue.shift();
+        const r = await fetchLi(p.account);
+        p.li = r.li;
+        p.liTitle = r.title;
+        if (r.transient) failed++;
+        status.textContent = `Looked up ${++done}/${targets.length}…`;
+        renderAllCards();
+      }
+    };
+    await Promise.all([worker(), worker(), worker()]);
+
+    const skipped = allPlayers.length - targets.length;
+    status.textContent = `Done. ${targets.length} looked up` +
+      (skipped ? `, ${skipped} with no account name` : '') +
+      (failed ? `, ${failed} failed (try again)` : '') + '.';
+    btn.disabled = false;
+  }
+
+  /* =========================================
      PARSING LOGIC
      ========================================= */
   function parseAndGenerate() {
@@ -525,9 +629,15 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
         }
       }
 
+      const account = extractAccountName(namePart);
+      const cached = account ? kpCache[account.toLowerCase()] : undefined;
+
       allPlayers.push({
         id: 'p-' + index + '-' + Date.now(),
         name: displayName,
+        account: account,
+        li: cached ? cached.li : undefined,
+        liTitle: cached ? cached.title : undefined,
         discordMention: discordMention,
         offeredRoles: offeredRoles,
         activeRoles: new Set(),
@@ -577,7 +687,7 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
     });
 
     let html = `<div class="card-row name-row">
-        <span>${player.name}</span>
+        <span class="name-main"><span>${player.name}</span>${liBadgeHtml(player)}</span>
         <span class="remove-btn" onclick="removePlayer('${player.id}')">×</span>
       </div>`;
 
