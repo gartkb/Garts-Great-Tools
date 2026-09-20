@@ -141,6 +141,8 @@
       box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
     .player-card:active { cursor: grabbing; }
+    .player-card.drop-before { box-shadow: 0 -4px 0 -1px var(--accent-blue), 0 2px 5px rgba(0,0,0,0.2); }
+    .player-card.drop-end { box-shadow: 0 4px 0 -1px var(--accent-blue), 0 2px 5px rgba(0,0,0,0.2); }
     
     .card-row { margin-bottom: 6px; }
     .card-row.name-row { font-weight: 700; font-size: 1rem; color: white; display:flex; justify-content:space-between; align-items: center;}
@@ -773,19 +775,67 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
     generateOutput();
   }
 
-  function handleDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+  // Returns the card in `zone` the pointer is above (i.e. the drop should insert before it), or null for "at the end".
+  function getDropTargetCard(zone, y) {
+    const cards = [...zone.querySelectorAll('.player-card')].filter(c => c.style.opacity !== '0.5');
+    return cards.find(c => {
+      const r = c.getBoundingClientRect();
+      return y < r.top + r.height / 2;
+    }) || null;
+  }
+
+  function clearDropIndicators() {
+    document.querySelectorAll('.drop-before, .drop-end').forEach(el => el.classList.remove('drop-before', 'drop-end'));
+  }
+
+  function handleDragOver(e) {
+    e.preventDefault();
+    const zone = e.currentTarget;
+    zone.classList.add('drag-over');
+    clearDropIndicators();
+    const target = getDropTargetCard(zone, e.clientY);
+    if (target) target.classList.add('drop-before');
+    else {
+      const cards = zone.querySelectorAll('.player-card:not([style*="opacity: 0.5"])');
+      if (cards.length) cards[cards.length - 1].classList.add('drop-end');
+    }
+  }
+
   function handleDrop(e) {
     e.preventDefault();
     const zone = e.currentTarget;
     zone.classList.remove('drag-over');
     const pid = e.dataTransfer.getData('text/plain');
     const p = allPlayers.find(x => x.id === pid);
+    clearDropIndicators();
     if(p) {
+      const target = getDropTargetCard(zone, e.clientY);
+      const beforeId = target ? target.id : null;
+
+      // Order within a group follows order in allPlayers: remove, then re-insert at the drop position.
+      allPlayers = allPlayers.filter(x => x.id !== pid);
       p.group = zone.dataset.group;
+      const idx = beforeId ? allPlayers.findIndex(x => x.id === beforeId) : -1;
+      if (idx >= 0) allPlayers.splice(idx, 0, p);
+      else allPlayers.push(p);
+
       renderAllCards();
       generateOutput();
     }
   }
+
+  // Remove stale highlights when a drag leaves a zone or ends without a drop
+  document.addEventListener('dragend', () => {
+    clearDropIndicators();
+    document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+  });
+  document.addEventListener('dragleave', (e) => {
+    const zone = e.target.closest && e.target.closest('.drop-zone');
+    if (zone && !zone.contains(e.relatedTarget)) {
+      zone.classList.remove('drag-over');
+      clearDropIndicators();
+    }
+  });
 
   /* =========================================
      OUTPUT
