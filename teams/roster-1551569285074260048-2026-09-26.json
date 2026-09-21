@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1551569285074260048",
-  "last_updated": "2026-09-21T18:48:35.675410+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<212177158284509184> Aya (Ayanomaly.1294),      📧\n2.<285863738668744714> Urvogelmon (Elmon.3906) 👥, 📧\n3.<198877291856527360> Ven (Larquin.5237),        📧\n4.<185656503733059593> Wolfwood (Wolfwood.8563),  📧\n5.<734971332089085984> ☠️Visceral.2796 🚺,         📧\n```",
+  "last_updated": "2026-09-21T20:59:28.696696+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<212177158284509184> Aya (Ayanomaly.1294),      📧\n2.<285863738668744714> Urvogelmon (Elmon.3906) 👥, 📧\n3.<198877291856527360> Ven (Larquin.5237),        📧\n4.<185656503733059593> Wolfwood (Wolfwood.8563),  📧\n5.<734971332089085984> ☠️Visceral.2796 🚺,         📧\n6.<668023351050240003> 🎂B3cfist (bcfist.6274) 🔱 🚹,📧\n```",
   "roster": [
     {
       "discord_id": "185656503733059593",
@@ -28,6 +28,13 @@
     {
       "discord_id": "285863738668744714",
       "nickname": "Urvogelmon (Elmon.3906) 👥",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "668023351050240003",
+      "nickname": "🎂B3cfist (bcfist.6274) 🔱 🚹",
       "emojis": [
         "📧"
       ]
@@ -85,6 +92,14 @@
       "timestamp": "2026-09-21T18:47:29.792354+00:00",
       "discord_id": "285863738668744714",
       "nickname": "Urvogelmon (Elmon.3906) 👥",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-09-21T20:58:22.865568+00:00",
+      "discord_id": "668023351050240003",
+      "nickname": "🎂B3cfist (bcfist.6274) 🔱 🚹",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
