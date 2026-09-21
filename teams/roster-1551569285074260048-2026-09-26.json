@@ -1,0 +1,40 @@
+{
+  "source_type": "event",
+  "id": "1551569285074260048",
+  "last_updated": "2026-09-21T12:26:02.631888+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<198877291856527360> Ven (Larquin.5237),        📧\n2.<185656503733059593> Wolfwood (Wolfwood.8563),  📧\n```",
+  "roster": [
+    {
+      "discord_id": "185656503733059593",
+      "nickname": "Wolfwood (Wolfwood.8563)",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "198877291856527360",
+      "nickname": "Ven (Larquin.5237)",
+      "emojis": [
+        "📧"
+      ]
+    }
+  ],
+  "history": [
+    {
+      "timestamp": "2026-09-21T12:25:56.866762+00:00",
+      "discord_id": "185656503733059593",
+      "nickname": "Wolfwood (Wolfwood.8563)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-09-21T12:25:56.959411+00:00",
+      "discord_id": "198877291856527360",
+      "nickname": "Ven (Larquin.5237)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    }
+  ]
+}
