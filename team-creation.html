@@ -99,6 +99,54 @@
       flex-shrink: 0; /* Prevents header from shrinking */
     }
 
+    /* --- BENCH FILTER --- */
+    .bench-filter {
+      flex-shrink: 0;
+      margin: -5px 0 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .bench-filter.hidden { display: none; }
+    .filter-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+    .filter-chip {
+      position: relative;
+      display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+      min-width: 44px; height: 34px; padding: 0 7px;
+      border-radius: 17px; background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      cursor: pointer; user-select: none; font-size: 1.1rem;
+      transition: all 0.15s;
+    }
+    .filter-chip:hover { background: rgba(255,255,255,0.14); }
+    .filter-chip img { height: 22px; width: auto; pointer-events: none; }
+    .filter-chip .chip-label { font-size: 0.7rem; }
+    .filter-chip .chip-count {
+      font-size: 0.72rem; font-weight: 700; color: var(--text-muted);
+      min-width: 12px; text-align: center;
+    }
+    .filter-chip.empty { opacity: 0.3; }
+    .filter-chip.active {
+      background: rgba(52, 152, 219, 0.3); border-color: var(--accent-blue);
+      box-shadow: 0 0 8px rgba(52, 152, 219, 0.45); opacity: 1;
+    }
+    .filter-chip.active .chip-count { color: #fff; }
+    .filter-tools {
+      display: flex; align-items: center; gap: 8px; margin-top: 8px;
+      font-size: 0.78rem; color: var(--text-muted);
+    }
+    .filter-tools button {
+      padding: 3px 9px; font-size: 0.75rem; font-weight: 600; border-radius: 4px;
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+    }
+    .filter-tools button:hover { background: rgba(255,255,255,0.18); transform: none; }
+    .filter-tools button.mode-on { background: var(--accent-blue); border-color: var(--accent-blue); }
+    .filter-tools .spacer { flex-grow: 1; }
+    .img-fallback {
+      font-size: 0.65rem; font-weight: 600; line-height: 1.1;
+      color: var(--text-main); white-space: nowrap;
+    }
+    .bench-empty-msg { color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 20px 10px; }
+
     /* Target the bench drop zone specifically for scrolling */
     #bench-zone {
       overflow-y: auto;
@@ -327,6 +375,7 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
         <span>The Bench</span>
         <span id="benchCount">0</span>
       </div>
+      <div id="benchFilter" class="bench-filter hidden"></div>
       <div id="bench-zone" class="drop-zone" data-group="Unassigned"></div>
     </div>
     <div class="squad-grid" id="squadGrid"></div>
@@ -379,6 +428,10 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
 
   let allPlayers = []; 
   let loadedHistory = [];
+
+  // Bench filter state
+  let benchFilter = new Set();   // normalized role keys currently selected
+  let benchFilterMode = 'any';   // 'any' = has at least one selected role, 'all' = has every selected role
 
   /* =========================================
      INIT
@@ -665,25 +718,162 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
   }
 
   /* =========================================
+     ICON IMAGES WITH TEXT FALLBACK
+     ========================================= */
+
+  // Builds an <img> for a remote icon. If the image can't load (blocked, offline, CDN down),
+  // it is swapped for a small text label with the role/emoji name.
+  function iconImg(src, label, style) {
+    const l = escapeHtml(label || '?');
+    return `<img src="${src}" alt="${l}" data-label="${l}" onerror="imgFallback(this)"${style ? ` style="${style}"` : ''}>`;
+  }
+
+  function imgFallback(img) {
+    const span = document.createElement('span');
+    span.className = 'img-fallback';
+    span.textContent = img.dataset.label || img.alt || '?';
+    img.replaceWith(span);
+  }
+
+  /* =========================================
+     BENCH FILTER
+     ========================================= */
+
+  // Normalizes a role token so different spellings of the same icon match:
+  //   "<:QuickDPS:1038...>" -> ":quickdps:",  ":QuickDPS:" -> ":quickdps:",  "🛡️" / "🛡" -> "🛡"
+  function roleKey(token) {
+    if (!token) return '';
+    const custom = token.match(/^<a?:([a-zA-Z0-9_]+):\d+>$/);
+    if (custom) return ':' + custom[1].toLowerCase() + ':';
+    if (/^:[a-zA-Z0-9_]+:$/.test(token)) return token.toLowerCase();
+    return token.replace(/[\uFE0F\u200D]/g, '');
+  }
+
+  function standardRoleForKey(key) {
+    return standardRoles.find(r => roleKey(r.discordtext || r.text) === key);
+  }
+
+  function playerRoleKeys(p) {
+    return new Set((p.offeredRoles || []).map(roleKey));
+  }
+
+  function playerMatchesFilter(p) {
+    if (benchFilter.size === 0) return true;
+    const keys = playerRoleKeys(p);
+    const wanted = [...benchFilter];
+    return benchFilterMode === 'all' ? wanted.every(k => keys.has(k)) : wanted.some(k => keys.has(k));
+  }
+
+  // Builds the icon shown on a filter chip, from a standard role or a sample token seen in the roster.
+  function chipContent(key, sampleToken) {
+    const std = standardRoleForKey(key);
+    if (std) return { html: std.img ? iconImg(std.img, std.name) : std.text, name: std.name };
+    const custom = sampleToken && sampleToken.match(/<a?:([a-zA-Z0-9_]+):(\d+)>/);
+    if (custom) return { html: iconImg(`https://cdn.discordapp.com/emojis/${custom[2]}.png`, custom[1]), name: custom[1] };
+    if (key.startsWith(':')) return { html: `<span class="chip-label">${escapeHtml(key.replace(/:/g, ''))}</span>`, name: key };
+    return { html: escapeHtml(sampleToken || key), name: sampleToken || key };
+  }
+
+  function renderBenchFilter() {
+    const bar = document.getElementById('benchFilter');
+    const benchPlayers = allPlayers.filter(p => p.group === 'Unassigned');
+
+    if (allPlayers.length === 0) { bar.classList.add('hidden'); bar.innerHTML = ''; return; }
+    bar.classList.remove('hidden');
+
+    // Count bench players per role, and remember one raw token per key for display
+    const counts = {};
+    const samples = {};
+    allPlayers.forEach(p => (p.offeredRoles || []).forEach(t => {
+      const k = roleKey(t);
+      if (!samples[k] || /^<a?:/.test(t)) samples[k] = t;
+    }));
+    benchPlayers.forEach(p => playerRoleKeys(p).forEach(k => { counts[k] = (counts[k] || 0) + 1; }));
+
+    // Standard roles first (fixed order), then any other icons people signed up with
+    const stdKeys = standardRoles.map(r => roleKey(r.discordtext || r.text));
+    const extraKeys = Object.keys(samples)
+      .filter(k => !stdKeys.includes(k))
+      .sort((a, b) => (counts[b] || 0) - (counts[a] || 0));
+    benchFilter.forEach(k => { if (!stdKeys.includes(k) && !extraKeys.includes(k)) extraKeys.push(k); });
+
+    const chips = document.createElement('div');
+    chips.className = 'filter-chips';
+    [...stdKeys, ...extraKeys].forEach(key => {
+      const n = counts[key] || 0;
+      const { html, name } = chipContent(key, samples[key]);
+      const chip = document.createElement('div');
+      chip.className = 'filter-chip' + (benchFilter.has(key) ? ' active' : '') + (n === 0 ? ' empty' : '');
+      chip.title = `${name}: ${n} on bench offered this`;
+      chip.innerHTML = `${html}<span class="chip-count">${n}</span>`;
+      chip.addEventListener('click', () => toggleBenchFilter(key));
+      chips.appendChild(chip);
+    });
+
+    const tools = document.createElement('div');
+    tools.className = 'filter-tools';
+    tools.innerHTML = `<span>Match:</span>`;
+    ['any', 'all'].forEach(mode => {
+      const b = document.createElement('button');
+      b.textContent = mode === 'any' ? 'Any' : 'All';
+      b.title = mode === 'any' ? 'Show players who offered at least one selected role' : 'Show players who offered every selected role';
+      if (benchFilterMode === mode) b.classList.add('mode-on');
+      b.addEventListener('click', () => { benchFilterMode = mode; renderAllCards(); });
+      tools.appendChild(b);
+    });
+    const spacer = document.createElement('span');
+    spacer.className = 'spacer';
+    tools.appendChild(spacer);
+    if (benchFilter.size > 0) {
+      const clear = document.createElement('button');
+      clear.textContent = '✕ Clear';
+      clear.addEventListener('click', () => { benchFilter.clear(); renderAllCards(); });
+      tools.appendChild(clear);
+    }
+
+    bar.innerHTML = '';
+    bar.appendChild(chips);
+    bar.appendChild(tools);
+  }
+
+  function toggleBenchFilter(key) {
+    if (benchFilter.has(key)) benchFilter.delete(key);
+    else benchFilter.add(key);
+    renderAllCards();
+  }
+
+  /* =========================================
      RENDERING (UPDATED FOR CUSTOM EMOJIS)
      ========================================= */
   function renderAllCards() {
-    document.getElementById('bench-zone').innerHTML = '';
+    const bench = document.getElementById('bench-zone');
+    bench.innerHTML = '';
     document.querySelectorAll('.squad-grid .drop-zone').forEach(el => el.innerHTML = '');
     
-    let benchCount = 0;
+    let benchTotal = 0, benchShown = 0;
     allPlayers.forEach(player => {
-      const card = createPlayerCard(player);
-      if(player.group === 'Unassigned') {
-        document.getElementById('bench-zone').appendChild(card);
-        benchCount++;
+      let zone = null;
+      if (player.group !== 'Unassigned') zone = document.querySelector(`.drop-zone[data-group="${player.group}"]`);
+
+      if (zone) {
+        zone.appendChild(createPlayerCard(player));
       } else {
-        const zone = document.querySelector(`.drop-zone[data-group="${player.group}"]`);
-        if(zone) zone.appendChild(card);
-        else document.getElementById('bench-zone').appendChild(card);
+        benchTotal++;
+        if (playerMatchesFilter(player)) {
+          bench.appendChild(createPlayerCard(player));
+          benchShown++;
+        }
       }
     });
-    document.getElementById('benchCount').innerText = benchCount;
+
+    if (benchTotal > 0 && benchShown === 0) {
+      bench.innerHTML = '<div class="bench-empty-msg">No bench players match the selected icons.</div>';
+    }
+
+    document.getElementById('benchCount').innerText =
+      benchFilter.size > 0 ? `${benchShown} / ${benchTotal}` : benchTotal;
+
+    renderBenchFilter();
   }
 
   function createPlayerCard(player) {
@@ -730,10 +920,11 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
         if (customIdMatch) {
            // Use Discord CDN for custom IDs
            const emojiId = customIdMatch[1];
-           displayContent = `<img src="https://cdn.discordapp.com/emojis/${emojiId}.png">`;
+           const emojiName = (roleStr.match(/<a?:([^:]+):/) || [])[1] || (std && std.name);
+           displayContent = iconImg(`https://cdn.discordapp.com/emojis/${emojiId}.png`, emojiName);
         } else if (std && std.img) {
            // Use Predefined Standard Image
-           displayContent = `<img src="${std.img}">`;
+           displayContent = iconImg(std.img, std.name);
         } else if (roleStr.startsWith(':')) {
            // Text Shortcode
            displayContent = `<span style="font-size:0.7em;">${roleStr.replace(/:/g,'')}</span>`;
@@ -750,7 +941,7 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
     standardRoles.forEach(role => {
        const val = role.discordtext || role.text;
        const isActive = player.activeRoles.has(val) ? 'active' : '';
-       const content = role.text ? role.text : `<img src="${role.img}">`;
+       const content = role.text ? role.text : iconImg(role.img, role.name);
        html += `<div class="role-btn ${isActive}" onclick="toggleRole('${player.id}', '${val}')" title="${role.name}">${content}</div>`;
     });
     html += `</div>`;
@@ -1026,7 +1217,8 @@ Gart Finderboom, 🛡️ 🕵️‍♂️"></textarea>
     const customIdMatch = emojiStr.match(/<a?:.+:(\d+)>/);
     if (customIdMatch) {
       const emojiId = customIdMatch[1];
-      return `<img src="https://cdn.discordapp.com/emojis/${emojiId}.png" style="height: 20px; width: auto; vertical-align: middle;">`;
+      const emojiName = (emojiStr.match(/<a?:([^:]+):/) || [])[1];
+      return iconImg(`https://cdn.discordapp.com/emojis/${emojiId}.png`, emojiName, 'height: 20px; width: auto; vertical-align: middle;');
     }
     return `<span style="font-size: 1.1rem; line-height: 1;">${emojiStr}</span>`;
   }
