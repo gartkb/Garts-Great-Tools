@@ -1,9 +1,16 @@
 {
   "source_type": "event",
   "id": "1552186103996485672",
-  "last_updated": "2026-09-23T05:25:47.582404+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,📧\n```",
+  "last_updated": "2026-09-23T06:03:18.832751+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,     📧\n2.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,📧\n```",
   "roster": [
+    {
+      "discord_id": "219437617219895297",
+      "nickname": "BeastfromtheEast.2946",
+      "emojis": [
+        "📧"
+      ]
+    },
     {
       "discord_id": "619970339233071134",
       "nickname": "gijo(Candid Flames.6279)🌠🌀",
@@ -17,6 +24,14 @@
       "timestamp": "2026-09-23T05:25:41.989548+00:00",
       "discord_id": "619970339233071134",
       "nickname": "gijo(Candid Flames.6279)🌠🌀",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-09-23T06:02:13.007613+00:00",
+      "discord_id": "219437617219895297",
+      "nickname": "BeastfromtheEast.2946",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
