@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1551569285074260048",
-  "last_updated": "2026-09-23T01:37:02.537944+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<212177158284509184> Aya (Ayanomaly.1294),      📧\n2.<285863738668744714> Urvogelmon (Elmon.3906) 👥, 📧\n3.<198877291856527360> Ven (Larquin.5237),        📧\n4.<185656503733059593> Wolfwood (Wolfwood.8563),  📧\n5.<554770810556907540> Zach (Zach.8607),          📧\n6.<450756915807649815> sophonias.9302 👥,          📧\n7.<734971332089085984> ☠️Visceral.2796 🚺,         📧\n8.<668023351050240003> 🎂B3cfist (bcfist.6274) 🔱 🚹,📧\n```",
+  "last_updated": "2026-09-26T16:56:46.776620+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<212177158284509184> Aya (Ayanomaly.1294),      📧\n2.<668023351050240003> B3cfist (bcfist.6274) 🔱 🚹, 📧\n3.<266984776131543050> Memory (Memory.1860) 🚺,    📧\n4.<285863738668744714> Urvogelmon (Elmon.3906) 👥, 📧\n5.<198877291856527360> Ven (Larquin.5237),        📧\n6.<185656503733059593> Wolfwood (Wolfwood.8563),  📧\n7.<554770810556907540> Zach (Zach.8607),          📧\n8.<450756915807649815> sophonias.9302 👥,          📧\n9.<734971332089085984> ☠️Visceral.2796 🚺,         📧\n```",
   "roster": [
     {
       "discord_id": "185656503733059593",
@@ -21,6 +21,13 @@
     {
       "discord_id": "212177158284509184",
       "nickname": "Aya (Ayanomaly.1294)",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "266984776131543050",
+      "nickname": "Memory (Memory.1860) 🚺",
       "emojis": [
         "📧"
       ]
@@ -48,7 +55,7 @@
     },
     {
       "discord_id": "668023351050240003",
-      "nickname": "🎂B3cfist (bcfist.6274) 🔱 🚹",
+      "nickname": "B3cfist (bcfist.6274) 🔱 🚹",
       "emojis": [
         "📧"
       ]
@@ -130,6 +137,14 @@
       "timestamp": "2026-09-23T01:35:55.768263+00:00",
       "discord_id": "450756915807649815",
       "nickname": "sophonias.9302 👥",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-09-26T16:55:40.806878+00:00",
+      "discord_id": "266984776131543050",
+      "nickname": "Memory (Memory.1860) 🚺",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
