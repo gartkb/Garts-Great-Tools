@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1551439268537434153",
-  "last_updated": "2026-09-25T04:10:17.268627+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<200060947501547520> Begonia.9536 🔰 🔱 🚺,            📧\n2.<97838779439542272> Cloud Kicker (Cloud Kicker.5987),📧\n3.<212238143791824896> Elfee (elfee.2084),            📧\n4.<798211339365384212> Livingldly (Kavish.8593),      📧\n5.<534432840595800115> MyriAbernathy (Kryzten.1872),  📧\n6.<171725897173303296> redtalon.1638,                 📧\n7.<231518357440954368> shaqsalazar (shaqsalazar.2906),📧\n```",
+  "last_updated": "2026-09-26T00:21:51.699671+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<200060947501547520> Begonia.9536 🔰 🔱 🚺,            📧\n2.<97838779439542272> Cloud Kicker (Cloud Kicker.5987),📧\n3.<212238143791824896> Elfee (elfee.2084),            📧\n4.<798211339365384212> Livingldly (Kavish.8593) 🌠,    📧\n5.<266984776131543050> Memory (Memory.1860) 🚺,        📧\n6.<534432840595800115> MyriAbernathy (Kryzten.1872),  📧\n7.<171725897173303296> redtalon.1638,                 📧\n8.<231518357440954368> shaqsalazar (shaqsalazar.2906),📧\n```",
   "roster": [
     {
       "discord_id": "97838779439542272",
@@ -40,6 +40,13 @@
       ]
     },
     {
+      "discord_id": "266984776131543050",
+      "nickname": "Memory (Memory.1860) 🚺",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
       "discord_id": "534432840595800115",
       "nickname": "MyriAbernathy (Kryzten.1872)",
       "emojis": [
@@ -48,7 +55,7 @@
     },
     {
       "discord_id": "798211339365384212",
-      "nickname": "Livingldly (Kavish.8593)",
+      "nickname": "Livingldly (Kavish.8593) 🌠",
       "emojis": [
         "📧"
       ]
@@ -148,6 +155,14 @@
       "discord_id": "718665407522799637",
       "nickname": "💫 Pol (Pol.2146) 🚺",
       "action": "uninterested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-09-26T00:20:45.422924+00:00",
+      "discord_id": "266984776131543050",
+      "nickname": "Memory (Memory.1860) 🚺",
+      "action": "interested",
       "source": "event_interest",
       "emoji": null
     }
