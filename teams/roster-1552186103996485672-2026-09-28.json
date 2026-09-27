@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1552186103996485672",
-  "last_updated": "2026-09-27T23:44:16.846971+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,     📧\n2.<344480812508643342> Ozurlen (Ozurlen V.8563) 🚹,📧\n3.<316685427392380939> Sleepy (Sleepy.5912),      📧\n4.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,📧\n5.<171725897173303296> redtalon.1638,             📧\n```",
+  "last_updated": "2026-09-27T23:57:03.081675+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,     📧\n2.<401805357405569034> Cassirae (Cassirae.2875) 🚺,📧\n3.<344480812508643342> Ozurlen (Ozurlen V.8563) 🚹,📧\n4.<316685427392380939> Sleepy (Sleepy.5912),      📧\n5.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,📧\n6.<171725897173303296> redtalon.1638,             📧\n```",
   "roster": [
     {
       "discord_id": "171725897173303296",
@@ -28,6 +28,13 @@
     {
       "discord_id": "344480812508643342",
       "nickname": "Ozurlen (Ozurlen V.8563) 🚹",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "401805357405569034",
+      "nickname": "Cassirae (Cassirae.2875) 🚺",
       "emojis": [
         "📧"
       ]
@@ -77,6 +84,14 @@
       "timestamp": "2026-09-27T23:43:11.072380+00:00",
       "discord_id": "344480812508643342",
       "nickname": "Ozurlen (Ozurlen V.8563) 🚹",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-09-27T23:55:57.070103+00:00",
+      "discord_id": "401805357405569034",
+      "nickname": "Cassirae (Cassirae.2875) 🚺",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
