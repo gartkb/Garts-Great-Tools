@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1552186103996485672",
-  "last_updated": "2026-09-28T00:30:33.229531+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,     📧\n2.<401805357405569034> Cassirae (Cassirae.2875) 🚺,📧\n3.<798211339365384212> Livingldly (Kavish.8593) 🌠,📧\n4.<344480812508643342> Ozurlen (Ozurlen V.8563) 🚹,📧\n5.<316685427392380939> Sleepy (Sleepy.5912),      📧\n6.<193583025630478339> Vem (UncreativeGreen.2019) 🚹,📧\n7.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,📧\n8.<171725897173303296> redtalon.1638,             📧\n```",
+  "last_updated": "2026-09-28T00:32:48.314105+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,     📧\n2.<401805357405569034> Cassirae (Cassirae.2875) 🚺,📧\n3.<798211339365384212> Livingldly (Kavish.8593) 🌠,📧\n4.<344480812508643342> Ozurlen (Ozurlen V.8563) 🚹,📧\n5.<316685427392380939> Sleepy (Sleepy.5912),      📧\n6.<193583025630478339> Vem (UncreativeGreen.2019) 🚹,📧\n7.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,📧\n8.<171725897173303296> redtalon.1638,             📧\n9.<200423784589688832> 💫 KelsTheBard (kelso.2354),📧\n```",
   "roster": [
     {
       "discord_id": "171725897173303296",
@@ -14,6 +14,13 @@
     {
       "discord_id": "193583025630478339",
       "nickname": "Vem (UncreativeGreen.2019) 🚹",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "200423784589688832",
+      "nickname": "💫 KelsTheBard (kelso.2354)",
       "emojis": [
         "📧"
       ]
@@ -122,6 +129,14 @@
       "timestamp": "2026-09-28T00:29:26.591900+00:00",
       "discord_id": "193583025630478339",
       "nickname": "Vem (UncreativeGreen.2019) 🚹",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-09-28T00:31:42.621158+00:00",
+      "discord_id": "200423784589688832",
+      "nickname": "💫 KelsTheBard (kelso.2354)",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
