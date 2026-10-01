@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1555265434352226394",
-  "last_updated": "2026-10-01T19:22:49.432042+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<197888702163320832> Mrs Bunnicorn (Ezzy.5264),   ✨\n2.<160041950840487936> Wolfsfriend (Wolfsfriend.6395),🐺\n3.<670714519349231617> Wyrmcast (HiddenHand.2694),  ⚔️\n4.<758528354361802774> Zenon (Zenon.2719) 🚹,        \\<a:cooldoge:585661992828796939>\n5.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,  \\<a:cooldoge:585661992828796939>\n6.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  📧\n7.<297875840748748810> 💫☄️🕵 morganah.8214 🔰 👥,      📧  🕊️  ✨\n8.<489230008603115531> 🔨Fred T W (Frederick.8305),  👍\n```",
+  "last_updated": "2026-10-01T20:01:21.467590+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<197888702163320832> Mrs Bunnicorn (Ezzy.5264),   ✨\n2.<160041950840487936> Wolfsfriend (Wolfsfriend.6395),🐺\n3.<670714519349231617> Wyrmcast (HiddenHand.2694),  ⚔️\n4.<758528354361802774> Zenon (Zenon.2719) 🚹,        \\<a:cooldoge:585661992828796939>\n5.<229773188127653908> anti (Anti.3861 ) 🚹,         ✨\n6.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,  \\<a:cooldoge:585661992828796939>\n7.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  📧\n8.<297875840748748810> 💫☄️🕵 morganah.8214 🔰 👥,      📧  🕊️  ✨\n9.<489230008603115531> 🔨Fred T W (Frederick.8305),  👍\n```",
   "roster": [
     {
       "discord_id": "297875840748748810",
@@ -18,6 +18,13 @@
       "nickname": "💫☄️Gartner Kinderboom.5019",
       "emojis": [
         "📧"
+      ]
+    },
+    {
+      "discord_id": "229773188127653908",
+      "nickname": "anti (Anti.3861 ) 🚹",
+      "emojis": [
+        "✨"
       ]
     },
     {
@@ -247,6 +254,14 @@
       "action": "reacted",
       "source": "post_reaction",
       "emoji": "🐺"
+    },
+    {
+      "timestamp": "2026-10-01T20:00:08.890977+00:00",
+      "discord_id": "229773188127653908",
+      "nickname": "anti (Anti.3861 ) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "✨"
     }
   ]
 }
