@@ -1,0 +1,74 @@
+{
+  "source_type": "static_post",
+  "id": "1554999951610613780",
+  "last_updated": "2026-10-01T02:08:46.625915+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<325635192767250433> Daisaku (Daisaku.5034),    ✅  \\<:Commander_circle_marker2:1408559283401920655>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  🔥  \\<:healheart:1436465472509050982>\n2.<266984776131543050> Memory (Memory.1860) 🚺,    \\<:Commander_circle_marker2:1408559283401920655>  \\<:healheart:1436465472509050982>\n3.<241747609717309441> Overrated (Redbargame.6570),\\<:Commander_circle_marker2:1408559283401920655>  \\<:healheart:1436465472509050982>\n4.<335149766688112640> Waffles.4082,              ✅  \\<:Commander_heart_marker3:1408559284891156571>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  🔥  \\<:healheart:1436465472509050982>\n5.<184883262735253504> ☄️DrinkHolder (koramar.4961),🧩  \\<:4CatmanderRed:833051121978310667>\n6.<596875174700122122> 💫☄️Gartner Kinderboom.5019,✅  \\<:Commander_arrow_marker1:1408559163646283866>  \\<:Commander_circle_marker2:1408559283401920655>  \\<:Commander_heart_marker3:1408559284891156571>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  🔥  \\<:healheart:1436465472509050982>  🧩  \\<:4CatmanderRed:833051121978310667>  ⭐\n```",
+  "roster": [
+    {
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "emojis": [
+        "✅",
+        "<:Commander_arrow_marker1:1408559163646283866>",
+        "<:Commander_circle_marker2:1408559283401920655>",
+        "<:Commander_heart_marker3:1408559284891156571>",
+        "<:QuickDPS:1038159940164014090>",
+        "<:AlacDPS:1038159937391562843>",
+        "🔥",
+        "<:healheart:1436465472509050982>",
+        "🧩",
+        "<:4CatmanderRed:833051121978310667>",
+        "⭐"
+      ]
+    },
+    {
+      "discord_id": "335149766688112640",
+      "nickname": "Waffles.4082",
+      "emojis": [
+        "✅",
+        "<:Commander_heart_marker3:1408559284891156571>",
+        "<:QuickDPS:1038159940164014090>",
+        "<:AlacDPS:1038159937391562843>",
+        "🔥",
+        "<:healheart:1436465472509050982>"
+      ]
+    },
+    {
+      "discord_id": "325635192767250433",
+      "nickname": "Daisaku (Daisaku.5034)",
+      "emojis": [
+        "✅",
+        "<:Commander_circle_marker2:1408559283401920655>",
+        "<:QuickDPS:1038159940164014090>",
+        "<:AlacDPS:1038159937391562843>",
+        "🔥",
+        "<:healheart:1436465472509050982>"
+      ]
+    },
+    {
+      "discord_id": "266984776131543050",
+      "nickname": "Memory (Memory.1860) 🚺",
+      "emojis": [
+        "<:Commander_circle_marker2:1408559283401920655>",
+        "<:healheart:1436465472509050982>"
+      ]
+    },
+    {
+      "discord_id": "241747609717309441",
+      "nickname": "Overrated (Redbargame.6570)",
+      "emojis": [
+        "<:Commander_circle_marker2:1408559283401920655>",
+        "<:healheart:1436465472509050982>"
+      ]
+    },
+    {
+      "discord_id": "184883262735253504",
+      "nickname": "☄️DrinkHolder (koramar.4961)",
+      "emojis": [
+        "🧩",
+        "<:4CatmanderRed:833051121978310667>"
+      ]
+    }
+  ],
+  "history": []
+}
