@@ -1,8 +1,8 @@
 {
   "source_type": "static_post",
   "id": "1554999951610613780",
-  "last_updated": "2026-10-01T16:17:31.810731+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<325635192767250433> Daisaku (Daisaku.5034),    ✅  \\<:Commander_circle_marker2:1408559283401920655>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  🔥  \\<:healheart:1436465472509050982>\n2.<356311257592102923> Langley (SilverShark.8274) 🚹,✅  \\<:Commander_heart_marker3:1408559284891156571>  \\<:QuickDPS:1038159940164014090>  \\<:healheart:1436465472509050982>  🧩  \\<:4CatmanderRed:833051121978310667>  ⭐\n3.<266984776131543050> Memory (Memory.1860) 🚺,    \\<:Commander_circle_marker2:1408559283401920655>  \\<:healheart:1436465472509050982>\n4.<241747609717309441> Overrated (Redbargame.6570),\\<:Commander_circle_marker2:1408559283401920655>  \\<:healheart:1436465472509050982>\n5.<335149766688112640> Waffles.4082,              ✅  \\<:Commander_heart_marker3:1408559284891156571>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  🔥  \\<:healheart:1436465472509050982>\n6.<184883262735253504> ☄️DrinkHolder (koramar.4961),🧩  \\<:4CatmanderRed:833051121978310667>\n7.<596875174700122122> 💫☄️Gartner Kinderboom.5019,✅  \\<:Commander_arrow_marker1:1408559163646283866>  \\<:Commander_circle_marker2:1408559283401920655>  \\<:Commander_heart_marker3:1408559284891156571>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  🔥  \\<:healheart:1436465472509050982>  🧩  \\<:4CatmanderRed:833051121978310667>  ⭐\n```",
+  "last_updated": "2026-10-01T17:19:37.152774+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1. <97838779439542272> Cloud Kicker (Cloud Kicker.5987),\\<:Commander_heart_marker3:1408559284891156571>  \\<:healheart:1436465472509050982>  \\<:4CatmanderRed:833051121978310667>\n2. <325635192767250433> Daisaku (Daisaku.5034),        ✅  \\<:Commander_circle_marker2:1408559283401920655>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  🔥  \\<:healheart:1436465472509050982>\n3. <356311257592102923> Langley (SilverShark.8274) 🚹,  ✅  \\<:Commander_heart_marker3:1408559284891156571>  \\<:QuickDPS:1038159940164014090>  \\<:healheart:1436465472509050982>  🧩  \\<:4CatmanderRed:833051121978310667>  ⭐\n4. <266984776131543050> Memory (Memory.1860) 🚺,        \\<:Commander_circle_marker2:1408559283401920655>  \\<:healheart:1436465472509050982>\n5. <564604986357579809> Moxigaaf (Moxigaaf.3714),      ✅  \\<:Commander_circle_marker2:1408559283401920655>  \\<:healheart:1436465472509050982>\n6. <241747609717309441> Overrated (Redbargame.6570),   \\<:Commander_circle_marker2:1408559283401920655>  \\<:healheart:1436465472509050982>\n7. <335149766688112640> Waffles.4082,                  ✅  \\<:Commander_heart_marker3:1408559284891156571>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  🔥  \\<:healheart:1436465472509050982>\n8. <182299024148267008> hyggja,                        ✅  \\<:Commander_circle_marker2:1408559283401920655>  \\<:AlacDPS:1038159937391562843>  \\<:4CatmanderRed:833051121978310667>\n9. <184883262735253504> ☄️DrinkHolder (koramar.4961),  🧩  \\<:4CatmanderRed:833051121978310667>\n10.<596875174700122122> 💫☄️Gartner Kinderboom.5019,    ✅  \\<:Commander_arrow_marker1:1408559163646283866>  \\<:Commander_circle_marker2:1408559283401920655>  \\<:Commander_heart_marker3:1408559284891156571>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  🔥  \\<:healheart:1436465472509050982>  🧩  \\<:4CatmanderRed:833051121978310667>  ⭐\n```",
   "roster": [
     {
       "discord_id": "596875174700122122",
@@ -19,6 +19,15 @@
         "🧩",
         "<:4CatmanderRed:833051121978310667>",
         "⭐"
+      ]
+    },
+    {
+      "discord_id": "564604986357579809",
+      "nickname": "Moxigaaf (Moxigaaf.3714)",
+      "emojis": [
+        "✅",
+        "<:Commander_circle_marker2:1408559283401920655>",
+        "<:healheart:1436465472509050982>"
       ]
     },
     {
@@ -59,6 +68,16 @@
       ]
     },
     {
+      "discord_id": "182299024148267008",
+      "nickname": "hyggja",
+      "emojis": [
+        "✅",
+        "<:Commander_circle_marker2:1408559283401920655>",
+        "<:AlacDPS:1038159937391562843>",
+        "<:4CatmanderRed:833051121978310667>"
+      ]
+    },
+    {
       "discord_id": "266984776131543050",
       "nickname": "Memory (Memory.1860) 🚺",
       "emojis": [
@@ -72,6 +91,15 @@
       "emojis": [
         "<:Commander_circle_marker2:1408559283401920655>",
         "<:healheart:1436465472509050982>"
+      ]
+    },
+    {
+      "discord_id": "97838779439542272",
+      "nickname": "Cloud Kicker (Cloud Kicker.5987)",
+      "emojis": [
+        "<:Commander_heart_marker3:1408559284891156571>",
+        "<:healheart:1436465472509050982>",
+        "<:4CatmanderRed:833051121978310667>"
       ]
     },
     {
