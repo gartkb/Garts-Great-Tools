@@ -1,9 +1,16 @@
 {
   "source_type": "event",
   "id": "1553957414548803654",
-  "last_updated": "2026-10-01T19:36:06.814619+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,     📧\n2.<266984776131543050> Memory (Memory.1860) 🚺,    📧\n3.<316685427392380939> Sleepy (Sleepy.5912),      📧\n4.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,📧\n```",
+  "last_updated": "2026-10-01T23:36:52.756076+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,     📧\n2.<266984776131543050> Memory (Memory.1860) 🚺,    📧\n3.<316685427392380939> Sleepy (Sleepy.5912),      📧\n4.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,📧\n5.<141735079318650881> hockeyob (hockeyob.5378) 🚹,📧\n```",
   "roster": [
+    {
+      "discord_id": "141735079318650881",
+      "nickname": "hockeyob (hockeyob.5378) 🚹",
+      "emojis": [
+        "📧"
+      ]
+    },
     {
       "discord_id": "219437617219895297",
       "nickname": "BeastfromtheEast.2946",
@@ -78,6 +85,14 @@
       "timestamp": "2026-10-01T19:35:00.894761+00:00",
       "discord_id": "219437617219895297",
       "nickname": "BeastfromtheEast.2946",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-01T23:35:46.505965+00:00",
+      "discord_id": "141735079318650881",
+      "nickname": "hockeyob (hockeyob.5378) 🚹",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
