@@ -1,7 +1,7 @@
 {
   "source_type": "event",
   "id": "1555265434352226394",
-  "last_updated": "2026-10-01T20:13:32.375795+00:00",
+  "last_updated": "2026-10-01T20:23:04.007239+00:00",
   "text_representation": "**Interest List:**\n\n```\n1. <197888702163320832> Mrs Bunnicorn (Ezzy.5264),   ✨\n2. <160041950840487936> Wolfsfriend (Wolfsfriend.6395),🐺\n3. <670714519349231617> Wyrmcast (HiddenHand.2694),  ⚔️\n4. <758528354361802774> Zenon (Zenon.2719) 🚹,        \\<a:cooldoge:585661992828796939>\n5. <229773188127653908> anti (Anti.3861 ) 🚹,         ✨\n6. <619970339233071134> gijo(Candid Flames.6279)🌠🌀,  \\<a:cooldoge:585661992828796939>\n7. <172515643801731072> ☠️Toni (Orewatowi.1603) 🚺,   🕊️\n8. <596875174700122122> 💫☄️Gartner Kinderboom.5019,  📧\n9. <297875840748748810> 💫☄️🕵 morganah.8214 🔰 👥,      📧  🕊️  ✨\n10.<489230008603115531> 🔨Fred T W (Frederick.8305),  👍\n```",
   "roster": [
     {
@@ -277,6 +277,126 @@
       "action": "reacted",
       "source": "post_reaction",
       "emoji": "🕊️"
+    },
+    {
+      "timestamp": "2026-10-01T20:22:51.684652+00:00",
+      "discord_id": "297875840748748810",
+      "nickname": "💫☄️🕵 morganah.8214 🔰 👥",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "✨"
+    },
+    {
+      "timestamp": "2026-10-01T20:22:51.792207+00:00",
+      "discord_id": "229773188127653908",
+      "nickname": "anti (Anti.3861 ) 🚹",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "✨"
+    },
+    {
+      "timestamp": "2026-10-01T20:22:51.871212+00:00",
+      "discord_id": "229773188127653908",
+      "nickname": "anti (Anti.3861 ) 🚹",
+      "action": "uninterested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-01T20:22:51.952105+00:00",
+      "discord_id": "197888702163320832",
+      "nickname": "Mrs Bunnicorn (Ezzy.5264)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "✨"
+    },
+    {
+      "timestamp": "2026-10-01T20:22:52.033843+00:00",
+      "discord_id": "197888702163320832",
+      "nickname": "Mrs Bunnicorn (Ezzy.5264)",
+      "action": "uninterested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-01T20:22:52.115535+00:00",
+      "discord_id": "489230008603115531",
+      "nickname": "🔨Fred T W (Frederick.8305)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "👍"
+    },
+    {
+      "timestamp": "2026-10-01T20:22:52.196651+00:00",
+      "discord_id": "489230008603115531",
+      "nickname": "🔨Fred T W (Frederick.8305)",
+      "action": "uninterested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-01T20:22:52.277447+00:00",
+      "discord_id": "758528354361802774",
+      "nickname": "Zenon (Zenon.2719) 🚹",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<a:cooldoge:585661992828796939>"
+    },
+    {
+      "timestamp": "2026-10-01T20:22:52.359114+00:00",
+      "discord_id": "758528354361802774",
+      "nickname": "Zenon (Zenon.2719) 🚹",
+      "action": "uninterested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-01T20:22:52.440923+00:00",
+      "discord_id": "619970339233071134",
+      "nickname": "gijo(Candid Flames.6279)🌠🌀",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<a:cooldoge:585661992828796939>"
+    },
+    {
+      "timestamp": "2026-10-01T20:22:52.525310+00:00",
+      "discord_id": "619970339233071134",
+      "nickname": "gijo(Candid Flames.6279)🌠🌀",
+      "action": "uninterested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-01T20:22:52.607420+00:00",
+      "discord_id": "670714519349231617",
+      "nickname": "Wyrmcast (HiddenHand.2694)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-10-01T20:22:52.707516+00:00",
+      "discord_id": "670714519349231617",
+      "nickname": "Wyrmcast (HiddenHand.2694)",
+      "action": "uninterested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-01T20:22:52.790410+00:00",
+      "discord_id": "160041950840487936",
+      "nickname": "Wolfsfriend (Wolfsfriend.6395)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🐺"
+    },
+    {
+      "timestamp": "2026-10-01T20:22:52.873840+00:00",
+      "discord_id": "160041950840487936",
+      "nickname": "Wolfsfriend (Wolfsfriend.6395)",
+      "action": "uninterested",
+      "source": "event_interest",
+      "emoji": null
     }
   ]
 }
