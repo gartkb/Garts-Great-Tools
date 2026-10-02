@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1555265434352226394",
-  "last_updated": "2026-10-01T23:45:31.933058+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1. <197888702163320832> Mrs Bunnicorn (Ezzy.5264),   ✨\n2. <239171418460389386> Veri (Veritas.2691),         ❤️\n3. <331207307675435008> Vin (Vaati.9436) 🚺,          👍\n4. <160041950840487936> Wolfsfriend (Wolfsfriend.6395),🐺\n5. <670714519349231617> Wyrmcast (HiddenHand.2694),  ⚔️\n6. <758528354361802774> Zenon (Zenon.2719) 🚹,        \\<a:cooldoge:585661992828796939>\n7. <229773188127653908> anti (Anti.3861 ) 🚹,         ✨\n8. <407571428045619211> bayawulf (bealana.7510) 🚺,   ❤️\n9. <619970339233071134> gijo(Candid Flames.6279)🌠🌀,  \\<a:cooldoge:585661992828796939>\n10.<172515643801731072> ☠️Toni (Orewatowi.1603) 🚺,   🕊️\n11.<734971332089085984> ☠️Visceral.2796 🚺,           ✨\n12.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  📧\n13.<297875840748748810> 💫☄️🕵 morganah.8214 🔰 👥,      📧  🕊️  ✨\n14.<489230008603115531> 🔨Fred T W (Frederick.8305),  👍\n```",
+  "last_updated": "2026-10-02T21:05:43.013452+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1. <197888702163320832> Mrs Bunnicorn (Ezzy.5264),   ✨\n2. <427250003933921280> Saej (Ravecia.5621),         ❤️\n3. <239171418460389386> Veri (Veritas.2691),         ❤️\n4. <331207307675435008> Vin (Vaati.9436) 🚺,          👍\n5. <160041950840487936> Wolfsfriend (Wolfsfriend.6395),🐺\n6. <670714519349231617> Wyrmcast (HiddenHand.2694),  ⚔️\n7. <758528354361802774> Zenon (Zenon.2719) 🚹,        \\<a:cooldoge:585661992828796939>\n8. <229773188127653908> anti (Anti.3861 ) 🚹,         ✨\n9. <407571428045619211> bayawulf (bealana.7510) 🚺,   ❤️\n10.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,  \\<a:cooldoge:585661992828796939>\n11.<172515643801731072> ☠️Toni (Orewatowi.1603) 🚺,   🕊️\n12.<734971332089085984> ☠️Visceral.2796 🚺,           ✨\n13.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  📧\n14.<297875840748748810> 💫☄️🕵 morganah.8214 🔰 👥,      📧  🕊️  ✨\n15.<489230008603115531> 🔨Fred T W (Frederick.8305),  👍\n```",
   "roster": [
     {
       "discord_id": "297875840748748810",
@@ -88,6 +88,13 @@
       "nickname": "Wolfsfriend (Wolfsfriend.6395)",
       "emojis": [
         "🐺"
+      ]
+    },
+    {
+      "discord_id": "427250003933921280",
+      "nickname": "Saej (Ravecia.5621)",
+      "emojis": [
+        "❤️"
       ]
     },
     {
@@ -454,6 +461,14 @@
       "timestamp": "2026-10-01T23:44:20.018459+00:00",
       "discord_id": "407571428045619211",
       "nickname": "bayawulf (bealana.7510) 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "❤️"
+    },
+    {
+      "timestamp": "2026-10-02T21:04:31.429752+00:00",
+      "discord_id": "427250003933921280",
+      "nickname": "Saej (Ravecia.5621)",
       "action": "reacted",
       "source": "post_reaction",
       "emoji": "❤️"
