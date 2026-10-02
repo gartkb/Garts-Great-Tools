@@ -1,8 +1,8 @@
 {
   "source_type": "event",
   "id": "1524461266138304602",
-  "last_updated": "2026-09-27T23:27:15.705791+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,       📧\n2.<798211339365384212> Livingldly (Kavish.8593) 🌠,  📧\n3.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,  📧\n4.<231518357440954368> shaqsalazar (shaqsalazar.2906),📧\n5.<200423784589688832> 💫 KelsTheBard (kelso.2354),  📧\n```",
+  "last_updated": "2026-10-02T22:10:56.844434+00:00",
+  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,       📧\n2.<798211339365384212> Livingldly (Kavish.8593) 🌠,  📧\n3.<411260184036638721> Torrid (Segwee.4781 ) 🚺,     📧\n4.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,  📧\n5.<231518357440954368> shaqsalazar (shaqsalazar.2906),📧\n6.<200423784589688832> 💫 KelsTheBard (kelso.2354),  📧\n```",
   "roster": [
     {
       "discord_id": "200423784589688832",
@@ -21,6 +21,13 @@
     {
       "discord_id": "231518357440954368",
       "nickname": "shaqsalazar (shaqsalazar.2906)",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "411260184036638721",
+      "nickname": "Torrid (Segwee.4781 ) 🚺",
       "emojis": [
         "📧"
       ]
@@ -85,6 +92,14 @@
       "timestamp": "2026-09-27T23:26:09.192640+00:00",
       "discord_id": "316685427392380939",
       "nickname": "Sleepy (Sleepy.5912)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-02T22:09:51.038882+00:00",
+      "discord_id": "411260184036638721",
+      "nickname": "Torrid (Segwee.4781 ) 🚺",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
