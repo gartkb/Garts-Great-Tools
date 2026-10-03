@@ -1,8 +1,10 @@
 {
   "source_type": "static_post",
   "id": "1539414701472096287",
-  "last_updated": "2026-10-02T14:33:43.417005+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<166023618440986624> Ara (Aranisium.1498),        ⚔️  \\<:AlacDPS:1038159937391562843>  \\<:QuickHeal:1038159941472620655>  ☣️\n2.<122459890529730560> Danny (dclh.6834) 🚹,         ⚔️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  💥  🍄  ☣️\n3.<615168697706872844> Doobus (Doobus.7186) 🚹,      ⚔️  \\<:QuickDPS:1038159940164014090>  \\<:QuickHeal:1038159941472620655>\n4.<183746801587847169> Igrener (Igrener.8947) 🚹,    ⚔️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  🍄  ☣️\n5.<185163027430113280> SGT_Hades (Zephyr.2174),     ⚔️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  💥  ☣️\n6.<267011520997752833> TheSaltyOreo.1936 🚹,         ⚔️  \\<:AlacDPS:1038159937391562843>  💥  🍄\n7.<231518357440954368> shaqsalazar (shaqsalazar.2906),⚔️  \\<:AlacDPS:1038159937391562843>  💥  🪞  ☣️\n8.<617181650190598155> 💫 whycantifly (Fei.7308) 🚺,  ⚔️  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️  🖐️  🏢  💥  🍄  🚀  🪁  🪞  🎀  ☠️  👊  ☣️\n9.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  ⚔️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️  🖐️  🏢  💥  🍄  🚀  🪁  🪞  🎀  ☠️  🫗  🗽  👊  ☣️\n```",
+  "label": "#🍄saturday-hot-static roster",
+  "last_updated": "2026-10-03T22:14:58.810917+00:00",
+  "expires_at": null,
+  "text_representation": "**Interest List:**\n\n```\n1. <166023618440986624> Ara (Aranisium.1498),        ⚔️  \\<:AlacDPS:1038159937391562843>  \\<:QuickHeal:1038159941472620655>  ☣️\n2. <122459890529730560> Danny (dclh.6834) 🚹,         ⚔️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  💥  🍄  ☣️\n3. <615168697706872844> Doobus (Doobus.7186) 🚹,      ⚔️  \\<:QuickDPS:1038159940164014090>  \\<:QuickHeal:1038159941472620655>\n4. <183746801587847169> Igrener (Igrener.8947) 🚹,    ⚔️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  🍄  ☣️\n5. <185163027430113280> SGT_Hades (Zephyr.2174),     ⚔️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  💥  ☣️\n6. <231518357440954368> shaqsalazar (shaqsalazar.2906),⚔️  \\<:AlacDPS:1038159937391562843>  💥  🪞  ☣️\n7. <267011520997752833> TheSaltyOreo.1936 🚹,         ⚔️  \\<:AlacDPS:1038159937391562843>  💥  🍄\n8. <117454153273442313> Wax (Grunther ROTDPA.3478) 🚹,⚔️  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  🚀  ☣️\n9. <617181650190598155> 💫 whycantifly (Fei.7308) 🚺,  ⚔️  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️  🖐️  🏢  💥  🍄  🚀  🪁  🪞  🎀  ☠️  👊  ☣️\n10.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  ⚔️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️  🖐️  🏢  💥  🍄  🚀  🪁  🪞  🎀  ☠️  🫗  🗽  👊  ☣️\n```",
   "roster": [
     {
       "discord_id": "617181650190598155",
@@ -127,49 +129,20 @@
         "🍄",
         "☣️"
       ]
+    },
+    {
+      "discord_id": "117454153273442313",
+      "nickname": "Wax (Grunther ROTDPA.3478) 🚹",
+      "emojis": [
+        "⚔️",
+        "<:AlacDPS:1038159937391562843>",
+        "<:AlacHeal:1038159938335277140>",
+        "🚀",
+        "☣️"
+      ]
     }
   ],
   "history": [
-    {
-      "timestamp": "2026-09-03T03:36:10.590864+00:00",
-      "discord_id": "617181650190598155",
-      "nickname": "whycantifly (Fei.7308) 🚺",
-      "action": "unreacted",
-      "source": "post_reaction",
-      "emoji": "🛡️"
-    },
-    {
-      "timestamp": "2026-09-03T03:36:10.615799+00:00",
-      "discord_id": "617181650190598155",
-      "nickname": "whycantifly (Fei.7308) 🚺",
-      "action": "unreacted",
-      "source": "post_reaction",
-      "emoji": "🖐️"
-    },
-    {
-      "timestamp": "2026-09-03T03:36:10.643524+00:00",
-      "discord_id": "617181650190598155",
-      "nickname": "whycantifly (Fei.7308) 🚺",
-      "action": "unreacted",
-      "source": "post_reaction",
-      "emoji": "💥"
-    },
-    {
-      "timestamp": "2026-09-03T03:36:10.672865+00:00",
-      "discord_id": "617181650190598155",
-      "nickname": "whycantifly (Fei.7308) 🚺",
-      "action": "unreacted",
-      "source": "post_reaction",
-      "emoji": "🍄"
-    },
-    {
-      "timestamp": "2026-09-03T03:36:10.702282+00:00",
-      "discord_id": "617181650190598155",
-      "nickname": "whycantifly (Fei.7308) 🚺",
-      "action": "unreacted",
-      "source": "post_reaction",
-      "emoji": "🪁"
-    },
     {
       "timestamp": "2026-09-03T03:36:10.731989+00:00",
       "discord_id": "617181650190598155",
@@ -4129,6 +4102,46 @@
       "action": "unreacted",
       "source": "post_reaction",
       "emoji": "☣️"
+    },
+    {
+      "timestamp": "2026-10-03T22:12:57.093251+00:00",
+      "discord_id": "117454153273442313",
+      "nickname": "Wax (Grunther ROTDPA.3478) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacHeal:1038159938335277140>"
+    },
+    {
+      "timestamp": "2026-10-03T22:12:59.031350+00:00",
+      "discord_id": "117454153273442313",
+      "nickname": "Wax (Grunther ROTDPA.3478) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacDPS:1038159937391562843>"
+    },
+    {
+      "timestamp": "2026-10-03T22:13:09.421048+00:00",
+      "discord_id": "117454153273442313",
+      "nickname": "Wax (Grunther ROTDPA.3478) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-10-03T22:13:26.100689+00:00",
+      "discord_id": "117454153273442313",
+      "nickname": "Wax (Grunther ROTDPA.3478) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "☣️"
+    },
+    {
+      "timestamp": "2026-10-03T22:13:41.434957+00:00",
+      "discord_id": "117454153273442313",
+      "nickname": "Wax (Grunther ROTDPA.3478) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🚀"
     }
   ]
 }
