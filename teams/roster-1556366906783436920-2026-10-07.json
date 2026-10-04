@@ -2,9 +2,9 @@
   "source_type": "event",
   "id": "1556366906783436920",
   "label": "Gart's Great Intro To Raids",
-  "last_updated": "2026-10-04T18:10:47.987849+00:00",
+  "last_updated": "2026-10-04T18:16:44.932154+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,🔥  🕵️\n2.<561243994227605515> 🍄 Para (ParanoidEye.4072), 🕵️  🛡️\n3.<596875174700122122> 💫☄️Gartner Kinderboom.5019,📧\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,🔥  🕵️\n2.<838104616155086869> Morganna Star (Rasja.4382) 🚺,📧  🐣\n3.<561243994227605515> 🍄 Para (ParanoidEye.4072), 🕵️  🛡️\n4.<617181650190598155> 💫 whycantifly (Fei.7308) 🚺,🕵️  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️\n5.<596875174700122122> 💫☄️Gartner Kinderboom.5019,📧\n```",
   "roster": [
     {
       "discord_id": "596875174700122122",
@@ -14,11 +14,30 @@
       ]
     },
     {
+      "discord_id": "838104616155086869",
+      "nickname": "Morganna Star (Rasja.4382) 🚺",
+      "emojis": [
+        "📧",
+        "🐣"
+      ]
+    },
+    {
       "discord_id": "619970339233071134",
       "nickname": "gijo(Candid Flames.6279)🌠🌀",
       "emojis": [
         "🔥",
         "🕵️"
+      ]
+    },
+    {
+      "discord_id": "617181650190598155",
+      "nickname": "💫 whycantifly (Fei.7308) 🚺",
+      "emojis": [
+        "🕵️",
+        "<:AlacDPS:1038159937391562843>",
+        "<:AlacHeal:1038159938335277140>",
+        "<:QuickHeal:1038159941472620655>",
+        "🛡️"
       ]
     },
     {
@@ -70,6 +89,62 @@
       "action": "reacted",
       "source": "post_reaction",
       "emoji": "🛡️"
+    },
+    {
+      "timestamp": "2026-10-04T18:14:53.855796+00:00",
+      "discord_id": "838104616155086869",
+      "nickname": "Morganna Star (Rasja.4382) 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🐣"
+    },
+    {
+      "timestamp": "2026-10-04T18:14:54.775347+00:00",
+      "discord_id": "838104616155086869",
+      "nickname": "Morganna Star (Rasja.4382) 🚺",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-04T18:15:12.723499+00:00",
+      "discord_id": "617181650190598155",
+      "nickname": "💫 whycantifly (Fei.7308) 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🕵️"
+    },
+    {
+      "timestamp": "2026-10-04T18:15:24.991074+00:00",
+      "discord_id": "617181650190598155",
+      "nickname": "💫 whycantifly (Fei.7308) 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🛡️"
+    },
+    {
+      "timestamp": "2026-10-04T18:15:31.078023+00:00",
+      "discord_id": "617181650190598155",
+      "nickname": "💫 whycantifly (Fei.7308) 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickHeal:1038159941472620655>"
+    },
+    {
+      "timestamp": "2026-10-04T18:15:31.687877+00:00",
+      "discord_id": "617181650190598155",
+      "nickname": "💫 whycantifly (Fei.7308) 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacHeal:1038159938335277140>"
+    },
+    {
+      "timestamp": "2026-10-04T18:15:32.465347+00:00",
+      "discord_id": "617181650190598155",
+      "nickname": "💫 whycantifly (Fei.7308) 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacDPS:1038159937391562843>"
     }
   ]
 }
