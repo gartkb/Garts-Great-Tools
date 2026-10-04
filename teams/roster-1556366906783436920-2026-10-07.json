@@ -2,9 +2,9 @@
   "source_type": "event",
   "id": "1556366906783436920",
   "label": "Gart's Great Intro To Raids",
-  "last_updated": "2026-10-04T20:07:19.119597+00:00",
+  "last_updated": "2026-10-04T20:19:19.245723+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1. <180733022251909120> Aline (aline.8179) 🚺,      📧  🐣\n2. <153993501124722689> Echo (Echo.9506),          🐥\n3. <619970339233071134> gijo(Candid Flames.6279)🌠🌀,🔥  🕵️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>\n4. <141735079318650881> hockeyob (hockeyob.5378) 🚹,🕵️\n5. <1524441324240113827> likkos_,                  📧\n6. <838104616155086869> Morganna Star (Rasja.4382) 🚺,📧  🐣\n7. <670714519349231617> Wyrmcast (HiddenHand.2694),🐥\n8. <561243994227605515> 🍄 Para (ParanoidEye.4072), 🕵️  🛡️\n9. <617181650190598155> 💫 whycantifly (Fei.7308) 🚺,🕵️  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️\n10.<596875174700122122> 💫☄️Gartner Kinderboom.5019,📧\n11.<297875840748748810> 💫☄️🕵 morganah.8214 🔰 👥,    📧  🔥  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>\n```",
+  "text_representation": "**Interest List:**\n\n```\n1. <180733022251909120> Aline (aline.8179) 🚺,      📧  🐣\n2. <153993501124722689> Echo (Echo.9506),          🐥\n3. <619970339233071134> gijo(Candid Flames.6279)🌠🌀,🔥  🕵️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>\n4. <141735079318650881> hockeyob (hockeyob.5378) 🚹,🕵️\n5. <1524441324240113827> likkos_,                  📧\n6. <838104616155086869> Morganna Star (Rasja.4382) 🚺,📧  🐣\n7. <344480812508643342> Ozurlen (Ozurlen V.8563) 🚹,🐥\n8. <670714519349231617> Wyrmcast (HiddenHand.2694),🐥\n9. <561243994227605515> 🍄 Para (ParanoidEye.4072), 🕵️  🛡️\n10.<617181650190598155> 💫 whycantifly (Fei.7308) 🚺,🕵️  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️\n11.<596875174700122122> 💫☄️Gartner Kinderboom.5019,📧\n12.<297875840748748810> 💫☄️🕵 morganah.8214 🔰 👥,    📧  🔥  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>\n```",
   "roster": [
     {
       "discord_id": "180733022251909120",
@@ -49,6 +49,13 @@
     {
       "discord_id": "670714519349231617",
       "nickname": "Wyrmcast (HiddenHand.2694)",
+      "emojis": [
+        "🐥"
+      ]
+    },
+    {
+      "discord_id": "344480812508643342",
+      "nickname": "Ozurlen (Ozurlen V.8563) 🚹",
       "emojis": [
         "🐥"
       ]
@@ -360,6 +367,30 @@
       "discord_id": "180733022251909120",
       "nickname": "Aline (aline.8179) 🚺",
       "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-04T20:16:51.466105+00:00",
+      "discord_id": "344480812508643342",
+      "nickname": "Ozurlen (Ozurlen V.8563) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🐥"
+    },
+    {
+      "timestamp": "2026-10-04T20:17:39.342296+00:00",
+      "discord_id": "1463525092045619244",
+      "nickname": "Zeuhl (lwyrgmr.4590)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-04T20:18:06.276347+00:00",
+      "discord_id": "1463525092045619244",
+      "nickname": "Zeuhl (lwyrgmr.4590)",
+      "action": "uninterested",
       "source": "event_interest",
       "emoji": null
     }
