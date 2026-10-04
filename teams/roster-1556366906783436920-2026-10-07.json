@@ -1,16 +1,32 @@
 {
   "source_type": "event",
   "id": "1556366906783436920",
-  "label": "placeholder",
-  "last_updated": "2026-10-04T18:07:32.850340+00:00",
+  "label": "Gart's Great Intro To Raids",
+  "last_updated": "2026-10-04T18:10:47.987849+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<596875174700122122> 💫☄️Gartner Kinderboom.5019,📧\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,🔥  🕵️\n2.<561243994227605515> 🍄 Para (ParanoidEye.4072), 🕵️  🛡️\n3.<596875174700122122> 💫☄️Gartner Kinderboom.5019,📧\n```",
   "roster": [
     {
       "discord_id": "596875174700122122",
       "nickname": "💫☄️Gartner Kinderboom.5019",
       "emojis": [
         "📧"
+      ]
+    },
+    {
+      "discord_id": "619970339233071134",
+      "nickname": "gijo(Candid Flames.6279)🌠🌀",
+      "emojis": [
+        "🔥",
+        "🕵️"
+      ]
+    },
+    {
+      "discord_id": "561243994227605515",
+      "nickname": "🍄 Para (ParanoidEye.4072)",
+      "emojis": [
+        "🕵️",
+        "🛡️"
       ]
     }
   ],
@@ -22,6 +38,38 @@
       "action": "interested",
       "source": "event_interest",
       "emoji": null
+    },
+    {
+      "timestamp": "2026-10-04T18:09:14.431002+00:00",
+      "discord_id": "619970339233071134",
+      "nickname": "gijo(Candid Flames.6279)🌠🌀",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🔥"
+    },
+    {
+      "timestamp": "2026-10-04T18:09:14.943755+00:00",
+      "discord_id": "619970339233071134",
+      "nickname": "gijo(Candid Flames.6279)🌠🌀",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🕵️"
+    },
+    {
+      "timestamp": "2026-10-04T18:09:28.596892+00:00",
+      "discord_id": "561243994227605515",
+      "nickname": "🍄 Para (ParanoidEye.4072)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🕵️"
+    },
+    {
+      "timestamp": "2026-10-04T18:09:35.843174+00:00",
+      "discord_id": "561243994227605515",
+      "nickname": "🍄 Para (ParanoidEye.4072)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🛡️"
     }
   ]
 }
