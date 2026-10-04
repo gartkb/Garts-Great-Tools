@@ -2,9 +2,9 @@
   "source_type": "static_post",
   "id": "1554999951610613780",
   "label": "#✨static-recruiting · 💫☄️Gartner Kinderboom.5019, Sep 30: <@&1555308523523547336> **GROUP NOW …",
-  "last_updated": "2026-10-04T19:33:12.431064+00:00",
+  "last_updated": "2026-10-04T19:51:59.024929+00:00",
   "expires_at": "2026-10-17T22:49:22.594110+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<454007957995257866> dr_wh0o 🚹,                 ✅\n2.<335149766688112640> Waffles.4082 🔱,            🤙\n3.<758528354361802774> Zenon (Zenon.2719) 🚹,      ✅  \\<:Commander_circle_marker2:1408559283401920655>  \\<:Commander_heart_marker3:1408559284891156571>  \\<:healheart:1436465472509050982>\n4.<596875174700122122> 💫☄️Gartner Kinderboom.5019,✅  \\<:Commander_arrow_marker1:1408559163646283866>  \\<:Commander_circle_marker2:1408559283401920655>  \\<:Commander_heart_marker3:1408559284891156571>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  🔥  \\<:healheart:1436465472509050982>  🧩  \\<:4CatmanderRed:833051121978310667>  ⭐  🤙\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<454007957995257866> dr_wh0o 🚹,                 ✅\n2.<335149766688112640> Waffles.4082 🔱,            ✅  🤙\n3.<758528354361802774> Zenon (Zenon.2719) 🚹,      ✅  \\<:Commander_circle_marker2:1408559283401920655>  \\<:Commander_heart_marker3:1408559284891156571>  \\<:healheart:1436465472509050982>\n4.<596875174700122122> 💫☄️Gartner Kinderboom.5019,✅  \\<:Commander_arrow_marker1:1408559163646283866>  \\<:Commander_circle_marker2:1408559283401920655>  \\<:Commander_heart_marker3:1408559284891156571>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  🔥  \\<:healheart:1436465472509050982>  🧩  \\<:4CatmanderRed:833051121978310667>  ⭐  🤙\n```",
   "roster": [
     {
       "discord_id": "758528354361802774",
@@ -45,6 +45,7 @@
       "discord_id": "335149766688112640",
       "nickname": "Waffles.4082 🔱",
       "emojis": [
+        "✅",
         "🤙"
       ]
     }
@@ -721,6 +722,14 @@
       "action": "reacted",
       "source": "post_reaction",
       "emoji": "🤙"
+    },
+    {
+      "timestamp": "2026-10-04T19:50:47.660077+00:00",
+      "discord_id": "335149766688112640",
+      "nickname": "Waffles.4082 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "✅"
     }
   ]
 }
