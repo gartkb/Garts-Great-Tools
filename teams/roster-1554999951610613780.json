@@ -2,9 +2,9 @@
   "source_type": "static_post",
   "id": "1554999951610613780",
   "label": "#✨static-recruiting · 💫☄️Gartner Kinderboom.5019, Sep 30: <@&1555308523523547336> **GROUP NOW …",
-  "last_updated": "2026-10-04T16:49:17.846524+00:00",
+  "last_updated": "2026-10-04T19:33:12.431064+00:00",
   "expires_at": "2026-10-17T22:49:22.594110+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1. <97838779439542272> Cloud Kicker (Cloud Kicker.5987),\\<:Commander_heart_marker3:1408559284891156571>  \\<:healheart:1436465472509050982>  \\<:4CatmanderRed:833051121978310667>\n2. <325635192767250433> Daisaku (Daisaku.5034),        ✅  \\<:Commander_circle_marker2:1408559283401920655>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  🔥  \\<:healheart:1436465472509050982>\n3. <454007957995257866> dr_wh0o 🚹,                     ✅\n4. <153993501124722689> Echo (Echo.9506),              ✅  \\<:Commander_arrow_marker1:1408559163646283866>  \\<:healheart:1436465472509050982>  \\<:4CatmanderRed:833051121978310667>\n5. <141735079318650881> hockeyob (hockeyob.5378) 🚹,    ✅  \\<:Commander_circle_marker2:1408559283401920655>  \\<:AlacDPS:1038159937391562843>  🧩\n6. <266984776131543050> Memory (Memory.1860) 🚺,        \\<:Commander_circle_marker2:1408559283401920655>  \\<:healheart:1436465472509050982>\n7. <564604986357579809> Moxigaaf (Moxigaaf.3714),      ✅  \\<:Commander_circle_marker2:1408559283401920655>  \\<:healheart:1436465472509050982>\n8. <335149766688112640> Waffles.4082 🔱,                ✅  \\<:Commander_heart_marker3:1408559284891156571>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  🔥  \\<:healheart:1436465472509050982>  🤙\n9. <670714519349231617> Wyrmcast (HiddenHand.2694),    \\<:Commander_arrow_marker1:1408559163646283866>  \\<:AlacDPS:1038159937391562843>\n10.<758528354361802774> Zenon (Zenon.2719) 🚹,          ✅  \\<:Commander_circle_marker2:1408559283401920655>  \\<:Commander_heart_marker3:1408559284891156571>  \\<:healheart:1436465472509050982>\n11.<596875174700122122> 💫☄️Gartner Kinderboom.5019,    ✅  \\<:Commander_arrow_marker1:1408559163646283866>  \\<:Commander_circle_marker2:1408559283401920655>  \\<:Commander_heart_marker3:1408559284891156571>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  🔥  \\<:healheart:1436465472509050982>  🧩  \\<:4CatmanderRed:833051121978310667>  ⭐\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<454007957995257866> dr_wh0o 🚹,                 ✅\n2.<335149766688112640> Waffles.4082 🔱,            🤙\n3.<758528354361802774> Zenon (Zenon.2719) 🚹,      ✅  \\<:Commander_circle_marker2:1408559283401920655>  \\<:Commander_heart_marker3:1408559284891156571>  \\<:healheart:1436465472509050982>\n4.<596875174700122122> 💫☄️Gartner Kinderboom.5019,✅  \\<:Commander_arrow_marker1:1408559163646283866>  \\<:Commander_circle_marker2:1408559283401920655>  \\<:Commander_heart_marker3:1408559284891156571>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  🔥  \\<:healheart:1436465472509050982>  🧩  \\<:4CatmanderRed:833051121978310667>  ⭐  🤙\n```",
   "roster": [
     {
       "discord_id": "758528354361802774",
@@ -30,16 +30,8 @@
         "<:healheart:1436465472509050982>",
         "🧩",
         "<:4CatmanderRed:833051121978310667>",
-        "⭐"
-      ]
-    },
-    {
-      "discord_id": "564604986357579809",
-      "nickname": "Moxigaaf (Moxigaaf.3714)",
-      "emojis": [
-        "✅",
-        "<:Commander_circle_marker2:1408559283401920655>",
-        "<:healheart:1436465472509050982>"
+        "⭐",
+        "🤙"
       ]
     },
     {
@@ -53,70 +45,7 @@
       "discord_id": "335149766688112640",
       "nickname": "Waffles.4082 🔱",
       "emojis": [
-        "✅",
-        "<:Commander_heart_marker3:1408559284891156571>",
-        "<:QuickDPS:1038159940164014090>",
-        "<:AlacDPS:1038159937391562843>",
-        "🔥",
-        "<:healheart:1436465472509050982>",
         "🤙"
-      ]
-    },
-    {
-      "discord_id": "325635192767250433",
-      "nickname": "Daisaku (Daisaku.5034)",
-      "emojis": [
-        "✅",
-        "<:Commander_circle_marker2:1408559283401920655>",
-        "<:QuickDPS:1038159940164014090>",
-        "<:AlacDPS:1038159937391562843>",
-        "🔥",
-        "<:healheart:1436465472509050982>"
-      ]
-    },
-    {
-      "discord_id": "153993501124722689",
-      "nickname": "Echo (Echo.9506)",
-      "emojis": [
-        "✅",
-        "<:Commander_arrow_marker1:1408559163646283866>",
-        "<:healheart:1436465472509050982>",
-        "<:4CatmanderRed:833051121978310667>"
-      ]
-    },
-    {
-      "discord_id": "141735079318650881",
-      "nickname": "hockeyob (hockeyob.5378) 🚹",
-      "emojis": [
-        "✅",
-        "<:Commander_circle_marker2:1408559283401920655>",
-        "<:AlacDPS:1038159937391562843>",
-        "🧩"
-      ]
-    },
-    {
-      "discord_id": "670714519349231617",
-      "nickname": "Wyrmcast (HiddenHand.2694)",
-      "emojis": [
-        "<:Commander_arrow_marker1:1408559163646283866>",
-        "<:AlacDPS:1038159937391562843>"
-      ]
-    },
-    {
-      "discord_id": "266984776131543050",
-      "nickname": "Memory (Memory.1860) 🚺",
-      "emojis": [
-        "<:Commander_circle_marker2:1408559283401920655>",
-        "<:healheart:1436465472509050982>"
-      ]
-    },
-    {
-      "discord_id": "97838779439542272",
-      "nickname": "Cloud Kicker (Cloud Kicker.5987)",
-      "emojis": [
-        "<:Commander_heart_marker3:1408559284891156571>",
-        "<:healheart:1436465472509050982>",
-        "<:4CatmanderRed:833051121978310667>"
       ]
     }
   ],
@@ -544,6 +473,254 @@
       "action": "unreacted",
       "source": "post_reaction",
       "emoji": "<:healheart:1436465472509050982>"
+    },
+    {
+      "timestamp": "2026-10-04T19:29:29.994010+00:00",
+      "discord_id": "97838779439542272",
+      "nickname": "Cloud Kicker (Cloud Kicker.5987)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:healheart:1436465472509050982>"
+    },
+    {
+      "timestamp": "2026-10-04T19:29:31.190018+00:00",
+      "discord_id": "153993501124722689",
+      "nickname": "Echo (Echo.9506)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:healheart:1436465472509050982>"
+    },
+    {
+      "timestamp": "2026-10-04T19:29:33.742093+00:00",
+      "discord_id": "266984776131543050",
+      "nickname": "Memory (Memory.1860) 🚺",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:healheart:1436465472509050982>"
+    },
+    {
+      "timestamp": "2026-10-04T19:29:35.817915+00:00",
+      "discord_id": "325635192767250433",
+      "nickname": "Daisaku (Daisaku.5034)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:healheart:1436465472509050982>"
+    },
+    {
+      "timestamp": "2026-10-04T19:29:37.525224+00:00",
+      "discord_id": "335149766688112640",
+      "nickname": "Waffles.4082 🔱",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:healheart:1436465472509050982>"
+    },
+    {
+      "timestamp": "2026-10-04T19:29:38.215323+00:00",
+      "discord_id": "564604986357579809",
+      "nickname": "Moxigaaf (Moxigaaf.3714)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:healheart:1436465472509050982>"
+    },
+    {
+      "timestamp": "2026-10-04T19:29:42.861513+00:00",
+      "discord_id": "141735079318650881",
+      "nickname": "hockeyob (hockeyob.5378) 🚹",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "✅"
+    },
+    {
+      "timestamp": "2026-10-04T19:29:44.004423+00:00",
+      "discord_id": "153993501124722689",
+      "nickname": "Echo (Echo.9506)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "✅"
+    },
+    {
+      "timestamp": "2026-10-04T19:29:44.686751+00:00",
+      "discord_id": "325635192767250433",
+      "nickname": "Daisaku (Daisaku.5034)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "✅"
+    },
+    {
+      "timestamp": "2026-10-04T19:29:45.866151+00:00",
+      "discord_id": "335149766688112640",
+      "nickname": "Waffles.4082 🔱",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "✅"
+    },
+    {
+      "timestamp": "2026-10-04T19:29:46.880707+00:00",
+      "discord_id": "564604986357579809",
+      "nickname": "Moxigaaf (Moxigaaf.3714)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "✅"
+    },
+    {
+      "timestamp": "2026-10-04T19:29:50.833673+00:00",
+      "discord_id": "141735079318650881",
+      "nickname": "hockeyob (hockeyob.5378) 🚹",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacDPS:1038159937391562843>"
+    },
+    {
+      "timestamp": "2026-10-04T19:29:51.904951+00:00",
+      "discord_id": "325635192767250433",
+      "nickname": "Daisaku (Daisaku.5034)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacDPS:1038159937391562843>"
+    },
+    {
+      "timestamp": "2026-10-04T19:30:42.620604+00:00",
+      "discord_id": "670714519349231617",
+      "nickname": "Wyrmcast (HiddenHand.2694)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacDPS:1038159937391562843>"
+    },
+    {
+      "timestamp": "2026-10-04T19:30:48.919265+00:00",
+      "discord_id": "141735079318650881",
+      "nickname": "hockeyob (hockeyob.5378) 🚹",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:Commander_circle_marker2:1408559283401920655>"
+    },
+    {
+      "timestamp": "2026-10-04T19:30:54.367822+00:00",
+      "discord_id": "266984776131543050",
+      "nickname": "Memory (Memory.1860) 🚺",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:Commander_circle_marker2:1408559283401920655>"
+    },
+    {
+      "timestamp": "2026-10-04T19:30:56.928948+00:00",
+      "discord_id": "325635192767250433",
+      "nickname": "Daisaku (Daisaku.5034)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:Commander_circle_marker2:1408559283401920655>"
+    },
+    {
+      "timestamp": "2026-10-04T19:30:59.589405+00:00",
+      "discord_id": "564604986357579809",
+      "nickname": "Moxigaaf (Moxigaaf.3714)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:Commander_circle_marker2:1408559283401920655>"
+    },
+    {
+      "timestamp": "2026-10-04T19:31:04.309811+00:00",
+      "discord_id": "153993501124722689",
+      "nickname": "Echo (Echo.9506)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:Commander_arrow_marker1:1408559163646283866>"
+    },
+    {
+      "timestamp": "2026-10-04T19:31:06.470731+00:00",
+      "discord_id": "670714519349231617",
+      "nickname": "Wyrmcast (HiddenHand.2694)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:Commander_arrow_marker1:1408559163646283866>"
+    },
+    {
+      "timestamp": "2026-10-04T19:31:09.606488+00:00",
+      "discord_id": "97838779439542272",
+      "nickname": "Cloud Kicker (Cloud Kicker.5987)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:Commander_heart_marker3:1408559284891156571>"
+    },
+    {
+      "timestamp": "2026-10-04T19:31:10.977730+00:00",
+      "discord_id": "335149766688112640",
+      "nickname": "Waffles.4082 🔱",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:Commander_heart_marker3:1408559284891156571>"
+    },
+    {
+      "timestamp": "2026-10-04T19:31:16.820679+00:00",
+      "discord_id": "325635192767250433",
+      "nickname": "Daisaku (Daisaku.5034)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickDPS:1038159940164014090>"
+    },
+    {
+      "timestamp": "2026-10-04T19:31:18.143930+00:00",
+      "discord_id": "335149766688112640",
+      "nickname": "Waffles.4082 🔱",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickDPS:1038159940164014090>"
+    },
+    {
+      "timestamp": "2026-10-04T19:31:22.310816+00:00",
+      "discord_id": "325635192767250433",
+      "nickname": "Daisaku (Daisaku.5034)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🔥"
+    },
+    {
+      "timestamp": "2026-10-04T19:31:23.114258+00:00",
+      "discord_id": "335149766688112640",
+      "nickname": "Waffles.4082 🔱",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🔥"
+    },
+    {
+      "timestamp": "2026-10-04T19:31:28.945084+00:00",
+      "discord_id": "97838779439542272",
+      "nickname": "Cloud Kicker (Cloud Kicker.5987)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:4CatmanderRed:833051121978310667>"
+    },
+    {
+      "timestamp": "2026-10-04T19:31:29.506535+00:00",
+      "discord_id": "153993501124722689",
+      "nickname": "Echo (Echo.9506)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:4CatmanderRed:833051121978310667>"
+    },
+    {
+      "timestamp": "2026-10-04T19:31:37.775801+00:00",
+      "discord_id": "335149766688112640",
+      "nickname": "Waffles.4082 🔱",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacDPS:1038159937391562843>"
+    },
+    {
+      "timestamp": "2026-10-04T19:31:41.747531+00:00",
+      "discord_id": "141735079318650881",
+      "nickname": "hockeyob (hockeyob.5378) 🚹",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🧩"
+    },
+    {
+      "timestamp": "2026-10-04T19:32:00.917330+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🤙"
     }
   ]
 }
