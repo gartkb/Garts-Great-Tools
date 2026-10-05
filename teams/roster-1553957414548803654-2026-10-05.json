@@ -2,9 +2,9 @@
   "source_type": "event",
   "id": "1553957414548803654",
   "label": "Quick Weekly Raids! Soto2 + EoD5 [NM] ~1hr",
-  "last_updated": "2026-10-05T00:25:42.368680+00:00",
+  "last_updated": "2026-10-05T00:42:39.664361+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1. <189165200652369920> anti0599 🚹,                    📧\n2. <219437617219895297> BeastfromtheEast.2946,         📧\n3. <1459942608334880851> Fuxyzie (bryanvanalstine.2638) 🚹,📧\n4. <619970339233071134> gijo(Candid Flames.6279)🌠🌀,    📧\n5. <141735079318650881> hockeyob (hockeyob.5378) 🚹,    📧\n6. <266984776131543050> Memory (Memory.1860) 🚺,        📧\n7. <316685427392380939> Sleepy (Sleepy.5912),          📧\n8. <267011520997752833> TheSaltyOreo.1936 🚹,           📧\n9. <193583025630478339> Vem (UncreativeGreen.2019) 🚹,  📧\n10.<180509787555889152> 💫 Mimori (Mimori.2051) 🚺,      📧\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<189165200652369920> anti0599 🚹,                    📧\n2.<1459942608334880851> Fuxyzie (bryanvanalstine.2638) 🚹,📧\n3.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,    📧\n4.<141735079318650881> hockeyob (hockeyob.5378) 🚹,    📧\n5.<266984776131543050> Memory (Memory.1860) 🚺,        📧\n6.<316685427392380939> Sleepy (Sleepy.5912),          📧\n7.<267011520997752833> TheSaltyOreo.1936 🚹,           📧\n8.<193583025630478339> Vem (UncreativeGreen.2019) 🚹,  📧\n9.<180509787555889152> 💫 Mimori (Mimori.2051) 🚺,      📧\n```",
   "roster": [
     {
       "discord_id": "141735079318650881",
@@ -30,13 +30,6 @@
     {
       "discord_id": "193583025630478339",
       "nickname": "Vem (UncreativeGreen.2019) 🚹",
-      "emojis": [
-        "📧"
-      ]
-    },
-    {
-      "discord_id": "219437617219895297",
-      "nickname": "BeastfromtheEast.2946",
       "emojis": [
         "📧"
       ]
@@ -187,6 +180,14 @@
       "discord_id": "193583025630478339",
       "nickname": "Vem (UncreativeGreen.2019) 🚹",
       "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-05T00:41:30.712694+00:00",
+      "discord_id": "219437617219895297",
+      "nickname": "BeastfromtheEast.2946",
+      "action": "uninterested",
       "source": "event_interest",
       "emoji": null
     }
