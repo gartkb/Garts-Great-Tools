@@ -2,10 +2,18 @@
   "source_type": "static_post",
   "id": "1554999951610613780",
   "label": "#✨static-recruiting · 💫☄️Gartner Kinderboom.5019, Sep 30: <@&1555308523523547336> **GROUP NOW …",
-  "last_updated": "2026-10-04T20:03:01.114599+00:00",
+  "last_updated": "2026-10-05T06:35:05.265090+00:00",
   "expires_at": "2026-10-17T22:49:22.594110+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<454007957995257866> dr_wh0o 🚹,                 ✅\n2.<335149766688112640> Waffles.4082 🔱,            🤙\n3.<758528354361802774> Zenon (Zenon.2719) 🚹,      ✅  \\<:Commander_circle_marker2:1408559283401920655>  \\<:Commander_heart_marker3:1408559284891156571>  \\<:healheart:1436465472509050982>\n4.<596875174700122122> 💫☄️Gartner Kinderboom.5019,✅  \\<:Commander_arrow_marker1:1408559163646283866>  \\<:Commander_circle_marker2:1408559283401920655>  \\<:Commander_heart_marker3:1408559284891156571>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  🔥  \\<:healheart:1436465472509050982>  🧩  \\<:4CatmanderRed:833051121978310667>  ⭐  🤙\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<454007957995257866> dr_wh0o 🚹,                 ✅\n2.<335149766688112640> Waffles.4082 🔱,            🤙\n3.<758528354361802774> Zenon (Zenon.2719) 🚹,      ✅  \\<:Commander_circle_marker2:1408559283401920655>  \\<:Commander_heart_marker3:1408559284891156571>  \\<:healheart:1436465472509050982>\n4.<1463525092045619244> Zeuhl (lwyrgmr.4590),     ✅  \\<:Commander_heart_marker3:1408559284891156571>\n5.<596875174700122122> 💫☄️Gartner Kinderboom.5019,✅  \\<:Commander_arrow_marker1:1408559163646283866>  \\<:Commander_circle_marker2:1408559283401920655>  \\<:Commander_heart_marker3:1408559284891156571>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  🔥  \\<:healheart:1436465472509050982>  🧩  \\<:4CatmanderRed:833051121978310667>  ⭐  🤙\n```",
   "roster": [
+    {
+      "discord_id": "1463525092045619244",
+      "nickname": "Zeuhl (lwyrgmr.4590)",
+      "emojis": [
+        "✅",
+        "<:Commander_heart_marker3:1408559284891156571>"
+      ]
+    },
     {
       "discord_id": "758528354361802774",
       "nickname": "Zenon (Zenon.2719) 🚹",
@@ -737,6 +745,22 @@
       "action": "unreacted",
       "source": "post_reaction",
       "emoji": "✅"
+    },
+    {
+      "timestamp": "2026-10-05T06:33:48.478508+00:00",
+      "discord_id": "1463525092045619244",
+      "nickname": "Zeuhl (lwyrgmr.4590)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "✅"
+    },
+    {
+      "timestamp": "2026-10-05T06:33:53.973793+00:00",
+      "discord_id": "1463525092045619244",
+      "nickname": "Zeuhl (lwyrgmr.4590)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:Commander_heart_marker3:1408559284891156571>"
     }
   ]
 }
