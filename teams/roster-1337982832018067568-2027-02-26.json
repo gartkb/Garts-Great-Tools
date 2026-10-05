@@ -1,8 +1,10 @@
 {
   "source_type": "event",
   "id": "1337982832018067568",
-  "last_updated": "2026-09-26T23:29:57.336881+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<653498144432062489> Limtac.6293,               📧\n2.<532603087156674560> Rith (Stacyjay.9407) 🚹,    📧\n3.<700459091662733312> ThreeStax (ThreeStax.6571) 🚹,📧\n4.<810264372130873354> Viral.4560,                📧\n5.<265647872618397706> holtchef (holtchef.7801) 🔱,📧\n```",
+  "label": "How to Guild Missions (not an event)",
+  "last_updated": "2026-10-05T00:02:36.029565+00:00",
+  "expires_at": null,
+  "text_representation": "**Interest List:**\n\n```\n1.<265647872618397706> holtchef (holtchef.7801) 🔱,📧\n2.<653498144432062489> Limtac.6293,               📧\n3.<532603087156674560> Rith (Stacyjay.9407) 🚹,    📧\n4.<700459091662733312> ThreeStax (ThreeStax.6571) 🚹,📧\n5.<810264372130873354> Viral.4560,                📧\n```",
   "roster": [
     {
       "discord_id": "265647872618397706",
@@ -75,6 +77,22 @@
     },
     {
       "timestamp": "2026-09-26T23:28:51.577912+00:00",
+      "discord_id": "532603087156674560",
+      "nickname": "Rith (Stacyjay.9407) 🚹",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-05T00:01:29.515649+00:00",
+      "discord_id": "532603087156674560",
+      "nickname": "Rith (Stacyjay.9407) 🚹",
+      "action": "uninterested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-05T00:01:30.282914+00:00",
       "discord_id": "532603087156674560",
       "nickname": "Rith (Stacyjay.9407) 🚹",
       "action": "interested",
