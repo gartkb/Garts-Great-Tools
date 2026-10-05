@@ -1,0 +1,27 @@
+{
+  "source_type": "event",
+  "id": "1556488047854362675",
+  "label": "[Official] Soto2 + EoD5 [NM]",
+  "last_updated": "2026-10-05T02:08:55.084061+00:00",
+  "expires_at": null,
+  "text_representation": "**Interest List:**\n\n```\n1.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,📧\n```",
+  "roster": [
+    {
+      "discord_id": "619970339233071134",
+      "nickname": "gijo(Candid Flames.6279)🌠🌀",
+      "emojis": [
+        "📧"
+      ]
+    }
+  ],
+  "history": [
+    {
+      "timestamp": "2026-10-05T02:07:49.224685+00:00",
+      "discord_id": "619970339233071134",
+      "nickname": "gijo(Candid Flames.6279)🌠🌀",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    }
+  ]
+}
