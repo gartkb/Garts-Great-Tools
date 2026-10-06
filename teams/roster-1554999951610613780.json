@@ -2,53 +2,10 @@
   "source_type": "static_post",
   "id": "1554999951610613780",
   "label": "#✨static-recruiting · 💫☄️Gartner Kinderboom.5019, Sep 30: <@&1555308523523547336> **GROUP NOW …",
-  "last_updated": "2026-10-05T06:37:44.969431+00:00",
+  "last_updated": "2026-10-06T14:59:50.793716+00:00",
   "expires_at": "2026-10-17T22:49:22.594110+00:00",
-  "text_representation": "**Interest List:**\n\n```\n1.<454007957995257866> dr_wh0o 🚹,                 ✅\n2.<335149766688112640> Waffles.4082 🔱,            🤙\n3.<758528354361802774> Zenon (Zenon.2719) 🚹,      ✅  \\<:Commander_circle_marker2:1408559283401920655>  \\<:Commander_heart_marker3:1408559284891156571>  \\<:healheart:1436465472509050982>\n4.<596875174700122122> 💫☄️Gartner Kinderboom.5019,✅  \\<:Commander_arrow_marker1:1408559163646283866>  \\<:Commander_circle_marker2:1408559283401920655>  \\<:Commander_heart_marker3:1408559284891156571>  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  🔥  \\<:healheart:1436465472509050982>  🧩  \\<:4CatmanderRed:833051121978310667>  ⭐  🤙\n```",
-  "roster": [
-    {
-      "discord_id": "758528354361802774",
-      "nickname": "Zenon (Zenon.2719) 🚹",
-      "emojis": [
-        "✅",
-        "<:Commander_circle_marker2:1408559283401920655>",
-        "<:Commander_heart_marker3:1408559284891156571>",
-        "<:healheart:1436465472509050982>"
-      ]
-    },
-    {
-      "discord_id": "596875174700122122",
-      "nickname": "💫☄️Gartner Kinderboom.5019",
-      "emojis": [
-        "✅",
-        "<:Commander_arrow_marker1:1408559163646283866>",
-        "<:Commander_circle_marker2:1408559283401920655>",
-        "<:Commander_heart_marker3:1408559284891156571>",
-        "<:QuickDPS:1038159940164014090>",
-        "<:AlacDPS:1038159937391562843>",
-        "🔥",
-        "<:healheart:1436465472509050982>",
-        "🧩",
-        "<:4CatmanderRed:833051121978310667>",
-        "⭐",
-        "🤙"
-      ]
-    },
-    {
-      "discord_id": "454007957995257866",
-      "nickname": "dr_wh0o 🚹",
-      "emojis": [
-        "✅"
-      ]
-    },
-    {
-      "discord_id": "335149766688112640",
-      "nickname": "Waffles.4082 🔱",
-      "emojis": [
-        "🤙"
-      ]
-    }
-  ],
+  "text_representation": "No interested users found.",
+  "roster": [],
   "history": [
     {
       "timestamp": "2026-10-03T21:58:08.771714+00:00",
@@ -769,6 +726,150 @@
       "action": "unreacted",
       "source": "post_reaction",
       "emoji": "<:Commander_heart_marker3:1408559284891156571>"
+    },
+    {
+      "timestamp": "2026-10-06T14:59:50.639227+00:00",
+      "discord_id": "758528354361802774",
+      "nickname": "Zenon (Zenon.2719) 🚹",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "✅"
+    },
+    {
+      "timestamp": "2026-10-06T14:59:50.639312+00:00",
+      "discord_id": "758528354361802774",
+      "nickname": "Zenon (Zenon.2719) 🚹",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:Commander_circle_marker2:1408559283401920655>"
+    },
+    {
+      "timestamp": "2026-10-06T14:59:50.639352+00:00",
+      "discord_id": "758528354361802774",
+      "nickname": "Zenon (Zenon.2719) 🚹",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:Commander_heart_marker3:1408559284891156571>"
+    },
+    {
+      "timestamp": "2026-10-06T14:59:50.639396+00:00",
+      "discord_id": "758528354361802774",
+      "nickname": "Zenon (Zenon.2719) 🚹",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:healheart:1436465472509050982>"
+    },
+    {
+      "timestamp": "2026-10-06T14:59:50.639460+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "✅"
+    },
+    {
+      "timestamp": "2026-10-06T14:59:50.639499+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:Commander_arrow_marker1:1408559163646283866>"
+    },
+    {
+      "timestamp": "2026-10-06T14:59:50.639533+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:Commander_circle_marker2:1408559283401920655>"
+    },
+    {
+      "timestamp": "2026-10-06T14:59:50.639570+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:Commander_heart_marker3:1408559284891156571>"
+    },
+    {
+      "timestamp": "2026-10-06T14:59:50.639602+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickDPS:1038159940164014090>"
+    },
+    {
+      "timestamp": "2026-10-06T14:59:50.639634+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacDPS:1038159937391562843>"
+    },
+    {
+      "timestamp": "2026-10-06T14:59:50.639667+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🔥"
+    },
+    {
+      "timestamp": "2026-10-06T14:59:50.639700+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:healheart:1436465472509050982>"
+    },
+    {
+      "timestamp": "2026-10-06T14:59:50.639734+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🧩"
+    },
+    {
+      "timestamp": "2026-10-06T14:59:50.639766+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:4CatmanderRed:833051121978310667>"
+    },
+    {
+      "timestamp": "2026-10-06T14:59:50.639798+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "⭐"
+    },
+    {
+      "timestamp": "2026-10-06T14:59:50.639830+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🤙"
+    },
+    {
+      "timestamp": "2026-10-06T14:59:50.639882+00:00",
+      "discord_id": "454007957995257866",
+      "nickname": "dr_wh0o 🚹",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "✅"
+    },
+    {
+      "timestamp": "2026-10-06T14:59:50.639936+00:00",
+      "discord_id": "335149766688112640",
+      "nickname": "Waffles.4082 🔱",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🤙"
     }
   ]
 }
