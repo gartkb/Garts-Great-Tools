@@ -1,14 +1,21 @@
 {
   "source_type": "event",
   "id": "1556836166991478834",
-  "label": "Experimental Daily Raid Bounties",
-  "last_updated": "2026-10-06T01:12:13.311546+00:00",
+  "label": "Experimental⁉️ Daily Raid Bounties",
+  "last_updated": "2026-10-06T01:23:45.345679+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<1184189909737681019> Zoli (zoli.5129) 🔱 🔰,     📧\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<1184189909737681019> Zoli (zoli.5129) 🔱 🔰,     📧\n2.<1338535612340240429> ☠️lorelai.7051,           📧\n```",
   "roster": [
     {
       "discord_id": "1184189909737681019",
       "nickname": "Zoli (zoli.5129) 🔱 🔰",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "1338535612340240429",
+      "nickname": "☠️lorelai.7051",
       "emojis": [
         "📧"
       ]
@@ -19,6 +26,14 @@
       "timestamp": "2026-10-06T01:11:07.322486+00:00",
       "discord_id": "1184189909737681019",
       "nickname": "Zoli (zoli.5129) 🔱 🔰",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-06T01:22:35.939501+00:00",
+      "discord_id": "1338535612340240429",
+      "nickname": "☠️lorelai.7051",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
