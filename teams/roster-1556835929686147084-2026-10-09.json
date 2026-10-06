@@ -2,9 +2,9 @@
   "source_type": "event",
   "id": "1556835929686147084",
   "label": "Experimental⁉️ Daily Raid Bounties",
-  "last_updated": "2026-10-06T01:38:10.105835+00:00",
+  "last_updated": "2026-10-06T02:39:13.427181+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<482727284609122309> mooshi (mooshi.4021),      📧\n2.<197888702163320832> Mrs Bunnicorn (Ezzy.5264), 📧\n3.<1184189909737681019> Zoli (zoli.5129) 🔱 🔰,     📧\n4.<1338535612340240429> ☠️lorelai.7051,           📧\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<482727284609122309> mooshi (mooshi.4021),      📧\n2.<197888702163320832> Mrs Bunnicorn (Ezzy.5264), 📧\n3.<1184189909737681019> Zoli (zoli.5129) 🔱 🔰,     📧\n4.<1338535612340240429> ☠️lorelai.7051,           📧\n5.<596875174700122122> 💫☄️Gartner Kinderboom.5019,👍\n```",
   "roster": [
     {
       "discord_id": "197888702163320832",
@@ -32,6 +32,13 @@
       "nickname": "☠️lorelai.7051",
       "emojis": [
         "📧"
+      ]
+    },
+    {
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "emojis": [
+        "👍"
       ]
     }
   ],
@@ -67,6 +74,14 @@
       "action": "interested",
       "source": "event_interest",
       "emoji": null
+    },
+    {
+      "timestamp": "2026-10-06T02:38:07.389556+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "👍"
     }
   ]
 }
