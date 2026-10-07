@@ -2,9 +2,9 @@
   "source_type": "event",
   "id": "1556835929686147084",
   "label": "Experimental⁉️ Daily Raid Bounties",
-  "last_updated": "2026-10-07T21:36:53.048705+00:00",
+  "last_updated": "2026-10-07T21:53:25.331254+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<180733022251909120> Aline (aline.8179) 🚺,      📧\n2.<219437617219895297> BeastfromtheEast.2946,     📧  👍\n3.<482727284609122309> mooshi (mooshi.4021),      📧\n4.<197888702163320832> Mrs Bunnicorn (Ezzy.5264), 📧\n5.<1184189909737681019> Zoli (zoli.5129) 🔱 🔰,     📧\n6.<1338535612340240429> ☠️lorelai.7051,           📧\n7.<596875174700122122> 💫☄️Gartner Kinderboom.5019,👍\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<180733022251909120> Aline (aline.8179) 🚺,        📧\n2.<219437617219895297> BeastfromtheEast.2946,       📧  👍\n3.<493633584528097281> CrimsonPenalty (Crimson. 3186),📧\n4.<482727284609122309> mooshi (mooshi.4021),        📧\n5.<197888702163320832> Mrs Bunnicorn (Ezzy.5264),   📧\n6.<347101066149625858> NATURE.5962 🚹,               📧\n7.<1184189909737681019> Zoli (zoli.5129) 🔱 🔰,       📧\n8.<1338535612340240429> ☠️lorelai.7051,             📧\n9.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  👍\n```",
   "roster": [
     {
       "discord_id": "180733022251909120",
@@ -29,8 +29,22 @@
       ]
     },
     {
+      "discord_id": "347101066149625858",
+      "nickname": "NATURE.5962 🚹",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
       "discord_id": "482727284609122309",
       "nickname": "mooshi (mooshi.4021)",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "493633584528097281",
+      "nickname": "CrimsonPenalty (Crimson. 3186)",
       "emojis": [
         "📧"
       ]
@@ -118,6 +132,22 @@
       "timestamp": "2026-10-07T21:35:46.818279+00:00",
       "discord_id": "180733022251909120",
       "nickname": "Aline (aline.8179) 🚺",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-07T21:51:29.881014+00:00",
+      "discord_id": "347101066149625858",
+      "nickname": "NATURE.5962 🚹",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-07T21:52:19.268440+00:00",
+      "discord_id": "493633584528097281",
+      "nickname": "CrimsonPenalty (Crimson. 3186)",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
