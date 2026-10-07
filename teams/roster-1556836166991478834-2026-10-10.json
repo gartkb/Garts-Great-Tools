@@ -2,9 +2,9 @@
   "source_type": "event",
   "id": "1556836166991478834",
   "label": "Experimental⁉️ Daily Raid Bounties",
-  "last_updated": "2026-10-07T01:26:20.710674+00:00",
+  "last_updated": "2026-10-07T21:34:33.411014+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,     📧  👍\n2.<482727284609122309> mooshi (mooshi.4021),      📧\n3.<351072425401647115> Snowman (AngryPanda.2504), 📧\n4.<1184189909737681019> Zoli (zoli.5129) 🔱 🔰,     📧\n5.<1338535612340240429> ☠️lorelai.7051,           📧\n6.<596875174700122122> 💫☄️Gartner Kinderboom.5019,👍\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,     📧  👍\n2.<482727284609122309> mooshi (mooshi.4021),      📧\n3.<344480812508643342> Ozurlen (Ozurlen V.8563) 🚹,📧\n4.<351072425401647115> Snowman (AngryPanda.2504), 📧\n5.<239171418460389386> Veri (Veritas.2691),       📧\n6.<1184189909737681019> Zoli (zoli.5129) 🔱 🔰,     📧\n7.<1338535612340240429> ☠️lorelai.7051,           📧\n8.<596875174700122122> 💫☄️Gartner Kinderboom.5019,👍\n```",
   "roster": [
     {
       "discord_id": "219437617219895297",
@@ -12,6 +12,20 @@
       "emojis": [
         "📧",
         "👍"
+      ]
+    },
+    {
+      "discord_id": "239171418460389386",
+      "nickname": "Veri (Veritas.2691)",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "344480812508643342",
+      "nickname": "Ozurlen (Ozurlen V.8563) 🚹",
+      "emojis": [
+        "📧"
       ]
     },
     {
@@ -103,6 +117,22 @@
       "timestamp": "2026-10-07T01:25:14.434805+00:00",
       "discord_id": "351072425401647115",
       "nickname": "Snowman (AngryPanda.2504)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-07T21:32:48.444644+00:00",
+      "discord_id": "239171418460389386",
+      "nickname": "Veri (Veritas.2691)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-07T21:33:27.345789+00:00",
+      "discord_id": "344480812508643342",
+      "nickname": "Ozurlen (Ozurlen V.8563) 🚹",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
