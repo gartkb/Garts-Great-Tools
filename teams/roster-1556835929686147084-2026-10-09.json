@@ -2,9 +2,9 @@
   "source_type": "event",
   "id": "1556835929686147084",
   "label": "Experimental⁉️ Daily Raid Bounties",
-  "last_updated": "2026-10-07T22:36:13.571408+00:00",
+  "last_updated": "2026-10-07T22:37:21.558668+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1. <180733022251909120> Aline (aline.8179) 🚺,        📧\n2. <219437617219895297> BeastfromtheEast.2946,       📧  👍\n3. <493633584528097281> CrimsonPenalty (Crimson. 3186),📧\n4. <482727284609122309> mooshi (mooshi.4021),        📧\n5. <197888702163320832> Mrs Bunnicorn (Ezzy.5264),   📧\n6. <347101066149625858> NATURE.5962 🚹,               📧\n7. <1184189909737681019> Zoli (zoli.5129) 🔱 🔰,       📧\n8. <1338535612340240429> ☠️lorelai.7051,             📧\n9. <734971332089085984> ☠️Visceral.2796 🚺,           📧\n10.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  👍\n```",
+  "text_representation": "**Interest List:**\n\n```\n1. <180733022251909120> Aline (aline.8179) 🚺,        📧\n2. <219437617219895297> BeastfromtheEast.2946,       📧  👍\n3. <493633584528097281> CrimsonPenalty (Crimson. 3186),📧\n4. <482727284609122309> mooshi (mooshi.4021),        📧\n5. <197888702163320832> Mrs Bunnicorn (Ezzy.5264),   📧\n6. <347101066149625858> NATURE.5962 🚹,               📧\n7. <1184189909737681019> Zoli (zoli.5129) 🔱 🔰,       📧\n8. <1338535612340240429> ☠️lorelai.7051,             📧\n9. <734971332089085984> ☠️Visceral.2796 🚺,           📧  👍\n10.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  👍\n```",
   "roster": [
     {
       "discord_id": "180733022251909120",
@@ -53,7 +53,8 @@
       "discord_id": "734971332089085984",
       "nickname": "☠️Visceral.2796 🚺",
       "emojis": [
-        "📧"
+        "📧",
+        "👍"
       ]
     },
     {
@@ -166,6 +167,14 @@
       "action": "interested",
       "source": "event_interest",
       "emoji": null
+    },
+    {
+      "timestamp": "2026-10-07T22:36:15.383824+00:00",
+      "discord_id": "734971332089085984",
+      "nickname": "☠️Visceral.2796 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "👍"
     }
   ]
 }
