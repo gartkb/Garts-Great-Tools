@@ -2,9 +2,9 @@
   "source_type": "event",
   "id": "1556836166991478834",
   "label": "Experimental⁉️ Daily Raid Bounties",
-  "last_updated": "2026-10-07T23:49:16.797208+00:00",
+  "last_updated": "2026-10-08T01:32:32.854940+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1. <219437617219895297> BeastfromtheEast.2946,       📧  👍\n2. <493633584528097281> CrimsonPenalty (Crimson. 3186),📧\n3. <333119238447562753> ignacio (ign.2951),          📧\n4. <482727284609122309> mooshi (mooshi.4021),        📧\n5. <344480812508643342> Ozurlen (Ozurlen V.8563) 🚹,  📧\n6. <351072425401647115> Snowman (AngryPanda.2504),   📧\n7. <239171418460389386> Veri (Veritas.2691),         📧\n8. <1184189909737681019> Zoli (zoli.5129) 🔱 🔰,       📧\n9. <1338535612340240429> ☠️lorelai.7051,             📧\n10.<734971332089085984> ☠️Visceral.2796 🚺,           👍\n11.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  👍\n```",
+  "text_representation": "**Interest List:**\n\n```\n1. <219437617219895297> BeastfromtheEast.2946,       📧  👍\n2. <493633584528097281> CrimsonPenalty (Crimson. 3186),📧\n3. <392049473012105217> ibyterawr(Ibyterawr.8069),   📧\n4. <333119238447562753> ignacio (ign.2951),          📧\n5. <482727284609122309> mooshi (mooshi.4021),        📧\n6. <344480812508643342> Ozurlen (Ozurlen V.8563) 🚹,  📧\n7. <351072425401647115> Snowman (AngryPanda.2504),   📧\n8. <239171418460389386> Veri (Veritas.2691),         📧\n9. <1184189909737681019> Zoli (zoli.5129) 🔱 🔰,       📧\n10.<1338535612340240429> ☠️lorelai.7051,             📧\n11.<734971332089085984> ☠️Visceral.2796 🚺,           👍\n12.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  👍\n```",
   "roster": [
     {
       "discord_id": "219437617219895297",
@@ -38,6 +38,13 @@
     {
       "discord_id": "351072425401647115",
       "nickname": "Snowman (AngryPanda.2504)",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "392049473012105217",
+      "nickname": "ibyterawr(Ibyterawr.8069)",
       "emojis": [
         "📧"
       ]
@@ -178,6 +185,14 @@
       "timestamp": "2026-10-07T23:48:06.007532+00:00",
       "discord_id": "333119238447562753",
       "nickname": "ignacio (ign.2951)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-08T01:31:26.324830+00:00",
+      "discord_id": "392049473012105217",
+      "nickname": "ibyterawr(Ibyterawr.8069)",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
