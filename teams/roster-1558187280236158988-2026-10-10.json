@@ -2,10 +2,17 @@
   "source_type": "event",
   "id": "1558187280236158988",
   "label": "95-100 fractal achievement run for cm's",
-  "last_updated": "2026-10-09T21:44:45.348838+00:00",
+  "last_updated": "2026-10-09T21:57:37.530509+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<798211339365384212> Livingldly (Kavish.8593) 🌠,📧\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<200060947501547520> Begonia.9536 🔰 🔱 🚺,        📧\n2.<798211339365384212> Livingldly (Kavish.8593) 🌠,📧\n```",
   "roster": [
+    {
+      "discord_id": "200060947501547520",
+      "nickname": "Begonia.9536 🔰 🔱 🚺",
+      "emojis": [
+        "📧"
+      ]
+    },
     {
       "discord_id": "798211339365384212",
       "nickname": "Livingldly (Kavish.8593) 🌠",
@@ -134,6 +141,14 @@
       "action": "unreacted",
       "source": "post_reaction",
       "emoji": "<:AlacHeal:1038159938335277140>"
+    },
+    {
+      "timestamp": "2026-10-09T21:56:26.203648+00:00",
+      "discord_id": "200060947501547520",
+      "nickname": "Begonia.9536 🔰 🔱 🚺",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
     }
   ]
 }
