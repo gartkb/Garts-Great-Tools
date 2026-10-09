@@ -2,9 +2,9 @@
   "source_type": "event",
   "id": "1553643482575405169",
   "label": "Wing 6 Full Clear (Q1)",
-  "last_updated": "2026-10-05T14:21:37.402959+00:00",
+  "last_updated": "2026-10-09T18:29:58.873609+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<204099741355737088> Kastos (Kastos.7562),        📧\n2.<798211339365384212> Livingldly (Kavish.8593) 🌠,  📧\n3.<266984776131543050> Memory (Memory.1860) 🚺,      📧\n4.<534432840595800115> MyriAbernathy (Kryzten.1872),📧\n5.<231518357440954368> shaqsalazar (shaqsalazar.2906),📧\n6.<338166646877454346> Tessius (tessius.4621) 🚹,    📧\n7.<718665407522799637> 💫 Pol (Pol.2146) 🚺,          📧\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<204099741355737088> Kastos (Kastos.7562),        📧\n2.<798211339365384212> Livingldly (Kavish.8593) 🌠,  📧\n3.<266984776131543050> Memory (Memory.1860) 🚺,      📧\n4.<564604986357579809> Moxigaaf (Moxigaaf.3714),    📧\n5.<534432840595800115> MyriAbernathy (Kryzten.1872),📧\n6.<231518357440954368> shaqsalazar (shaqsalazar.2906),📧\n7.<338166646877454346> Tessius (tessius.4621) 🚹,    📧\n8.<718665407522799637> 💫 Pol (Pol.2146) 🚺,          📧\n```",
   "roster": [
     {
       "discord_id": "204099741355737088",
@@ -37,6 +37,13 @@
     {
       "discord_id": "534432840595800115",
       "nickname": "MyriAbernathy (Kryzten.1872)",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "564604986357579809",
+      "nickname": "Moxigaaf (Moxigaaf.3714)",
       "emojis": [
         "📧"
       ]
@@ -125,6 +132,14 @@
       "timestamp": "2026-10-05T14:20:31.408642+00:00",
       "discord_id": "204099741355737088",
       "nickname": "Kastos (Kastos.7562)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-09T18:28:52.632754+00:00",
+      "discord_id": "564604986357579809",
+      "nickname": "Moxigaaf (Moxigaaf.3714)",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
