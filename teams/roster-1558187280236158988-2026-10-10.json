@@ -2,7 +2,7 @@
   "source_type": "event",
   "id": "1558187280236158988",
   "label": "95-100 fractal achievement run for cm's",
-  "last_updated": "2026-10-09T18:44:30.651386+00:00",
+  "last_updated": "2026-10-09T18:58:50.130510+00:00",
   "expires_at": null,
   "text_representation": "**Interest List:**\n\n```\n1.<798211339365384212> Livingldly (Kavish.8593) 🌠,📧\n```",
   "roster": [
@@ -20,6 +20,22 @@
       "discord_id": "798211339365384212",
       "nickname": "Livingldly (Kavish.8593) 🌠",
       "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-09T18:57:30.367043+00:00",
+      "discord_id": "450756915807649815",
+      "nickname": "sophonias.9302 👥",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-09T18:57:37.667955+00:00",
+      "discord_id": "450756915807649815",
+      "nickname": "sophonias.9302 👥",
+      "action": "uninterested",
       "source": "event_interest",
       "emoji": null
     }
