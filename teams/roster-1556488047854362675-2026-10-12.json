@@ -2,7 +2,7 @@
   "source_type": "event",
   "id": "1556488047854362675",
   "label": "[Official] Soto2 + EoD5 [NM]",
-  "last_updated": "2026-10-06T23:59:18.735443+00:00",
+  "last_updated": "2026-10-10T01:26:48.409604+00:00",
   "expires_at": null,
   "text_representation": "**Interest List:**\n\n```\n1.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,📧\n2.<833094029922533386> MaiaGLN (MaiaGLN.3567) 🚹,  📧\n3.<267011520997752833> TheSaltyOreo.1936 🚹,       📧\n4.<239171418460389386> Veri (Veritas.2691),       📧\n5.<734971332089085984> ☠️Visceral.2796 🚺,         📧\n```",
   "roster": [
@@ -79,6 +79,14 @@
       "timestamp": "2026-10-06T23:58:12.733056+00:00",
       "discord_id": "267011520997752833",
       "nickname": "TheSaltyOreo.1936 🚹",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-10T01:25:42.505862+00:00",
+      "discord_id": "311402609099407361",
+      "nickname": "lazy.dude (Lazy.3918) 🚹",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
