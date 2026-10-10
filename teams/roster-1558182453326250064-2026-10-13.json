@@ -2,9 +2,9 @@
   "source_type": "event",
   "id": "1558182453326250064",
   "label": "Halloween Fashion Contest Hosted by Fallon",
-  "last_updated": "2026-10-09T18:22:03.911545+00:00",
+  "last_updated": "2026-10-10T16:30:14.591418+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<464961052392816640> Eidolon Rook (Guardian.5142) 🚹,\\<a:Eyes:1070804357026676867>\n2.<139241616396255232> Mario (Eratic Bandit.5047) 🌀 🚹,🎃\n3.<197888702163320832> Mrs Bunnicorn (Ezzy.5264),   🎃\n4.<173271582465196033> pet (HarlequinPetEU.3016) 🚺, 🎃  🐱\n5.<411260184036638721> Torrid (Segwee.4781 ) 🚺,     🎃  👻  🐈‍⬛  🧛‍♂️  🧟‍♂️  🍬  \\<:Mystic_Coin:1496371743084777602>  👗  ✨  \\<:4CatmanderRed:833051121978310667>\n6.<172515643801731072> ☠️Toni (Orewatowi.1603) 🚺,   🎃  👻\n7.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  📧  🎃  👻  🐈‍⬛  🧛‍♂️  🧟‍♂️  🍬  \\<:Mystic_Coin:1496371743084777602>  👗  ✨\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<464961052392816640> Eidolon Rook (Guardian.5142) 🚹,\\<a:Eyes:1070804357026676867>\n2.<139241616396255232> Mario (Eratic Bandit.5047) 🌀 🚹,🎃\n3.<197888702163320832> Mrs Bunnicorn (Ezzy.5264),   🎃\n4.<173271582465196033> pet (HarlequinPetEU.3016) 🚺, 🎃  🐱\n5.<411260184036638721> Torrid (Segwee.4781 ) 🚺,     🎃  👻  🐈‍⬛  🧛‍♂️  🧟‍♂️  🍬  \\<:Mystic_Coin:1496371743084777602>  👗  ✨  \\<:4CatmanderRed:833051121978310667>\n6.<670714519349231617> Wyrmcast (HiddenHand.2694),  📧\n7.<172515643801731072> ☠️Toni (Orewatowi.1603) 🚺,   🎃  👻\n8.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  📧  🎃  👻  🐈‍⬛  🧛‍♂️  🧟‍♂️  🍬  \\<:Mystic_Coin:1496371743084777602>  👗  ✨\n```",
   "roster": [
     {
       "discord_id": "596875174700122122",
@@ -20,6 +20,13 @@
         "<:Mystic_Coin:1496371743084777602>",
         "👗",
         "✨"
+      ]
+    },
+    {
+      "discord_id": "670714519349231617",
+      "nickname": "Wyrmcast (HiddenHand.2694)",
+      "emojis": [
+        "📧"
       ]
     },
     {
@@ -81,6 +88,14 @@
       "timestamp": "2026-10-09T18:20:46.996564+00:00",
       "discord_id": "596875174700122122",
       "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-10T16:28:57.359923+00:00",
+      "discord_id": "670714519349231617",
+      "nickname": "Wyrmcast (HiddenHand.2694)",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
