@@ -2,9 +2,9 @@
   "source_type": "event",
   "id": "1558182453326250064",
   "label": "Halloween Fashion Contest Hosted by Fallon",
-  "last_updated": "2026-10-10T16:39:48.680612+00:00",
+  "last_updated": "2026-10-10T20:40:51.357379+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<153993501124722689> Echo (Echo.9506),            📧\n2.<464961052392816640> Eidolon Rook (Guardian.5142) 🚹,\\<a:Eyes:1070804357026676867>\n3.<139241616396255232> Mario (Eratic Bandit.5047) 🌀 🚹,🎃\n4.<197888702163320832> Mrs Bunnicorn (Ezzy.5264),   🎃\n5.<173271582465196033> pet (HarlequinPetEU.3016) 🚺, 🎃  🐱\n6.<411260184036638721> Torrid (Segwee.4781 ) 🚺,     🎃  👻  🐈‍⬛  🧛‍♂️  🧟‍♂️  🍬  \\<:Mystic_Coin:1496371743084777602>  👗  ✨  \\<:4CatmanderRed:833051121978310667>\n7.<670714519349231617> Wyrmcast (HiddenHand.2694),  📧\n8.<172515643801731072> ☠️Toni (Orewatowi.1603) 🚺,   🎃  👻\n9.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  📧  🎃  👻  🐈‍⬛  🧛‍♂️  🧟‍♂️  🍬  \\<:Mystic_Coin:1496371743084777602>  👗  ✨\n```",
+  "text_representation": "**Interest List:**\n\n```\n1. <1012398481417195593> Doughnut (OnyxFist.7364) 🚹, 📧\n2. <153993501124722689> Echo (Echo.9506),            📧\n3. <464961052392816640> Eidolon Rook (Guardian.5142) 🚹,\\<a:Eyes:1070804357026676867>\n4. <139241616396255232> Mario (Eratic Bandit.5047) 🌀 🚹,🎃\n5. <197888702163320832> Mrs Bunnicorn (Ezzy.5264),   🎃\n6. <173271582465196033> pet (HarlequinPetEU.3016) 🚺, 🎃  🐱\n7. <411260184036638721> Torrid (Segwee.4781 ) 🚺,     🎃  👻  🐈‍⬛  🧛‍♂️  🧟‍♂️  🍬  \\<:Mystic_Coin:1496371743084777602>  👗  ✨  \\<:4CatmanderRed:833051121978310667>\n8. <670714519349231617> Wyrmcast (HiddenHand.2694),  📧\n9. <172515643801731072> ☠️Toni (Orewatowi.1603) 🚺,   🎃  👻\n10.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  📧  🎃  👻  🐈‍⬛  🧛‍♂️  🧟‍♂️  🍬  \\<:Mystic_Coin:1496371743084777602>  👗  ✨\n```",
   "roster": [
     {
       "discord_id": "153993501124722689",
@@ -32,6 +32,13 @@
     {
       "discord_id": "670714519349231617",
       "nickname": "Wyrmcast (HiddenHand.2694)",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "1012398481417195593",
+      "nickname": "Doughnut (OnyxFist.7364) 🚹",
       "emojis": [
         "📧"
       ]
@@ -111,6 +118,14 @@
       "timestamp": "2026-10-10T16:38:31.705473+00:00",
       "discord_id": "153993501124722689",
       "nickname": "Echo (Echo.9506)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-10T20:39:34.577306+00:00",
+      "discord_id": "1012398481417195593",
+      "nickname": "Doughnut (OnyxFist.7364) 🚹",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
