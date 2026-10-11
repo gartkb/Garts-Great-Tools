@@ -2,9 +2,9 @@
   "source_type": "event",
   "id": "1558927865846960198",
   "label": "Mad King's Labyrinth w/Gart",
-  "last_updated": "2026-10-11T20:38:31.615673+00:00",
+  "last_updated": "2026-10-11T20:54:36.909610+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<1173691093884346592> Nhyxi (Nhyxiha.2698) 🚺,   📧\n2.<175688968627683328> 🌺 DearDead (DearDead.3946) 👥,📧\n3.<596875174700122122> 💫☄️Gartner Kinderboom.5019,📧\n4.<619970339233071134> 🙏 gijo(Candid Flames.6279)🌠🌀,📧\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<1173691093884346592> Nhyxi (Nhyxiha.2698) 🚺,   📧\n2.<734971332089085984> ☠️Visceral.2796 🚺,         📧\n3.<175688968627683328> 🌺 DearDead (DearDead.3946) 👥,📧\n4.<596875174700122122> 💫☄️Gartner Kinderboom.5019,📧\n5.<619970339233071134> 🙏 gijo(Candid Flames.6279)🌠🌀,📧\n```",
   "roster": [
     {
       "discord_id": "175688968627683328",
@@ -23,6 +23,13 @@
     {
       "discord_id": "619970339233071134",
       "nickname": "🙏 gijo(Candid Flames.6279)🌠🌀",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "734971332089085984",
+      "nickname": "☠️Visceral.2796 🚺",
       "emojis": [
         "📧"
       ]
@@ -64,6 +71,14 @@
       "timestamp": "2026-10-11T20:37:25.551320+00:00",
       "discord_id": "1173691093884346592",
       "nickname": "Nhyxi (Nhyxiha.2698) 🚺",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-11T20:53:31.040749+00:00",
+      "discord_id": "734971332089085984",
+      "nickname": "☠️Visceral.2796 🚺",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
