@@ -1,0 +1,27 @@
+{
+  "source_type": "event",
+  "id": "1558867424219242617",
+  "label": "99 CM speedrun training - come learn extra funsies for the encounter",
+  "last_updated": "2026-10-11T15:45:01.461655+00:00",
+  "expires_at": null,
+  "text_representation": "No interested users found.",
+  "roster": [],
+  "history": [
+    {
+      "timestamp": "2026-10-11T15:43:44.582913+00:00",
+      "discord_id": "200423784589688832",
+      "nickname": "💫 KelsTheBard (kelso.2354)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🖐️"
+    },
+    {
+      "timestamp": "2026-10-11T15:43:45.186149+00:00",
+      "discord_id": "200423784589688832",
+      "nickname": "💫 KelsTheBard (kelso.2354)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🖐️"
+    }
+  ]
+}
