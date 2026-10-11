@@ -2,13 +2,20 @@
   "source_type": "event",
   "id": "1558927865846960198",
   "label": "Mad King's Labyrinth w/Gart",
-  "last_updated": "2026-10-11T19:43:52.884646+00:00",
+  "last_updated": "2026-10-11T20:15:52.226391+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<596875174700122122> 💫☄️Gartner Kinderboom.5019,📧\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<596875174700122122> 💫☄️Gartner Kinderboom.5019,📧\n2.<619970339233071134> 🙏 gijo(Candid Flames.6279)🌠🌀,📧\n```",
   "roster": [
     {
       "discord_id": "596875174700122122",
       "nickname": "💫☄️Gartner Kinderboom.5019",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "619970339233071134",
+      "nickname": "🙏 gijo(Candid Flames.6279)🌠🌀",
       "emojis": [
         "📧"
       ]
@@ -19,6 +26,14 @@
       "timestamp": "2026-10-11T19:42:47.124996+00:00",
       "discord_id": "596875174700122122",
       "nickname": "💫☄️Gartner Kinderboom.5019",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-11T20:14:46.275004+00:00",
+      "discord_id": "619970339233071134",
+      "nickname": "🙏 gijo(Candid Flames.6279)🌠🌀",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
