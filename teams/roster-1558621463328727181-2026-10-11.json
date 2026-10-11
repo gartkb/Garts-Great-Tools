@@ -2,10 +2,17 @@
   "source_type": "event",
   "id": "1558621463328727181",
   "label": "2 Contests! - Lantern Carving + Pet Costumes",
-  "last_updated": "2026-10-10T23:26:21.097578+00:00",
+  "last_updated": "2026-10-11T23:21:38.300656+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<797945111794810930> 💫SkielaHun.7015,           📧\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<185656503733059593> Wolfwood (Wolfwood.8563),  📧\n2.<797945111794810930> 💫SkielaHun.7015,           📧\n```",
   "roster": [
+    {
+      "discord_id": "185656503733059593",
+      "nickname": "Wolfwood (Wolfwood.8563)",
+      "emojis": [
+        "📧"
+      ]
+    },
     {
       "discord_id": "797945111794810930",
       "nickname": "💫SkielaHun.7015",
@@ -19,6 +26,14 @@
       "timestamp": "2026-10-10T23:25:15.444021+00:00",
       "discord_id": "797945111794810930",
       "nickname": "💫SkielaHun.7015",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-11T23:20:32.696122+00:00",
+      "discord_id": "185656503733059593",
+      "nickname": "Wolfwood (Wolfwood.8563)",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
