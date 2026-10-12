@@ -2,9 +2,9 @@
   "source_type": "event",
   "id": "1559310815725748356",
   "label": "Experimental⁉️ Raid Bounties",
-  "last_updated": "2026-10-12T21:19:47.735347+00:00",
+  "last_updated": "2026-10-12T21:33:52.948788+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<686299516886057092> Corey/Arrow Elite (CoreyMG.2458),📧\n2.<817628233138831401> ItsMandaKaye.4260 🚺,           📧\n3.<670714519349231617> Wyrmcast (HiddenHand.2694),    📧\n4.<1184189909737681019> Zoli (zoli.5129) 🔱 🔰,         📧\n5.<219437617219895297> 🌷 BeastfromtheEast.2946,       👍\n6.<734971332089085984> 💐 ☠️Visceral.2796 🚺,           👍\n7.<596875174700122122> 💫☄️Gartner Kinderboom.5019,    👍\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<686299516886057092> Corey/Arrow Elite (CoreyMG.2458),📧\n2.<817628233138831401> ItsMandaKaye.4260 🚺,           📧\n3.<670714519349231617> Wyrmcast (HiddenHand.2694),    📧\n4.<1184189909737681019> Zoli (zoli.5129) 🔱 🔰,         📧\n5.<219437617219895297> 🌷 BeastfromtheEast.2946,       👍\n6.<734971332089085984> 💐 ☠️Visceral.2796 🚺,           📧  👍\n7.<596875174700122122> 💫☄️Gartner Kinderboom.5019,    👍\n```",
   "roster": [
     {
       "discord_id": "670714519349231617",
@@ -21,6 +21,14 @@
       ]
     },
     {
+      "discord_id": "734971332089085984",
+      "nickname": "💐 ☠️Visceral.2796 🚺",
+      "emojis": [
+        "📧",
+        "👍"
+      ]
+    },
+    {
       "discord_id": "817628233138831401",
       "nickname": "ItsMandaKaye.4260 🚺",
       "emojis": [
@@ -32,13 +40,6 @@
       "nickname": "Zoli (zoli.5129) 🔱 🔰",
       "emojis": [
         "📧"
-      ]
-    },
-    {
-      "discord_id": "734971332089085984",
-      "nickname": "💐 ☠️Visceral.2796 🚺",
-      "emojis": [
-        "👍"
       ]
     },
     {
@@ -85,6 +86,14 @@
       "timestamp": "2026-10-12T21:18:41.418125+00:00",
       "discord_id": "670714519349231617",
       "nickname": "Wyrmcast (HiddenHand.2694)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-12T21:32:46.867446+00:00",
+      "discord_id": "734971332089085984",
+      "nickname": "💐 ☠️Visceral.2796 🚺",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
