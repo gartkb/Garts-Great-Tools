@@ -2,10 +2,17 @@
   "source_type": "event",
   "id": "1559310815725748356",
   "label": "Experimental⁉️ Raid Bounties",
-  "last_updated": "2026-10-12T21:05:37.956518+00:00",
+  "last_updated": "2026-10-12T21:14:40.758871+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<1184189909737681019> Zoli (zoli.5129) 🔱 🔰,     📧\n2.<219437617219895297> 🌷 BeastfromtheEast.2946,   👍\n3.<734971332089085984> 💐 ☠️Visceral.2796 🚺,       👍\n4.<596875174700122122> 💫☄️Gartner Kinderboom.5019,👍\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<686299516886057092> Corey/Arrow Elite (CoreyMG.2458),📧\n2.<1184189909737681019> Zoli (zoli.5129) 🔱 🔰,         📧\n3.<219437617219895297> 🌷 BeastfromtheEast.2946,       👍\n4.<734971332089085984> 💐 ☠️Visceral.2796 🚺,           👍\n5.<596875174700122122> 💫☄️Gartner Kinderboom.5019,    👍\n```",
   "roster": [
+    {
+      "discord_id": "686299516886057092",
+      "nickname": "Corey/Arrow Elite (CoreyMG.2458)",
+      "emojis": [
+        "📧"
+      ]
+    },
     {
       "discord_id": "1184189909737681019",
       "nickname": "Zoli (zoli.5129) 🔱 🔰",
@@ -40,6 +47,14 @@
       "timestamp": "2026-10-12T21:04:31.594441+00:00",
       "discord_id": "1184189909737681019",
       "nickname": "Zoli (zoli.5129) 🔱 🔰",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-12T21:13:34.359830+00:00",
+      "discord_id": "686299516886057092",
+      "nickname": "Corey/Arrow Elite (CoreyMG.2458)",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
