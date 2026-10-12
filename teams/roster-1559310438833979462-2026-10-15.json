@@ -2,9 +2,9 @@
   "source_type": "event",
   "id": "1559310438833979462",
   "label": "Experimental⁉️ Raid Bounties",
-  "last_updated": "2026-10-12T21:23:55.895495+00:00",
+  "last_updated": "2026-10-12T21:50:43.601867+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<204099741355737088> Kastos (Kastos.7562),      📧\n2.<168104894534778880> Marz (Marz.4629),          📧\n3.<179558669875281920> whoisthisvin (yuros.3716), 📧\n4.<1184189909737681019> Zoli (zoli.5129) 🔱 🔰,     📧\n5.<219437617219895297> 🌷 BeastfromtheEast.2946,   📧  👍\n6.<734971332089085984> 💐 ☠️Visceral.2796 🚺,       👍\n7.<596875174700122122> 💫☄️Gartner Kinderboom.5019,👍\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<204099741355737088> Kastos (Kastos.7562),      📧\n2.<168104894534778880> Marz (Marz.4629),          📧\n3.<179558669875281920> whoisthisvin (yuros.3716), 📧\n4.<399079501776027648> Xulie (Xulie.2424) 🚹,      📧\n5.<1184189909737681019> Zoli (zoli.5129) 🔱 🔰,     📧\n6.<219437617219895297> 🌷 BeastfromtheEast.2946,   📧  👍\n7.<734971332089085984> 💐 ☠️Visceral.2796 🚺,       👍\n8.<596875174700122122> 💫☄️Gartner Kinderboom.5019,👍\n```",
   "roster": [
     {
       "discord_id": "168104894534778880",
@@ -33,6 +33,13 @@
       "emojis": [
         "📧",
         "👍"
+      ]
+    },
+    {
+      "discord_id": "399079501776027648",
+      "nickname": "Xulie (Xulie.2424) 🚹",
+      "emojis": [
+        "📧"
       ]
     },
     {
@@ -94,6 +101,14 @@
       "timestamp": "2026-10-12T21:22:49.557443+00:00",
       "discord_id": "168104894534778880",
       "nickname": "Marz (Marz.4629)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-12T21:49:37.419756+00:00",
+      "discord_id": "399079501776027648",
+      "nickname": "Xulie (Xulie.2424) 🚹",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
