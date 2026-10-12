@@ -2,9 +2,9 @@
   "source_type": "event",
   "id": "1558927865846960198",
   "label": "Mad King's Labyrinth w/Gart",
-  "last_updated": "2026-10-12T13:52:57.092355+00:00",
+  "last_updated": "2026-10-12T15:16:45.523510+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1. <464961052392816640> Eidolon Rook (Guardian.5142) 🚹,🔥\n2. <225952830631051264> morguese (Turretfriend.2850)👥,📧\n3. <1173691093884346592> Nhyxi (Nhyxiha.2698) 🚺,     📧\n4. <399023487773048833> Nix (NixNovis.1409) 🚹,       🔥  🎃\n5. <383473811720372224> Razinth (Razinth.6389),      📧\n6. <239171418460389386> Veri (Veritas.2691),         📧\n7. <670714519349231617> Wyrmcast (HiddenHand.2694),  🔥  🎃\n8. <734971332089085984> ☠️Visceral.2796 🚺,           📧\n9. <1073391600266395678> 🌺 DeadRoses (Kimba.8260),   🔥\n10.<175688968627683328> 🌺 DearDead (DearDead.3946) 👥,📧\n11.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  📧\n12.<619970339233071134> 🙏 gijo(Candid Flames.6279)🌠🌀,📧\n```",
+  "text_representation": "**Interest List:**\n\n```\n1. <464961052392816640> Eidolon Rook (Guardian.5142) 🚹,🔥\n2. <225952830631051264> morguese (Turretfriend.2850)👥,📧\n3. <1173691093884346592> Nhyxi (Nhyxiha.2698) 🚺,     📧\n4. <399023487773048833> Nix (NixNovis.1409) 🚹,       🔥  🎃\n5. <383473811720372224> Razinth (Razinth.6389),      📧\n6. <239171418460389386> Veri (Veritas.2691),         📧\n7. <670714519349231617> Wyrmcast (HiddenHand.2694),  🔥  🎃\n8. <1463525092045619244> Zeuhl (lwyrgmr.4590),       🎃\n9. <734971332089085984> ☠️Visceral.2796 🚺,           📧\n10.<1073391600266395678> 🌺 DeadRoses (Kimba.8260),   🔥\n11.<175688968627683328> 🌺 DearDead (DearDead.3946) 👥,📧\n12.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  📧\n13.<619970339233071134> 🙏 gijo(Candid Flames.6279)🌠🌀,📧\n```",
   "roster": [
     {
       "discord_id": "175688968627683328",
@@ -89,6 +89,13 @@
       "nickname": "Nix (NixNovis.1409) 🚹",
       "emojis": [
         "🔥",
+        "🎃"
+      ]
+    },
+    {
+      "discord_id": "1463525092045619244",
+      "nickname": "Zeuhl (lwyrgmr.4590)",
+      "emojis": [
         "🎃"
       ]
     }
@@ -205,6 +212,14 @@
       "action": "reacted",
       "source": "post_reaction",
       "emoji": "🔥"
+    },
+    {
+      "timestamp": "2026-10-12T15:15:38.692112+00:00",
+      "discord_id": "1463525092045619244",
+      "nickname": "Zeuhl (lwyrgmr.4590)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🎃"
     }
   ]
 }
