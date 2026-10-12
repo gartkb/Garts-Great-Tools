@@ -2,9 +2,9 @@
   "source_type": "event",
   "id": "1558927865846960198",
   "label": "Mad King's Labyrinth w/Gart",
-  "last_updated": "2026-10-12T03:51:23.085667+00:00",
+  "last_updated": "2026-10-12T13:05:44.983601+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1. <464961052392816640> Eidolon Rook (Guardian.5142) 🚹,🔥\n2. <225952830631051264> morguese (Turretfriend.2850)👥,📧\n3. <1173691093884346592> Nhyxi (Nhyxiha.2698) 🚺,     📧\n4. <383473811720372224> Razinth (Razinth.6389),      📧\n5. <239171418460389386> Veri (Veritas.2691),         📧\n6. <670714519349231617> Wyrmcast (HiddenHand.2694),  🔥  🎃\n7. <734971332089085984> ☠️Visceral.2796 🚺,           📧\n8. <175688968627683328> 🌺 DearDead (DearDead.3946) 👥,📧\n9. <596875174700122122> 💫☄️Gartner Kinderboom.5019,  📧\n10.<619970339233071134> 🙏 gijo(Candid Flames.6279)🌠🌀,📧\n```",
+  "text_representation": "**Interest List:**\n\n```\n1. <464961052392816640> Eidolon Rook (Guardian.5142) 🚹,🔥\n2. <225952830631051264> morguese (Turretfriend.2850)👥,📧\n3. <1173691093884346592> Nhyxi (Nhyxiha.2698) 🚺,     📧\n4. <399023487773048833> Nix (NixNovis.1409) 🚹,       🔥  🎃\n5. <383473811720372224> Razinth (Razinth.6389),      📧\n6. <239171418460389386> Veri (Veritas.2691),         📧\n7. <670714519349231617> Wyrmcast (HiddenHand.2694),  🔥  🎃\n8. <734971332089085984> ☠️Visceral.2796 🚺,           📧\n9. <175688968627683328> 🌺 DearDead (DearDead.3946) 👥,📧\n10.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  📧\n11.<619970339233071134> 🙏 gijo(Candid Flames.6279)🌠🌀,📧\n```",
   "roster": [
     {
       "discord_id": "175688968627683328",
@@ -75,6 +75,14 @@
       "nickname": "Eidolon Rook (Guardian.5142) 🚹",
       "emojis": [
         "🔥"
+      ]
+    },
+    {
+      "discord_id": "399023487773048833",
+      "nickname": "Nix (NixNovis.1409) 🚹",
+      "emojis": [
+        "🔥",
+        "🎃"
       ]
     }
   ],
@@ -166,6 +174,22 @@
       "action": "interested",
       "source": "event_interest",
       "emoji": null
+    },
+    {
+      "timestamp": "2026-10-12T13:04:38.132036+00:00",
+      "discord_id": "399023487773048833",
+      "nickname": "Nix (NixNovis.1409) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🔥"
+    },
+    {
+      "timestamp": "2026-10-12T13:04:38.633741+00:00",
+      "discord_id": "399023487773048833",
+      "nickname": "Nix (NixNovis.1409) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🎃"
     }
   ]
 }
