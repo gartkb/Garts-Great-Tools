@@ -2,13 +2,20 @@
   "source_type": "event",
   "id": "1559032770657919086",
   "label": "pDS + IBS 5 Part 2 [Overflow]",
-  "last_updated": "2026-10-12T02:40:44.218106+00:00",
+  "last_updated": "2026-10-12T15:14:12.661545+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<619970339233071134> 🙏 gijo(Candid Flames.6279)🌠🌀,📧\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<1463525092045619244> Zeuhl (lwyrgmr.4590),     📧\n2.<619970339233071134> 🙏 gijo(Candid Flames.6279)🌠🌀,📧\n```",
   "roster": [
     {
       "discord_id": "619970339233071134",
       "nickname": "🙏 gijo(Candid Flames.6279)🌠🌀",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "1463525092045619244",
+      "nickname": "Zeuhl (lwyrgmr.4590)",
       "emojis": [
         "📧"
       ]
@@ -19,6 +26,14 @@
       "timestamp": "2026-10-12T02:39:38.409521+00:00",
       "discord_id": "619970339233071134",
       "nickname": "🙏 gijo(Candid Flames.6279)🌠🌀",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-12T15:13:06.791524+00:00",
+      "discord_id": "1463525092045619244",
+      "nickname": "Zeuhl (lwyrgmr.4590)",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
