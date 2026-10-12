@@ -1,0 +1,27 @@
+{
+  "source_type": "event",
+  "id": "1559338869369999381",
+  "label": "Experienced Raider Easy 4 Strike Challenge Modes",
+  "last_updated": "2026-10-12T22:57:07.201046+00:00",
+  "expires_at": null,
+  "text_representation": "**Interest List:**\n\n```\n1.<177613403584462848> 🌷🙏 💫 SoLucky (Lucky.6148) 🔱,📧\n```",
+  "roster": [
+    {
+      "discord_id": "177613403584462848",
+      "nickname": "🌷🙏 💫 SoLucky (Lucky.6148) 🔱",
+      "emojis": [
+        "📧"
+      ]
+    }
+  ],
+  "history": [
+    {
+      "timestamp": "2026-10-12T22:56:00.910719+00:00",
+      "discord_id": "177613403584462848",
+      "nickname": "🌷🙏 💫 SoLucky (Lucky.6148) 🔱",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    }
+  ]
+}
