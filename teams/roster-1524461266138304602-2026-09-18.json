@@ -2,9 +2,9 @@
   "source_type": "event",
   "id": "1524461266138304602",
   "label": "Daily pDS + IB5 + (Bounties?)",
-  "last_updated": "2026-10-11T23:12:56.096591+00:00",
+  "last_updated": "2026-10-12T23:26:31.733724+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,       📧\n2.<231518357440954368> shaqsalazar (shaqsalazar.2906),📧\n3.<411260184036638721> Torrid (Segwee.4781 ) 🚺,     📧\n4.<200423784589688832> 💫 KelsTheBard (kelso.2354),  📧\n5.<619970339233071134> 🙏 gijo(Candid Flames.6279)🌠🌀,📧\n6.<798211339365384212> 🙏 Livingldly (Kavish.8593) 🌠 🔱,📧\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<1371115777951797370> Blud (Blud.9243),           📧\n2.<231518357440954368> shaqsalazar (shaqsalazar.2906),📧\n3.<411260184036638721> Torrid (Segwee.4781 ) 🚺,     📧\n4.<219437617219895297> 🌷 BeastfromtheEast.2946,     📧\n5.<798211339365384212> 🌷🙏 Kavish.8593🌠 🔱,           📧\n6.<200423784589688832> 💫 KelsTheBard (kelso.2354),  📧\n7.<619970339233071134> 🙏 gijo(Candid Flames.6279)🌠🌀,📧\n```",
   "roster": [
     {
       "discord_id": "200423784589688832",
@@ -15,7 +15,7 @@
     },
     {
       "discord_id": "219437617219895297",
-      "nickname": "BeastfromtheEast.2946",
+      "nickname": "🌷 BeastfromtheEast.2946",
       "emojis": [
         "📧"
       ]
@@ -43,7 +43,14 @@
     },
     {
       "discord_id": "798211339365384212",
-      "nickname": "🙏 Livingldly (Kavish.8593) 🌠 🔱",
+      "nickname": "🌷🙏 Kavish.8593🌠 🔱",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "1371115777951797370",
+      "nickname": "Blud (Blud.9243)",
       "emojis": [
         "📧"
       ]
@@ -110,6 +117,14 @@
       "timestamp": "2026-10-11T23:11:50.044019+00:00",
       "discord_id": "316685427392380939",
       "nickname": "Sleepy (Sleepy.5912)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-12T23:25:25.840205+00:00",
+      "discord_id": "1371115777951797370",
+      "nickname": "Blud (Blud.9243)",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
