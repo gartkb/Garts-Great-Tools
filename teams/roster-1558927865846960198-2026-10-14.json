@@ -2,9 +2,9 @@
   "source_type": "event",
   "id": "1558927865846960198",
   "label": "Mad King's Labyrinth w/Gart",
-  "last_updated": "2026-10-13T21:24:29.798259+00:00",
+  "last_updated": "2026-10-13T21:45:49.558738+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1. <1082057319501799465> Blktequila (BlackTequila.3207),📧\n2. <464961052392816640> Eidolon Rook (Guardian.5142) 🚹,🔥\n3. <225952830631051264> morguese (Turretfriend.2850)👥,📧\n4. <1173691093884346592> Nhyxi (Nhyxiha.2698) 🚺,     📧\n5. <399023487773048833> Nix (NixNovis.1409) 🚹,       🔥  🎃\n6. <383473811720372224> Razinth (Razinth.6389),      📧\n7. <239171418460389386> Veri (Veritas.2691),         📧\n8. <670714519349231617> Wyrmcast (HiddenHand.2694),  🔥  🎃\n9. <1463525092045619244> Zeuhl (lwyrgmr.4590),       🎃\n10.<200420800514359297> ☄️🔎🍄💫Fedster (dfedster.1408),📧\n11.<798211339365384212> 🌷🙏 Kavish.8593🌠 🔱,           📧\n12.<1073391600266395678> 🌺 DeadRoses (Kimba.8260),   🔥\n13.<175688968627683328> 🌺 DearDead (DearDead.3946) 👥,📧\n14.<734971332089085984> 💐🙏 ☠️Visceral.2796 🚺,        📧\n15.<797945111794810930> 💫SkielaHun.7015,             🔥  🎃  💗\n16.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  📧\n17.<619970339233071134> 🙏 gijo(Candid Flames.6279)🌠🌀,📧\n```",
+  "text_representation": "**Interest List:**\n\n```\n1. <1082057319501799465> Blktequila (BlackTequila.3207),📧\n2. <464961052392816640> Eidolon Rook (Guardian.5142) 🚹,🔥\n3. <384950583125082137> Kru (Krumungus.2367) 🚹,      📧\n4. <225952830631051264> morguese (Turretfriend.2850)👥,📧\n5. <1173691093884346592> Nhyxi (Nhyxiha.2698) 🚺,     📧\n6. <399023487773048833> Nix (NixNovis.1409) 🚹,       🔥  🎃\n7. <383473811720372224> Razinth (Razinth.6389),      📧\n8. <239171418460389386> Veri (Veritas.2691),         📧\n9. <670714519349231617> Wyrmcast (HiddenHand.2694),  🔥  🎃\n10.<1463525092045619244> Zeuhl (lwyrgmr.4590),       🎃\n11.<200420800514359297> ☄️🔎🍄💫Fedster (dfedster.1408),📧\n12.<798211339365384212> 🌷🙏 Kavish.8593🌠 🔱,           📧\n13.<1073391600266395678> 🌺 DeadRoses (Kimba.8260),   🔥\n14.<175688968627683328> 🌺 DearDead (DearDead.3946) 👥,📧\n15.<734971332089085984> 💐🙏 ☠️Visceral.2796 🚺,        📧\n16.<797945111794810930> 💫SkielaHun.7015,             🔥  🎃  💗\n17.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  📧\n18.<619970339233071134> 🙏 gijo(Candid Flames.6279)🌠🌀,📧\n```",
   "roster": [
     {
       "discord_id": "175688968627683328",
@@ -37,6 +37,13 @@
     {
       "discord_id": "383473811720372224",
       "nickname": "Razinth (Razinth.6389)",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "384950583125082137",
+      "nickname": "Kru (Krumungus.2367) 🚹",
       "emojis": [
         "📧"
       ]
@@ -327,6 +334,14 @@
       "timestamp": "2026-10-13T21:23:23.298010+00:00",
       "discord_id": "1082057319501799465",
       "nickname": "Blktequila (BlackTequila.3207)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-13T21:44:42.838785+00:00",
+      "discord_id": "384950583125082137",
+      "nickname": "Kru (Krumungus.2367) 🚹",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
