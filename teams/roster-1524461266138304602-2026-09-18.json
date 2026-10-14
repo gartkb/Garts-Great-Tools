@@ -2,9 +2,9 @@
   "source_type": "event",
   "id": "1524461266138304602",
   "label": "Daily pDS + IB5 + (Bounties?)",
-  "last_updated": "2026-10-13T23:53:51.344854+00:00",
+  "last_updated": "2026-10-14T23:54:09.635522+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<1371115777951797370> Blud (Blud.9243),           📧\n2.<231518357440954368> shaqsalazar (shaqsalazar.2906),📧\n3.<411260184036638721> Torrid (Segwee.4781 ) 🚺,     📧\n4.<219437617219895297> 🌷 BeastfromtheEast.2946,     📧\n5.<798211339365384212> 🌷🙏 Kavish.8593🌠 🔱,           📧\n6.<200423784589688832> 💫 KelsTheBard (kelso.2354),  📧\n7.<619970339233071134> 🙏 gijo(Candid Flames.6279)🌠🌀,📧\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<1371115777951797370> Blud (Blud.9243),           📧\n2.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,  📧\n3.<231518357440954368> shaqsalazar (shaqsalazar.2906),📧\n4.<411260184036638721> Torrid (Segwee.4781 ) 🚺,     📧\n5.<219437617219895297> 🌷 BeastfromtheEast.2946,     📧\n6.<798211339365384212> 🌷 Kavish.8593🌠 🔱,            📧\n7.<200423784589688832> 💫 KelsTheBard (kelso.2354),  📧\n```",
   "roster": [
     {
       "discord_id": "200423784589688832",
@@ -36,14 +36,14 @@
     },
     {
       "discord_id": "619970339233071134",
-      "nickname": "🙏 gijo(Candid Flames.6279)🌠🌀",
+      "nickname": "gijo(Candid Flames.6279)🌠🌀",
       "emojis": [
         "📧"
       ]
     },
     {
       "discord_id": "798211339365384212",
-      "nickname": "🌷🙏 Kavish.8593🌠 🔱",
+      "nickname": "🌷 Kavish.8593🌠 🔱",
       "emojis": [
         "📧"
       ]
@@ -139,6 +139,14 @@
     },
     {
       "timestamp": "2026-10-13T23:52:45.593409+00:00",
+      "discord_id": "267011520997752833",
+      "nickname": "TheSaltyOreo.1936 🚹",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-14T23:53:03.807590+00:00",
       "discord_id": "267011520997752833",
       "nickname": "TheSaltyOreo.1936 🚹",
       "action": "interested",
