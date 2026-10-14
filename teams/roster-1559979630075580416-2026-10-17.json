@@ -1,0 +1,27 @@
+{
+  "source_type": "event",
+  "id": "1559979630075580416",
+  "label": "Wing 1 training run",
+  "last_updated": "2026-10-14T21:46:35.031880+00:00",
+  "expires_at": null,
+  "text_representation": "No interested users found.",
+  "roster": [],
+  "history": [
+    {
+      "timestamp": "2026-10-14T21:45:12.284452+00:00",
+      "discord_id": "798211339365384212",
+      "nickname": "🌷 Kavish.8593🌠 🔱",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-14T21:45:17.905103+00:00",
+      "discord_id": "798211339365384212",
+      "nickname": "🌷 Kavish.8593🌠 🔱",
+      "action": "uninterested",
+      "source": "event_interest",
+      "emoji": null
+    }
+  ]
+}
