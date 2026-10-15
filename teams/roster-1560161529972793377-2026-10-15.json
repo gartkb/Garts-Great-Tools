@@ -1,0 +1,27 @@
+{
+  "source_type": "event",
+  "id": "1560161529972793377",
+  "label": "Mad Lab labyrinth",
+  "last_updated": "2026-10-15T09:46:02.480381+00:00",
+  "expires_at": null,
+  "text_representation": "No interested users found.",
+  "roster": [],
+  "history": [
+    {
+      "timestamp": "2026-10-15T09:44:55.748396+00:00",
+      "discord_id": "670714519349231617",
+      "nickname": "Wyrmcast (HiddenHand.2694)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "😎"
+    },
+    {
+      "timestamp": "2026-10-15T09:44:56.231189+00:00",
+      "discord_id": "670714519349231617",
+      "nickname": "Wyrmcast (HiddenHand.2694)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "😎"
+    }
+  ]
+}
