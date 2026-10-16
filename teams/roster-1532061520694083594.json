@@ -2,7 +2,7 @@
   "source_type": "static_post",
   "id": "1532061520694083594",
   "label": "#🙅downstate-defiers roster",
-  "last_updated": "2026-10-16T06:26:41.494478+00:00",
+  "last_updated": "2026-10-16T06:31:15.647332+00:00",
   "expires_at": null,
   "text_representation": "**Interest List:**\n\n```\n1. <217725428633305089> Eduardo (eduardo.3219) 🚹,     ⚔️  ☣️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  ✋  💣  🍄  🪞  ☠️  🫗  🗽  🧪\n2. <133398327176855553> Konfedy (Konfedy.4180),       ⚔️  ☣️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  ✋  💣  🍄  🪞\n3. <838104616155086869> Morganna Star (Rasja.4382) 🚺, ⚔️  🍄\n4. <437022285434454016> PerplexDD (Synux.5634),       ⚔️  ☣️\n5. <734971332089085984> 💐🙏 ☠️Visceral.2796 🚺,         ⚔️  ☣️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️  ✋  \\<:2MesmerChronomancer:837890878583996437>  💣  🍄  🪞  🎀  ☠️  🫗  👊  🧪\n6. <718665407522799637> 💐🙏 💫 Pol (Pol.2146) 🚺,        ⚔️  ☣️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  ✋  💣  🍄  🚀  🪞  🫗  🗽  👊  🧪\n7. <117897822329765892> 💫 Mandy Ember (Amanda.5871) 🔱 🚺,⚔️  ☣️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️  ✋  \\<:2MesmerChronomancer:837890878583996437>  💣  🍄  🚀  🪞  🎀  ☠️  🫗  🗽  👊  🧪\n8. <318097946975404042> 🙏 Elouan (Ivora.8739) 👥,      ⚔️  ☣️  \\<:QuickDPS:1038159940164014090>  \\<:QuickHeal:1038159941472620655>  💣  🍄  🚀  🧪\n9. <265647872618397706> 🙏 holtchef (holtchef.7801) 🔱, ⚔️  ☣️  \\<:QuickDPS:1038159940164014090>  \\<:AlacDPS:1038159937391562843>  \\<:AlacHeal:1038159938335277140>  \\<:QuickHeal:1038159941472620655>  🛡️  ✋  💣  🍄  🚀  🪞  🎀  ☠️  👊  🧪\n10.<384950583125082137> 🙏 Kru (Krumungus.2367) 🚹,     ⚔️  \\<:QuickDPS:1038159940164014090>  💣  🍄  🚀  🫗  👊  🧪\n11.<416784349623615498> 🙏 Stouts (Stouts.4253),       ⚔️  \\<:QuickDPS:1038159940164014090>  🍄\n```",
   "roster": [
@@ -4193,6 +4193,22 @@
       "action": "reacted",
       "source": "post_reaction",
       "emoji": "🪞"
+    },
+    {
+      "timestamp": "2026-10-16T06:29:53.573846+00:00",
+      "discord_id": "718665407522799637",
+      "nickname": "💐🙏 💫 Pol (Pol.2146) 🚺",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "💣"
+    },
+    {
+      "timestamp": "2026-10-16T06:29:54.237763+00:00",
+      "discord_id": "718665407522799637",
+      "nickname": "💐🙏 💫 Pol (Pol.2146) 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "💣"
     }
   ]
 }
