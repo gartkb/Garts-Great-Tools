@@ -2,9 +2,9 @@
   "source_type": "event",
   "id": "1559310815725748356",
   "label": "Experimental⁉️ Raid Bounties",
-  "last_updated": "2026-10-15T02:05:49.370614+00:00",
+  "last_updated": "2026-10-16T05:55:07.461211+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1. <686299516886057092> Corey/Arrow Elite (CoreyMG.2458),📧\n2. <493633584528097281> CrimsonPenalty (Crimson. 3186),📧\n3. <333119238447562753> ignacio (ign.2951),            📧\n4. <817628233138831401> ItsMandaKaye.4260 🚺,           📧\n5. <481272652179439626> mcr (miniruss.2496),           📧\n6. <344480812508643342> Ozurlen (Ozurlen V.8563) 🚹,    📧\n7. <239171418460389386> Veri (Veritas.2691),           📧\n8. <670714519349231617> Wyrmcast (HiddenHand.2694),    📧\n9. <1184189909737681019> Zoli (zoli.5129) 🔱 🔰,         📧\n10.<219437617219895297> 🌷 BeastfromtheEast.2946,       📧  👍\n11.<617181650190598155> 🌷🙏 💫 whycantifly (Fei.7308) 🚺, 📧\n12.<734971332089085984> 💐🙏 ☠️Visceral.2796 🚺,          📧  👍\n13.<596875174700122122> 💫☄️Gartner Kinderboom.5019,    👍\n```",
+  "text_representation": "**Interest List:**\n\n```\n1. <686299516886057092> Corey/Arrow Elite (CoreyMG.2458),📧\n2. <493633584528097281> CrimsonPenalty (Crimson. 3186),📧\n3. <333119238447562753> ignacio (ign.2951),            📧\n4. <817628233138831401> ItsMandaKaye.4260 🚺,           📧\n5. <481272652179439626> mcr (miniruss.2496),           📧\n6. <339693997847216128> Mesh (Meshy.7428) 🚹,           📧  👍\n7. <344480812508643342> Ozurlen (Ozurlen V.8563) 🚹,    📧\n8. <239171418460389386> Veri (Veritas.2691),           📧\n9. <670714519349231617> Wyrmcast (HiddenHand.2694),    📧\n10.<1184189909737681019> Zoli (zoli.5129) 🔱 🔰,         📧\n11.<219437617219895297> 🌷 BeastfromtheEast.2946,       📧  👍\n12.<617181650190598155> 🌷 💫 whycantifly (Fei.7308) 🚺,  📧\n13.<734971332089085984> 💐🙏 ☠️Visceral.2796 🚺,          📧  👍\n14.<596875174700122122> 💫☄️Gartner Kinderboom.5019,    👍\n```",
   "roster": [
     {
       "discord_id": "219437617219895297",
@@ -26,6 +26,14 @@
       "nickname": "ignacio (ign.2951)",
       "emojis": [
         "📧"
+      ]
+    },
+    {
+      "discord_id": "339693997847216128",
+      "nickname": "Mesh (Meshy.7428) 🚹",
+      "emojis": [
+        "📧",
+        "👍"
       ]
     },
     {
@@ -51,7 +59,7 @@
     },
     {
       "discord_id": "617181650190598155",
-      "nickname": "🌷🙏 💫 whycantifly (Fei.7308) 🚺",
+      "nickname": "🌷 💫 whycantifly (Fei.7308) 🚺",
       "emojis": [
         "📧"
       ]
@@ -193,6 +201,22 @@
       "timestamp": "2026-10-15T02:04:42.844453+00:00",
       "discord_id": "219437617219895297",
       "nickname": "🌷 BeastfromtheEast.2946",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-16T05:53:36.879589+00:00",
+      "discord_id": "339693997847216128",
+      "nickname": "Mesh (Meshy.7428) 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "👍"
+    },
+    {
+      "timestamp": "2026-10-16T05:53:56.036170+00:00",
+      "discord_id": "339693997847216128",
+      "nickname": "Mesh (Meshy.7428) 🚹",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
