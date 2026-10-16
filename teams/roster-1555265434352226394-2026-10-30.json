@@ -2,9 +2,9 @@
   "source_type": "event",
   "id": "1555265434352226394",
   "label": "✨LEGENDARY GIVEAWAY✨",
-  "last_updated": "2026-10-15T22:38:10.295976+00:00",
+  "last_updated": "2026-10-16T06:22:55.158991+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1. <229773188127653908> anti (Anti.3861 ) 🚹,         ✨\n2. <407571428045619211> bayawulf (bealana.7510) 🚺,   ❤️\n3. <493633584528097281> CrimsonPenalty (Crimson. 3186),👍  \\<a:cooldoge:585661992828796939>  ❤️\n4. <122459890529730560> Danny (dclh.6834) 🚹,         ❤️\n5. <454007957995257866> dr_wh0o 🚹,                   🕊️\n6. <619970339233071134> gijo(Candid Flames.6279)🌠🌀,  \\<a:cooldoge:585661992828796939>\n7. <197888702163320832> Mrs Bunnicorn (Ezzy.5264),   ✨\n8. <948277528454373416> nicksterxo.6934 🚺,           🕊️  \\<a:cooldoge:585661992828796939>\n9. <383473811720372224> Razinth (Razinth.6389),      📧\n10.<532603087156674560> Rith (Stacyjay.9407) 🚹,      📧\n11.<427250003933921280> Saej (Ravecia.5621),         ❤️\n12.<269455660847071232> Sangyi (Murcielago.3570) 🚹,  📧\n13.<693599094349758554> shane.6842,                  ❤️\n14.<338166646877454346> Tessius (tessius.4621) 🚹,    📧\n15.<239171418460389386> Veri (Veritas.2691),         ❤️\n16.<331207307675435008> Vin (Vaati.9436) 🚺,          👍\n17.<670714519349231617> Wyrmcast (HiddenHand.2694),  ⚔️\n18.<758528354361802774> Zenon (Zenon.2719) 🚹,        \\<a:cooldoge:585661992828796939>\n19.<172515643801731072> ☠️Toni (Orewatowi.1603) 🚺,   🕊️\n20.<734971332089085984> 💐🙏 ☠️Visceral.2796 🚺,        ✨\n21.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  📧\n22.<297875840748748810> 💫☄️🕵 morganah.8214 🔰 👥,      📧  🕊️  ✨\n23.<489230008603115531> 🔨Fred T W (Frederick.8305) 🔱,👍\n```",
+  "text_representation": "**Interest List:**\n\n```\n1. <229773188127653908> anti (Anti.3861 ) 🚹,         ✨\n2. <407571428045619211> bayawulf (bealana.7510) 🚺,   ❤️\n3. <493633584528097281> CrimsonPenalty (Crimson. 3186),👍  \\<a:cooldoge:585661992828796939>  ❤️\n4. <122459890529730560> Danny (dclh.6834) 🚹,         ❤️\n5. <454007957995257866> dr_wh0o 🚹,                   🕊️\n6. <619970339233071134> gijo(Candid Flames.6279)🌠🌀,  \\<a:cooldoge:585661992828796939>\n7. <339693997847216128> Mesh (Meshy.7428) 🚹,         📧\n8. <197888702163320832> Mrs Bunnicorn (Ezzy.5264),   ✨\n9. <948277528454373416> nicksterxo.6934 🚺,           🕊️  \\<a:cooldoge:585661992828796939>\n10.<383473811720372224> Razinth (Razinth.6389),      📧\n11.<532603087156674560> Rith (Stacyjay.9407) 🚹,      📧\n12.<427250003933921280> Saej (Ravecia.5621),         ❤️\n13.<269455660847071232> Sangyi (Murcielago.3570) 🚹,  📧\n14.<693599094349758554> shane.6842,                  ❤️\n15.<338166646877454346> Tessius (tessius.4621) 🚹,    📧\n16.<239171418460389386> Veri (Veritas.2691),         ❤️\n17.<331207307675435008> Vin (Vaati.9436) 🚺,          👍\n18.<670714519349231617> Wyrmcast (HiddenHand.2694),  ⚔️\n19.<758528354361802774> Zenon (Zenon.2719) 🚹,        \\<a:cooldoge:585661992828796939>\n20.<172515643801731072> ☠️Toni (Orewatowi.1603) 🚺,   🕊️\n21.<734971332089085984> 💐🙏 ☠️Visceral.2796 🚺,        ✨\n22.<596875174700122122> 💫☄️Gartner Kinderboom.5019,  📧\n23.<297875840748748810> 💫☄️🕵 morganah.8214 🔰 👥,      📧  🕊️  ✨\n24.<489230008603115531> 🔨Fred T W (Frederick.8305) 🔱,👍\n```",
   "roster": [
     {
       "discord_id": "269455660847071232",
@@ -25,6 +25,13 @@
     {
       "discord_id": "338166646877454346",
       "nickname": "Tessius (tessius.4621) 🚹",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "339693997847216128",
+      "nickname": "Mesh (Meshy.7428) 🚹",
       "emojis": [
         "📧"
       ]
@@ -674,6 +681,14 @@
       "timestamp": "2026-10-15T22:36:57.857454+00:00",
       "discord_id": "338166646877454346",
       "nickname": "Tessius (tessius.4621) 🚹",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-16T06:21:43.351071+00:00",
+      "discord_id": "339693997847216128",
+      "nickname": "Mesh (Meshy.7428) 🚹",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
