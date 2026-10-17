@@ -1,0 +1,27 @@
+{
+  "source_type": "event",
+  "id": "1560898021263417445",
+  "label": "Wing 1 Training continued",
+  "last_updated": "2026-10-17T17:08:00.838827+00:00",
+  "expires_at": null,
+  "text_representation": "No interested users found.",
+  "roster": [],
+  "history": [
+    {
+      "timestamp": "2026-10-17T17:06:44.250054+00:00",
+      "discord_id": "698333611404951562",
+      "nickname": "Sylph (Shiris.2097) 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🐣"
+    },
+    {
+      "timestamp": "2026-10-17T17:06:44.635724+00:00",
+      "discord_id": "698333611404951562",
+      "nickname": "Sylph (Shiris.2097) 🚺",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🐣"
+    }
+  ]
+}
