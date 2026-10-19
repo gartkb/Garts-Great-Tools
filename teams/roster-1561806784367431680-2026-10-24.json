@@ -1,0 +1,27 @@
+{
+  "source_type": "event",
+  "id": "1561806784367431680",
+  "label": "Wing 2 training run",
+  "last_updated": "2026-10-19T18:24:46.515967+00:00",
+  "expires_at": null,
+  "text_representation": "No interested users found.",
+  "roster": [],
+  "history": [
+    {
+      "timestamp": "2026-10-19T18:23:29.606660+00:00",
+      "discord_id": "383473811720372224",
+      "nickname": "Razinth (Razinth.6389)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    },
+    {
+      "timestamp": "2026-10-19T18:23:29.970343+00:00",
+      "discord_id": "383473811720372224",
+      "nickname": "Razinth (Razinth.6389)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "⚔️"
+    }
+  ]
+}
