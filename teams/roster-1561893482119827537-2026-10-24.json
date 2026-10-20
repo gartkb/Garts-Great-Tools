@@ -2,15 +2,23 @@
   "source_type": "event",
   "id": "1561893482119827537",
   "label": "Experimental⁉️ Raid Bounties",
-  "last_updated": "2026-10-20T02:40:07.650352+00:00",
+  "last_updated": "2026-10-20T06:00:27.402434+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,         👍\n2.<493633584528097281> CrimsonPenalty (Crimson. 3186) 🚹,📧\n3.<333119238447562753> ignacio (ign.2951),            📧\n4.<481272652179439626> mcr (miniruss.2496),           📧\n5.<482727284609122309> mooshi (mooshi.4021),          📧\n6.<197888702163320832> Mrs Bunnicorn (Ezzy.5264),     📧\n7.<1184189909737681019> Zoli (zoli.5129) 🔱 🔰,         📧\n8.<734971332089085984> ☠️Visceral.2796 🚺,             📧  👍\n9.<596875174700122122> 💫☄️Gartner Kinderboom.5019,    👍\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,         📧  👍\n2.<493633584528097281> CrimsonPenalty (Crimson. 3186) 🚹,📧\n3.<333119238447562753> ignacio (ign.2951),            📧\n4.<481272652179439626> mcr (miniruss.2496),           📧\n5.<482727284609122309> mooshi (mooshi.4021),          📧\n6.<197888702163320832> Mrs Bunnicorn (Ezzy.5264),     📧\n7.<1184189909737681019> Zoli (zoli.5129) 🔱 🔰,         📧\n8.<734971332089085984> ☠️Visceral.2796 🚺,             📧  👍\n9.<596875174700122122> 💫☄️Gartner Kinderboom.5019,    👍\n```",
   "roster": [
     {
       "discord_id": "197888702163320832",
       "nickname": "Mrs Bunnicorn (Ezzy.5264)",
       "emojis": [
         "📧"
+      ]
+    },
+    {
+      "discord_id": "219437617219895297",
+      "nickname": "BeastfromtheEast.2946",
+      "emojis": [
+        "📧",
+        "👍"
       ]
     },
     {
@@ -59,13 +67,6 @@
     {
       "discord_id": "596875174700122122",
       "nickname": "💫☄️Gartner Kinderboom.5019",
-      "emojis": [
-        "👍"
-      ]
-    },
-    {
-      "discord_id": "219437617219895297",
-      "nickname": "BeastfromtheEast.2946",
       "emojis": [
         "👍"
       ]
@@ -157,6 +158,14 @@
       "discord_id": "1338535612340240429",
       "nickname": "💫 ☠️lorelai.7051",
       "action": "uninterested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-20T05:59:20.921518+00:00",
+      "discord_id": "219437617219895297",
+      "nickname": "BeastfromtheEast.2946",
+      "action": "interested",
       "source": "event_interest",
       "emoji": null
     }
