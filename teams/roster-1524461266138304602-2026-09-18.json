@@ -2,9 +2,9 @@
   "source_type": "event",
   "id": "1524461266138304602",
   "label": "Daily pDS + IB5 + (Bounties?)",
-  "last_updated": "2026-10-17T19:21:34.073247+00:00",
+  "last_updated": "2026-10-20T20:48:54.032306+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,       📧\n2.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,  📧\n3.<231518357440954368> shaqsalazar (shaqsalazar.2906),📧\n4.<411260184036638721> Torrid (Segwee.4781 ) 🚺,     📧\n5.<200423784589688832> 💫 KelsTheBard (kelso.2354),  📧\n6.<798211339365384212> 🙏🙏 Kavish.8593🌠 🔱,           📧\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,       📧\n2.<619970339233071134> gijo(Candid Flames.6279)🌠🌀,  📧\n3.<798211339365384212> Kavish.8593🌠 🔱,              📧\n4.<231518357440954368> shaqsalazar (shaqsalazar.2906),📧\n5.<411260184036638721> Torrid (Segwee.4781 ) 🚺,     📧\n6.<200423784589688832> 💫 KelsTheBard (kelso.2354),  📧\n```",
   "roster": [
     {
       "discord_id": "200423784589688832",
@@ -43,7 +43,7 @@
     },
     {
       "discord_id": "798211339365384212",
-      "nickname": "🙏🙏 Kavish.8593🌠 🔱",
+      "nickname": "Kavish.8593🌠 🔱",
       "emojis": [
         "📧"
       ]
@@ -151,6 +151,14 @@
       "discord_id": "1371115777951797370",
       "nickname": "Blud (Blud.9243)",
       "action": "uninterested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-20T20:47:47.965389+00:00",
+      "discord_id": "172515643801731072",
+      "nickname": "☠️Toni (Orewatowi.1603) 🚺",
+      "action": "interested",
       "source": "event_interest",
       "emoji": null
     }
