@@ -1,0 +1,27 @@
+{
+  "source_type": "event",
+  "id": "1562743606786138172",
+  "label": "Dhuum CM training",
+  "last_updated": "2026-10-22T22:48:28.902908+00:00",
+  "expires_at": null,
+  "text_representation": "**Interest List:**\n\n```\n1.<1089292559764959303> TheMoldMan (Moldy.7582) 👥,📧\n```",
+  "roster": [
+    {
+      "discord_id": "1089292559764959303",
+      "nickname": "TheMoldMan (Moldy.7582) 👥",
+      "emojis": [
+        "📧"
+      ]
+    }
+  ],
+  "history": [
+    {
+      "timestamp": "2026-10-22T22:46:58.434451+00:00",
+      "discord_id": "1089292559764959303",
+      "nickname": "TheMoldMan (Moldy.7582) 👥",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    }
+  ]
+}
