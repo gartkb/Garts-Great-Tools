@@ -2,9 +2,9 @@
   "source_type": "event",
   "id": "1561893482119827537",
   "label": "Experimental⁉️ Raid Bounties",
-  "last_updated": "2026-10-22T13:10:30.598626+00:00",
+  "last_updated": "2026-10-22T22:48:15.911901+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1. <351882965506195457> AzureSkye (ethearia.3640) 🚺,   📧\n2. <219437617219895297> BeastfromtheEast.2946,         📧  👍\n3. <493633584528097281> CrimsonPenalty (Crimson. 3186) 🚹,📧\n4. <1012398481417195593> Doughnut (OnyxFist.7364) 🚹,   📧\n5. <333119238447562753> ignacio (ign.2951),            📧\n6. <168104894534778880> Marz (Marz.4629),              📧\n7. <481272652179439626> mcr (miniruss.2496),           📧\n8. <482727284609122309> mooshi (mooshi.4021),          📧\n9. <197888702163320832> Mrs Bunnicorn (Ezzy.5264),     📧\n10.<605078375333363762> superc (superc.4590) 🚹,        📧\n11.<1463525092045619244> Zeuhl (lwyrgmr.4590),         📧\n12.<1184189909737681019> Zoli (zoli.5129) 🔱 🔰,         📧\n13.<734971332089085984> ☠️Visceral.2796 🚺,             📧  👍\n14.<596875174700122122> 💫☄️Gartner Kinderboom.5019,    👍\n```",
+  "text_representation": "**Interest List:**\n\n```\n1. <351882965506195457> AzureSkye (ethearia.3640) 🚺,   📧\n2. <219437617219895297> BeastfromtheEast.2946,         📧  👍\n3. <493633584528097281> CrimsonPenalty (Crimson. 3186) 🚹,📧\n4. <1012398481417195593> Doughnut (OnyxFist.7364) 🚹,   📧\n5. <333119238447562753> ignacio (ign.2951),            📧\n6. <168104894534778880> Marz (Marz.4629),              📧\n7. <481272652179439626> mcr (miniruss.2496),           📧\n8. <482727284609122309> mooshi (mooshi.4021),          📧\n9. <197888702163320832> Mrs Bunnicorn (Ezzy.5264),     📧\n10.<605078375333363762> superc (superc.4590) 🚹,        📧\n11.<1089292559764959303> TheMoldMan (Moldy.7582) 👥,    📧\n12.<1463525092045619244> Zeuhl (lwyrgmr.4590),         📧\n13.<1184189909737681019> Zoli (zoli.5129) 🔱 🔰,         📧\n14.<734971332089085984> ☠️Visceral.2796 🚺,             📧  👍\n15.<596875174700122122> 💫☄️Gartner Kinderboom.5019,    👍\n```",
   "roster": [
     {
       "discord_id": "168104894534778880",
@@ -81,6 +81,13 @@
     {
       "discord_id": "1012398481417195593",
       "nickname": "Doughnut (OnyxFist.7364) 🚹",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "1089292559764959303",
+      "nickname": "TheMoldMan (Moldy.7582) 👥",
       "emojis": [
         "📧"
       ]
@@ -240,6 +247,14 @@
       "timestamp": "2026-10-22T13:09:24.207542+00:00",
       "discord_id": "605078375333363762",
       "nickname": "superc (superc.4590) 🚹",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-22T22:47:02.811730+00:00",
+      "discord_id": "1089292559764959303",
+      "nickname": "TheMoldMan (Moldy.7582) 👥",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
