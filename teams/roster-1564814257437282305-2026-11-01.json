@@ -2,10 +2,17 @@
   "source_type": "event",
   "id": "1564814257437282305",
   "label": "Booze and Boos",
-  "last_updated": "2026-10-28T01:37:21.826153+00:00",
+  "last_updated": "2026-10-28T02:21:50.713703+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<1173691093884346592> Nhyxi (Nhyxiha.2698) 🚺,   📧\n2.<835294996562837544> 💐 Fallon (Fallon.8214) 🔱 🚺,📧\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<1173691093884346592> Nhyxi (Nhyxiha.2698) 🚺,   📧\n2.<835294996562837544> 💐 Fallon (Fallon.8214) 🔱 🚺,📧\n3.<817628233138831401> 🙏 ItsMandaKaye.4260 🚺,     📧\n```",
   "roster": [
+    {
+      "discord_id": "817628233138831401",
+      "nickname": "🙏 ItsMandaKaye.4260 🚺",
+      "emojis": [
+        "📧"
+      ]
+    },
     {
       "discord_id": "835294996562837544",
       "nickname": "💐 Fallon (Fallon.8214) 🔱 🚺",
@@ -34,6 +41,14 @@
       "timestamp": "2026-10-28T01:36:15.984877+00:00",
       "discord_id": "1173691093884346592",
       "nickname": "Nhyxi (Nhyxiha.2698) 🚺",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-28T02:20:44.800849+00:00",
+      "discord_id": "817628233138831401",
+      "nickname": "🙏 ItsMandaKaye.4260 🚺",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
