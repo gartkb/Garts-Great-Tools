@@ -2,20 +2,27 @@
   "source_type": "event",
   "id": "1564814257437282305",
   "label": "Booze and Boos",
-  "last_updated": "2026-10-28T15:20:57.328227+00:00",
+  "last_updated": "2026-10-31T22:36:20.342730+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<1173691093884346592> Nhyxi (Nhyxiha.2698) 🚺,   📧\n2.<1463525092045619244> Zeuhl (lwyrgmr.4590),     📧\n3.<835294996562837544> 💐 Fallon (Fallon.8214) 🔱 🚺,📧\n4.<817628233138831401> 🙏 ItsMandaKaye.4260 🚺,     📧\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<835294996562837544> Fallon (Fallon.8214) 🔱 🚺,  📧\n2.<817628233138831401> ItsMandaKaye.4260 🚺,       📧\n3.<1173691093884346592> Nhyxi (Nhyxiha.2698) 🚺,   📧\n4.<532603087156674560> Rith (Stacyjay.9407) 🚹,    📧\n5.<1463525092045619244> Zeuhl (lwyrgmr.4590),     📧\n```",
   "roster": [
     {
+      "discord_id": "532603087156674560",
+      "nickname": "Rith (Stacyjay.9407) 🚹",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
       "discord_id": "817628233138831401",
-      "nickname": "🙏 ItsMandaKaye.4260 🚺",
+      "nickname": "ItsMandaKaye.4260 🚺",
       "emojis": [
         "📧"
       ]
     },
     {
       "discord_id": "835294996562837544",
-      "nickname": "💐 Fallon (Fallon.8214) 🔱 🚺",
+      "nickname": "Fallon (Fallon.8214) 🔱 🚺",
       "emojis": [
         "📧"
       ]
@@ -96,6 +103,14 @@
       "timestamp": "2026-10-28T15:19:50.849509+00:00",
       "discord_id": "835294996562837544",
       "nickname": "💐 Fallon (Fallon.8214) 🔱 🚺",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-10-31T22:35:14.662416+00:00",
+      "discord_id": "532603087156674560",
+      "nickname": "Rith (Stacyjay.9407) 🚹",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
