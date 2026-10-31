@@ -69,6 +69,13 @@
         .show-values-active .item-value { display: flex; }
         .ov-g { color: #f1c40f; } .ov-s { color: #bdc3c7; } .ov-c { color: #e67e22; }
 
+        /* --- VALUE FILTER / SORT CONTROLS (visible only while "Show Values" is ticked) --- */
+        .value-controls { flex-wrap: wrap; }
+        .value-input { width: 150px; }
+        .filter-input.invalid { border-color: #e74c3c; }
+        .value-sep { color: #7f8c8d; }
+        .value-clear { padding: 6px 10px; font-size: 0.8rem; }
+
         .item-slot.type-consumable { border-bottom: 3px solid #f1c40f; } 
         .item-slot.type-decoration { border-bottom: 3px solid #3498db; } 
         .item-slot.type-claimable { border-bottom: 3px solid #e74c3c; } 
@@ -187,16 +194,31 @@
     <div id="tab-stash" class="tab-content active">
         <div class="filter-bar">
             <div class="filter-group">
-                <input type="text" id="stash-search" class="filter-input" placeholder="Search stash items..." onkeyup="applyStashFilter()">
+                <input type="text" id="stash-search" class="filter-input" placeholder="Search stash items..." oninput="applyStashFilter()">
             </div>
             <div class="filter-group">
                 <label class="filter-label">
                     <input type="checkbox" id="chk-show-values" onchange="toggleStashValues()"> Show Values
                 </label>
             </div>
+            <div class="filter-group value-controls" id="value-controls" style="display:none;">
+                <input type="text" id="val-min" class="filter-input value-input" placeholder="Min (e.g. 5g)" oninput="applyStashFilter()" title="Amounts: 5 = 5 gold, 2.5 = 2g 50s, or text like 2g 50s / 30s / 75c">
+                <span class="value-sep">to</span>
+                <input type="text" id="val-max" class="filter-input value-input" placeholder="Max (e.g. 2g 50s)" oninput="applyStashFilter()" title="Amounts: 5 = 5 gold, 2.5 = 2g 50s, or text like 2g 50s / 30s / 75c">
+                <select id="val-mode" class="filter-input" onchange="applyStashFilter()" title="Which value to show, filter and sort by">
+                    <option value="stack" selected>Stack total</option>
+                    <option value="unit">Per unit</option>
+                </select>
+                <select id="val-sort" class="filter-input" onchange="applyStashFilter()" title="Sorts within each vault tab only">
+                    <option value="">Sort: default</option>
+                    <option value="desc">Sort: value high &rarr; low</option>
+                    <option value="asc">Sort: value low &rarr; high</option>
+                </select>
+                <button class="value-clear" onclick="clearValueFilter()">Clear</button>
+            </div>
             <div class="filter-group">
                 <label class="filter-label" style="font-size:0.8rem; opacity:0.7;">
-                    (Hides empty slots when searching)
+                    (Hides empty slots when searching or filtering by value)
                 </label>
             </div>
         </div>
@@ -207,7 +229,7 @@
     <div id="tab-consumables" class="tab-content">
         <div class="filter-bar">
             <div class="filter-group">
-                <input type="text" id="storage-search" class="filter-input" placeholder="Search names..." onkeyup="applyStorageFilter()">
+                <input type="text" id="storage-search" class="filter-input" placeholder="Search names..." oninput="applyStorageFilter()">
             </div>
             <div class="filter-group">
                 <select id="storage-filter" class="filter-input" onchange="applyStorageFilter()">
@@ -257,7 +279,7 @@
     <div id="tab-roster" class="tab-content">
         <div class="filter-bar">
              <div class="filter-group">
-                <input type="text" id="roster-search" class="filter-input" placeholder="Search members..." onkeyup="applyRosterFilter()">
+                <input type="text" id="roster-search" class="filter-input" placeholder="Search members..." oninput="applyRosterFilter()">
                 <!-- Check Ranks Button -->
                 <button onclick="checkRanks()" style="margin-left: 5px; padding: 6px 12px; font-size: 0.9rem;">Check Ranks</button>
             </div>
@@ -272,7 +294,7 @@
     <div id="tab-log" class="tab-content">
         <div class="filter-bar">
             <div class="filter-group">
-                <input type="text" id="log-search" class="filter-input" placeholder="Search logs..." onkeyup="applyLogFilter()">
+                <input type="text" id="log-search" class="filter-input" placeholder="Search logs..." oninput="applyLogFilter()">
             </div>
             <div class="filter-group">
                 <select id="log-filter" class="filter-input" onchange="applyLogFilter()">
@@ -452,11 +474,40 @@
         return `<span class="ov-c">${c}c</span>`;
     }
 
+    function esc(s) {
+        return String(s === undefined || s === null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    // Parses user-typed money into copper. Bare number = gold (decimals ok: 2.5 = 2g 50s).
+    // Also accepts "2g 50s", "30s", "75c", "1g20s5c". Returns {value: copper|null, ok: bool}.
+    function parseCoinText(str) {
+        str = String(str || '').trim().toLowerCase().replace(/,/g, '');
+        if (!str) return { value: null, ok: true };
+        if (/^\d+(\.\d+)?$/.test(str)) return { value: Math.round(parseFloat(str) * 10000), ok: true };
+        const re = /(\d+(?:\.\d+)?)\s*([gsc])/g;
+        let m, total = 0, consumed = '';
+        while ((m = re.exec(str)) !== null) {
+            total += parseFloat(m[1]) * (m[2] === 'g' ? 10000 : m[2] === 's' ? 100 : 1);
+            consumed += m[0];
+        }
+        if (!consumed || consumed.replace(/\s+/g, '') !== str.replace(/\s+/g, '')) return { value: null, ok: false };
+        return { value: Math.round(total), ok: true };
+    }
+
     function toggleStashValues() {
         const isChecked = document.getElementById('chk-show-values').checked;
         const grid = document.getElementById('stash-grid');
         if (isChecked) grid.classList.add('show-values-active');
         else grid.classList.remove('show-values-active');
+        document.getElementById('value-controls').style.display = isChecked ? 'flex' : 'none';
+        applyStashFilter();
+    }
+
+    function clearValueFilter() {
+        document.getElementById('val-min').value = '';
+        document.getElementById('val-max').value = '';
+        document.getElementById('val-sort').value = '';
+        applyStashFilter();
     }
 
     // --- CACHING ---
@@ -683,20 +734,25 @@
     }
 
     async function refreshData() {
-        guildData = {}; allDiscoveredGuilds = []; itemPrices.clear();
-        await loadItemNameMap();
-        await loadGlobalLibrary();
-        const activeGuildIds = await fetchGuildData();
-        renderAll(); populateDebugGuilds();
-        
-        if(activeGuildIds && activeGuildIds.length > 0) {
-            await loadStashItemDetails(activeGuildIds);
-            renderAll(); 
-            await enrichLibraryWithStats();
-            updateStatus(''); renderAll(); 
-            // Load WvW tabs after main data
-            await renderWvwTab();
-        } else { updateStatus(''); }
+        try {
+            guildData = {}; allDiscoveredGuilds = []; itemPrices.clear();
+            await loadItemNameMap();
+            await loadGlobalLibrary();
+            const activeGuildIds = await fetchGuildData();
+            renderAll(); populateDebugGuilds();
+            
+            if(activeGuildIds && activeGuildIds.length > 0) {
+                await loadStashItemDetails(activeGuildIds);
+                renderAll(); 
+                await enrichLibraryWithStats();
+                updateStatus(''); renderAll(); 
+                // Load WvW tabs after main data
+                await renderWvwTab();
+            } else { updateStatus(''); }
+        } catch(e) {
+            console.error('Refresh failed', e);
+            updateStatus('Refresh failed: ' + (e && e.message ? e.message : e) + ' (see console)');
+        }
     }
 
     async function fetchGuildData() {
@@ -938,6 +994,7 @@
                         <div class="stash-total-value">Items: ${formatCoins(tabTotal)}</div>
                         ${coinString}
                     </div>`;
+                grid._totalEl = title.querySelector('.stash-total-value');
                 // --------------------------
 
                 ui.body.appendChild(title);
@@ -950,15 +1007,17 @@
                         if(!info) info = { name: 'Loading...', icon: '', rarity: 'Basic', type: 'Item' };
                         const iconSrc = info.icon || 'https://render.guildwars2.com/file/0000000000000000000000000000000000000000/1.png';
                         
-                        let priceHtml = '';
+                        // Value data lives on the element; applyStashFilter() fills the overlay,
+                        // filters and sorts from it (no network, no re-render).
+                        let hasPrice = false;
                         if (itemPrices.has(slot.id)) {
-                            const prices = itemPrices.get(slot.id);
-                            const formatted = formatOverlayPrice(prices.sells, slot.count);
-                            if(formatted) priceHtml = `<div class="item-value">${formatted}</div>`;
+                            const sells = itemPrices.get(slot.id).sells;
+                            if (sells > 0) { d.dataset.unit = sells; hasPrice = true; }
                         }
+                        d.dataset.count = slot.count;
 
                         d.className = `item-slot rarity-${info.rarity}`;
-                        d.innerHTML = `<img src="${iconSrc}"><div class="item-count">${slot.count}</div>${priceHtml}`;
+                        d.innerHTML = `<img src="${iconSrc}"><div class="item-count">${slot.count}</div>${hasPrice ? '<div class="item-value"></div>' : ''}`;
                         if(info.name) d.dataset.name = info.name.toLowerCase();
                         
                         const tooltipData = { id: slot.id, name: info.name, count: slot.count, rarity: info.rarity, type: info.type, icon: iconSrc, desc: info.desc || (info.details ? info.details.description : ''), stats: info.details && info.details.description ? info.details.description : '' };
@@ -1009,7 +1068,7 @@
     }
 
     function generateRosterRows(members) {
-        return members.map(m => `<tr class="roster-row" data-name="${m.name.toLowerCase()}" data-rank="${m.rank.toLowerCase()}"><td style="font-weight:bold; color:#ecf0f1;">${m.name}</td><td style="color:#3498db;"><span class="rank-badge">${m.rank}</span></td><td style="color:#bdc3c7;">${new Date(m.joined).toLocaleDateString()}</td></tr>`).join('');
+        return members.map(m => `<tr class="roster-row" data-name="${esc(m.name.toLowerCase())}" data-rank="${esc(m.rank.toLowerCase())}"><td style="font-weight:bold; color:#ecf0f1;">${esc(m.name)}</td><td style="color:#3498db;"><span class="rank-badge">${esc(m.rank)}</span></td><td style="color:#bdc3c7;">${new Date(m.joined).toLocaleDateString()}</td></tr>`).join('');
     }
 
     function renderLogCard(g) {
@@ -1106,19 +1165,65 @@
 
     function createCard(g, titleSuffix) {
         const div = document.createElement('div'); div.className = 'guild-card';
-        div.innerHTML = `<div class="guild-header"><div><span class="guild-name">${g.name}</span> <span class="guild-tag">[${g.tag}]</span></div><div style="font-size:0.8rem; opacity:0.7">${titleSuffix}</div></div><div class="guild-body"></div>`;
+        div.innerHTML = `<div class="guild-header"><div><span class="guild-name">${esc(g.name)}</span> <span class="guild-tag">[${esc(g.tag)}]</span></div><div style="font-size:0.8rem; opacity:0.7">${titleSuffix}</div></div><div class="guild-body"></div>`;
         return { card: div, body: div.querySelector('.guild-body') };
     }
 
+    // One function owns slot visibility, value overlay, tab totals and sort order for the vault.
+    // Value controls only take effect while "Show Values" is ticked.
     function applyStashFilter() {
         const search = document.getElementById('stash-search').value.toLowerCase().trim();
-        document.querySelectorAll('#stash-grid .item-slot').forEach(slot => {
-            if(search === '') { slot.style.display = ''; return; }
-            if(slot.classList.contains('empty-slot')) { slot.style.display = 'none'; } 
-            else { const name = slot.dataset.name || ''; slot.style.display = name.includes(search) ? 'block' : 'none'; }
+        const showVals = document.getElementById('chk-show-values').checked;
+        const minEl = document.getElementById('val-min'), maxEl = document.getElementById('val-max');
+        const minP = parseCoinText(minEl.value), maxP = parseCoinText(maxEl.value);
+        minEl.classList.toggle('invalid', showVals && !minP.ok);
+        maxEl.classList.toggle('invalid', showVals && !maxP.ok);
+
+        const mode = showVals ? document.getElementById('val-mode').value : 'stack';
+        const sortDir = showVals ? document.getElementById('val-sort').value : '';
+        const minV = showVals ? minP.value : null;   // invalid text => value null => bound ignored
+        const maxV = showVals ? maxP.value : null;
+        const rangeActive = minV !== null || maxV !== null;
+
+        document.querySelectorAll('#stash-grid .item-grid').forEach(grid => {
+            let total = 0;
+            const priced = [];
+            Array.from(grid.children).forEach((slot, idx) => {
+                const isEmpty = slot.classList.contains('empty-slot');
+                const unit = slot.dataset.unit !== undefined ? Number(slot.dataset.unit) : null;
+                const count = Number(slot.dataset.count || 0);
+                const v = unit === null ? null : (mode === 'unit' ? unit : unit * count);
+
+                let visible = true;
+                if (search) visible = !isEmpty && (slot.dataset.name || '').includes(search);
+                if (visible && rangeActive) {
+                    visible = !isEmpty && v !== null && (minV === null || v >= minV) && (maxV === null || v <= maxV);
+                }
+                slot.style.display = visible ? '' : 'none';
+                if (visible && unit !== null) total += unit * count;
+
+                if (unit !== null) {
+                    const ov = slot.querySelector('.item-value');
+                    if (ov && ov.dataset.mode !== mode) {
+                        ov.innerHTML = formatOverlayPrice(unit, mode === 'unit' ? 1 : count) || '';
+                        ov.dataset.mode = mode;
+                    }
+                    if (sortDir) priced.push({ slot, v, idx });
+                }
+                slot.style.order = '';
+            });
+
+            if (sortDir) {
+                priced.sort((a, b) => (sortDir === 'desc' ? b.v - a.v : a.v - b.v) || a.idx - b.idx);
+                const pricedSet = new Set(priced.map(p => p.slot));
+                priced.forEach((p, rank) => { p.slot.style.order = rank; });
+                // everything unpriced / empty keeps its original relative order, after the priced slots
+                Array.from(grid.children).forEach((slot, idx) => { if (!pricedSet.has(slot)) slot.style.order = priced.length + idx; });
+            }
+            if (grid._totalEl) grid._totalEl.innerHTML = `Items: ${formatCoins(total)}`;
         });
     }
-    
+
     function applyStorageFilter() {
         const search = document.getElementById('storage-search').value.toLowerCase();
         const filter = document.getElementById('storage-filter').value;
@@ -1160,24 +1265,51 @@
         document.getElementById('roster-total-count').innerText = totalVisible;
     }
 
-    async function fetchItemIcon(id, el) {
+    // Icon/name lookups are queued and sent as batched /items?ids= requests (up to 200 ids each)
+    // instead of one request per slot.
+    const iconQueue = new Map();
+    let iconTimer = null;
+
+    function applyItemToElement(data, el) {
+        if(!el) return;
+        if(el.tagName === 'IMG') { el.src = data.icon; el.title = data.name; }
+        else { const img = el.querySelector('img'); if(img) img.src = data.icon; if(data.name) el.dataset.name = data.name.toLowerCase(); }
+    }
+
+    function fetchItemIcon(id, el) {
         const existing = itemDetails.get(id);
-        if(existing && existing.name) {
-            const data = existing;
-            if(el) {
-                if(el.tagName === 'IMG') { el.src = data.icon; el.title = data.name; } 
-                else { const img = el.querySelector('img'); if(img) img.src = data.icon; if(data.name) el.dataset.name = data.name.toLowerCase(); }
-            }
-            return;
+        if(existing && existing.name) { applyItemToElement(existing, el); return; }
+        if(!iconQueue.has(id)) iconQueue.set(id, []);
+        if(el) iconQueue.get(id).push(el);
+        if(!iconTimer) iconTimer = setTimeout(flushIconQueue, 50);
+    }
+
+    async function flushIconQueue() {
+        iconTimer = null;
+        const batch = new Map(iconQueue);
+        iconQueue.clear();
+        const ids = [];
+        batch.forEach((els, id) => {
+            const existing = itemDetails.get(id);
+            if(existing && existing.name) els.forEach(el => applyItemToElement(existing, el)); // arrived via another path meanwhile
+            else ids.push(id);
+        });
+        let changed = false;
+        for(let i = 0; i < ids.length; i += 200) {
+            const chunk = ids.slice(i, i + 200);
+            try {
+                const res = await fetch(`${GW2_API}/items?ids=${chunk.join(',')}`);
+                if(!res.ok) continue;
+                const items = await res.json();
+                items.forEach(data => {
+                    const entry = { id: data.id, name: data.name, icon: data.icon, rarity: data.rarity, type: data.type, desc: data.description, details: data.details };
+                    itemDetails.set(data.id, entry);
+                    (batch.get(data.id) || []).forEach(el => applyItemToElement(entry, el));
+                    changed = true;
+                });
+            } catch(e) { console.error('Icon batch error', e); }
         }
-        try {
-            const res = await fetch(`${GW2_API}/items/${id}`);
-            const data = await res.json();
-            itemDetails.set(id, { id: data.id, name: data.name, icon: data.icon, rarity: data.rarity, type: data.type, desc: data.description, details: data.details }); 
-            if(el) {
-                if(el.tagName === 'IMG') { el.src = data.icon; } else { const img = el.querySelector('img'); if(img) img.src = data.icon; if(data.name) el.dataset.name = data.name.toLowerCase(); }
-            }
-        } catch(e){}
+        if(changed) saveCache();
     }
 
     function renderGuildSelectionList() {
@@ -1185,7 +1317,7 @@
         if(allDiscoveredGuilds.length === 0) { container.innerHTML = '<div style="text-align:center; color:#7f8c8d; padding:10px;">No guilds found yet.</div>'; return; }
         container.innerHTML = allDiscoveredGuilds.map(g => {
             const isChecked = !disabledGuilds.has(g.id);
-            return `<div class="guild-list-item"><input type="checkbox" id="cb-${g.id}" ${isChecked ? 'checked' : ''} onchange="toggleGuild('${g.id}')" style="cursor:pointer; transform:scale(1.2)"><label for="cb-${g.id}" style="flex:1; cursor:pointer; color:#ecf0f1;"><span style="font-weight:bold; color:#3498db;">[${g.tag}]</span> ${g.name}</label></div>`;
+            return `<div class="guild-list-item"><input type="checkbox" id="cb-${g.id}" ${isChecked ? 'checked' : ''} onchange="toggleGuild('${g.id}')" style="cursor:pointer; transform:scale(1.2)"><label for="cb-${g.id}" style="flex:1; cursor:pointer; color:#ecf0f1;"><span style="font-weight:bold; color:#3498db;">[${esc(g.tag)}]</span> ${esc(g.name)}</label></div>`;
         }).join('');
     }
 
