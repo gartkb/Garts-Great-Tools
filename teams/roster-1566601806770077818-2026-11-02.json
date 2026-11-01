@@ -1,0 +1,27 @@
+{
+  "source_type": "event",
+  "id": "1566601806770077818",
+  "label": "[Daily] pDS + IBS 5 [R+1]",
+  "last_updated": "2026-11-01T23:57:23.143450+00:00",
+  "expires_at": null,
+  "text_representation": "**Interest List:**\n\n```\n1.<619970339233071134> 💐🙏 gijo(Candid Flames.6279)🌠🌀,📧\n```",
+  "roster": [
+    {
+      "discord_id": "619970339233071134",
+      "nickname": "💐🙏 gijo(Candid Flames.6279)🌠🌀",
+      "emojis": [
+        "📧"
+      ]
+    }
+  ],
+  "history": [
+    {
+      "timestamp": "2026-11-01T23:56:17.326210+00:00",
+      "discord_id": "619970339233071134",
+      "nickname": "💐🙏 gijo(Candid Flames.6279)🌠🌀",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    }
+  ]
+}
