@@ -2,13 +2,20 @@
   "source_type": "event",
   "id": "1566601806770077818",
   "label": "[Daily] pDS + IBS 5 [R+1]",
-  "last_updated": "2026-11-01T23:57:23.143450+00:00",
+  "last_updated": "2026-11-02T00:00:54.317663+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<619970339233071134> 💐🙏 gijo(Candid Flames.6279)🌠🌀,📧\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<1463525092045619244> Zeuhl (lwyrgmr.4590),      📧\n2.<619970339233071134> 💐🙏 gijo(Candid Flames.6279)🌠🌀,📧\n```",
   "roster": [
     {
       "discord_id": "619970339233071134",
       "nickname": "💐🙏 gijo(Candid Flames.6279)🌠🌀",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "1463525092045619244",
+      "nickname": "Zeuhl (lwyrgmr.4590)",
       "emojis": [
         "📧"
       ]
@@ -19,6 +26,14 @@
       "timestamp": "2026-11-01T23:56:17.326210+00:00",
       "discord_id": "619970339233071134",
       "nickname": "💐🙏 gijo(Candid Flames.6279)🌠🌀",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-11-01T23:59:48.605799+00:00",
+      "discord_id": "1463525092045619244",
+      "nickname": "Zeuhl (lwyrgmr.4590)",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
