@@ -2,7 +2,7 @@
   "source_type": "event",
   "id": "1567249780176846950",
   "label": "Wing 3 training continued",
-  "last_updated": "2026-11-03T19:18:57.296952+00:00",
+  "last_updated": "2026-11-03T19:56:33.664843+00:00",
   "expires_at": null,
   "text_representation": "**Interest List:**\n\n```\n1.<297875840748748810> 💐 💫🕵 morganah.8214 🔰 👥,    📧\n```",
   "roster": [
@@ -54,6 +54,22 @@
       "action": "interested",
       "source": "event_interest",
       "emoji": null
+    },
+    {
+      "timestamp": "2026-11-03T19:55:16.459525+00:00",
+      "discord_id": "817628233138831401",
+      "nickname": "ItsMandaKaye.4260 🚺",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🌚"
+    },
+    {
+      "timestamp": "2026-11-03T19:55:16.944281+00:00",
+      "discord_id": "817628233138831401",
+      "nickname": "ItsMandaKaye.4260 🚺",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🌚"
     }
   ]
 }
