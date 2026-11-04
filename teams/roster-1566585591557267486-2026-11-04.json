@@ -2,7 +2,7 @@
   "source_type": "event",
   "id": "1566585591557267486",
   "label": "Gart's Great Intro to Raids",
-  "last_updated": "2026-11-03T13:44:10.024372+00:00",
+  "last_updated": "2026-11-04T00:14:09.108238+00:00",
   "expires_at": null,
   "text_representation": "**Interest List:**\n\n```\n1.<297875840748748810> 💐 💫🕵 morganah.8214 🔰 👥,    📧\n```",
   "roster": [
@@ -150,6 +150,38 @@
       "action": "unreacted",
       "source": "post_reaction",
       "emoji": "🛡️"
+    },
+    {
+      "timestamp": "2026-11-04T00:12:37.443317+00:00",
+      "discord_id": "1073391600266395678",
+      "nickname": "🌺 DeadRoses (Kimba.8260)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🐥"
+    },
+    {
+      "timestamp": "2026-11-04T00:12:38.296592+00:00",
+      "discord_id": "1073391600266395678",
+      "nickname": "🌺 DeadRoses (Kimba.8260)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🐥"
+    },
+    {
+      "timestamp": "2026-11-04T00:12:51.859099+00:00",
+      "discord_id": "1073391600266395678",
+      "nickname": "🌺 DeadRoses (Kimba.8260)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🐥"
+    },
+    {
+      "timestamp": "2026-11-04T00:12:52.237803+00:00",
+      "discord_id": "1073391600266395678",
+      "nickname": "🌺 DeadRoses (Kimba.8260)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🐥"
     }
   ]
 }
