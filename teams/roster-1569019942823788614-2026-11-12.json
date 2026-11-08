@@ -2,7 +2,7 @@
   "source_type": "event",
   "id": "1569019942823788614",
   "label": "testing signups interface",
-  "last_updated": "2026-11-08T16:07:01.333704+00:00",
+  "last_updated": "2026-11-08T16:23:10.073732+00:00",
   "expires_at": null,
   "text_representation": "No interested users found.",
   "roster": [],
@@ -86,6 +86,86 @@
       "action": "unreacted",
       "source": "post_reaction",
       "emoji": "<:AlacHeal:1038159938335277140>"
+    },
+    {
+      "timestamp": "2026-11-08T16:21:46.293460+00:00",
+      "discord_id": "335149766688112640",
+      "nickname": "Waffles.4082 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacDPS:1038159937391562843>"
+    },
+    {
+      "timestamp": "2026-11-08T16:21:46.650870+00:00",
+      "discord_id": "335149766688112640",
+      "nickname": "Waffles.4082 🔱",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacDPS:1038159937391562843>"
+    },
+    {
+      "timestamp": "2026-11-08T16:21:51.570989+00:00",
+      "discord_id": "335149766688112640",
+      "nickname": "Waffles.4082 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:Commander_heart_marker3:1408559284891156571>"
+    },
+    {
+      "timestamp": "2026-11-08T16:21:51.933673+00:00",
+      "discord_id": "335149766688112640",
+      "nickname": "Waffles.4082 🔱",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:Commander_heart_marker3:1408559284891156571>"
+    },
+    {
+      "timestamp": "2026-11-08T16:21:52.216657+00:00",
+      "discord_id": "335149766688112640",
+      "nickname": "Waffles.4082 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🖐️"
+    },
+    {
+      "timestamp": "2026-11-08T16:21:52.523455+00:00",
+      "discord_id": "335149766688112640",
+      "nickname": "Waffles.4082 🔱",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🖐️"
+    },
+    {
+      "timestamp": "2026-11-08T16:21:52.863013+00:00",
+      "discord_id": "335149766688112640",
+      "nickname": "Waffles.4082 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🕵️"
+    },
+    {
+      "timestamp": "2026-11-08T16:21:53.139042+00:00",
+      "discord_id": "335149766688112640",
+      "nickname": "Waffles.4082 🔱",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🕵️"
+    },
+    {
+      "timestamp": "2026-11-08T16:21:53.292536+00:00",
+      "discord_id": "335149766688112640",
+      "nickname": "Waffles.4082 🔱",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🔥"
+    },
+    {
+      "timestamp": "2026-11-08T16:21:53.588769+00:00",
+      "discord_id": "335149766688112640",
+      "nickname": "Waffles.4082 🔱",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "🔥"
     }
   ]
 }
