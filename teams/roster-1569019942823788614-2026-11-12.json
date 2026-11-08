@@ -1,0 +1,91 @@
+{
+  "source_type": "event",
+  "id": "1569019942823788614",
+  "label": "testing signups interface",
+  "last_updated": "2026-11-08T16:07:01.333704+00:00",
+  "expires_at": null,
+  "text_representation": "No interested users found.",
+  "roster": [],
+  "history": [
+    {
+      "timestamp": "2026-11-08T16:05:37.711266+00:00",
+      "discord_id": "168395207820181505",
+      "nickname": "Taco(TacoTwilight.1902)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacHeal:1038159938335277140>"
+    },
+    {
+      "timestamp": "2026-11-08T16:05:38.075690+00:00",
+      "discord_id": "168395207820181505",
+      "nickname": "Taco(TacoTwilight.1902)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickHeal:1038159941472620655>"
+    },
+    {
+      "timestamp": "2026-11-08T16:05:38.144090+00:00",
+      "discord_id": "168395207820181505",
+      "nickname": "Taco(TacoTwilight.1902)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacHeal:1038159938335277140>"
+    },
+    {
+      "timestamp": "2026-11-08T16:05:38.621208+00:00",
+      "discord_id": "168395207820181505",
+      "nickname": "Taco(TacoTwilight.1902)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickHeal:1038159941472620655>"
+    },
+    {
+      "timestamp": "2026-11-08T16:05:39.176716+00:00",
+      "discord_id": "168395207820181505",
+      "nickname": "Taco(TacoTwilight.1902)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "❤️"
+    },
+    {
+      "timestamp": "2026-11-08T16:05:39.438108+00:00",
+      "discord_id": "168395207820181505",
+      "nickname": "Taco(TacoTwilight.1902)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "❤️"
+    },
+    {
+      "timestamp": "2026-11-08T16:05:41.745524+00:00",
+      "discord_id": "168395207820181505",
+      "nickname": "Taco(TacoTwilight.1902)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickHeal:1038159941472620655>"
+    },
+    {
+      "timestamp": "2026-11-08T16:05:42.099184+00:00",
+      "discord_id": "168395207820181505",
+      "nickname": "Taco(TacoTwilight.1902)",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacHeal:1038159938335277140>"
+    },
+    {
+      "timestamp": "2026-11-08T16:05:42.158450+00:00",
+      "discord_id": "168395207820181505",
+      "nickname": "Taco(TacoTwilight.1902)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:QuickHeal:1038159941472620655>"
+    },
+    {
+      "timestamp": "2026-11-08T16:05:42.746834+00:00",
+      "discord_id": "168395207820181505",
+      "nickname": "Taco(TacoTwilight.1902)",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:AlacHeal:1038159938335277140>"
+    }
+  ]
+}
