@@ -1,0 +1,27 @@
+{
+  "source_type": "event",
+  "id": "1569561749751996436",
+  "label": "Wing 4 training run",
+  "last_updated": "2026-11-11T14:40:40.837425+00:00",
+  "expires_at": null,
+  "text_representation": "No interested users found.",
+  "roster": [],
+  "history": [
+    {
+      "timestamp": "2026-11-11T14:39:08.867142+00:00",
+      "discord_id": "518463781177655297",
+      "nickname": "papertowel20 🚹",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "<:Invasion_event_mob_crossed_sword:1422268791110373456>"
+    },
+    {
+      "timestamp": "2026-11-11T14:39:34.923793+00:00",
+      "discord_id": "518463781177655297",
+      "nickname": "papertowel20 🚹",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "<:Invasion_event_mob_crossed_sword:1422268791110373456>"
+    }
+  ]
+}
