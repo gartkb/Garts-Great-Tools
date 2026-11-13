@@ -35,7 +35,7 @@
   .wiki:hover { background: #2f3644; }
   #mapwrap { flex: 1; position: relative; min-height: 0; }
   #map { position: absolute; inset: 0; background: #0b0c0f; }
-  #here { position: absolute; right: 10px; top: 10px; z-index: 1000; width: 320px; max-height: 70%; overflow: auto;
+  #here { position: absolute; right: 10px; top: 10px; z-index: 1000; width: 300px; max-width: calc(100% - 60px); max-height: 70%; overflow: auto;
     background: rgba(20,22,27,.93); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; pointer-events: none; }
   #here.pinned { pointer-events: auto; border-color: #6b7280; }
   #toast { position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 1001; pointer-events: none;
@@ -54,9 +54,13 @@
   .evt { color: var(--event); }
   .hint { color: var(--muted); font-size: 11px; margin-top: 6px; }
   .zhead { font-size: 14px; padding-bottom: 5px; margin-bottom: 6px; border-bottom: 1px solid var(--border); }
-  .leaflet-tooltip.tip { background: #1e2128; color: var(--text); border-color: var(--border); }
+  .leaflet-tooltip.tip { background: #1e2128; color: var(--text); border-color: var(--border);
+    white-space: normal; width: max-content; max-width: min(280px, 70vw); overflow-wrap: anywhere; }
   .leaflet-container { font: inherit; }
   .wp-icon { background: none; border: 0; }
+  .md-icon { background: none; border: 0; }
+  .md-icon img { width: 18px; height: 18px; display: block;
+    filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff) drop-shadow(0 0 2px rgba(255,255,255,.8)); }
   #worldBtn { background: #2a2f3a; color: var(--text); border: 1px solid var(--border); border-radius: 4px;
     padding: 5px 6px; font: inherit; cursor: pointer; text-align: left; }
   #worldBtn:hover { background: #343a47; }
@@ -97,6 +101,7 @@
         <label class="row" title="Zone portals (positions from Lady Elyssa's marker pack) and asura gates (wiki). Faded = destination not confirmed."><input type="checkbox" id="tGate" checked><img class="hp-img" src="icons/zone_portal.png" alt="">Gates</label>
         <label class="row" title="Dungeon, fractal, raid and strike entrances (in-game icons from the GW2 API)"><input type="checkbox" id="tDung" checked><img class="hp-img" id="dungSwatch" alt="">Dungeons &amp; raids</label>
         <label class="row" title="Jumping puzzles, marked at the finish or chest (positions from Tekkit's marker pack); hover shows the way to the start"><input type="checkbox" id="tJP" checked><img class="hp-img" src="icons/jumping_puzzle.png" alt="">Jumping puzzles</label>
+        <label class="row" title="Mini-dungeons (wiki list; positions mostly from Lady Elyssa's routes). Click one to show its route."><input type="checkbox" id="tMD" checked><img class="hp-img" src="icons/mini_dungeon.png" alt="">Mini-dungeons</label>
       </div>
     </header>
     <div id="stats"></div>
@@ -160,11 +165,29 @@
   const entranceKind = p => { const m = /\/(\d+)\.png$/.exec(p.icon || ''); return m ? ENTRANCE_ICONS[m[1]] : null; };
   $('heroSwatch').src = ICON_URL.heropoint;
   $('dungSwatch').src = ICON_URL.dungeon;
+  // Mini-dungeon: slightly smaller, with a light glow so the brown map stands out on brown terrain.
+  const mdIcon = L.divIcon({ className: 'md-icon', iconSize: [18, 18], iconAnchor: [9, 9],
+    html: '<img src="icons/mini_dungeon.png" alt="">' });
   const jpIcon = L.icon({ iconUrl: 'icons/jumping_puzzle.png', iconSize: [18, 18], iconAnchor: [9, 9] });   // small: the puzzle event itself is only 2-7 m
   const jpHint = L.layerGroup().addTo(map);
   // Lady Elyssa's shortcut for one puzzle at a time: route lines, numbered method steps, shortcut start sign.
   const jpShort = L.layerGroup().addTo(map);
   let shortcutOf = null;
+  // Route + helper steps of one mini-dungeon (Lady Elyssa), shown on click like the puzzle shortcuts.
+  function toggleGuide(r) {
+    jpShort.clearLayers();
+    if (shortcutOf === r) { shortcutOf = null; return; }
+    shortcutOf = r;
+    for (const seg of r.guide.routes)
+      L.polyline(seg.map(ll), { color: '#ffd84d', weight: 3, opacity: .9, interactive: false }).addTo(jpShort);
+    for (const st of r.guide.steps)
+      L.circleMarker(ll(st.coord), { radius: 5, color: '#000', weight: 1, fillColor: st.note ? '#ff8a65' : '#ffd84d', fillOpacity: 1 })
+        .bindTooltip(esc(st.note ? '⚠ ' + st.note : st.label), { permanent: !st.note, direction: 'right', offset: [6, 0], className: 'tip' })
+        .addTo(jpShort);
+    if (r.start) L.circleMarker(ll(r.start), { radius: 7, color: '#000', weight: 2, fillColor: '#7dffb0', fillOpacity: 1 })
+      .bindTooltip('route start', { permanent: true, direction: 'left', offset: [-8, 0], className: 'tip' }).addTo(jpShort);
+    toast(`Route for <b>${esc(r.name)}</b> shown · click it again or press Esc to hide`);
+  }
   function toggleShortcut(p) {
     jpShort.clearLayers();
     if (shortcutOf === p) { shortcutOf = null; return; }
@@ -206,7 +229,7 @@
   }
   $('region').onchange = () => { fillZones(); selectZone(+$('zone').value, true); };
   $('zone').onchange = () => selectZone(+$('zone').value, true);
-  ['tNormal', 'tGroup', 'tHero', 'tRift', 'tBounty', 'tWp', 'tGate', 'tDung', 'tJP', 'tHeart'].forEach(id => $(id).onchange = render);
+  ['tNormal', 'tGroup', 'tHero', 'tRift', 'tBounty', 'tWp', 'tGate', 'tDung', 'tJP', 'tMD', 'tHeart'].forEach(id => $(id).onchange = render);
   $('q').oninput = render;
 
   let zone = null, shown = [], pinned = null;   // pinned = { x, y, hits }
@@ -267,8 +290,9 @@
   }
   function showWorld() {
     zone = null; unpin(); jpShort.clearLayers(); shortcutOf = null;
-    for (const k of ['zone', 'events', 'gates', 'wps', 'hearts', 'hl', 'pin']) layers[k].clearLayers();
+    for (const k of ['zone', 'events', 'wps', 'hearts', 'hl', 'pin']) layers[k].clearLayers();
     drawOutlines();
+    renderGlobal();   // gates, entrances, puzzles, mini-dungeons stay visible in the world map
     map.fitBounds(MAPS.reduce((b, m) => b.extend(rectOf(m)), rectOf(MAPS[0])).pad(0.03), { animate: false });
     history.replaceState(null, '', '#world');
     $('stats').textContent = `World map · ${MAPS.length} zones · click a zone to open it`;
@@ -339,6 +363,7 @@
 
   // ---- drawing ----
   function render() {
+    renderGlobal();
     if (!zone) return;
     const q = $('q').value.trim().toLowerCase();
     const showN = $('tNormal').checked, showG = $('tGroup').checked, showH = $('tHero').checked;
@@ -384,24 +409,36 @@
         .on('click', () => copyText(p.chat_link, p.name))
         .addTo(layers.wps);
     }
+    renderZoneExtras();
+  }
 
+  // Icons drawn for EVERY zone, in the world map and in a zone view alike: gates, dungeon/raid entrances,
+  // jumping puzzles, mini-dungeons. Clicking one that belongs to another zone (or in the world map) opens its zone first.
+  const zoneTip = m => m === zone ? '' : `<br><span class="muted">in ${esc(m.name)} · click opens this zone</span>`;
+  const openZone = m => { if (m === zone) return false; selectZone(m.id, !zone); return true; };
+  function renderGlobal() {
     layers.gates.clearLayers();
     const showGates = $('tGate').checked, showDung = $('tDung').checked;
-    for (const g of MAPS.flatMap(m => m.gates || [])) {   // gates of every zone
+    for (const m of MAPS) for (const g of m.gates || []) {
       const isEntrance = ['raid', 'dungeon', 'fractal'].includes(g.kind);
       if (isEntrance ? !showDung : !showGates) continue;
       const what = GATE_LABEL[g.kind] || 'Portal';
       const dest = g.to ? `→ ${esc(g.to)}`
         : g.claims ? `<span class="muted">→ sources disagree: ${g.claims.map(esc).join(' vs ')}</span>`
         : '<span class="muted">→ destination not confirmed</span>';
-      const go = g.to_id ? '<br><span class="muted">click to go there</span>'
+      // Outside the current zone the first click only opens the gate's own zone; inside it, it travels / copies.
+      const go = m !== zone ? zoneTip(m)
+        : g.to_id ? '<br><span class="muted">click to go there</span>'
         : g.chat_link ? `<br><span class="muted">${esc(g.chat_link)} · click to copy</span>` : '';
       const src = `<br><span class="muted">position: ${esc(g.src)}${g.to ? ' · destination: ' + esc(g.how) : ''}</span>`;
-      const mk = L.marker(ll(g.coord), { icon: gateIcon[g.kind], keyboard: false, opacity: g.to ? 1 : 0.55 })
+      L.marker(ll(g.coord), { icon: gateIcon[g.kind], keyboard: false, opacity: g.to ? 1 : 0.55 })
         .bindTooltip(`<b>${what}</b> ${dest}${go}${src}`, { className: 'tip', direction: 'top', offset: [0, -10] })
+        .on('click', () => {
+          if (openZone(m)) return;
+          if (g.to_id) selectZone(g.to_id, true);
+          else if (g.chat_link) copyText(g.chat_link, g.to);
+        })
         .addTo(layers.gates);
-      if (g.to_id) mk.on('click', () => selectZone(g.to_id, true));
-      else if (g.chat_link) mk.on('click', () => copyText(g.chat_link, g.to));
     }
     // Jumping puzzles of every zone: icon at the finish/chest; hovering draws a dashed line to the start.
     jpHint.clearLayers();
@@ -416,7 +453,7 @@
         `<br><span class="muted">${sc.routes.length ? 'click to show the route' : 'click to show the steps (no route in her pack)'}</span>`;
       const mk = L.marker(ll(p.coord), { icon: jpIcon, keyboard: false })
         .bindTooltip(`<b>Jumping puzzle</b>: ${esc(p.name)}<br><span class="muted">${where}</span>` +
-          (p.disagree ? `<br><span class="muted">⚠ ${esc(p.disagree)}</span>` : '') + scHtml,
+          (p.disagree ? `<br><span class="muted">⚠ ${esc(p.disagree)}</span>` : '') + scHtml + zoneTip(m),
           Object.assign({ className: 'tip' }, awayFrom(p.coord, p.start)))
         .on('mouseover', () => { if (!p.start) return;
           L.polyline([ll(p.start), ll(p.coord)], { color: '#7dffb0', weight: 2, dashArray: '6 5', interactive: false }).addTo(jpHint);
@@ -424,20 +461,34 @@
             .bindTooltip('start', Object.assign({ permanent: true, className: 'tip' }, awayFrom(p.start, p.coord))).addTo(jpHint); })
         .on('mouseout', () => jpHint.clearLayers())
         .addTo(layers.gates);
-      if (sc) mk.on('click', () => toggleShortcut(p));
+      mk.on('click', () => { const opened = openZone(m); if (sc && !(opened && shortcutOf === p)) toggleShortcut(p); });
+    }
+    // Mini-dungeons of every zone.
+    if ($('tMD').checked) for (const m of MAPS) for (const r of m.minidungeons || []) {
+      const yn = v => v === 'yes' ? 'yes' : v === 'no' ? 'no' : '?';
+      const tip = `<b>Mini-dungeon</b>: ${esc(r.name)}<br><span class="muted">nearest waypoint: ${esc(r.waypoint || '—')}<br>` +
+        `glider ${yn(r.glider)} · mount ${yn(r.mount)}` + (r.achievement ? `<br>achievement: ${esc(r.achievement.replace(/<[^>]*>/g, ''))}` : '') +
+        `<br>marker: ${esc(r.at)}</span>` + (r.guide ? '<br><span class="muted">click to show the route (Lady Elyssa)</span>' : '') + zoneTip(m);
+      const mk = L.marker(ll(r.coord), { icon: mdIcon, keyboard: false, opacity: /approx/.test(r.at) ? .6 : 1 })
+        .bindTooltip(tip, Object.assign({ className: 'tip' }, awayFrom(r.coord, r.start)))
+        .addTo(layers.gates);
+      mk.on('click', () => { const opened = openZone(m); if (r.guide && !(opened && shortcutOf === r)) toggleGuide(r); });
     }
     // Dungeon / fractal / raid / strike entrances from the API (those not already shown as a gate).
-    if (showDung) for (const p of MAPS.flatMap(m => m.pois || [])) {
+    if (showDung) for (const m of MAPS) for (const p of m.pois || []) {
       if (p.type !== 'unlock' || p.merged || !entranceKind(p)) continue;
       const name = (p.name || '').replace(/^Raid\W+/, '') || entranceKind(p);
       L.marker(ll(p.coord), { icon: L.icon({ iconUrl: p.icon, iconSize: [26, 26], iconAnchor: [13, 13] }), keyboard: false })
-        .bindTooltip(`<b>${esc(entranceKind(p))}</b>: ${esc(name)}<br><span class="muted">${esc(p.chat_link)} · click to copy</span>`,
+        .bindTooltip(`<b>${esc(entranceKind(p))}</b>: ${esc(name)}<br><span class="muted">${esc(p.chat_link)} · click to copy</span>` + zoneTip(m),
           { className: 'tip', direction: 'top', offset: [0, -10] })
-        .on('click', () => copyText(p.chat_link, name))
+        .on('click', () => { openZone(m); copyText(p.chat_link, name); })
         .addTo(layers.gates);
     }
-    const gateNote = (zone.gates || []).length ? '' : ' · no gate data';
+  }
 
+  // Current-zone only: hearts, stats line, side list, pinned box.
+  function renderZoneExtras() {
+    const gateNote = (zone.gates || []).length ? '' : ' · no gate data';
     layers.hearts.clearLayers();
     if ($('tHeart').checked) map.addLayer(layers.hearts); else map.removeLayer(layers.hearts);
     for (const h of zone.hearts) {
