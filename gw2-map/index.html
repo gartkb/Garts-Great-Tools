@@ -1,1 +1,590 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GW2 Event Areas</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+  :root {
+    --bg: #15171c; --panel: #1e2128; --border: #333844; --text: #e6e6e6; --muted: #9aa0ad;
+    --event: #ffa31a; --group: #e5281b; --heart: #5fd068; --wp: #2f8cff; --hl: #ffffff; --link: #8cc8ff; --hero: #ffe14d; --rift: #c084ff; --bounty: #d9a066;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text);
+    font: 13px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  a { color: var(--link); }
+  #app { display: flex; height: 100%; }
+  #side { width: 320px; min-width: 320px; display: flex; flex-direction: column; background: var(--panel);
+    border-right: 1px solid var(--border); }
+  #side header { padding: 12px 12px 8px; border-bottom: 1px solid var(--border); }
+  #side h1 { font-size: 15px; margin: 0 0 8px; }
+  label.row { display: flex; align-items: center; gap: 6px; margin: 4px 0; }
+  select, input[type=search] { width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border);
+    border-radius: 4px; padding: 5px 6px; font: inherit; }
+  .pickers { display: grid; gap: 6px; margin-bottom: 8px; }
+  .toggles { display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; }
+  .swatch { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+  #stats { color: var(--muted); padding: 6px 12px; border-bottom: 1px solid var(--border); }
+  #list { flex: 1; overflow: auto; margin: 0; padding: 0; list-style: none; }
+  #list li { padding: 5px 12px; cursor: pointer; border-bottom: 1px solid #262a33; display: flex; gap: 8px; align-items: baseline; }
+  #list li:hover { background: #2a2f3a; }
+  #list .lv { color: var(--muted); margin-left: auto; white-space: nowrap; }
+  .wiki { font-size: 11px; text-decoration: none; border: 1px solid var(--border); border-radius: 3px; padding: 0 4px;
+    white-space: nowrap; }
+  .wiki:hover { background: #2f3644; }
+  #mapwrap { flex: 1; position: relative; min-height: 0; }
+  #map { position: absolute; inset: 0; background: #0b0c0f; }
+  #here { position: absolute; right: 10px; top: 10px; z-index: 1000; width: 320px; max-height: 70%; overflow: auto;
+    background: rgba(20,22,27,.93); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; pointer-events: none; }
+  #here.pinned { pointer-events: auto; border-color: #6b7280; }
+  #toast { position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 1001; pointer-events: none;
+    background: rgba(20,22,27,.95); border: 1px solid #6b7280; border-radius: 6px; padding: 6px 12px;
+    opacity: 0; transition: opacity .2s; white-space: nowrap; max-width: 90%; overflow: hidden; text-overflow: ellipsis; }
+  #toast.on { opacity: 1; }
+  #here h2 { font-size: 13px; margin: 0 0 4px; display: flex; gap: 8px; align-items: baseline; }
+  #here h2 button { margin-left: auto; background: none; border: 1px solid var(--border); color: var(--text);
+    border-radius: 3px; cursor: pointer; font: inherit; padding: 0 6px; }
+  #here ol { margin: 6px 0 0; padding-left: 20px; }
+  #here li { padding: 3px 4px; border-radius: 4px; }
+  #here.pinned li:hover { background: #2a2f3a; }
+  #here .links { display: flex; gap: 4px; margin-top: 2px; }
+  .muted { color: var(--muted); }
+  .grp { color: var(--group); }
+  .evt { color: var(--event); }
+  .hint { color: var(--muted); font-size: 11px; margin-top: 6px; }
+  .zhead { font-size: 14px; padding-bottom: 5px; margin-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .leaflet-tooltip.tip { background: #1e2128; color: var(--text); border-color: var(--border); }
+  .leaflet-container { font: inherit; }
+  .wp-icon { background: none; border: 0; }
+  #worldBtn { background: #2a2f3a; color: var(--text); border: 1px solid var(--border); border-radius: 4px;
+    padding: 5px 6px; font: inherit; cursor: pointer; text-align: left; }
+  #worldBtn:hover { background: #343a47; }
+  .zlabel { width: 0; height: 0; }
+  .zlabel span { position: absolute; transform: translate(-50%, -50%); white-space: nowrap; font-size: 11px; font-weight: 600;
+    color: #fff; text-shadow: 0 0 3px #000, 0 0 3px #000, 0 0 2px #000; pointer-events: none; }
+  .hp-img { width: 16px; height: 16px; flex: none; vertical-align: -3px; }
+  .hero { color: var(--hero); }
+  .rift { color: var(--rift); }
+  .bounty { color: var(--bounty); }
+  .detail { color: #e9d9a6; font-style: italic; }
+  @media (max-width: 700px) {
+    #app { flex-direction: column; }
+    #side { width: 100%; min-width: 0; height: 45%; border-right: 0; border-bottom: 1px solid var(--border); }
+    #here { width: 240px; max-height: 50%; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="side">
+    <header>
+      <h1>GW2 event areas (prototype)</h1>
+      <div class="pickers">
+        <button id="worldBtn" title="Show all zones; click one to open it">🗺 World map</button>
+        <select id="region"></select>
+        <select id="zone"></select>
+        <input type="search" id="q" placeholder="Filter events by name…">
+      </div>
+      <div class="toggles">
+        <label class="row"><input type="checkbox" id="tNormal" checked><span class="swatch" style="background:var(--event)"></span>Events</label>
+        <label class="row"><input type="checkbox" id="tGroup" checked><span class="swatch" style="background:var(--group)"></span>Group events</label>
+        <label class="row"><input type="checkbox" id="tHero" checked><img class="hp-img" id="heroSwatch" alt="">Hero challenges</label>
+        <label class="row" title="Stabilize the Rift spots: only start when someone uses a Class I/II Rift Stabilizer near an active spot; which spots are active is not shown in game"><input type="checkbox" id="tRift"><span class="swatch" style="background:var(--rift)"></span>Rift spots</label>
+        <label class="row" title="Bounty-board events (Path of Fire / Living World 4): they only run when a player starts them at a bounty board"><input type="checkbox" id="tBounty"><img class="hp-img" src="icons/bounty_board.png" alt="">Bounties</label>
+        <label class="row"><input type="checkbox" id="tHeart"><img class="hp-img" id="heartSwatch" alt="">Hearts</label>
+        <label class="row"><input type="checkbox" id="tWp" checked><img class="hp-img" id="wpSwatch" alt="">Waypoints</label>
+        <label class="row" title="Zone portals (positions from Lady Elyssa's marker pack) and asura gates (wiki). Faded = destination not confirmed."><input type="checkbox" id="tGate" checked><img class="hp-img" src="icons/zone_portal.png" alt="">Gates</label>
+        <label class="row" title="Dungeon, fractal, raid and strike entrances (in-game icons from the GW2 API)"><input type="checkbox" id="tDung" checked><img class="hp-img" id="dungSwatch" alt="">Dungeons &amp; raids</label>
+        <label class="row" title="Jumping puzzles, marked at the finish or chest (positions from Tekkit's marker pack); hover shows the way to the start"><input type="checkbox" id="tJP" checked><img class="hp-img" src="icons/jumping_puzzle.png" alt="">Jumping puzzles</label>
+      </div>
+    </header>
+    <div id="stats"></div>
+    <ul id="list"></ul>
+  </aside>
+  <div id="mapwrap">
+    <div id="map"></div>
+    <div id="here"></div>
+    <div id="toast"></div>
+  </div>
+</div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<!-- data.js changes whenever build_data.py runs; a cache-busting query makes the browser always fetch the current one. -->
+<script>document.write('<script src="data.js?v=' + Date.now() + '"><\/script>');</script>
+<script>
+(function () {
+  const MAPS = window.GW2_MAPS;
+  const NATIVE = 7;                       // tile zoom where 1 px = 1 continent unit
+  const DIMS = [81920, 114688];
+  const WIKI = 'https://wiki.guildwars2.com/index.php?title=Special:Search';
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const C = { event: css('--event'), group: css('--group'), heart: css('--heart'), hl: css('--hl'), hero: css('--hero'), rift: css('--rift'), bounty: css('--bounty') };
+  const $ = id => document.getElementById(id);
+
+  const map = L.map('map', { crs: L.CRS.Simple, minZoom: 1, maxZoom: 9, zoomSnap: 0.5, preferCanvas: true });
+  const ll = p => map.unproject(p, NATIVE);
+  const toCont = latlng => map.project(latlng, NATIVE);
+  const world = L.latLngBounds(ll([0, 0]), ll(DIMS));
+  map.setMaxBounds(world.pad(0.05));
+  L.tileLayer('https://tiles.guildwars2.com/1/1/{z}/{x}/{y}.jpg', {
+    minZoom: 1, maxZoom: 9, maxNativeZoom: NATIVE, noWrap: true, bounds: world,
+    attribution: 'Map tiles &amp; data © ArenaNet (GW2 API)'
+  }).addTo(map);
+
+  const layers = { zone: L.layerGroup().addTo(map), events: L.layerGroup().addTo(map), gates: L.layerGroup().addTo(map),
+    hearts: L.layerGroup(), wps: L.layerGroup().addTo(map), hl: L.layerGroup().addTo(map), pin: L.layerGroup().addTo(map) };
+
+  // Map icons: ArenaNet's own, served by the official API (/v2/files: map_waypoint, map_heropoint, map_heart_full).
+  const ICON_URL = {
+    waypoint: 'https://render.guildwars2.com/file/32633AF8ADEA696A1EF56D3AE32D617B10D3AC57/157353.png',
+    heropoint: 'https://render.guildwars2.com/file/B4EC6BB3FDBC42557C3CAE0CAA9E57EBF9E462E3/156626.png',
+    heart: 'https://render.guildwars2.com/file/B3DEEC72BBEF0C6FC6FEF835A0E275FCB1151BB7/102439.png',
+    dungeon: 'https://render.guildwars2.com/file/943538394A94A491C8632FBEF6203C2013443555/102478.png',
+    raid: 'https://render.guildwars2.com/file/5866630DA52DCB5C423FB81ECF69FD071611E36B/1128644.png',
+    fractal: 'https://render.guildwars2.com/file/80F608A1E8112313595813033BDEAD3C05A43D01/514379.png'
+  };
+  const wpIcon = L.icon({ iconUrl: ICON_URL.waypoint, iconSize: [24, 24], iconAnchor: [12, 12] });
+  const heroIcon = L.icon({ iconUrl: ICON_URL.heropoint, iconSize: [22, 22], iconAnchor: [11, 11] });
+  const heartIcon = L.icon({ iconUrl: ICON_URL.heart, iconSize: [22, 22], iconAnchor: [11, 11] });
+  // Gate icons: downloaded once from the wiki into icons/ (not hotlinked).
+  const gateIcon = { zone: L.icon({ iconUrl: 'icons/zone_portal.png', iconSize: [24, 24], iconAnchor: [12, 12] }),
+                     asura: L.icon({ iconUrl: 'icons/asura_gate.png', iconSize: [22, 22], iconAnchor: [11, 11] }),
+                     dungeon: L.icon({ iconUrl: ICON_URL.dungeon, iconSize: [26, 26], iconAnchor: [13, 13] }),
+                     raid: L.icon({ iconUrl: ICON_URL.raid, iconSize: [26, 26], iconAnchor: [13, 13] }),
+                     fractal: L.icon({ iconUrl: ICON_URL.fractal, iconSize: [26, 26], iconAnchor: [13, 13] }) };
+  const GATE_LABEL = { zone: 'Zone portal', asura: 'Asura gate', dungeon: 'Dungeon entrance', raid: 'Raid portal',
+                       fractal: 'Fractal portal' };
+  // In-game icons of the API's entrance points ("unlock" POIs) we show; mount unlocks etc. are left out.
+  const ENTRANCE_ICONS = { '102478': 'Dungeon', '514379': 'Fractals', '1128644': 'Raid', '2200049': 'Strike mission' };
+  const entranceKind = p => { const m = /\/(\d+)\.png$/.exec(p.icon || ''); return m ? ENTRANCE_ICONS[m[1]] : null; };
+  $('heroSwatch').src = ICON_URL.heropoint;
+  $('dungSwatch').src = ICON_URL.dungeon;
+  const jpIcon = L.icon({ iconUrl: 'icons/jumping_puzzle.png', iconSize: [18, 18], iconAnchor: [9, 9] });   // small: the puzzle event itself is only 2-7 m
+  const jpHint = L.layerGroup().addTo(map);
+  // Lady Elyssa's shortcut for one puzzle at a time: route lines, numbered method steps, shortcut start sign.
+  const jpShort = L.layerGroup().addTo(map);
+  let shortcutOf = null;
+  function toggleShortcut(p) {
+    jpShort.clearLayers();
+    if (shortcutOf === p) { shortcutOf = null; return; }
+    shortcutOf = p;
+    const sc = p.shortcut;
+    for (const r of sc.routes)
+      L.polyline(r.map(ll), { color: '#ffd84d', weight: 3, opacity: .9, interactive: false }).addTo(jpShort);
+    let n = 0;
+    for (const st of sc.steps) {
+      const method = st.note ? 'Note' : st.label;
+      const label = st.note ? '⚠ ' + st.note : `${++n}. ${st.label}`;
+      L.circleMarker(ll(st.coord), { radius: 5, color: '#000', weight: 1, fillColor: st.note ? '#ff8a65' : '#ffd84d', fillOpacity: 1 })
+        .bindTooltip(esc(label), { permanent: !st.note, direction: 'right', offset: [6, 0], className: 'tip' })
+        .addTo(jpShort);
+    }
+    if (sc.sign) L.circleMarker(ll(sc.sign), { radius: 7, color: '#000', weight: 2, fillColor: '#7dffb0', fillOpacity: 1 })
+      .bindTooltip('shortcut start', { permanent: true, direction: 'left', offset: [-8, 0], className: 'tip' }).addTo(jpShort);
+    toast(`Shortcut for <b>${esc(p.name)}</b> shown · click the puzzle again or press Esc to hide`);
+  }
+  // Tooltip placement on the side opposite the puzzle's start, so it never covers the start line/dot.
+  // (Continent y grows downwards: start above = smaller y.)
+  function awayFrom(at, start) {
+    if (!start) return { direction: 'top', offset: [0, -12] };
+    const dx = start[0] - at[0], dy = start[1] - at[1];
+    if (Math.abs(dy) >= Math.abs(dx)) return dy < 0 ? { direction: 'bottom', offset: [0, 14] } : { direction: 'top', offset: [0, -14] };
+    return dx > 0 ? { direction: 'left', offset: [-14, 0] } : { direction: 'right', offset: [14, 0] };
+  }
+  const bountyIcon = L.icon({ iconUrl: 'icons/bounty_board.png', iconSize: [20, 20], iconAnchor: [10, 10] });
+  $('heartSwatch').src = ICON_URL.heart;
+  $('wpSwatch').src = ICON_URL.waypoint;
+
+  // ---- pickers ----
+  const regions = [...new Set(MAPS.map(m => m.region))];
+  $('region').innerHTML = regions.map(r => `<option>${esc(r)}</option>`).join('');
+  function fillZones() {
+    const r = $('region').value;
+    $('zone').innerHTML = MAPS.filter(m => m.region === r)
+      .map(m => `<option value="${m.id}">${esc(m.name)} (${m.levels[0]}–${m.levels[1]}) · ${m.events.filter(e => !e.tag).length} events</option>`).join('');
+  }
+  $('region').onchange = () => { fillZones(); selectZone(+$('zone').value, true); };
+  $('zone').onchange = () => selectZone(+$('zone').value, true);
+  ['tNormal', 'tGroup', 'tHero', 'tRift', 'tBounty', 'tWp', 'tGate', 'tDung', 'tJP', 'tHeart'].forEach(id => $(id).onchange = render);
+  $('q').oninput = render;
+
+  let zone = null, shown = [], pinned = null;   // pinned = { x, y, hits }
+
+  // ---- zone outlines: every zone named and clickable, in the world map AND around the current zone ----
+  // Outlines are drawn non-interactive; the map's own click/mousemove decide which zone is under the cursor
+  // (zone outlines overlap, e.g. Dry Top inside the Silverwastes' rectangle). Inside the current zone, the
+  // current zone always wins; elsewhere the smallest outline containing the point wins.
+  const outlineLayer = L.layerGroup().addTo(map);
+  const REGION_COLOURS = ['#7fd1ff', '#ffb35c', '#9be37a', '#ff7ab6', '#c49bff', '#ffe066', '#66e0c2', '#ff8a65',
+                          '#a0b4ff', '#e0e0e0', '#d4f07a'];
+  const regionColour = m => REGION_COLOURS[regions.indexOf(m.region) % REGION_COLOURS.length];
+  const rectArea = m => { const [[a, b], [c, d]] = m.continent_rect; return (c - a) * (d - b); };
+  const inRect = (m, x, y) => { const [[a, b], [c, d]] = m.continent_rect; return x >= a && x <= c && y >= b && y <= d; };
+  // Real zone shapes = the API's sectors (named sub-areas). Point-in-sector decides which zone the cursor is in;
+  // the rectangle is only a fallback for small gaps between sectors.
+  function pip(ring, x, y) {
+    let c = false;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++)
+      if ((ring[i][1] > y) !== (ring[j][1] > y) && x < (ring[j][0] - ring[i][0]) * (y - ring[i][1]) / (ring[j][1] - ring[i][1]) + ring[i][0]) c = !c;
+    return c;
+  }
+  const sectorAt = (m, x, y) => inRect(m, x, y) ? (m.sectors || []).find(s => pip(s.ring, x, y)) || null : null;
+  function zoneAt(x, y) {
+    if (zone && sectorAt(zone, x, y)) return zone;
+    const bySector = MAPS.filter(m => sectorAt(m, x, y)).sort((a, b) => rectArea(a) - rectArea(b))[0];
+    if (bySector) return bySector;
+    if (zone && inRect(zone, x, y)) return zone;
+    return MAPS.filter(m => inRect(m, x, y)).sort((a, b) => rectArea(a) - rectArea(b))[0] || null;
+  }
+  const rectOf = m => { const [[x0, y0], [x1, y1]] = m.continent_rect; return L.latLngBounds(ll([x0, y0]), ll([x1, y1])); };
+  // The zone's shape as one multi-polygon; fillRule nonzero + same winding (done in build) = union of sectors.
+  const shapeOf = (m, style) => (m.sectors && m.sectors.length)
+    ? L.polygon(m.sectors.map(s => s.ring.map(ll)), Object.assign({ stroke: false, fillRule: 'nonzero', interactive: false }, style))
+    : L.rectangle(rectOf(m), Object.assign({ stroke: false, interactive: false }, style));
+  function drawOutlines() {
+    outlineLayer.clearLayers();
+    for (const m of MAPS) {
+      if (m === zone) continue;
+      const col = regionColour(m);
+      shapeOf(m, { fillColor: col, fillOpacity: zone ? .16 : .22 }).addTo(outlineLayer);
+      L.marker(ll(m.label || rectOf(m).getCenter()), { interactive: false, keyboard: false,
+        icon: L.divIcon({ className: 'zlabel', html: `<span>${esc(m.name)}</span>`, iconSize: null }) }).addTo(outlineLayer);
+    }
+  }
+  function hoverZone(m) {   // highlight a zone other than the current one, and say what a click will do
+    if (pinned) return;
+    layers.hl.clearLayers();
+    if (!m) { if (zone) idleBox(); else worldBox(); return; }
+    shapeOf(m, { fillColor: '#ffffff', fillOpacity: .28 }).addTo(layers.hl);
+    $('here').className = '';
+    $('here').innerHTML = zoneHead() + `<h2>${esc(m.name)}</h2><span class="muted">${esc(m.region)} · lv ${m.levels[0]}–${m.levels[1]} · ` +
+      `${m.events.filter(e => !e.tag).length} events</span><div class="hint">Click to open this zone.</div>`;
+  }
+  function worldBox() {
+    $('here').className = '';
+    $('here').innerHTML = zoneHead() + '<span class="muted">World map: hover a zone for its region and level range; click it to open it.</span>';
+  }
+  function showWorld() {
+    zone = null; unpin(); jpShort.clearLayers(); shortcutOf = null;
+    for (const k of ['zone', 'events', 'gates', 'wps', 'hearts', 'hl', 'pin']) layers[k].clearLayers();
+    drawOutlines();
+    map.fitBounds(MAPS.reduce((b, m) => b.extend(rectOf(m)), rectOf(MAPS[0])).pad(0.03), { animate: false });
+    history.replaceState(null, '', '#world');
+    $('stats').textContent = `World map · ${MAPS.length} zones · click a zone to open it`;
+    $('list').innerHTML = '';
+    worldBox();
+  }
+  $('worldBtn').onclick = showWorld;
+
+  function selectZone(id, fly) {
+    zone = MAPS.find(m => m.id === id) || MAPS[0];
+    drawOutlines();
+    $('region').value = zone.region; fillZones(); $('zone').value = zone.id;
+    history.replaceState(null, '', '#' + zone.id);
+    const [[x0, y0], [x1, y1]] = zone.continent_rect;
+    layers.zone.clearLayers();   // the current zone is the untinted area; neighbours are tinted
+    if (fly) map.fitBounds([ll([x0, y0]), ll([x1, y1])], { animate: false });
+    unpin(); render();
+  }
+
+  // ---- helpers ----
+  const isGroup = e => e.flags.includes('group_event');
+  const metres = units => Math.round(units * zone.inch_per_unit * 0.0254);
+  const isHero = e => 'hero' in e;
+  const heroLabel = e => ({ wiki: 'hero challenge (wiki)', name: 'hero challenge (by name)' })[e.hero_how]
+    || 'hero challenge (centred on hero point, inferred)';
+  const HERO_KIND = { combat: 'Combat hero challenge', commune: 'Commune hero challenge', interact: 'Interact hero challenge' };
+  const isRift = e => e.tag === 'rift';
+  const isBounty = e => e.tag === 'bounty';
+  const isJP = e => e.tag === 'jp';
+  const isOptional = e => isRift(e) || isBounty(e) || isJP(e);   // hidden by default, kept out of event counts
+  const colour = e => isBounty(e) ? C.bounty : isRift(e) ? C.rift : isHero(e) ? C.hero : isGroup(e) ? C.group : C.event;
+  const kindClass = e => isBounty(e) ? 'bounty' : isRift(e) ? 'rift' : isHero(e) ? 'hero' : isGroup(e) ? 'grp' : 'evt';
+  const marker = e => isJP(e) ? '<img class="hp-img" src="icons/jumping_puzzle.png" alt="jumping puzzle">' : isBounty(e) ? '<img class="hp-img" src="icons/bounty_board.png" alt="bounty">' : isHero(e) ? `<img class="hp-img" src="${ICON_URL.heropoint}" alt="hero">`
+                                : `<span class="swatch" style="background:${colour(e)}"></span>`;
+  // Exact page when the build found one by event GUID (Special:Ask on "Has game guid"), else a name search.
+  const wikiName = e => e.wiki
+    ? 'https://wiki.guildwars2.com/wiki/' + encodeURIComponent(e.wiki.replace(/ /g, '_')).replace(/%2F/g, '/')
+    : `${WIKI}&search=${encodeURIComponent(e.name.replace(/[.!]+$/, ''))}`;
+  const wikiTip = e => e.wiki ? 'Open this event&#39;s wiki page' : 'No wiki page found by event id: search the wiki by name';
+  const detailHtml = e => e.detail ? ` <span class="detail">— ${esc(e.detail)}</span>` : '';
+  function area(e) {
+    if (!e.points) return Math.PI * e.radius * e.radius;
+    let a = 0; const p = e.points;
+    for (let i = 0, j = p.length - 1; i < p.length; j = i++) a += (p[j][0] + p[i][0]) * (p[j][1] - p[i][1]);
+    return Math.abs(a / 2);
+  }
+  function shapeFor(e, style) {
+    return e.points ? L.polygon(e.points.map(ll), style)
+                    : L.circle(ll(e.center), Object.assign({ radius: e.radius / Math.pow(2, NATIVE) }, style));
+  }
+  function inside(e, x, y) {
+    if (!e.points) return Math.hypot(x - e.center[0], y - e.center[1]) <= e.radius;
+    let c = false; const p = e.points;
+    for (let i = 0, j = p.length - 1; i < p.length; j = i++)
+      if ((p[i][1] > y) !== (p[j][1] > y) && x < (p[j][0] - p[i][0]) * (y - p[i][1]) / (p[j][1] - p[i][1]) + p[i][0]) c = !c;
+    return c;
+  }
+  const hitsAt = (x, y) => shown.filter(e => inside(e, x, y)).sort((a, b) => area(a) - area(b));
+  function nearestWp(x, y) {
+    let best = null, bd = Infinity;
+    for (const p of zone.pois) if (p.type === 'waypoint') {
+      const d = Math.hypot(p.coord[0] - x, p.coord[1] - y); if (d < bd) { bd = d; best = p; }
+    }
+    if (!best) return '—';
+    const copy = pinned ? ` <a class="wiki" href="#" data-copy="${esc(best.chat_link)}" data-what="${esc(best.name)}">copy code</a>` : '';
+    return `${esc(best.name)} — ${metres(bd)} m${copy}`;
+  }
+
+  // ---- drawing ----
+  function render() {
+    if (!zone) return;
+    const q = $('q').value.trim().toLowerCase();
+    const showN = $('tNormal').checked, showG = $('tGroup').checked, showH = $('tHero').checked;
+    const showR = $('tRift').checked;
+    const showB = $('tBounty').checked;
+    const showJP = $('tJP').checked;
+    shown = zone.events.filter(e => (isJP(e) ? showJP : isBounty(e) ? showB : isRift(e) ? showR : isHero(e) ? showH : isGroup(e) ? showG : showN) &&
+      (!q || e.name.toLowerCase().includes(q) || (e.detail || '').toLowerCase().includes(q)));
+
+    layers.events.clearLayers();
+    // Normal events, then group events, then hero challenges on top (yellow ring, very light fill).
+    const order = e => isRift(e) ? -1 : isHero(e) ? 2 : isGroup(e) ? 1 : 0;   // rift spots underneath
+    for (const e of [...shown].sort((a, b) => order(a) - order(b))) {
+      const col = colour(e);
+      if (isJP(e)) { e._layer = shapeFor(e, { stroke: false, fill: false, interactive: false }); continue; }   // the puzzle icon marks it
+      if (isBounty(e)) L.marker(ll(e.center), { icon: bountyIcon, keyboard: false, interactive: false }).addTo(layers.events);
+      e._layer = shapeFor(e, isOptional(e)
+        ? { color: col, weight: 1.2, opacity: .9, dashArray: '3 3', fillColor: col, fillOpacity: .05, interactive: false }
+        : isHero(e)
+        ? { color: col, weight: 2, opacity: .95, fillColor: col, fillOpacity: .06, interactive: false }
+        : { color: col, weight: 1.2, opacity: .9, fillColor: col, fillOpacity: .14, interactive: false })
+        .addTo(layers.events);
+    }
+    // Hero point icons (all hero points in the zone, linked to an event or not). Click pins the list there.
+    if (showH) for (const h of zone.heropoints) {
+      const evs = zone.events.filter(e => e.hero === h.k);
+      const head = `<b>${esc(HERO_KIND[h.kind] || 'Hero challenge')}</b>${h.title ? ': ' + esc(h.title) : ''}`;
+      const tip = evs.length
+        ? evs.map(e => `Event: ${esc(e.name)} <span class="muted">(lv ${e.level})</span>`).join('<br>')
+        : `<span class="muted">${h.kind === 'combat' ? 'No matching event found' : 'Not an event'}</span>`;
+      L.marker(ll(h.coord), { icon: heroIcon, keyboard: false })
+        .bindTooltip(`${head}<br>${tip}`, { className: 'tip', direction: 'top', offset: [0, -10] })
+        .on('click', () => pinAt(h.coord[0], h.coord[1]))
+        .addTo(layers.events);
+    }
+
+    layers.wps.clearLayers();
+    if ($('tWp').checked) map.addLayer(layers.wps); else map.removeLayer(layers.wps);
+    for (const p of zone.pois.filter(p => p.type === 'waypoint')) {
+      L.marker(ll(p.coord), { icon: wpIcon, keyboard: false })
+        .bindTooltip(`${esc(p.name)}<br><span class="muted">${esc(p.chat_link)} · click to copy</span>`,
+          { className: 'tip', direction: 'top', offset: [0, -8] })
+        .on('click', () => copyText(p.chat_link, p.name))
+        .addTo(layers.wps);
+    }
+
+    layers.gates.clearLayers();
+    const showGates = $('tGate').checked, showDung = $('tDung').checked;
+    for (const g of MAPS.flatMap(m => m.gates || [])) {   // gates of every zone
+      const isEntrance = ['raid', 'dungeon', 'fractal'].includes(g.kind);
+      if (isEntrance ? !showDung : !showGates) continue;
+      const what = GATE_LABEL[g.kind] || 'Portal';
+      const dest = g.to ? `→ ${esc(g.to)}`
+        : g.claims ? `<span class="muted">→ sources disagree: ${g.claims.map(esc).join(' vs ')}</span>`
+        : '<span class="muted">→ destination not confirmed</span>';
+      const go = g.to_id ? '<br><span class="muted">click to go there</span>'
+        : g.chat_link ? `<br><span class="muted">${esc(g.chat_link)} · click to copy</span>` : '';
+      const src = `<br><span class="muted">position: ${esc(g.src)}${g.to ? ' · destination: ' + esc(g.how) : ''}</span>`;
+      const mk = L.marker(ll(g.coord), { icon: gateIcon[g.kind], keyboard: false, opacity: g.to ? 1 : 0.55 })
+        .bindTooltip(`<b>${what}</b> ${dest}${go}${src}`, { className: 'tip', direction: 'top', offset: [0, -10] })
+        .addTo(layers.gates);
+      if (g.to_id) mk.on('click', () => selectZone(g.to_id, true));
+      else if (g.chat_link) mk.on('click', () => copyText(g.chat_link, g.to));
+    }
+    // Jumping puzzles of every zone: icon at the finish/chest; hovering draws a dashed line to the start.
+    jpHint.clearLayers();
+    if ($('tJP').checked) for (const m of MAPS) for (const p of m.puzzles || []) {
+      const far = p.start ? Math.round(Math.hypot(p.start[0] - p.coord[0], p.start[1] - p.coord[1]) * (m.inch_per_unit || 24) * 0.0254) : null;
+      const where = p.at === 'start' ? 'marker at the start (no finish marked)'
+        : `marker at the ${p.at === 'event' ? 'puzzle event (finish/chest)' : p.at}${far !== null ? ` · start is ${far} m away (hover shows the way)` : ''}`;
+      const sc = p.shortcut;
+      const scHtml = !sc ? '' :
+        `<br><b>Shortcut</b> (Lady Elyssa)${sc.methods.length ? ': ' + sc.methods.map(esc).join(' → ') : ''}` +
+        sc.notes.map(n => `<br><span class="muted">⚠ ${esc(n)}</span>`).join('') +
+        `<br><span class="muted">${sc.routes.length ? 'click to show the route' : 'click to show the steps (no route in her pack)'}</span>`;
+      const mk = L.marker(ll(p.coord), { icon: jpIcon, keyboard: false })
+        .bindTooltip(`<b>Jumping puzzle</b>: ${esc(p.name)}<br><span class="muted">${where}</span>` +
+          (p.disagree ? `<br><span class="muted">⚠ ${esc(p.disagree)}</span>` : '') + scHtml,
+          Object.assign({ className: 'tip' }, awayFrom(p.coord, p.start)))
+        .on('mouseover', () => { if (!p.start) return;
+          L.polyline([ll(p.start), ll(p.coord)], { color: '#7dffb0', weight: 2, dashArray: '6 5', interactive: false }).addTo(jpHint);
+          L.circleMarker(ll(p.start), { radius: 5, color: '#000', weight: 1, fillColor: '#7dffb0', fillOpacity: 1, interactive: false })
+            .bindTooltip('start', Object.assign({ permanent: true, className: 'tip' }, awayFrom(p.start, p.coord))).addTo(jpHint); })
+        .on('mouseout', () => jpHint.clearLayers())
+        .addTo(layers.gates);
+      if (sc) mk.on('click', () => toggleShortcut(p));
+    }
+    // Dungeon / fractal / raid / strike entrances from the API (those not already shown as a gate).
+    if (showDung) for (const p of MAPS.flatMap(m => m.pois || [])) {
+      if (p.type !== 'unlock' || p.merged || !entranceKind(p)) continue;
+      const name = (p.name || '').replace(/^Raid\W+/, '') || entranceKind(p);
+      L.marker(ll(p.coord), { icon: L.icon({ iconUrl: p.icon, iconSize: [26, 26], iconAnchor: [13, 13] }), keyboard: false })
+        .bindTooltip(`<b>${esc(entranceKind(p))}</b>: ${esc(name)}<br><span class="muted">${esc(p.chat_link)} · click to copy</span>`,
+          { className: 'tip', direction: 'top', offset: [0, -10] })
+        .on('click', () => copyText(p.chat_link, name))
+        .addTo(layers.gates);
+    }
+    const gateNote = (zone.gates || []).length ? '' : ' · no gate data';
+
+    layers.hearts.clearLayers();
+    if ($('tHeart').checked) map.addLayer(layers.hearts); else map.removeLayer(layers.hearts);
+    for (const h of zone.hearts) {
+      if (h.bounds && h.bounds.length > 2)
+        L.polygon(h.bounds.map(ll), { color: C.heart, weight: 1, dashArray: '3 3', fillOpacity: .05, interactive: false }).addTo(layers.hearts);
+      L.marker(ll(h.coord), { icon: heartIcon, keyboard: false })
+        .bindTooltip(`${esc(h.name)} <span class="muted">(lv ${h.level})</span>`, { className: 'tip', direction: 'top', offset: [0, -10] })
+        .addTo(layers.hearts);
+    }
+
+    const g = shown.filter(e => isGroup(e) && !isHero(e) && !isOptional(e)).length, h = shown.filter(isHero).length;
+    const r = shown.filter(isRift).length, b = shown.filter(isBounty).length, total = zone.events.filter(e => !isOptional(e)).length;
+    const j = shown.filter(isJP).length;
+    $('stats').textContent = `${shown.length - r - b - j} of ${total} events shown · ${g} group · ${h} hero · ` +
+      (r ? `${r} rift spots · ` : '') + (b ? `${b} bounties · ` : '') + ((zone.puzzles || []).length ? `${zone.puzzles.length} jumping puzzles · ` : '') + (total ? '' : zone.type === 'Guild hall' ? 'guild hall (no events) · '
+                  : 'no events in the API event list (it predates newer maps) · ') +
+      `${zone.pois.filter(p => p.type === 'waypoint').length} waypoints${gateNote}`;
+    $('list').innerHTML = shown.map((e, i) =>
+      `<li data-i="${i}">${marker(e)}` +
+      `<span>${esc(e.name)}${detailHtml(e)}</span><span class="lv">lv ${e.level}</span>` +
+      `<a class="wiki" href="${wikiName(e)}" target="_blank" rel="noopener" title="${wikiTip(e)}">${e.wiki ? 'wiki' : 'wiki?'}</a></li>`).join('');
+
+    if (pinned) pinAt(pinned.x, pinned.y); else idleBox();
+  }
+
+  // ---- side list ----
+  $('list').addEventListener('mouseover', ev => {
+    const li = ev.target.closest('li'); if (!li || pinned) return;
+    const e = shown[+li.dataset.i];
+    highlight([e]); showHere([e], 'Selected in list');
+  });
+  $('list').addEventListener('click', ev => {
+    if (ev.target.closest('a')) return;           // wiki link: let it open
+    const li = ev.target.closest('li'); if (!li) return;
+    map.fitBounds(shown[+li.dataset.i]._layer.getBounds().pad(1.5), { maxZoom: 8 });
+  });
+
+  // ---- hover box ----
+  function highlight(list, focus) {
+    layers.hl.clearLayers();
+    for (const e of list)
+      shapeFor(e, { color: C.hl, weight: e === focus ? 3.5 : (focus ? 1 : 2), opacity: focus && e !== focus ? .4 : 1,
+        fill: e === focus, fillColor: C.hl, fillOpacity: .15, interactive: false }).addTo(layers.hl);
+  }
+  // Header line for the top-right box: current zone, region, level range.
+  function zoneHead() {
+    if (!zone) return `<div class="zhead"><b>World map</b> <span class="muted">· ${MAPS.length} zones</span></div>`;
+    const lv = zone.levels[0] === zone.levels[1] ? `lv ${zone.levels[0]}` : `lv ${zone.levels[0]}–${zone.levels[1]}`;
+    return `<div class="zhead"><b>${esc(zone.name)}</b> <span class="muted">· ${esc(zone.region)} · ${lv}` +
+      `${zone.type === 'Guild hall' ? ' · guild hall' : ''}</span></div>`;
+  }
+  function idleBox() {
+    $('here').className = '';
+    $('here').innerHTML = zoneHead() + '<span class="muted">Hover the map: every event area under the cursor is listed here.<br>' +
+      '<b>Click</b> to pin the list so you can pick an event from it.</span>';
+  }
+  function showHere(list, title, x, y) {
+    const isPinned = !!pinned;
+    const rows = list.map((e, i) => {
+      const shape = e.points ? 'polygon' : `${e.type}, r ${e.radius_m} m`;
+      return `<li data-k="${i}">${isHero(e) ? marker(e) + ' ' : ''}<b class="${kindClass(e)}">${esc(e.name)}</b>${detailHtml(e)}<br>` +
+        `<span class="muted">lv ${e.level} · ${shape}${isGroup(e) ? ' · group event' : ''}` +
+        `${isHero(e) ? ' · ' + heroLabel(e) : ''}${isJP(e) ? ' · jumping puzzle event (at the finish/chest)' : ''}${isBounty(e) ? ' · bounty-board event: only runs when a player starts it at a bounty board' : ''}${isRift(e) ? ' · rift spot: needs a Rift Stabilizer; active spots show as an empty event star in game (stabilizer not in an invisible bag)' : ''}</span>` +
+        (isPinned ? `<div class="links"><a class="wiki" href="${wikiName(e)}" target="_blank" rel="noopener" title="${wikiTip(e)}">${e.wiki ? 'wiki' : 'wiki (search)'}</a>` +
+          `<a class="wiki" href="#" data-copy="${e.id}" data-what="event id">copy id</a></div>` : '') + '</li>';
+    }).join('');
+    const sec = x !== undefined && zone ? sectorAt(zone, x, y) : null;
+    const where = x !== undefined ? (sec ? `<div class="muted">Area: ${esc(sec.name)}</div>` : '') +
+      `<div class="muted">Nearest waypoint: ${nearestWp(x, y)}</div>` : '';
+    const close = isPinned ? '<button id="unpin" title="Unpin (Esc)">✕</button>' : '';
+    const hint = isPinned ? '<div class="hint">Smallest area first. Hover an entry to outline it on the map. Esc or ✕ to unpin.</div>'
+                          : (list.length ? '<div class="hint">Click to pin this list.</div>' : '');
+    $('here').className = isPinned ? 'pinned' : '';
+    $('here').innerHTML = zoneHead() + `<h2>${title}${close}</h2>${where}` +
+      (rows ? `<ol>${rows}</ol>` : '<span class="muted">No event areas here.</span>') + hint;
+  }
+
+  function pinAt(x, y) {
+    pinned = { x, y, hits: hitsAt(x, y) };
+    layers.pin.clearLayers();
+    L.circleMarker(ll([x, y]), { radius: 5, color: '#000', weight: 2, fillColor: '#fff', fillOpacity: 1, interactive: false }).addTo(layers.pin);
+    highlight(pinned.hits);
+    showHere(pinned.hits, `📌 ${pinned.hits.length} event area${pinned.hits.length === 1 ? '' : 's'} here`, x, y);
+  }
+  function unpin() { pinned = null; layers.pin.clearLayers(); layers.hl.clearLayers(); idleBox(); }
+
+  map.on('mousemove', ev => {
+    const pt = toCont(ev.latlng);
+    const z = zoneAt(pt.x, pt.y);
+    if (z !== zone || !zone) { hoverZone(z); return; }   // over another zone (or the world map)
+    if (pinned) return;
+    const hits = hitsAt(pt.x, pt.y);
+    highlight(hits);
+    showHere(hits, `${hits.length} event area${hits.length === 1 ? '' : 's'} here`, pt.x, pt.y);
+  });
+  map.on('mouseout', () => { if (!pinned) layers.hl.clearLayers(); });
+  map.on('click', ev => {
+    const pt = toCont(ev.latlng);
+    const z = zoneAt(pt.x, pt.y);
+    if (zone && z === zone) pinAt(pt.x, pt.y);
+    // From the world map: zoom to the zone. From a zone view: keep the view where it is (the user is
+    // looking at this border, e.g. comparing gates).
+    else if (z) selectZone(z.id, !zone);
+  });
+  document.addEventListener('keydown', ev => {
+    if (ev.key !== 'Escape') return;
+    if (shortcutOf) { jpShort.clearLayers(); shortcutOf = null; }
+    if (pinned) unpin();
+  });
+
+  $('here').addEventListener('click', ev => {
+    if (ev.target.id === 'unpin') { unpin(); return; }
+    const c = ev.target.closest('[data-copy]');
+    if (c) {
+      ev.preventDefault();
+      copyText(c.dataset.copy, c.dataset.what, () => {
+        const was = c.textContent; c.textContent = 'copied';
+        setTimeout(() => c.textContent = was, 1200);
+      });
+    }
+  });
+
+  // Copy to clipboard and confirm with a toast. If the browser refuses, show the text pre-selected for Ctrl+C.
+  let toastTimer;
+  function toast(html) {
+    const t = $('toast'); t.innerHTML = html; t.classList.add('on');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('on'), 1800);
+  }
+  function copyText(text, what, done) {
+    const ok = () => { toast(`Copied${what ? ' ' + esc(what) : ''}: <b>${esc(text)}</b>`); if (done) done(); };
+    const fallback = () => prompt('Press Ctrl+C to copy:', text);
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(ok, fallback);
+    else fallback();
+  }
+  $('here').addEventListener('mouseover', ev => {
+    if (!pinned) return;
+    const li = ev.target.closest('li[data-k]');
+    highlight(pinned.hits, li ? pinned.hits[+li.dataset.k] : undefined);
+  });
+  $('here').addEventListener('mouseleave', () => { if (pinned) highlight(pinned.hits); });
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+  fillZones();
+  if (location.hash === '#world') showWorld();
+  else selectZone(+location.hash.slice(1) || (MAPS.find(m => m.name === 'Queensdale') || MAPS[0]).id, true);
+})();
+</script>
+</body>
+</html>
