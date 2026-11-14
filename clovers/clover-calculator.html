@@ -1,1 +1,705 @@
+<title>Mystic Clover Calculator</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: summary row of route cards up top, then settings (left) and per-route breakdown (right); stacks on phones. */
+:root {
+  --bg: #f3f6f3;
+  --surface: #ffffff;
+  --fg: #18221d;
+  --muted: #5a6a61;
+  --line: #d9e2dc;
+  --accent: #2c8a4b;
+  --accent-soft: #e3f2e8;
+  --gold: #a87c0c;
+  --silver: #6f7a80;
+  --copper: #a85a1e;
+  --warn: #9a5b00;
+  --font-display: "Marcellus", "Palatino Linotype", Georgia, serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101613; --surface: #17201b; --fg: #e4ece7; --muted: #98a99f; --line: #2a3630;
+    --accent: #5cc47e; --accent-soft: #1d3326; --gold: #e2b43a; --silver: #bcc5ca; --copper: #db8b52; --warn: #e0a24a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101613; --surface: #17201b; --fg: #e4ece7; --muted: #98a99f; --line: #2a3630;
+  --accent: #5cc47e; --accent-soft: #1d3326; --gold: #e2b43a; --silver: #bcc5ca; --copper: #db8b52; --warn: #e0a24a;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 48px;
+}
+.wrap { max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 400; margin: 0; text-wrap: balance; }
+h1 { font-size: 2.1rem; line-height: 1.15; }
+h2 { font-size: 1.35rem; }
+h3 { font-size: 1.05rem; }
+p { margin: 0; }
+a { color: var(--accent); }
+.lede { color: var(--muted); max-width: 68ch; }
+header { display: flex; flex-direction: column; gap: 10px; }
+.status { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-size: 0.85rem; color: var(--muted); }
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 0.8rem; white-space: nowrap; }
+.pill.live::before, .pill.snap::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.pill.snap::before { background: var(--warn); }
+button { font: inherit; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 6px; padding: 3px 10px; }
+button:hover { border-color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
+.routes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.route { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.route.best { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.route .name { font-weight: 600; display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.route .tag { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); font-weight: 600; }
+.route .price { font-size: 1.45rem; font-variant-numeric: tabular-nums; }
+.route .sub { font-size: 0.82rem; color: var(--muted); }
+
+.main { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 20px; align-items: start; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+legend { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); font-weight: 600; margin-bottom: 8px; padding: 0; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; align-items: center; }
+.row label { min-width: 0; }
+.hint { font-size: 0.8rem; color: var(--muted); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; flex-wrap: wrap; }
+.seg input { position: absolute; opacity: 0; pointer-events: none; }
+.seg label { padding: 4px 10px; font-size: 0.85rem; cursor: pointer; border-right: 1px solid var(--line); white-space: nowrap; }
+.seg label:last-of-type { border-right: 0; }
+.seg input:checked + label { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.seg input:focus-visible + label { outline: 2px solid var(--accent); outline-offset: -2px; }
+select, input[type="number"] { font: inherit; font-size: 0.88rem; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; max-width: 100%; }
+input[type="number"] { width: 6.5em; text-align: right; font-variant-numeric: tabular-nums; }
+select { width: 100%; }
+.cur { display: flex; flex-direction: column; gap: 6px; padding: 10px 0; border-top: 1px solid var(--line); }
+.cur:first-of-type { border-top: 0; padding-top: 0; }
+.cur-head { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.cur-head strong { font-weight: 600; }
+.cur-val { font-variant-numeric: tabular-nums; font-size: 0.9rem; }
+.cur-custom { display: flex; gap: 8px; align-items: center; font-size: 0.85rem; color: var(--muted); }
+.check { display: flex; gap: 8px; align-items: center; }
+.market { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; font-size: 0.78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.health { padding: 0 8px; border-radius: 999px; border: 1px solid currentColor; font-weight: 600; white-space: nowrap; }
+.health.ok { color: var(--accent); }
+.health.thin { color: var(--warn); }
+
+.breakdown { display: flex; flex-direction: column; gap: 18px; }
+.bd { display: flex; flex-direction: column; gap: 6px; }
+.bd table { width: 100%; border-collapse: collapse; font-size: 0.86rem; font-variant-numeric: tabular-nums; }
+.bd td { padding: 3px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.bd td:last-child { text-align: right; white-space: nowrap; padding-left: 12px; }
+.bd tr.total td { font-weight: 600; border-bottom: 0; padding-top: 6px; }
+.bd tr.minus td:first-child { color: var(--muted); }
+.tbl { overflow-x: auto; }
+.bd tr.sect td { padding-top: 12px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); font-weight: 600; text-align: left; }
+.bd tr.sect.ret td { color: var(--accent); }
+.bd tr.sub td { font-weight: 600; }
+.bd tr.ret td:first-child { padding-left: 4px; }
+.bd tr.ret { background: var(--accent-soft); }
+.bd tr.sect.ret { background: transparent; }
+.bd tr.ret td:last-child .coin * { color: var(--accent); }
+.arrow { color: var(--accent); margin-right: 4px; }
+.back { display: inline-block; margin-left: 6px; padding: 0 7px; border-radius: 999px; border: 1px solid var(--accent); font-size: 0.68rem; letter-spacing: 0.04em; }
+
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); overflow-x: auto; }
+.tabs button { border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; padding: 8px 14px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.tabs button[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); }
+.tabpanel { display: flex; flex-direction: column; gap: 20px; }
+.routes.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.neg { color: var(--warn); }
+
+.g { color: var(--gold); } .s { color: var(--silver); } .c { color: var(--copper); }
+.coin { white-space: nowrap; }
+footer { font-size: 0.82rem; color: var(--muted); display: flex; flex-direction: column; gap: 6px; max-width: 80ch; }
+
+@media (max-width: 900px) {
+  .routes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .main { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 460px) {
+  .routes, .routes.three { grid-template-columns: minmax(0, 1fr); }
+  h1 { font-size: 1.7rem; }
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Mystic Clover Calculator</h1>
+    <p class="lede">Forge your clovers, or buy them with game-mode currency? This works out the gold cost of each Mystic Clover by every route, counting the average value of what the forge gives back when it fails, and the gold your currencies could have been sold for instead.</p>
+    <div class="status">
+      <span id="priceStatus" class="pill snap">Loading prices…</span>
+      <button id="refresh" type="button">Refresh prices</button>
+      <button id="reset" type="button">Reset settings</button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Calculator views">
+    <button type="button" role="tab" id="tabbtn-clover" aria-controls="tab-clover" data-tab="clover">Clover cost</button>
+    <button type="button" role="tab" id="tabbtn-relic" aria-controls="tab-relic" data-tab="relic">Fractal Relic value</button>
+  </nav>
+
+  <div id="tab-relic" role="tabpanel" aria-labelledby="tabbtn-relic" class="tabpanel" hidden>
+    <p class="lede">Turn relics into gold by buying Fractal Encryption Keys from BUY-4373 (1 relic plus silver each), using them on Fractal Encryptions bought from the Trading Post, and selling what comes out. The value of one relic is the gold you clear per encryption, divided by the relics it uses.</p>
+    <section class="routes three" id="relicCards" aria-label="Relic value by key price"></section>
+    <div class="main">
+      <section class="panel" aria-label="Encryption settings">
+        <h2>Your settings</h2>
+        <fieldset>
+          <legend>Keys</legend>
+          <div class="row">
+            <label for="tier_deep">Key price used on the Clover tab</label>
+            <div class="seg" role="radiogroup" aria-label="Key price">
+              <input type="radio" name="keytier" id="tier_deep" value="deep"><label for="tier_deep">20s</label>
+              <input type="radio" name="keytier" id="tier_disc" value="disc"><label for="tier_disc">25.04s</label>
+              <input type="radio" name="keytier" id="tier_full" value="full"><label for="tier_full">30s</label>
+            </div>
+          </div>
+          <p class="hint">BUY-4373 sells 30 keys a day at 20s, the next 30 at 25.04s, and any more at 30s. Each key also costs 1 relic.</p>
+        </fieldset>
+        <fieldset>
+          <legend>Buying encryptions</legend>
+          <div class="row">
+            <label for="encBuyOrder">Fractal Encryptions from the Trading Post</label>
+            <div class="seg" role="radiogroup" aria-label="Buying encryptions">
+              <input type="radio" name="encbuy" id="encBuyOrder" value="order"><label for="encBuyOrder">Buy order</label>
+              <input type="radio" name="encbuy" id="encBuyInstant" value="instant"><label for="encBuyInstant">Instant buy</label>
+            </div>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Account-bound drops (silver each)</legend>
+          <div class="row"><label for="v_asc">Ascended material <span class="hint">· Dragonite, Empyreal, Bloodstone; about 3 per encryption</span></label><input type="number" id="v_asc" min="0" step="0.01"></div>
+        </fieldset>
+        <p class="hint">Selling the drops follows the Trading Post settings on the Clover cost tab, including the tax toggle.</p>
+      </section>
+      <section class="panel" aria-label="Encryption breakdown">
+        <h2>One encryption, on average</h2>
+        <div class="breakdown" id="encBreakdown"></div>
+      </section>
+    </div>
+  </div>
+
+  <div id="tab-clover" role="tabpanel" aria-labelledby="tabbtn-clover" class="tabpanel">
+  <section class="routes" id="routes" aria-label="Cost per clover by route"></section>
+
+  <div class="main">
+    <section class="panel" aria-label="Settings">
+      <h2>Your settings</h2>
+
+      <fieldset>
+        <legend>Forge drop rate</legend>
+        <div class="row">
+          <label for="rateObserved">Clover chance per forge</label>
+          <div class="seg" role="radiogroup" aria-label="Clover chance">
+            <input type="radio" name="rate" id="rateObserved" value="observed"><label for="rateObserved">31.18% measured</label>
+            <input type="radio" name="rate" id="rateTheory" value="theory"><label for="rateTheory">30.8% theory</label>
+          </div>
+        </div>
+        <p class="hint">Measured rate is from 14,000 single forges recorded by Shiny &amp; Selici. 30.8% (77/250) is Shiny's guess at the coded value.</p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Trading Post</legend>
+        <div class="row">
+          <label for="buyInstant">Buying coins and ecto</label>
+          <div class="seg" role="radiogroup" aria-label="Buying">
+            <input type="radio" name="buy" id="buyInstant" value="instant"><label for="buyInstant">Instant buy</label>
+            <input type="radio" name="buy" id="buyOrder" value="order"><label for="buyOrder">Buy order</label>
+          </div>
+        </div>
+        <div class="row">
+          <label for="sellInstant">Selling items</label>
+          <div class="seg" role="radiogroup" aria-label="Selling">
+            <input type="radio" name="sell" id="sellInstant" value="instant"><label for="sellInstant">Instant sell</label>
+            <input type="radio" name="sell" id="sellListing" value="listing"><label for="sellListing">Sell listing</label>
+          </div>
+        </div>
+        <label class="check"><input type="checkbox" id="taxReturns"> Take 15% TP tax off forge returns</label>
+        <p class="hint">Untick if you'll use the returned mats yourself instead of selling them. Currency conversions always pay the tax, since they only turn into gold by selling.</p>
+      </fieldset>
+
+      <fieldset id="curFields">
+        <legend>What your currencies are worth to you</legend>
+      </fieldset>
+
+      <fieldset>
+        <legend>Account-bound items (silver each)</legend>
+        <div class="row"><label for="v_spirit">Spirit Shard <span class="hint">· 6 Philosopher's Stones per forge = 0.6</span></label><input type="number" id="v_spirit" min="0" step="1"></div>
+        <div class="row"><label for="v_obsidian">Obsidian Shard <span class="hint">· 2,100 karma at most vendors</span></label><input type="number" id="v_obsidian" min="0" step="1"></div>
+        <div class="row"><label for="v_crystal">Mystic Crystal <span class="hint">· forge return</span></label><input type="number" id="v_crystal" min="0" step="1"></div>
+        <div class="row"><label for="v_emblem">Emblem of the Avenger <span class="hint">· used by ticket conversions</span></label><input type="number" id="v_emblem" min="0" step="1"></div>
+        <p class="hint">Spirit Shards mostly cancel out: forging costs about 1.92 shards per clover, and the Fractal and Raid vendors charge 2. Only the WvW route skips them.</p>
+      </fieldset>
+    </section>
+
+    <section class="panel" aria-label="Breakdown">
+      <h2>Where the gold goes</h2>
+      <div class="breakdown" id="breakdown"></div>
+    </section>
+  </div>
+  </div>
+
+  <footer>
+    <p>Forge rates: <a href="https://docs.google.com/spreadsheets/d/1vJQkQEXjtKme-SUUdoHFqu6YiG1kadAig9ttJ-xXP6s/edit" target="_blank" rel="noopener">Shiny &amp; Selici's Mystic Clover data</a> (14,000 single forges). Recipe, vendor costs and weekly limits: <a href="https://wiki.guildwars2.com/wiki/Mystic_Clover" target="_blank" rel="noopener">Guild Wars 2 Wiki</a>. Prices: official GW2 API. Weekly purchase limits on conversion items are not tracked; pick the conversion you'd actually use.</p>
+    <p>Single forge: 1 Mystic Coin, 1 Glob of Ectoplasm, 1 Obsidian Shard, 6 Philosopher's Stones. On a miss it returns one of: 2–4 of a T6 fine material (40%), 1–3 of a T6 refined material (20%), 1 T5 lodestone or Putrid Essence (4%), 5 Mystic Coins, 2 Obsidian Shards, 2 Ectoplasm, 2 Mystic Crystals (about 1% each), or a Hidden Treasure.</p>
+    <p>Encryption drop rates: <a href="https://docs.google.com/spreadsheets/d/1LQDrzHI98JZ6Ad_Wgc2jo77X8_5lLgu9sC-SYMUMTjg/edit" target="_blank" rel="noopener">Zanar, Selici &amp; Shinymeta's Fractal Encryption data</a> (1,000,000 encryptions, with the Recursive Resourcing mastery trained). Ascended recipes and Bags of Rare Gear can also drop; they're account bound or negligible and count as 0.</p>
+  </footer>
+</div>
+
+<script>
+const SNAPSHOT = {"date":"2026-11-14","prices":{"9267":{"buy":1000,"sell":1177,"bq":11078,"sq":1043},"19685":{"buy":211,"sell":240,"bq":95285,"sq":377279},"19712":{"buy":278,"sell":320,"bq":37822,"sq":366705},"19721":{"buy":1878,"sell":1945,"bq":412662,"sq":2216072},"19737":{"buy":738,"sell":998,"bq":88244,"sq":292684},"19746":{"buy":149,"sell":178,"bq":190297,"sq":2964610},"19976":{"buy":20433,"sell":21593,"bq":10198254,"sq":99869},"21156":{"buy":682,"sell":774,"bq":67732,"sq":11849},"21157":{"buy":701,"sell":743,"bq":52534,"sq":19460},"21158":{"buy":701,"sell":882,"bq":45861,"sq":7471},"21160":{"buy":776,"sell":781,"bq":49932,"sq":24493},"21161":{"buy":715,"sell":799,"bq":405536,"sq":11684},"24276":{"buy":193,"sell":198,"bq":1176066,"sq":405463},"24277":{"buy":1016,"sell":1122,"bq":133687,"sq":625832},"24282":{"buy":37,"sell":40,"bq":1182062,"sq":12955073},"24283":{"buy":1700,"sell":1826,"bq":49102,"sq":152416},"24288":{"buy":39,"sell":45,"bq":753334,"sq":1282781},"24289":{"buy":1660,"sell":1843,"bq":31292,"sq":148039},"24294":{"buy":47,"sell":49,"bq":265816,"sq":1316977},"24295":{"buy":1994,"sell":2131,"bq":52632,"sq":250438},"24299":{"buy":41,"sell":43,"bq":225961,"sq":3248932},"24300":{"buy":1752,"sell":1843,"bq":26773,"sq":186151},"24325":{"buy":7337,"sell":8473,"bq":22564,"sq":9709},"24330":{"buy":5261,"sell":5423,"bq":37099,"sq":42129},"24335":{"buy":221,"sell":302,"bq":100809,"sq":333685},"24340":{"buy":6678,"sell":7501,"bq":10081,"sq":13884},"24341":{"buy":38,"sell":39,"bq":1747986,"sq":4601478},"24350":{"buy":61,"sell":63,"bq":2314889,"sq":6394159},"24351":{"buy":1950,"sell":2097,"bq":69148,"sq":175502},"24356":{"buy":35,"sell":36,"bq":1345781,"sq":6805630},"24357":{"buy":1564,"sell":1739,"bq":49425,"sq":218161},"24358":{"buy":1666,"sell":1775,"bq":54229,"sq":134153},"44001":{"buy":87519,"sell":120049,"bq":72,"sq":134},"44004":{"buy":70043,"sell":88888,"bq":358,"sq":161},"44007":{"buy":80363,"sell":139589,"bq":183,"sq":112},"44010":{"buy":68381,"sell":80992,"bq":180,"sq":171},"44013":{"buy":194007,"sell":340583,"bq":83,"sq":92},"44016":{"buy":90939,"sell":149908,"bq":212,"sq":120},"44019":{"buy":70840,"sell":103000,"bq":259,"sq":152},"44022":{"buy":212127,"sell":292127,"bq":129,"sq":108},"44025":{"buy":129253,"sell":224997,"bq":114,"sq":74},"44028":{"buy":63113,"sell":99998,"bq":137,"sq":103},"44031":{"buy":85220,"sell":148564,"bq":311,"sq":115},"44034":{"buy":54609,"sell":109594,"bq":93,"sq":124},"44037":{"buy":73724,"sell":108415,"bq":562,"sq":90},"44040":{"buy":71102,"sell":119495,"bq":63,"sq":109},"44043":{"buy":59667,"sell":129997,"bq":80,"sq":122},"44046":{"buy":66404,"sell":105519,"bq":443,"sq":108},"44049":{"buy":62046,"sell":97906,"bq":78,"sq":142},"44052":{"buy":67347,"sell":112293,"bq":150,"sq":102},"44055":{"buy":250240,"sell":450507,"bq":99,"sq":123},"49424":{"buy":25,"sell":31,"bq":3780920,"sq":9007109},"70421":{"buy":1507,"sell":6543,"bq":4141,"sq":919},"70624":{"buy":798,"sell":4710,"bq":3263,"sq":1522},"70664":{"buy":179,"sell":4783,"bq":6174,"sq":1813},"70815":{"buy":555,"sell":2508,"bq":13940,"sq":1213},"71190":{"buy":951,"sell":4065,"bq":9926,"sq":3043},"71223":{"buy":501,"sell":2998,"bq":9712,"sq":3655},"71340":{"buy":706,"sell":3716,"bq":1759,"sq":1843},"71447":{"buy":1105,"sell":6599,"bq":10324,"sq":3469},"71461":{"buy":423,"sell":4774,"bq":4199,"sq":458},"71473":{"buy":1105,"sell":2189,"bq":29088,"sq":19608},"71529":{"buy":512,"sell":1500,"bq":2652,"sq":2329},"71609":{"buy":734,"sell":3497,"bq":2305,"sq":1173},"71755":{"buy":745,"sell":1989,"bq":1698,"sq":936},"71844":{"buy":576,"sell":4986,"bq":1159,"sq":1785},"71921":{"buy":211,"sell":3392,"bq":2514,"sq":1631},"72153":{"buy":571,"sell":3322,"bq":3067,"sq":1055},"72414":{"buy":1449,"sell":6664,"bq":4000,"sq":1725},"72439":{"buy":748,"sell":4708,"bq":9728,"sq":968},"72810":{"buy":627,"sell":3997,"bq":5396,"sq":1385},"73071":{"buy":502,"sell":2999,"bq":3112,"sq":346},"73260":{"buy":623,"sell":2590,"bq":11793,"sq":371},"73451":{"buy":546,"sell":4996,"bq":1238,"sq":1379},"73658":{"buy":665,"sell":5177,"bq":1935,"sq":1621},"73744":{"buy":449,"sell":2836,"bq":3207,"sq":2229},"73949":{"buy":928,"sell":3325,"bq":6303,"sq":634},"73967":{"buy":653,"sell":4490,"bq":3961,"sq":1361},"74024":{"buy":593,"sell":4380,"bq":17275,"sq":1236},"74268":{"buy":3,"sell":11,"bq":126520,"sq":1465677},"74283":{"buy":706,"sell":4984,"bq":1454,"sq":906},"74438":{"buy":161,"sell":4679,"bq":11703,"sq":3024},"74548":{"buy":546,"sell":6666,"bq":4857,"sq":2041},"74687":{"buy":1047,"sell":4664,"bq":10718,"sq":814},"74694":{"buy":493,"sell":4706,"bq":5660,"sq":1230},"74880":{"buy":438,"sell":4156,"bq":3876,"sq":1082},"74881":{"buy":713,"sell":7777,"bq":1232,"sq":1766},"74946":{"buy":383,"sell":4998,"bq":12334,"sq":1518},"75008":{"buy":733,"sell":3279,"bq":11384,"sq":951},"75032":{"buy":150,"sell":1985,"bq":4840,"sq":1759},"75213":{"buy":949,"sell":7654,"bq":5806,"sq":480},"75250":{"buy":1047,"sell":2863,"bq":1363,"sq":1160},"75311":{"buy":770,"sell":1270,"bq":27435,"sq":5720},"75320":{"buy":911,"sell":2998,"bq":8567,"sq":2073},"75353":{"buy":500,"sell":2876,"bq":760,"sq":2965},"75428":{"buy":1000,"sell":5555,"bq":3404,"sq":1435},"75478":{"buy":1017,"sell":3990,"bq":7925,"sq":2139},"75508":{"buy":592,"sell":4544,"bq":572,"sq":1483},"75582":{"buy":756,"sell":4710,"bq":1511,"sq":1242},"75605":{"buy":505,"sell":2395,"bq":3188,"sq":2180},"75665":{"buy":659,"sell":1898,"bq":11150,"sq":1645},"75720":{"buy":632,"sell":2609,"bq":3972,"sq":1564},"75766":{"buy":709,"sell":3900,"bq":2758,"sq":1316},"75919":{"buy":2003,"sell":2018,"bq":110345,"sq":97068},"76009":{"buy":624,"sell":2871,"bq":333,"sq":897},"76317":{"buy":522,"sell":5153,"bq":2928,"sq":2010},"76350":{"buy":203,"sell":4771,"bq":515,"sq":2475},"76394":{"buy":622,"sell":4699,"bq":6880,"sq":2909},"76470":{"buy":562,"sell":1778,"bq":4685,"sq":1097},"76721":{"buy":351,"sell":3284,"bq":4307,"sq":1619},"76770":{"buy":501,"sell":2767,"bq":3350,"sq":1117},"76831":{"buy":695,"sell":4786,"bq":4795,"sq":2016},"76962":{"buy":78,"sell":4708,"bq":4661,"sq":1535},"76966":{"buy":501,"sell":2998,"bq":1632,"sq":1385},"77008":{"buy":673,"sell":3008,"bq":11950,"sq":1383},"77225":{"buy":1101,"sell":4711,"bq":137,"sq":924},"77274":{"buy":540264,"sell":709999,"bq":134,"sq":133},"77303":{"buy":500116,"sell":696965,"bq":76,"sq":156},"77310":{"buy":760000,"sell":949900,"bq":3063,"sq":185},"77316":{"buy":627525,"sell":977525,"bq":120,"sq":44},"77366":{"buy":520114,"sell":749997,"bq":354,"sq":218},"77394":{"buy":477131,"sell":686757,"bq":141,"sq":188},"85644":{"buy":741488,"sell":979994,"bq":421,"sq":57},"85945":{"buy":613774,"sell":879559,"bq":425,"sq":71},"88700":{"buy":300007,"sell":389999,"bq":252,"sq":153},"91140":{"buy":997711,"sell":1899889,"bq":279,"sq":33},"91152":{"buy":1175609,"sell":1749998,"bq":53,"sq":56},"91154":{"buy":1107701,"sell":1819493,"bq":37,"sq":33},"91180":{"buy":980009,"sell":1700097,"bq":43,"sq":49},"91202":{"buy":1405614,"sell":1799990,"bq":408,"sq":60},"91210":{"buy":1100758,"sell":1795498,"bq":42,"sq":38},"91221":{"buy":1234568,"sell":1800000,"bq":69,"sq":39},"91236":{"buy":1111147,"sell":1699900,"bq":42,"sq":33},"96432":{"buy":2101027,"sell":2500000,"bq":2432,"sq":60},"96978":{"buy":12953,"sell":14706,"bq":439475,"sq":16356},"99155":{"buy":1264728,"sell":2099796,"bq":287,"sq":22},"99842":{"buy":1218,"sell":1418,"bq":12886,"sq":13962},"99845":{"buy":676,"sell":1100,"bq":5547,"sq":32111},"99980":{"buy":1500002,"sell":3109996,"bq":62,"sq":12},"102135":{"buy":997,"sell":1508,"bq":6450,"sq":7484}}}; /*SNAPSHOT*/
+
+const ID = { coin: 19976, ecto: 19721, hidden: 9267 };
+const FINE = [24351, 24357, 24289, 24358, 24283, 24295, 24277, 24300];
+const BASIC = [19685, 19737, 19746, 19712];
+const T5 = [24330, 24325, 24340, 24335];
+const RECIPES = [75605,71447,71190,77225,75213,73949,75250,74548,70815,76394,75478,72810,74946,75508,75008,74687,70624,73658,71340,74694,73744,72153,74283,76721,75032,75582,75665,71223,71921,71609,75320,74438,73260,76317,73451,70664,76966,76770,77008,76831,73071,76470,75353,71755,74880,76962,74024,72439,75720,71461,76009,70421,74881,75428,73967,71844,75766,71529,72414,76350];
+const PEERLESS = [[91202, "Power"], [91152, "Condition Damage"], [91180, "Precision"], [91140, "Toughness"], [91154, "Vitality"], [91210, "Healing"], [91221, "Boon Duration"], [91236, "Condition Duration"]];
+// Fractal Encryptions: Zanar, Selici & Shinymeta, 1,000,000 opened (items per encryption, Recursive Resourcing trained)
+const ENC = { id: 75919, mew: 74268, agony: 49424 };
+const T5_FRACTAL = [24341, 24350, 24356, 24288, 24299, 24276, 24282, 24294];
+const AETHER_SKINS = [44001, 44004, 44007, 44010, 44013, 44052, 44016, 44019, 44022, 44025, 44028, 44031, 44034, 44055, 44037, 44040, 44043, 44049, 44046];
+const ENC_RATES = { agony: 2.2637, t5: 2.7027, asc: 3.0326, key: 0.0998, relicBag: 0.0668, relicsPerBag: 3, mew: 0.020, skin: 0.00021 };
+// [trophy type, items per encryption, merchant price in copper]; totals 42s 83c, matching the research
+const TROPHIES = [["Manuscripts", 0.2854, 6000], ["Proofs", 0.4280, 3000], ["Treatises", 0.2864, 2500], ["Postulates", 0.2855, 2000]];
+const KEY_TIERS = [
+  { key: "deep", label: "Deeply Discounted key", coin: 2000, limit: "first 30 a day" },
+  { key: "disc", label: "Discounted key", coin: 2504, limit: "next 30 a day" },
+  { key: "full", label: "Full-price key", coin: 3000, limit: "no daily limit" },
+];
+const GHOSTLY = [[77310, "Power"], [77366, "Condition Damage"], [77316, "Precision"], [77394, "Toughness"], [77303, "Vitality"], [77274, "Healing"], [85945, "Boon Duration"], [85644, "Condition Duration"]];
+
+// Shiny & Selici, single forges (n = 14,000)
+const RATES = { clover: 0.3118, fine: 0.3998, basic: 0.1985, t5: 0.0408, coin: 0.0104, obsidian: 0.0104, ecto: 0.0106, crystal: 0.0094, hidden: 0.0084 };
+const THEORY_CLOVER = 77 / 250;
+const TAX = 0.85;
+
+// Each preset: value per currency unit = best over its options of (sale price after tax - extra costs) / currency spent.
+const CURRENCIES = [
+  { key: "relic", name: "Fractal Relic", presets: [
+    { key: "encryption", label: "Encryption keys on bought encryptions", note: "see Fractal Relic value tab", opts: [],
+      fn: () => ({ value: Math.max(0, computeEnc().perRelic), id: ENC.id }) },
+    { key: "recipes", label: "Ascended breather recipes (best of 60)", note: "150 relics each, slow sellers", opts: RECIPES.map(id => ({ id, cost: 150 })) },
+  ]},
+  { key: "magnetite", name: "Magnetite Shard", presets: [
+    ...PEERLESS.map(([id, stat]) => ({ key: "peerless-" + id, label: `Peerless Infusion (${stat})`, note: "2,000 shards + 20 gold", opts: [{ id, cost: 2000, coin: 200000 }] })),
+    { key: "djinn", label: "Brilliant Djinn Doubloon", note: "150 shards + 20 gold", opts: [{ id: 88700, cost: 150, coin: 200000 }] },
+    ...GHOSTLY.map(([id, stat]) => ({ key: "ghostly-" + id, label: `Ghostly Infusion (${stat})`, note: "1,000 shards + 20 gold", opts: [{ id, cost: 1000, coin: 200000 }] })),
+    { key: "stone", label: "Antique Summoning Stone", note: "10 shards, 1 per week", opts: [{ id: 96978, cost: 10 }] },
+    { key: "coin", label: "Mystic Coin from Manfred", note: "10 shards + 1 Spirit Shard", opts: [{ id: 19976, cost: 10, spirit: 1 }] },
+    { key: "dragonvoid", label: "Endless Dragonvoid Combat Tonic", note: "500 shards, limit not checked", opts: [{ id: 96432, cost: 500 }] },
+    { key: "kryptis", label: "Endless Kryptis Lord Combat Tonic", note: "500 shards", opts: [{ id: 99980, cost: 500 }] },
+    { key: "scarlet", label: "Endless Scarlet Briar Combat Tonic", note: "500 shards", opts: [{ id: 99155, cost: 500 }] },
+  ]},
+  { key: "badge", name: "Badge of Honor", presets: [
+    { key: "siege", label: "Basic siege blueprints (best)", note: "6 to 24 badges each", opts: [
+      { id: 21161, cost: 6 }, { id: 21156, cost: 6 }, { id: 21157, cost: 6 }, { id: 21158, cost: 12 }, { id: 75311, cost: 12 }, { id: 21160, cost: 24 } ] },
+    { key: "tribute", label: "Badge of Tribute", note: "30 badges", opts: [{ id: 71473, cost: 30 }] },
+  ]},
+  { key: "ticket", name: "WvW Skirmish Claim Ticket", presets: [
+    { key: "tuning", label: "Mist-Infused Master Tuning Crystal", note: "10 tickets + 1 Emblem of the Avenger", opts: [{ id: 102135, cost: 10, emblem: 1 }] },
+    { key: "stone", label: "Mist-Infused Sharpening Stone", note: "10 tickets + 1 Emblem of the Avenger", opts: [{ id: 99845, cost: 10, emblem: 1 }] },
+    { key: "oil", label: "Mist-Infused Maintenance Oil", note: "20 tickets + 1 Emblem of the Avenger", opts: [{ id: 99842, cost: 20, emblem: 1 }] },
+  ]},
+];
+
+const ALL_IDS = [...new Set([ID.coin, ID.ecto, ID.hidden, ...FINE, ...BASIC, ...T5,
+  ENC.id, ENC.mew, ENC.agony, ...T5_FRACTAL, ...AETHER_SKINS,
+  ...CURRENCIES.flatMap(c => c.presets.flatMap(p => p.opts.map(o => o.id)))])];
+
+const DEFAULTS = {
+  rate: "observed", buy: "order", sell: "listing", taxReturns: true,
+  bound: { spirit: 0, obsidian: 0, crystal: 0, emblem: 0 }, // silver
+  tab: "clover",
+  enc: { tier: "deep", asc: 0, buy: "order" }, // asc in silver
+  cur: { relic: { preset: "encryption", custom: 0 }, magnetite: { preset: "peerless-91202", custom: 0 }, badge: { preset: "siege", custom: 0 }, ticket: { preset: "tuning", custom: 0 } },
+};
+const STORE_KEY = "clover-calc-settings-v3";
+let state = loadState();
+let prices = {};   // id -> { buy, sell } in copper
+let priceSource = null;
+
+function loadState() {
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(STORE_KEY)); } catch (e) {}
+  const s = structuredClone(DEFAULTS);
+  if (saved && typeof saved === "object") {
+    for (const k of ["rate", "buy", "sell", "taxReturns", "tab"]) if (k in saved) s[k] = saved[k];
+    if (saved.enc) Object.assign(s.enc, saved.enc);
+    if (saved.bound) Object.assign(s.bound, saved.bound);
+    if (saved.cur) for (const k in s.cur) if (saved.cur[k]) Object.assign(s.cur[k], saved.cur[k]);
+  }
+  return s;
+}
+function saveState() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {} }
+
+// ---------- prices ----------
+function p(id) { return prices[id] || { buy: 0, sell: 0 }; }
+function buyCost(id) {          // what you pay to acquire one
+  const q = p(id);
+  if (state.buy === "order") return q.buy || q.sell;
+  return q.sell || q.buy;
+}
+function saleValue(id) {        // gross price you sell one for
+  const q = p(id);
+  if (state.sell === "listing") return q.sell || q.buy;
+  return q.buy || q.sell;
+}
+const silver = v => (Number(v) || 0) * 100; // silver input -> copper
+
+function presetValue(preset) {  // copper per currency unit
+  if (preset.fn) return preset.fn();
+  let best = -Infinity, bestId = null;
+  for (const o of preset.opts) {
+    const gross = saleValue(o.id) * TAX;
+    const extra = (o.coin || 0) + (o.emblem || 0) * silver(state.bound.emblem) + (o.spirit || 0) * silver(state.bound.spirit);
+    const v = (gross - extra) / o.cost;
+    if (v > best) { best = v; bestId = o.id; }
+  }
+  return { value: Math.max(0, best), id: bestId };
+}
+// Market depth for one item: flags few buy orders or a wide buy/sell gap.
+function health(id) {
+  const q = p(id);
+  if (!q.buy && !q.sell) return { ok: false, flag: "no market", text: "No buy orders or listings" };
+  const spread = q.sell ? (q.sell - q.buy) / q.sell : 1;
+  const issues = [];
+  if ((q.bq ?? 0) < 100) issues.push("few buy orders");
+  if (spread > 0.25) issues.push("wide spread");
+  return {
+    ok: issues.length === 0,
+    flag: issues.join(", "),
+    text: `${(q.bq ?? 0).toLocaleString()} buy orders · ${(q.sq ?? 0).toLocaleString()} listed · ${Math.round(spread * 100)}% gap between buy and sell`,
+  };
+}
+
+function currencyValue(cur) {
+  const sel = state.cur[cur.key];
+  if (sel.preset === "zero") return 0;
+  if (sel.preset === "custom") return silver(sel.custom);
+  const preset = cur.presets.find(x => x.key === sel.preset) || cur.presets[0];
+  return presetValue(preset).value;
+}
+
+// ---------- model ----------
+function avg(ids, f) { return ids.reduce((a, id) => a + f(id), 0) / ids.length; }
+
+function compute() {
+  const ret = id => saleValue(id) * (state.taxReturns ? TAX : 1);
+  const clover = state.rate === "theory" ? THEORY_CLOVER : RATES.clover;
+  const ss = silver(state.bound.spirit), obs = silver(state.bound.obsidian), crys = silver(state.bound.crystal);
+  const coinIn = buyCost(ID.coin), ectoIn = buyCost(ID.ecto);
+
+  const inputs = [
+    ["Mystic Coin", coinIn, 1],
+    ["Glob of Ectoplasm", ectoIn, 1],
+    ["Obsidian Shard", obs, 1],
+    ["Philosopher's Stone (10 per Spirit Shard)", 0.6 * ss, 6],
+  ];
+  const returns = [
+    // [name, value per forge, chance, average qty when it drops, qty text]
+    ["T6 fine materials", RATES.fine * 3 * avg(FINE, ret), RATES.fine, 3, "2–4"],
+    ["T6 refined materials", RATES.basic * 2 * avg(BASIC, ret), RATES.basic, 2, "1–3"],
+    ["T5 lodestones / Putrid Essence", RATES.t5 * avg(T5, ret), RATES.t5, 1, "1"],
+    ["Mystic Coins", RATES.coin * 5 * ret(ID.coin), RATES.coin, 5, "5"],
+    ["Globs of Ectoplasm", RATES.ecto * 2 * ret(ID.ecto), RATES.ecto, 2, "2"],
+    ["Obsidian Shards", RATES.obsidian * 2 * obs, RATES.obsidian, 2, "2"],
+    ["Mystic Crystals", RATES.crystal * 2 * crys, RATES.crystal, 2, "2"],
+    ["Hidden Treasures", RATES.hidden * ret(ID.hidden), RATES.hidden, 1, "1"],
+  ];
+  const inTotal = inputs.reduce((a, r) => a + r[1], 0);
+  const retTotal = returns.reduce((a, r) => a + r[1], 0);
+  const perForge = inTotal - retTotal;
+
+  const base = [["2 Mystic Coins", 2 * coinIn], ["2 Globs of Ectoplasm", 2 * ectoIn]];
+  const cv = Object.fromEntries(CURRENCIES.map(c => [c.key, currencyValue(c)]));
+  const vendor = (extra) => { const rows = [...base, ...extra]; return { rows, total: rows.reduce((a, r) => a + r[1], 0) }; };
+
+  return {
+    clover, inputs, returns, inTotal, retTotal, perForge,
+    routes: [
+      { key: "forge", name: "Mystic Forge", limit: "No limit", total: perForge / clover,
+        sub: `${(1 / clover).toFixed(2)} forges per clover on average` },
+      { key: "relic", name: "Fractal vendor", limit: "10 per week", ...vendor([["2 Spirit Shards", 2 * ss], ["150 Fractal Relics", 150 * cv.relic]]),
+        sub: "BUY-4373" },
+      { key: "magnetite", name: "Raid vendor", limit: "15 per week", ...vendor([["2 Spirit Shards", 2 * ss], ["30 Magnetite Shards", 30 * cv.magnetite]]),
+        sub: "Manfred Njallson" },
+      { key: "wvw", name: "WvW vendor", limit: "5 per week", ...vendor([["10 Badges of Honor", 10 * cv.badge], ["20 Skirmish Claim Tickets", 20 * cv.ticket]]),
+        sub: "Dugan · no Spirit Shards" },
+    ],
+  };
+}
+
+// One encryption bought and opened with a bought key. Keys come back 10% of the time and
+// Handfuls of Fractal Relics hand some relics back, so both are netted out per encryption.
+function computeEnc(tierKey = state.enc.tier) {
+  const tier = KEY_TIERS.find(t => t.key === tierKey) || KEY_TIERS[0];
+  const ret = id => saleValue(id) * (state.taxReturns ? TAX : 1);
+  const keysBought = 1 - ENC_RATES.key;
+  const relicsBack = ENC_RATES.relicBag * ENC_RATES.relicsPerBag;
+  const netRelics = keysBought - relicsBack;
+  const spent = [
+    ["Fractal Encryption", state.enc.buy === "instant" ? (p(ENC.id).sell || p(ENC.id).buy) : (p(ENC.id).buy || p(ENC.id).sell), 1],
+    [`${tier.label}, silver part`, keysBought * tier.coin, keysBought],
+  ];
+  const trophyGold = TROPHIES.reduce((a, t) => a + t[1] * t[2], 0);
+  const trophyQty = TROPHIES.reduce((a, t) => a + t[1], 0);
+  const returns = [
+    // [name, value, qty per encryption, note]
+    ["Trophies", trophyGold, trophyQty, "sold to any merchant, no tax"],
+    ["+1 Agony Infusions", ENC_RATES.agony * ret(ENC.agony), ENC_RATES.agony, "Trading Post"],
+    ["T5 fine materials", ENC_RATES.t5 * avg(T5_FRACTAL, ret), ENC_RATES.t5, "Trading Post, 8 kinds"],
+    ["Ascended materials", ENC_RATES.asc * silver(state.enc.asc), ENC_RATES.asc, "account bound, your value"],
+    ["Mini Professor Mew", ENC_RATES.mew * ret(ENC.mew), ENC_RATES.mew, "Trading Post"],
+    ["Aetherized weapon skins", ENC_RATES.skin * avg(AETHER_SKINS, ret), ENC_RATES.skin, "Trading Post, 19 kinds"],
+  ];
+  const spentTotal = spent.reduce((a, r) => a + r[1], 0);
+  const retTotal = returns.reduce((a, r) => a + r[1], 0);
+  const net = retTotal - spentTotal;
+  return { tier, spent, returns, spentTotal, retTotal, net, keysBought, relicsBack, netRelics, perRelic: net / netRelics };
+}
+
+// ---------- formatting ----------
+function coin(copper, opts = {}) {
+  const neg = copper < 0;
+  let c = Math.round(Math.abs(copper));
+  const g = Math.floor(c / 10000), s = Math.floor((c % 10000) / 100); c = c % 100;
+  const parts = [];
+  if (g) parts.push(`<span class="g">${g.toLocaleString()}g</span>`);
+  if (g || s) parts.push(`<span class="s">${s}s</span>`);
+  if (!opts.noCopper || (!g && !s)) parts.push(`<span class="c">${c}c</span>`);
+  return `<span class="coin">${neg ? "−" : ""}${parts.join(" ")}</span>`;
+}
+function perUnit(copper) {
+  if (copper >= 100) return coin(copper) ;
+  return `<span class="coin"><span class="c">${copper.toFixed(copper < 10 ? 2 : 1)}c</span></span>`;
+}
+const esc = s => String(s).replace(/[&<>"]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
+
+// ---------- UI ----------
+function buildCurrencyFields() {
+  const fs = document.getElementById("curFields");
+  for (const cur of CURRENCIES) {
+    const div = document.createElement("div");
+    div.className = "cur";
+    div.innerHTML = `
+      <div class="cur-head"><label for="sel_${cur.key}"><strong>${esc(cur.name)}</strong></label><span class="cur-val" id="val_${cur.key}"></span></div>
+      <select id="sel_${cur.key}"></select>
+      <div class="market" id="mkt_${cur.key}"></div>
+      <div class="cur-custom" id="customWrap_${cur.key}" hidden>
+        <label for="custom_${cur.key}">Your value, silver each</label>
+        <input type="number" id="custom_${cur.key}" min="0" step="0.01">
+      </div>`;
+    fs.appendChild(div);
+    div.querySelector("select").addEventListener("change", e => { state.cur[cur.key].preset = e.target.value; update(); });
+    div.querySelector("input").addEventListener("input", e => { state.cur[cur.key].custom = e.target.value; update(); });
+  }
+}
+
+function renderCurrencyFields() {
+  for (const cur of CURRENCIES) {
+    const sel = document.getElementById("sel_" + cur.key);
+    const chosen = state.cur[cur.key].preset;
+    const opts = cur.presets.map(pr => {
+      const { value: v, id } = presetValue(pr);
+      const h = health(id);
+      return `<option value="${pr.key}">${esc(pr.label)} · ${esc(pr.note)} · ${v >= 100 ? (v / 100).toFixed(2) + "s" : v.toFixed(1) + "c"} each${h.ok ? "" : " · ⚠ " + h.flag}</option>`;
+    });
+    opts.push(`<option value="zero">Nothing: I'd never sell it (0)</option>`, `<option value="custom">My own value…</option>`);
+    sel.innerHTML = opts.join("");
+    sel.value = [...cur.presets.map(x => x.key), "zero", "custom"].includes(chosen) ? chosen : cur.presets[0].key;
+    document.getElementById("customWrap_" + cur.key).hidden = sel.value !== "custom";
+    const mkt = document.getElementById("mkt_" + cur.key);
+    const preset = cur.presets.find(x => x.key === sel.value);
+    mkt.hidden = !preset;
+    if (preset) {
+      const h = health(presetValue(preset).id);
+      mkt.innerHTML = `<span class="health ${h.ok ? "ok" : "thin"}">${h.ok ? "Healthy market" : "⚠ " + esc(h.flag)}</span><span>${esc(h.text)}</span>`;
+    }
+    const inp = document.getElementById("custom_" + cur.key);
+    if (document.activeElement !== inp) inp.value = state.cur[cur.key].custom;
+    document.getElementById("val_" + cur.key).innerHTML = perUnit(currencyValue(cur)) + " each";
+  }
+}
+
+function syncControls() {
+  document.querySelector(`input[name="rate"][value="${state.rate}"]`).checked = true;
+  document.querySelector(`input[name="buy"][value="${state.buy}"]`).checked = true;
+  document.querySelector(`input[name="sell"][value="${state.sell}"]`).checked = true;
+  document.getElementById("taxReturns").checked = !!state.taxReturns;
+  document.querySelector(`input[name="keytier"][value="${state.enc.tier}"]`).checked = true;
+  document.querySelector(`input[name="encbuy"][value="${state.enc.buy}"]`).checked = true;
+  const asc = document.getElementById("v_asc");
+  if (document.activeElement !== asc) asc.value = state.enc.asc;
+  showTab(state.tab);
+  for (const k of Object.keys(state.bound)) {
+    const el = document.getElementById("v_" + k);
+    if (document.activeElement !== el) el.value = state.bound[k];
+  }
+}
+
+function table(rows, totalLabel, total, minusRows) {
+  const tr = (label, v, cls = "") => `<tr class="${cls}"><td>${esc(label)}</td><td>${coin(v)}</td></tr>`;
+  let html = rows.map(r => tr(r[0], r[1])).join("");
+  if (minusRows) html += minusRows.map(r => tr(r[0], -r[1], "minus")).join("");
+  html += tr(totalLabel, total, "total");
+  return `<div class="tbl"><table>${html}</table></div>`;
+}
+
+function render() {
+  const m = compute();
+  const cheapest = Math.min(...m.routes.map(r => r.total));
+  document.getElementById("routes").innerHTML = m.routes.map(r => `
+    <article class="route ${r.total === cheapest ? "best" : ""}">
+      <div class="name"><span>${esc(r.name)}</span>${r.total === cheapest ? '<span class="tag">Cheapest</span>' : ""}</div>
+      <div class="price">${coin(r.total)}</div>
+      <div class="sub">per clover · ${esc(r.limit)}</div>
+      <div class="sub">${esc(r.sub)}</div>
+    </article>`).join("");
+
+  const forge = m.routes[0];
+  const k = 1 / m.clover; // average forges per clover
+  const row = (label, v, cls = "") => `<tr class="${cls}"><td>${label}</td><td>${coin(v)}</td></tr>`;
+  let ft = `<tr class="sect"><td colspan="2">Spent on ${k.toFixed(2)} forges</td></tr>`;
+  ft += m.inputs.map(r => row(esc(`${(k * r[2]).toFixed(2)} × ${r[0]}`), r[1] * k)).join("");
+  ft += row("Total spent", m.inTotal * k, "sub");
+  ft += `<tr class="sect ret"><td colspan="2">Given back by the forges that miss <span class="back">returned to you</span></td></tr>`;
+  ft += m.returns.map(r => row(
+    `<span class="arrow" aria-hidden="true">↩</span> ${(k * r[2] * r[3]).toFixed(2)} × ${esc(r[0])}<br><span class="hint">${esc(r[4])} at a time, on ${(r[2] * 100).toFixed(2)}% of forges</span>`,
+    r[1] * k, "ret")).join("");
+  ft += row("Value of everything returned", m.retTotal * k, "sub ret");
+  ft += row("Net cost per clover (spent − returned)", forge.total, "total");
+  let html = `<div class="bd"><h3>Mystic Forge, per clover</h3>
+    <p class="hint">A clover takes ${k.toFixed(2)} forges on average (${(m.clover * 100).toFixed(2)}% chance each). Every forge that misses hands back something instead. The returned rows show how much of each you collect on average per clover, and their value is subtracted from what you spent.</p>
+    <div class="tbl"><table>${ft}</table></div>
+    <p class="hint">These are long-run averages. A single stack of forges can land well above or below.</p></div>`;
+  for (const r of m.routes.slice(1)) {
+    html += `<div class="bd"><h3>${esc(r.name)} <span class="hint">· ${esc(r.sub)}, ${esc(r.limit)}</span></h3>${table(r.rows, "Per clover", r.total)}</div>`;
+  }
+  document.getElementById("breakdown").innerHTML = html;
+  renderCurrencyFields();
+  renderEnc();
+}
+
+function renderEnc() {
+  const sel = state.enc.tier;
+  document.getElementById("relicCards").innerHTML = KEY_TIERS.map(t => {
+    const e = computeEnc(t.key);
+    return `<article class="route ${t.key === sel ? "best" : ""}">
+      <div class="name"><span>${esc(t.label)}</span>${t.key === sel ? '<span class="tag">Used</span>' : ""}</div>
+      <div class="price ${e.perRelic < 0 ? "neg" : ""}">${coin(e.perRelic)}</div>
+      <div class="sub">per relic · 1 relic + ${coin(t.coin)} · ${esc(t.limit)}</div>
+      <div class="sub">150 relics (one clover): ${coin(150 * e.perRelic)}</div>
+    </article>`;
+  }).join("");
+
+  const e = computeEnc();
+  const row = (label, v, cls = "") => `<tr class="${cls}"><td>${label}</td><td>${coin(v)}</td></tr>`;
+  let t = `<tr class="sect"><td colspan="2">Spent per encryption</td></tr>`;
+  t += e.spent.map(r => row(esc(`${r[2].toFixed(2)} × ${r[0]}`), r[1])).join("");
+  t += row("Total spent", e.spentTotal, "sub");
+  t += `<tr class="sect ret"><td colspan="2">What comes out <span class="back">yours to sell</span></td></tr>`;
+  t += e.returns.map(r => row(
+    `<span class="arrow" aria-hidden="true">↩</span> ${r[2] < 0.01 ? r[2].toFixed(5) : r[2].toFixed(2)} × ${esc(r[0])}<br><span class="hint">${esc(r[3])}</span>`,
+    r[1], "ret")).join("");
+  t += row("Value of everything that comes out", e.retTotal, "sub ret");
+  t += row("Gold cleared per encryption (out − spent)", e.net, "total");
+
+  const h = health(ENC.id);
+  document.getElementById("encBreakdown").innerHTML = `
+    <div class="bd"><div class="tbl"><table>${t}</table></div></div>
+    <div class="bd"><h3>Relics used</h3>
+      <div class="tbl"><table>
+        <tr><td>${e.keysBought.toFixed(2)} keys bought <span class="hint">· 10% of encryptions give a key back</span></td><td>${e.keysBought.toFixed(2)} relics</td></tr>
+        <tr class="ret"><td><span class="arrow" aria-hidden="true">↩</span> Handfuls of Fractal Relics <span class="hint">· 3 relics on 6.68% of encryptions</span></td><td>${e.relicsBack.toFixed(2)} relics</td></tr>
+        <tr class="total"><td>Net relics per encryption</td><td>${e.netRelics.toFixed(2)} relics</td></tr>
+      </table></div>
+      <p class="hint">${coin(e.net)} ÷ ${e.netRelics.toFixed(2)} relics = <strong>${coin(e.perRelic)}</strong> per relic.${e.perRelic < 0 ? " At this key price you lose gold on every encryption, so relics are worth nothing this way." : ""}</p>
+    </div>
+    <div class="market"><span class="health ${h.ok ? "ok" : "thin"}">${h.ok ? "Healthy market" : "⚠ " + esc(h.flag)}</span><span>Fractal Encryption: ${esc(h.text)}</span></div>`;
+}
+
+function showTab(name) {
+  state.tab = name === "relic" ? "relic" : "clover";
+  for (const b of document.querySelectorAll(".tabs button")) {
+    const on = b.dataset.tab === state.tab;
+    b.setAttribute("aria-selected", on);
+    b.tabIndex = on ? 0 : -1;
+    document.getElementById("tab-" + b.dataset.tab).hidden = !on;
+  }
+}
+
+function update() { saveState(); render(); }
+
+function wire() {
+  for (const name of ["rate", "buy", "sell"]) {
+    document.querySelectorAll(`input[name="${name}"]`).forEach(el => el.addEventListener("change", () => { state[name] = el.value; update(); }));
+  }
+  document.getElementById("taxReturns").addEventListener("change", e => { state.taxReturns = e.target.checked; update(); });
+  for (const k of Object.keys(state.bound)) {
+    document.getElementById("v_" + k).addEventListener("input", e => { state.bound[k] = e.target.value; update(); });
+  }
+  document.querySelectorAll('input[name="keytier"]').forEach(el => el.addEventListener("change", () => { state.enc.tier = el.value; update(); }));
+  document.querySelectorAll('input[name="encbuy"]').forEach(el => el.addEventListener("change", () => { state.enc.buy = el.value; update(); }));
+  document.getElementById("v_asc").addEventListener("input", e => { state.enc.asc = e.target.value; update(); });
+  const tabs = [...document.querySelectorAll(".tabs button")];
+  tabs.forEach((b, i) => {
+    b.addEventListener("click", () => { showTab(b.dataset.tab); saveState(); });
+    b.addEventListener("keydown", e => {
+      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      const next = tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
+      next.focus(); showTab(next.dataset.tab); saveState();
+    });
+  });
+  document.getElementById("refresh").addEventListener("click", loadPrices);
+  document.getElementById("reset").addEventListener("click", () => { state = structuredClone(DEFAULTS); syncControls(); update(); });
+}
+
+function setStatus(kind, text) {
+  const el = document.getElementById("priceStatus");
+  el.className = "pill " + kind;
+  el.textContent = text;
+}
+
+async function loadPrices() {
+  setStatus("snap", "Fetching live prices…");
+  try {
+    const out = {};
+    for (let i = 0; i < ALL_IDS.length; i += 150) {
+      const ids = ALL_IDS.slice(i, i + 150).join(",");
+      const res = await fetch(`https://api.guildwars2.com/v2/commerce/prices?ids=${ids}`);
+      if (!res.ok && res.status !== 206) throw new Error("HTTP " + res.status);
+      for (const r of await res.json()) out[r.id] = { buy: r.buys.unit_price, sell: r.sells.unit_price, bq: r.buys.quantity, sq: r.sells.quantity };
+    }
+    prices = out;
+    priceSource = "live";
+    setStatus("live", "Live prices · " + new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
+  } catch (e) {
+    if (SNAPSHOT) {
+      prices = SNAPSHOT.prices;
+      priceSource = "snapshot";
+      setStatus("snap", "Live prices unavailable here · using snapshot from " + SNAPSHOT.date);
+    } else {
+      setStatus("snap", "Couldn't load prices");
+    }
+  }
+  render();
+}
+
+buildCurrencyFields();
+wire();
+syncControls();
+if (SNAPSHOT) prices = SNAPSHOT.prices;
+render();
+loadPrices();
+</script>
