@@ -59,6 +59,10 @@
   .leaflet-container { font: inherit; }
   .wp-icon { background: none; border: 0; }
   .md-icon { background: none; border: 0; }
+  .vein-img, .gather-icon.vein img { filter: drop-shadow(0 0 2px #ffd84d) drop-shadow(0 0 1px #ffd84d); }
+  .gather-icon { background: none; border: 0; }
+  .gather-icon img { width: 20px; height: 20px; display: block; }
+  .gather-icon.crop img { filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff) drop-shadow(0 0 2px rgba(255,255,255,.8)); }
   .md-icon img { width: 18px; height: 18px; display: block;
     filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1px #fff) drop-shadow(0 0 2px rgba(255,255,255,.8)); }
   #worldBtn { background: #2a2f3a; color: var(--text); border: 1px solid var(--border); border-radius: 4px;
@@ -72,6 +76,10 @@
   .rift { color: var(--rift); }
   .bounty { color: var(--bounty); }
   .detail { color: #e9d9a6; font-style: italic; }
+  #credits { border-top: 1px solid var(--border); padding: 6px 12px; font-size: 12px; max-height: 45%; overflow: auto; }
+  #credits summary { cursor: pointer; color: var(--muted); }
+  #credits ul { margin: 6px 0; padding-left: 16px; }
+  #credits li { margin: 3px 0; }
   @media (max-width: 700px) {
     #app { flex-direction: column; }
     #side { width: 100%; min-width: 0; height: 45%; border-right: 0; border-bottom: 1px solid var(--border); }
@@ -102,10 +110,23 @@
         <label class="row" title="Dungeon, fractal, raid and strike entrances (in-game icons from the GW2 API)"><input type="checkbox" id="tDung" checked><img class="hp-img" id="dungSwatch" alt="">Dungeons &amp; raids</label>
         <label class="row" title="Jumping puzzles, marked at the finish or chest (positions from Tekkit's marker pack); hover shows the way to the start"><input type="checkbox" id="tJP" checked><img class="hp-img" src="icons/jumping_puzzle.png" alt="">Jumping puzzles</label>
         <label class="row" title="Mini-dungeons (wiki list; positions mostly from Lady Elyssa's routes). Click one to show its route."><input type="checkbox" id="tMD" checked><img class="hp-img" src="icons/mini_dungeon.png" alt="">Mini-dungeons</label>
+        <label class="row" title="Node farms from the wiki's Node farm page (plus Orr sapling clusters and Thunderhead ore clusters). Faded = approximate (at the waypoint/area the wiki names)."><input type="checkbox" id="tFarm" checked><img class="hp-img" src="icons/gather_plant.png" alt="">Node farms</label>
+        <label class="row" title="Guaranteed (permanent) rich ore veins only, from the wiki's rich vein pages. Faded = approximate."><input type="checkbox" id="tVein" checked><img class="hp-img vein-img" src="icons/gather_mine.png" alt="">Rich veins</label>
       </div>
     </header>
     <div id="stats"></div>
     <ul id="list"></ul>
+    <details id="credits">
+      <summary>♥ Thanks to our sources</summary>
+      <ul>
+        <li><b>ArenaNet</b>: map tiles, map icons and the <a href="https://wiki.guildwars2.com/wiki/API:Main" target="_blank" rel="noopener">GW2 API</a> (events, waypoints, hero points, zones).</li>
+        <li><b>The Guild Wars 2 Wiki</b> and its editors: event pages, hero challenges, gates, mini-dungeons, jumping puzzles and icons (<a href="https://creativecommons.org/licenses/by-nc-sa/2.5/" target="_blank" rel="noopener">CC BY-NC-SA</a>).</li>
+        <li><b><a href="https://github.com/LadyElyssa/LadyElyssaTacoTrails" target="_blank" rel="noopener">Lady Elyssa's Guides</a></b>: zone portal positions, jumping puzzle shortcuts, mini-dungeon routes, node farm and rich vein markers.</li>
+        <li><b><a href="https://tekkitsworkshop.net/" target="_blank" rel="noopener">Tekkit's Workshop</a></b>: portals between maps, jumping puzzle positions, node farm and rich vein markers.</li>
+        <li><b><a href="https://leafletjs.com/" target="_blank" rel="noopener">Leaflet</a></b>: the map viewer.</li>
+      </ul>
+      <div class="muted">Guild Wars 2 © ArenaNet. This is a fan-made prototype, not affiliated with ArenaNet.</div>
+    </details>
   </aside>
   <div id="mapwrap">
     <div id="map"></div>
@@ -229,7 +250,7 @@
   }
   $('region').onchange = () => { fillZones(); selectZone(+$('zone').value, true); };
   $('zone').onchange = () => selectZone(+$('zone').value, true);
-  ['tNormal', 'tGroup', 'tHero', 'tRift', 'tBounty', 'tWp', 'tGate', 'tDung', 'tJP', 'tMD', 'tHeart'].forEach(id => $(id).onchange = render);
+  ['tNormal', 'tGroup', 'tHero', 'tRift', 'tBounty', 'tWp', 'tGate', 'tDung', 'tJP', 'tMD', 'tFarm', 'tVein', 'tHeart'].forEach(id => $(id).onchange = render);
   $('q').oninput = render;
 
   let zone = null, shown = [], pinned = null;   // pinned = { x, y, hits }
@@ -473,6 +494,29 @@
         .bindTooltip(tip, Object.assign({ className: 'tip' }, awayFrom(r.coord, r.start)))
         .addTo(layers.gates);
       mk.on('click', () => { const opened = openZone(m); if (r.guide && !(opened && shortcutOf === r)) toggleGuide(r); });
+    }
+    // Node farms and guaranteed rich veins of every zone (game gathering icons; faded = approximate position).
+    const showFarm = $('tFarm').checked, showVein = $('tVein').checked;
+    if (showFarm || showVein) for (const m of MAPS) for (const g of m.gathering || []) {
+      if (g.type === 'vein' ? !showVein : !showFarm) continue;
+      // Approximate ones sit on the wiki's anchor (often a waypoint): drawn above it, nudged up-right, with a
+      // dashed ring around the anchor, so they never hide under the waypoint icon.
+      // Plant farms: the in-game icon of the crop's item (API), with the mini-dungeon's light border.
+      const icon = L.divIcon({ className: 'gather-icon' + (g.type === 'vein' ? ' vein' : g.icon ? ' crop' : ''), iconSize: [20, 20],
+        iconAnchor: g.confirmed ? [10, 10] : [-2, 22], html: `<img src="${g.icon || `icons/gather_${g.kind}.png`}" alt="">` });
+      if (!g.confirmed) L.circleMarker(ll(g.coord), { radius: 16, color: '#9be37a', weight: 1.5, dashArray: '3 3', fill: false,
+        interactive: false }).addTo(layers.gates);
+      const head = g.type === 'vein' ? 'Rich vein' : g.kind === 'wood' ? 'Sapling cluster' : g.kind === 'mine' ? 'Ore cluster' : 'Node farm';
+      const pos = g.confirmed ? `position: ${esc(g.at)}` : `⚠ position not confirmed: dashed ring = ${esc(g.at)}` +
+        (g.disagree ? `<br>⚠ ${esc(g.disagree)}` : '');
+      L.marker(ll(g.coord), { icon, keyboard: false, opacity: g.confirmed ? 1 : .6, zIndexOffset: 1000 })
+        .bindTooltip(`<b>${head}</b>: ${esc(g.name)}<br>${esc(g.note)}<br><span class="muted">${pos}</span>` + zoneTip(m),
+          { className: 'tip', direction: 'top', offset: [0, -10] })
+        .on('mouseover', () => { for (const p of g.nodes || [])
+          L.circleMarker(ll(p), { radius: 3, color: '#000', weight: 1, fillColor: '#9be37a', fillOpacity: 1, interactive: false }).addTo(jpHint); })
+        .on('mouseout', () => jpHint.clearLayers())
+        .on('click', () => openZone(m))
+        .addTo(layers.gates);
     }
     // Dungeon / fractal / raid / strike entrances from the API (those not already shown as a gate).
     if (showDung) for (const m of MAPS) for (const p of m.pois || []) {
