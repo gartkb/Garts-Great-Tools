@@ -2,13 +2,20 @@
   "source_type": "event",
   "id": "1571721805700276287",
   "label": "Gart's Great Intro to Raids",
-  "last_updated": "2026-11-16T06:01:00.292715+00:00",
+  "last_updated": "2026-11-16T16:08:31.319517+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<596875174700122122> 💫Gartner Kinderboom.5019,  📧\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<596875174700122122> 💫Gartner Kinderboom.5019,  📧\n2.<797945111794810930> 💫SkielaHun.7015,           📧\n```",
   "roster": [
     {
       "discord_id": "596875174700122122",
       "nickname": "💫Gartner Kinderboom.5019",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "797945111794810930",
+      "nickname": "💫SkielaHun.7015",
       "emojis": [
         "📧"
       ]
@@ -36,6 +43,30 @@
       "discord_id": "1094878150229491754",
       "nickname": "Benana (Benana.7960)",
       "action": "uninterested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-11-16T16:06:46.631886+00:00",
+      "discord_id": "797945111794810930",
+      "nickname": "💫SkielaHun.7015",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-11-16T16:07:23.863726+00:00",
+      "discord_id": "797945111794810930",
+      "nickname": "💫SkielaHun.7015",
+      "action": "uninterested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-11-16T16:07:24.612001+00:00",
+      "discord_id": "797945111794810930",
+      "nickname": "💫SkielaHun.7015",
+      "action": "interested",
       "source": "event_interest",
       "emoji": null
     }
