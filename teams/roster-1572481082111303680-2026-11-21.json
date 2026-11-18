@@ -2,15 +2,23 @@
   "source_type": "event",
   "id": "1572481082111303680",
   "label": "Qadim the Peerless (Q2) Raid Training",
-  "last_updated": "2026-11-18T07:51:15.067194+00:00",
+  "last_updated": "2026-11-18T16:01:47.871144+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,     📧\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,     📧\n2.<596875174700122122> 💫Gartner Kinderboom.5019,  👍  🔥\n```",
   "roster": [
     {
       "discord_id": "219437617219895297",
       "nickname": "BeastfromtheEast.2946",
       "emojis": [
         "📧"
+      ]
+    },
+    {
+      "discord_id": "596875174700122122",
+      "nickname": "💫Gartner Kinderboom.5019",
+      "emojis": [
+        "👍",
+        "🔥"
       ]
     }
   ],
@@ -38,6 +46,22 @@
       "action": "unreacted",
       "source": "post_reaction",
       "emoji": "💯"
+    },
+    {
+      "timestamp": "2026-11-18T16:00:11.256497+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫Gartner Kinderboom.5019",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "👍"
+    },
+    {
+      "timestamp": "2026-11-18T16:00:36.634123+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫Gartner Kinderboom.5019",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🔥"
     }
   ]
 }
