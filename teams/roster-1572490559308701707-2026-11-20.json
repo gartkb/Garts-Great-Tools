@@ -2,9 +2,9 @@
   "source_type": "event",
   "id": "1572490559308701707",
   "label": "Thursday Raid Bounties Practice/Prog",
-  "last_updated": "2026-11-18T13:07:01.449077+00:00",
+  "last_updated": "2026-11-18T16:01:36.357721+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,     📧\n2.<596875174700122122> 💫Gartner Kinderboom.5019,  👍\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,     📧\n2.<596875174700122122> 💫Gartner Kinderboom.5019,  🔥\n```",
   "roster": [
     {
       "discord_id": "219437617219895297",
@@ -17,7 +17,7 @@
       "discord_id": "596875174700122122",
       "nickname": "💫Gartner Kinderboom.5019",
       "emojis": [
-        "👍"
+        "🔥"
       ]
     }
   ],
@@ -37,6 +37,22 @@
       "action": "reacted",
       "source": "post_reaction",
       "emoji": "👍"
+    },
+    {
+      "timestamp": "2026-11-18T16:00:14.651969+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫Gartner Kinderboom.5019",
+      "action": "unreacted",
+      "source": "post_reaction",
+      "emoji": "👍"
+    },
+    {
+      "timestamp": "2026-11-18T16:00:27.260262+00:00",
+      "discord_id": "596875174700122122",
+      "nickname": "💫Gartner Kinderboom.5019",
+      "action": "reacted",
+      "source": "post_reaction",
+      "emoji": "🔥"
     }
   ]
 }
