@@ -1,0 +1,27 @@
+{
+  "source_type": "event",
+  "id": "1572490559308701707",
+  "label": "Thursday Raid Bounties Practice/Prog",
+  "last_updated": "2026-11-18T07:16:59.417456+00:00",
+  "expires_at": null,
+  "text_representation": "**Interest List:**\n\n```\n1.<219437617219895297> BeastfromtheEast.2946,     📧\n```",
+  "roster": [
+    {
+      "discord_id": "219437617219895297",
+      "nickname": "BeastfromtheEast.2946",
+      "emojis": [
+        "📧"
+      ]
+    }
+  ],
+  "history": [
+    {
+      "timestamp": "2026-11-18T07:15:53.284160+00:00",
+      "discord_id": "219437617219895297",
+      "nickname": "BeastfromtheEast.2946",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    }
+  ]
+}
