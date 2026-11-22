@@ -2,10 +2,17 @@
   "source_type": "event",
   "id": "1573381950243086482",
   "label": "Eod 5 and soto 2 raids",
-  "last_updated": "2026-11-22T19:03:47.537763+00:00",
+  "last_updated": "2026-11-22T20:35:52.099201+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<693995688492793918> 🧞☠️ Nezmith.3862,          📧\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<266984776131543050> Memory (Memory.1860) 🚺,    📧\n2.<693995688492793918> 🧞☠️ Nezmith.3862,          📧\n```",
   "roster": [
+    {
+      "discord_id": "266984776131543050",
+      "nickname": "Memory (Memory.1860) 🚺",
+      "emojis": [
+        "📧"
+      ]
+    },
     {
       "discord_id": "693995688492793918",
       "nickname": "🧞☠️ Nezmith.3862",
@@ -19,6 +26,14 @@
       "timestamp": "2026-11-22T19:02:39.499087+00:00",
       "discord_id": "693995688492793918",
       "nickname": "🧞☠️ Nezmith.3862",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-11-22T20:34:46.273609+00:00",
+      "discord_id": "266984776131543050",
+      "nickname": "Memory (Memory.1860) 🚺",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
