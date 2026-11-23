@@ -2,9 +2,9 @@
   "source_type": "event",
   "id": "1574226777700565102",
   "label": "Raids-giving: Nexus of Eternity",
-  "last_updated": "2026-11-23T02:47:35.064110+00:00",
+  "last_updated": "2026-11-23T14:35:35.878419+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<183746801587847169> Igrener (Igrener.8947) 🚹,  📧\n2.<285292506017562624> NettNett_ (NettNett.6571), 📧\n3.<164157490496274432> Star2Wars (Kayle.1586) 🌠,  📧\n4.<172515643801731072> ☠️Toni (Orewatowi.1603) 🚺, 📧\n5.<734971332089085984> 🧞☠️Visceral.2796 🚺,        📧\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<351882965506195457> Aetheria (ethearia.3640) 🚺,📧\n2.<183746801587847169> Igrener (Igrener.8947) 🚹,  📧\n3.<285292506017562624> NettNett_ (NettNett.6571), 📧\n4.<164157490496274432> Star2Wars (Kayle.1586) 🌠,  📧\n5.<172515643801731072> ☠️Toni (Orewatowi.1603) 🚺, 📧\n6.<734971332089085984> 🧞☠️Visceral.2796 🚺,        📧\n```",
   "roster": [
     {
       "discord_id": "164157490496274432",
@@ -30,6 +30,13 @@
     {
       "discord_id": "285292506017562624",
       "nickname": "NettNett_ (NettNett.6571)",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "351882965506195457",
+      "nickname": "Aetheria (ethearia.3640) 🚺",
       "emojis": [
         "📧"
       ]
@@ -95,6 +102,14 @@
       "timestamp": "2026-11-23T02:46:27.272601+00:00",
       "discord_id": "285292506017562624",
       "nickname": "NettNett_ (NettNett.6571)",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-11-23T14:34:28.369260+00:00",
+      "discord_id": "351882965506195457",
+      "nickname": "Aetheria (ethearia.3640) 🚺",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
