@@ -2,13 +2,27 @@
   "source_type": "event",
   "id": "1574226777700565102",
   "label": "Raids-giving: Nexus of Eternity",
-  "last_updated": "2026-11-23T00:56:34.107297+00:00",
+  "last_updated": "2026-11-23T01:01:25.213630+00:00",
   "expires_at": null,
-  "text_representation": "**Interest List:**\n\n```\n1.<164157490496274432> Star2Wars (Kayle.1586) 🌠,  📧\n```",
+  "text_representation": "**Interest List:**\n\n```\n1.<183746801587847169> Igrener (Igrener.8947) 🚹,  📧\n2.<164157490496274432> Star2Wars (Kayle.1586) 🌠,  📧\n3.<172515643801731072> ☠️Toni (Orewatowi.1603) 🚺, 📧\n```",
   "roster": [
     {
       "discord_id": "164157490496274432",
       "nickname": "Star2Wars (Kayle.1586) 🌠",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "172515643801731072",
+      "nickname": "☠️Toni (Orewatowi.1603) 🚺",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "183746801587847169",
+      "nickname": "Igrener (Igrener.8947) 🚹",
       "emojis": [
         "📧"
       ]
@@ -35,6 +49,22 @@
       "timestamp": "2026-11-23T00:55:28.555093+00:00",
       "discord_id": "164157490496274432",
       "nickname": "Star2Wars (Kayle.1586) 🌠",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-11-23T00:59:51.669168+00:00",
+      "discord_id": "183746801587847169",
+      "nickname": "Igrener (Igrener.8947) 🚹",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    },
+    {
+      "timestamp": "2026-11-23T01:00:19.649297+00:00",
+      "discord_id": "172515643801731072",
+      "nickname": "☠️Toni (Orewatowi.1603) 🚺",
       "action": "interested",
       "source": "event_interest",
       "emoji": null
