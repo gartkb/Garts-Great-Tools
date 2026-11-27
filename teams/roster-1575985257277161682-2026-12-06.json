@@ -1,0 +1,84 @@
+{
+  "source_type": "event",
+  "id": "1575985257277161682",
+  "label": "Winterday's Secret Skritt-a!",
+  "last_updated": "2026-11-27T21:23:58.124239+00:00",
+  "expires_at": null,
+  "text_representation": "**Interest List:**\n\n```\n1.<619970339233071134> gijo(Candid Flames.6279)🌠🌀 🍬🍪,\\<:DocSmile:1213036172524126240>\n2.<798211339365384212> Kavish.8593🌠 🔱 🦌🦌🍬🍬🍪🍪🍪,       ❄️\n3.<383473811720372224> Razinth (Razinth.6389),       👍\n4.<198877291856527360> Ven (Larquin.5237) 🌀 🦌🎄💌🍪🍪,   📧\n5.<117897822329765892> 💫 Mandy Ember (Amanda.5871) 🔱 🚺,❄️  🎅  🎄  \\<:antiquary:1505655270121017464>\n6.<596875174700122122> 💫Gartner Kinderboom.5019,     🎅  🎄\n7.<797945111794810930> 💫SkielaHun.7015,              ❄️  🎅  🎄  \\<:antiquary:1505655270121017464>  💗\n8.<297875840748748810> 💫🕵 morganah.8214 🔰 👥 🦌🎄🍪,     \\<:antiquary:1505655270121017464>\n```",
+  "roster": [
+    {
+      "discord_id": "198877291856527360",
+      "nickname": "Ven (Larquin.5237) 🌀 🦌🎄💌🍪🍪",
+      "emojis": [
+        "📧"
+      ]
+    },
+    {
+      "discord_id": "798211339365384212",
+      "nickname": "Kavish.8593🌠 🔱 🦌🦌🍬🍬🍪🍪🍪",
+      "emojis": [
+        "❄️"
+      ]
+    },
+    {
+      "discord_id": "797945111794810930",
+      "nickname": "💫SkielaHun.7015",
+      "emojis": [
+        "❄️",
+        "🎅",
+        "🎄",
+        "<:antiquary:1505655270121017464>",
+        "💗"
+      ]
+    },
+    {
+      "discord_id": "117897822329765892",
+      "nickname": "💫 Mandy Ember (Amanda.5871) 🔱 🚺",
+      "emojis": [
+        "❄️",
+        "🎅",
+        "🎄",
+        "<:antiquary:1505655270121017464>"
+      ]
+    },
+    {
+      "discord_id": "596875174700122122",
+      "nickname": "💫Gartner Kinderboom.5019",
+      "emojis": [
+        "🎅",
+        "🎄"
+      ]
+    },
+    {
+      "discord_id": "297875840748748810",
+      "nickname": "💫🕵 morganah.8214 🔰 👥 🦌🎄🍪",
+      "emojis": [
+        "<:antiquary:1505655270121017464>"
+      ]
+    },
+    {
+      "discord_id": "383473811720372224",
+      "nickname": "Razinth (Razinth.6389)",
+      "emojis": [
+        "👍"
+      ]
+    },
+    {
+      "discord_id": "619970339233071134",
+      "nickname": "gijo(Candid Flames.6279)🌠🌀 🍬🍪",
+      "emojis": [
+        "<:DocSmile:1213036172524126240>"
+      ]
+    }
+  ],
+  "history": [
+    {
+      "timestamp": "2026-11-27T21:22:46.223198+00:00",
+      "discord_id": "198877291856527360",
+      "nickname": "Ven (Larquin.5237) 🌀 🦌🎄💌🍪🍪",
+      "action": "interested",
+      "source": "event_interest",
+      "emoji": null
+    }
+  ]
+}
